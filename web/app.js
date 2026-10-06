@@ -124,6 +124,7 @@ let proceduralFallbackStartedAt = 0;
 let fbxRuntimePromise = null;
 let fbxFallbackState = null;
 let fbxFallbackLoadToken = 0;
+const pokeMinersTextureInventoryCache = new Map();
 
 const IDLE_BREAK_OVERRIDES = {
   // Only verified clips belong here. Unknown species show "Unavailable"
@@ -716,6 +717,206 @@ function clearIdleBreakTimers() {
   }
 }
 
+async function pokeMinersTextureInventory(model) {
+  const key = String(model?.dex || "");
+  if (pokeMinersTextureInventoryCache.has(key)) {
+    return pokeMinersTextureInventoryCache.get(key);
+  }
+
+  const dex = String(model.dex).padStart(4, "0");
+  const folder = "pm" + dex + "_00_Rig";
+  const api =
+    "https://api.github.com/repos/PokeMiners/pogo_assets/contents/" +
+    "3D%20Assets/Pokemon/" + folder + "?ref=master";
+
+  const promise = fetch(api, { cache: "force-cache" })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Texture inventory HTTP " + response.status);
+      }
+      return response.json();
+    })
+    .then(items =>
+      (Array.isArray(items) ? items : [])
+        .filter(item => /\.(png|jpg|jpeg)$/i.test(String(item?.name || "")))
+        .map(item => ({
+          name: String(item.name),
+          url:
+            item.download_url ||
+            ("https://cdn.jsdelivr.net/gh/PokeMiners/pogo_assets@master/" +
+              "3D%20Assets/Pokemon/" + folder + "/" +
+              encodeURIComponent(String(item.name))),
+        }))
+    )
+    .catch(error => {
+      console.warn("PokeMiners texture inventory unavailable:", error);
+      return [];
+    });
+
+  pokeMinersTextureInventoryCache.set(key, promise);
+  return promise;
+}
+
+function textureWords(value) {
+  return new Set(
+    String(value || "")
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter(word =>
+        word.length >= 3 &&
+        !["mat", "material", "mesh", "texture", "tex"].includes(word)
+      )
+  );
+}
+
+function textureMatchScore(entry, objectName, materialName) {
+  const file = String(entry?.name || "").toLowerCase();
+  const target = (String(objectName || "") + " " + String(materialName || "")).toLowerCase();
+  let score = 0;
+
+  const fileWords = textureWords(file);
+  const targetWords = textureWords(target);
+  for (const word of fileWords) {
+    if (targetWords.has(word)) score += 18;
+  }
+
+  const tokens = [
+    ["body", 90],
+    ["eye", 140],
+    ["face", 110],
+    ["mouth", 120],
+    ["wing", 100],
+    ["fire", 140],
+    ["flame", 140],
+    ["leaf", 110],
+    ["flower", 110],
+    ["petal", 110],
+    ["hair", 100],
+    ["shell", 100],
+    ["tail", 80],
+  ];
+
+  for (const [token, weight] of tokens) {
+    if (target.includes(token) && file.includes(token)) score += weight;
+    if (target.includes(token) && !file.includes(token)) score -= weight * 0.2;
+  }
+
+  // Most Pokemon use Body*, BodyAll*, BodyA*/BodyB* for their principal skin.
+  if (/body/.test(file)) score += 12;
+  if (/combo/.test(file) && !/fire|flame/.test(target)) score -= 25;
+
+  return score;
+}
+
+async function loadThreeTexture(THREE, url) {
+  const loader = new THREE.TextureLoader();
+  loader.setCrossOrigin("anonymous");
+
+  return await new Promise((resolve, reject) => {
+    loader.load(
+      url,
+      texture => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.flipY = true;
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        texture.needsUpdate = true;
+        resolve(texture);
+      },
+      undefined,
+      reject
+    );
+  });
+}
+
+async function bindPokeMinersTextures(THREE, rig, model) {
+  const inventory = await pokeMinersTextureInventory(model);
+
+  const bodyCandidates = inventory.filter(entry =>
+    /body/i.test(entry.name) && !/shadow|mask|normal|spec/i.test(entry.name)
+  );
+
+  const textureCache = new Map();
+  const getTexture = async entry => {
+    if (!entry) return null;
+    if (!textureCache.has(entry.url)) {
+      textureCache.set(
+        entry.url,
+        loadThreeTexture(THREE, entry.url).catch(error => {
+          console.warn("Texture failed:", entry.url, error);
+          return null;
+        })
+      );
+    }
+    return textureCache.get(entry.url);
+  };
+
+  const assignments = [];
+
+  rig.traverse(object => {
+    if (!object.isMesh) return;
+
+    const materials = Array.isArray(object.material)
+      ? object.material
+      : [object.material];
+
+    materials.forEach((material, materialIndex) => {
+      if (!material) return;
+
+      // FBX materials can import as black when their external texture path
+      // cannot be resolved. White is the neutral base for a color texture.
+      material.color?.set?.(0xffffff);
+      if ("emissive" in material) material.emissive?.set?.(0x000000);
+      if ("roughness" in material) material.roughness = 0.75;
+      if ("metalness" in material) material.metalness = 0;
+
+      const ranked = [...inventory]
+        .map(entry => ({
+          entry,
+          score: textureMatchScore(entry, object.name, material.name),
+        }))
+        .sort((a, b) => b.score - a.score);
+
+      let chosen = ranked[0]?.score > 20 ? ranked[0].entry : null;
+
+      if (!chosen && bodyCandidates.length === 1) {
+        chosen = bodyCandidates[0];
+      } else if (!chosen && bodyCandidates.length > 1) {
+        // If the material gives us no useful clue, distribute BodyA/BodyB
+        // textures across material slots rather than painting everything black.
+        chosen = bodyCandidates[
+          Math.min(materialIndex, bodyCandidates.length - 1)
+        ];
+      }
+
+      if (!chosen) {
+        material.needsUpdate = true;
+        return;
+      }
+
+      assignments.push(
+        getTexture(chosen).then(texture => {
+          if (!texture) return;
+
+          material.map = texture;
+          material.color?.set?.(0xffffff);
+
+          const low = chosen.name.toLowerCase();
+          if (/eye|face|mouth|fire|flame|wing|leaf|petal/.test(low)) {
+            material.transparent = true;
+            material.alphaTest = 0.01;
+            material.depthWrite = true;
+          }
+
+          material.needsUpdate = true;
+        })
+      );
+    });
+  });
+
+  await Promise.allSettled(assignments);
+}
+
 function pokeMinersFbxUrl(model) {
   if (!model || String(model.form || "regular").toLowerCase() !== "regular") {
     return null;
@@ -908,6 +1109,8 @@ async function showRiggedFbxFallback(model) {
     const rig = await new Promise((resolve, reject) => {
       loader.load(url, resolve, undefined, reject);
     });
+
+    await bindPokeMinersTextures(THREE, rig, model);
 
     if (activeToken !== fbxFallbackLoadToken) {
       rig.traverse?.(object => object.geometry?.dispose?.());
