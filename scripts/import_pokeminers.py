@@ -28,7 +28,22 @@ def run(cmd: list[str], cwd: Path | None = None) -> None:
         raise RuntimeError(f"Command failed with code {result.returncode}: {' '.join(cmd)}")
 
 
-def ensure_source(update: bool) -> Path:
+def sparse_patterns(start_dex: int, end_dex: int) -> list[str]:
+    if start_dex and end_dex and end_dex >= start_dex:
+        return [
+            f"/3D Assets/Pokemon/pm{dex:04d}_*_Rig/"
+            for dex in range(start_dex, end_dex + 1)
+        ]
+    return ["/3D Assets/Pokemon/"]
+
+
+def configure_sparse_checkout(start_dex: int, end_dex: int) -> None:
+    patterns = sparse_patterns(start_dex, end_dex)
+    run(["git", "sparse-checkout", "init", "--no-cone"], CACHE)
+    run(["git", "sparse-checkout", "set", "--no-cone", *patterns], CACHE)
+
+
+def ensure_source(update: bool, start_dex: int, end_dex: int) -> Path:
     pokemon_dir = CACHE / POKEMON_SUBDIR
 
     if not CACHE.exists():
@@ -40,13 +55,14 @@ def ensure_source(update: bool) -> Path:
             "https://github.com/PokeMiners/pogo_assets.git",
             str(CACHE),
         ])
-        run(["git", "sparse-checkout", "init", "--cone"], CACHE)
-        run(["git", "sparse-checkout", "set", "3D Assets/Pokemon"], CACHE)
+        configure_sparse_checkout(start_dex, end_dex)
         run(["git", "checkout", "master"], CACHE)
-    elif update:
-        run(["git", "fetch", "origin", "master"], CACHE)
+    else:
+        if update:
+            run(["git", "fetch", "origin", "master"], CACHE)
+            run(["git", "reset", "--hard", "origin/master"], CACHE)
+        configure_sparse_checkout(start_dex, end_dex)
         run(["git", "checkout", "master"], CACHE)
-        run(["git", "reset", "--hard", "origin/master"], CACHE)
 
     if not pokemon_dir.is_dir():
         raise RuntimeError(f"PokeMiners Pokemon folder not found: {pokemon_dir}")
@@ -143,7 +159,7 @@ def main() -> int:
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
 
-    pokemon_dir = ensure_source(args.update)
+    pokemon_dir = ensure_source(args.update, args.start_dex, args.end_dex)
     blender = find_blender(args.blender)
     jobs = make_jobs(
         pokemon_dir,
