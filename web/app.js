@@ -27,12 +27,21 @@ let selectedIndex = 0;
 let autoRotate = false;
 let idleBreaksEnabled = true;
 let currentUrl = "";
+let currentModel = null;
+let modelLoadRequest = 0;
 let loadStartedAt = 0;
 let idleBreakTimer = null;
+let breakEndTimer = null;
 let idleAnimation = null;
 let breakAnimations = [];
 let playingBreak = false;
 const warmed = new Set();
+const preparedModelUrls = new Map();
+
+const IDLE_BREAK_OVERRIDES = {
+  // Bulbasaur: use its actual Pokédex-style break, not a jump clip.
+  1: ["model_skeleton|001fight_d"],
+};
 
 function makeInstantRegularCatalog() {
   return Array.from({ length: 1025 }, (_, i) => {
@@ -239,18 +248,110 @@ function selectModel(index) {
   prefetchNeighbors();
 }
 
+async function prepareModelForWeb(sourceUrl) {
+  if (preparedModelUrls.has(sourceUrl)) {
+    return preparedModelUrls.get(sourceUrl);
+  }
+
+  const response = await fetch(sourceUrl, {
+    mode: "cors",
+    cache: "force-cache",
+  });
+  if (!response.ok) {
+    throw new Error("Model HTTP " + response.status);
+  }
+
+  const source = await response.arrayBuffer();
+  const view = new DataView(source);
+
+  // GLB v2 header.
+  if (
+    source.byteLength < 20 ||
+    view.getUint32(0, true) !== 0x46546c67 ||
+    view.getUint32(4, true) !== 2
+  ) {
+    return sourceUrl;
+  }
+
+  const jsonLength = view.getUint32(12, true);
+  const jsonType = view.getUint32(16, true);
+  if (jsonType !== 0x4e4f534a || 20 + jsonLength > source.byteLength) {
+    return sourceUrl;
+  }
+
+  const decoder = new TextDecoder();
+  const rawJson = decoder
+    .decode(new Uint8Array(source, 20, jsonLength))
+    .replace(/[\u0000\s]+$/g, "");
+  const documentJson = JSON.parse(rawJson);
+
+  // These models split face/eye/body surfaces into separate material primitives.
+  // Rendering them unlit removes normal/lighting discontinuities at those borders.
+  const used = new Set(documentJson.extensionsUsed || []);
+  used.add("KHR_materials_unlit");
+  documentJson.extensionsUsed = Array.from(used);
+
+  for (const material of documentJson.materials || []) {
+    material.extensions = material.extensions || {};
+    material.extensions.KHR_materials_unlit = {};
+    material.pbrMetallicRoughness = material.pbrMetallicRoughness || {};
+    material.pbrMetallicRoughness.metallicFactor = 0;
+    material.pbrMetallicRoughness.roughnessFactor = 1;
+  }
+
+  const encoder = new TextEncoder();
+  const encodedJson = encoder.encode(JSON.stringify(documentJson));
+  const paddedJsonLength = (encodedJson.length + 3) & ~3;
+  const oldTailOffset = 20 + jsonLength;
+  const tail = new Uint8Array(source, oldTailOffset);
+
+  const rebuilt = new ArrayBuffer(20 + paddedJsonLength + tail.length);
+  const rebuiltView = new DataView(rebuilt);
+  const rebuiltBytes = new Uint8Array(rebuilt);
+
+  rebuiltView.setUint32(0, 0x46546c67, true);
+  rebuiltView.setUint32(4, 2, true);
+  rebuiltView.setUint32(8, rebuilt.byteLength, true);
+  rebuiltView.setUint32(12, paddedJsonLength, true);
+  rebuiltView.setUint32(16, 0x4e4f534a, true);
+
+  rebuiltBytes.set(encodedJson, 20);
+  rebuiltBytes.fill(0x20, 20 + encodedJson.length, 20 + paddedJsonLength);
+  rebuiltBytes.set(tail, 20 + paddedJsonLength);
+
+  const blobUrl = URL.createObjectURL(
+    new Blob([rebuilt], { type: "model/gltf-binary" })
+  );
+  preparedModelUrls.set(sourceUrl, blobUrl);
+  return blobUrl;
+}
+
 async function loadModel(model) {
   const url = toFastAssetUrl(model.url);
   if (url === currentUrl && viewer.loaded) return;
 
   currentUrl = url;
+  currentModel = model;
+  const request = ++modelLoadRequest;
   loadStartedAt = performance.now();
 
-  messageEl.textContent = "Loading 3D model…";
+  messageEl.textContent = "Preparing 3D model…";
   messageEl.classList.remove("hidden");
 
-  viewer.removeAttribute("src");
-  viewer.src = url;
+  try {
+    const preparedUrl = await prepareModelForWeb(url);
+    if (request !== modelLoadRequest) return;
+
+    viewer.removeAttribute("src");
+    viewer.src = preparedUrl;
+  } catch (error) {
+    console.warn("Web GLB preparation failed; using source model:", error);
+    if (request !== modelLoadRequest) return;
+
+    viewer.removeAttribute("src");
+    viewer.src = url;
+  }
+
   viewer.alt =
     "3D model of " + model.name + ", " + prettyForm(model.form) + " form";
   viewer.cameraOrbit = "auto auto auto";
@@ -391,13 +492,8 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
     "Idle breaks: " + (idleBreaksEnabled ? "On" : "Off");
 
   if (!idleBreaksEnabled) {
-    clearIdleBreakTimer();
-    if (idleAnimation) {
-      playingBreak = false;
-      viewer.animationName = idleAnimation;
-      viewer.currentTime = 0;
-      viewer.play();
-    }
+    clearIdleBreakTimers();
+    startBaseIdle();
   } else {
     scheduleNextIdleBreak();
   }
@@ -444,15 +540,31 @@ function animationScore(name) {
   return 10;
 }
 
-function clearIdleBreakTimer() {
+function clearIdleBreakTimers() {
   if (idleBreakTimer) {
     clearTimeout(idleBreakTimer);
     idleBreakTimer = null;
   }
+  if (breakEndTimer) {
+    clearTimeout(breakEndTimer);
+    breakEndTimer = null;
+  }
+}
+
+function startBaseIdle() {
+  if (!idleAnimation) return;
+
+  playingBreak = false;
+  viewer.animationName = idleAnimation;
+  viewer.currentTime = 0;
+  viewer.play();
 }
 
 function scheduleNextIdleBreak() {
-  clearIdleBreakTimer();
+  if (idleBreakTimer) {
+    clearTimeout(idleBreakTimer);
+    idleBreakTimer = null;
+  }
 
   if (
     !idleBreaksEnabled ||
@@ -463,33 +575,54 @@ function scheduleNextIdleBreak() {
     return;
   }
 
-  // Wait a full three seconds AFTER the previous break has ended.
-  idleBreakTimer = setTimeout(() => {
-    if (
-      !idleBreaksEnabled ||
-      !viewer.loaded ||
-      document.hidden ||
-      playingBreak
-    ) {
+  // The three-second gap begins only AFTER the previous break has ended.
+  idleBreakTimer = setTimeout(playIdleBreak, 3000);
+}
+
+function playIdleBreak() {
+  idleBreakTimer = null;
+
+  if (
+    !idleBreaksEnabled ||
+    !viewer.loaded ||
+    document.hidden ||
+    playingBreak ||
+    !breakAnimations.length
+  ) {
+    scheduleNextIdleBreak();
+    return;
+  }
+
+  const clip = breakAnimations[
+    Math.floor(Math.random() * breakAnimations.length)
+  ];
+
+  playingBreak = true;
+  viewer.animationName = clip;
+  viewer.currentTime = 0;
+  viewer.play({ repetitions: 1 });
+
+  // model-viewer exposes the active clip duration after animationName changes.
+  requestAnimationFrame(() => {
+    const seconds = Number(viewer.duration);
+    const durationMs =
+      Number.isFinite(seconds) && seconds > 0
+        ? seconds * 1000
+        : 1800;
+
+    if (breakEndTimer) clearTimeout(breakEndTimer);
+    breakEndTimer = setTimeout(() => {
+      breakEndTimer = null;
+      if (!playingBreak) return;
+
+      startBaseIdle();
       scheduleNextIdleBreak();
-      return;
-    }
-
-    const bestScore = animationScore(breakAnimations[0]);
-    const pool = breakAnimations.filter(
-      name => animationScore(name) === bestScore
-    );
-    const clip = pool[Math.floor(Math.random() * pool.length)];
-
-    playingBreak = true;
-    viewer.animationName = clip;
-    viewer.currentTime = 0;
-    viewer.play({ repetitions: 1 });
-  }, 3000);
+    }, durationMs + 100);
+  });
 }
 
 function setupIdleBreakAnimations() {
-  clearIdleBreakTimer();
+  clearIdleBreakTimers();
 
   const animations = Array.from(viewer.availableAnimations || []);
   idleAnimation =
@@ -497,33 +630,35 @@ function setupIdleBreakAnimations() {
     animations[0] ||
     null;
 
-  breakAnimations = animations
-    .filter(name => name !== idleAnimation)
-    .filter(name => animationScore(name) > 0)
-    .sort((a, b) => animationScore(b) - animationScore(a));
+  const overrideNames =
+    IDLE_BREAK_OVERRIDES[currentModel?.dex] || [];
 
-  playingBreak = false;
+  const overrides = overrideNames.filter(name =>
+    animations.includes(name)
+  );
 
-  if (!idleAnimation) return;
+  if (overrides.length) {
+    breakAnimations = overrides;
+  } else {
+    breakAnimations = animations
+      .filter(name => name !== idleAnimation)
+      .filter(name => animationScore(name) > 0)
+      .sort((a, b) => animationScore(b) - animationScore(a));
 
-  viewer.animationName = idleAnimation;
-  viewer.currentTime = 0;
-  viewer.play();
+    if (breakAnimations.length) {
+      const bestScore = animationScore(breakAnimations[0]);
+      breakAnimations = breakAnimations.filter(
+        name => animationScore(name) === bestScore
+      );
+    }
+  }
 
-  scheduleNextIdleBreak();
+  startBaseIdle();
+
+  if (idleBreaksEnabled) {
+    scheduleNextIdleBreak();
+  }
 }
-
-viewer.addEventListener("finished", () => {
-  if (!playingBreak || !idleAnimation) return;
-
-  playingBreak = false;
-  viewer.animationName = idleAnimation;
-  viewer.currentTime = 0;
-  viewer.play();
-
-  // The next break is scheduled only after this one has completely finished.
-  scheduleNextIdleBreak();
-});
 
 viewer.addEventListener("load", () => {
   const elapsed = Math.max(0, performance.now() - loadStartedAt);
