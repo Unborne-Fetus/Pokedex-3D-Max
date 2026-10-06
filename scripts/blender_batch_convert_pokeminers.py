@@ -4,7 +4,7 @@ import math
 import re
 import sys
 from pathlib import Path
-from mathutils import Vector
+from mathutils import Quaternion, Vector
 
 argv = sys.argv
 argv = argv[argv.index("--") + 1 :]
@@ -213,8 +213,13 @@ def choose_idle(animations):
         enumerate(usable),
         key=lambda pair: (-idle_score(pair[1]["name"]), pair[0]),
     )
-    return ranked[0][1]["name"]
+    best = ranked[0][1]
 
+    # Never treat an arbitrary imported action as an idle. Some Pokemon GO FBX
+    # files contain utility/take actions that can violently deform a skinned
+    # mesh when looped. Only accept actions whose names positively identify
+    # them as an idle/base/battle-idle.
+    return best["name"] if idle_score(best["name"]) >= 30 else None
 
 def choose_idle_breaks(animations, idle):
     preferred = []
@@ -305,13 +310,81 @@ def relax_bind_pose(armature):
     return changed
 
 
+def _bone_role(name: str):
+    low = (name or "").lower()
+    if any(token in low for token in ("head", "face", "skull")):
+        return "head"
+    if "neck" in low:
+        return "neck"
+    if "tail" in low:
+        return "tail"
+    if any(token in low for token in ("wing", "fin")):
+        return "wing"
+    if any(token in low for token in ("ear", "antenna", "feel", "horn", "leaf", "petal")):
+        return "appendage"
+    if any(token in low for token in ("spine", "chest", "body", "torso")):
+        return "torso"
+    return None
+
+
+def _animated_bones(armature):
+    """Pick a small, conservative set of bones for a universal idle."""
+    picked = []
+    seen_roles = {}
+
+    # Prefer shallow bones. Rotating the first useful parent moves an appendage
+    # naturally; rotating every child in a chain exaggerates deformation.
+    ordered = sorted(
+        armature.pose.bones,
+        key=lambda bone: len(bone.parent_recursive),
+    )
+
+    for bone in ordered:
+        role = _bone_role(bone.name)
+        if role is None:
+            continue
+
+        limit = {
+            "head": 1,
+            "neck": 1,
+            "torso": 2,
+            "tail": 2,
+            "wing": 2,
+            "appendage": 3,
+        }[role]
+
+        if seen_roles.get(role, 0) >= limit:
+            continue
+
+        # Skip tiny helper bones and end markers where possible.
+        low = bone.name.lower()
+        if any(token in low for token in ("end", "tip", "dummy", "helper", "ik", "ctrl")):
+            continue
+
+        picked.append((bone, role))
+        seen_roles[role] = seen_roles.get(role, 0) + 1
+
+    return picked
+
+
+def _key_rotation(bone, base, axis, degrees, frame):
+    bone.rotation_mode = "QUATERNION"
+    bone.rotation_quaternion = base @ Quaternion(axis, math.radians(degrees))
+    bone.keyframe_insert(
+        data_path="rotation_quaternion",
+        frame=frame,
+        group=bone.name,
+    )
+
+
 def create_procedural_idle(bounds):
     armatures = [obj for obj in bpy.context.scene.objects if obj.type == "ARMATURE"]
     if not armatures:
         return None
 
-    # Empty/zero-length FBX animation stacks are common in Pokemon GO rigs.
-    # Remove them so the GLB does not advertise a useless clip.
+    # Delete empty/short imported takes. They are worse than no animation:
+    # model-viewer can expose them as valid clips even though they are only a
+    # bind pose or a one-frame exporter artifact.
     for action in list(bpy.data.actions):
         if action_duration(action) < 0.2:
             bpy.data.actions.remove(action)
@@ -321,6 +394,7 @@ def create_procedural_idle(bounds):
     armature.select_set(True)
 
     changed = relax_bind_pose(armature)
+    animated = _animated_bones(armature)
 
     action = bpy.data.actions.new("Pokedex3DMax_ProceduralIdle")
     armature.animation_data_create()
@@ -329,26 +403,69 @@ def create_procedural_idle(bounds):
     scene = bpy.context.scene
     scene.render.fps = 30
     scene.frame_start = 1
-    scene.frame_end = 80
+    scene.frame_end = 90
 
-    # Lock the relaxed pose into the whole loop.
-    for frame in (1, 40, 80):
+    # Preserve the relaxed rest pose and add very small local rotations. The
+    # amplitudes are intentionally conservative so this works on bipeds,
+    # quadrupeds, serpentine Pokemon, plants, birds and insect rigs.
+    base_rotations = {}
+    for bone, _role in animated:
+        bone.rotation_mode = "QUATERNION"
+        base_rotations[bone.name] = bone.rotation_quaternion.copy()
+
+    for bone in changed:
+        if bone.name not in base_rotations:
+            bone.rotation_mode = "QUATERNION"
+            base_rotations[bone.name] = bone.rotation_quaternion.copy()
+
+    # Close every animated channel on identical first/last frames so the idle
+    # loops without a visible snap.
+    for frame in (1, 90):
         scene.frame_set(frame)
-        for bone in changed:
+        for bone_name, base in base_rotations.items():
+            bone = armature.pose.bones.get(bone_name)
+            if bone is None:
+                continue
+            bone.rotation_quaternion = base
             bone.keyframe_insert(
                 data_path="rotation_quaternion",
                 frame=frame,
                 group=bone.name,
             )
 
-    # A small whole-body rise/fall gives models without source animation a
-    # visible idle without risking species-specific limb deformation.
+    phase_frames = (23, 45, 68)
+    role_motion = {
+        "head": ((1.0, 0.0, 0.0), 2.2),
+        "neck": ((1.0, 0.0, 0.0), 1.3),
+        "torso": ((0.0, 1.0, 0.0), 0.9),
+        "tail": ((0.0, 0.0, 1.0), 4.0),
+        "wing": ((1.0, 0.0, 0.0), 2.5),
+        "appendage": ((0.0, 1.0, 0.0), 2.0),
+    }
+
+    for index, (bone, role) in enumerate(animated):
+        base = base_rotations[bone.name]
+        axis, amplitude = role_motion[role]
+        sign = -1.0 if index % 2 else 1.0
+        _key_rotation(bone, base, axis, amplitude * sign, phase_frames[0])
+        _key_rotation(bone, base, axis, 0.0, phase_frames[1])
+        _key_rotation(bone, base, axis, -amplitude * sign, phase_frames[2])
+
+    # Breathing/bobbing on the armature gives even rigs with generic bone names
+    # visible life. Keep translation under a few centimetres to avoid the
+    # "floating statue" effect.
     size = bounds.get("boundsSize", [1.0, 1.0, 1.0])
     height = max(float(size[1]) if len(size) > 1 else 1.0, 0.1)
     base_location = armature.location.copy()
-    bob = min(max(height * 0.012, 0.003), 0.03)
+    bob = min(max(height * 0.008, 0.002), 0.018)
 
-    for frame, offset in ((1, 0.0), (20, bob * 0.45), (40, bob), (60, bob * 0.45), (80, 0.0)):
+    for frame, offset in (
+        (1, 0.0),
+        (23, bob * 0.6),
+        (45, bob),
+        (68, bob * 0.6),
+        (90, 0.0),
+    ):
         scene.frame_set(frame)
         armature.location = base_location + Vector((0.0, 0.0, offset))
         armature.keyframe_insert(data_path="location", frame=frame)
@@ -359,9 +476,9 @@ def create_procedural_idle(bounds):
     return {
         "name": action.name,
         "relaxedBones": [bone.name for bone in changed],
+        "animatedBones": [bone.name for bone, _role in animated],
         "generated": True,
     }
-
 
 def export_job(job):
     source = Path(job["fbx"]).resolve()
@@ -424,8 +541,9 @@ def export_job(job):
         "idleBreaks": idle_breaks,
         "proceduralIdle": bool(procedural),
         "relaxedBones": procedural["relaxedBones"] if procedural else [],
+        "proceduralBones": procedural["animatedBones"] if procedural else [],
         **bounds,
-        "valid": output.is_file() and output.stat().st_size > 1000,
+        "valid": bool(idle) and output.is_file() and output.stat().st_size > 1000,
         "warnings": warnings,
     }
 
