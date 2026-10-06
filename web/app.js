@@ -36,11 +36,14 @@ let idleAnimation = null;
 let breakAnimations = [];
 let playingBreak = false;
 const warmed = new Set();
-const preparedModelUrls = new Map();
+let activeModelCandidates = [];
+let activeCandidateIndex = 0;
+let modelLoadTimeout = null;
+let animationDurations = new Map();
 
 const IDLE_BREAK_OVERRIDES = {
   // Bulbasaur: use its actual Pokédex-style break, not a jump clip.
-  1: ["model_skeleton|001fight_d"],
+  1: ["model_skeleton|001fight_b"],
 };
 
 function makeInstantRegularCatalog() {
@@ -284,123 +287,110 @@ function selectModel(index) {
   prefetchNeighbors();
 }
 
-async function prepareModelForWeb(sourceUrl) {
-  if (preparedModelUrls.has(sourceUrl)) {
-    return preparedModelUrls.get(sourceUrl);
+function modelAssetPath(url) {
+  const raw = String(url || "");
+
+  if (raw.startsWith(CDN_ROOT)) {
+    return raw.slice(CDN_ROOT.length);
   }
 
-  const response = await fetch(sourceUrl, {
-    mode: "cors",
-    cache: "force-cache",
-  });
-  if (!response.ok) {
-    throw new Error("Model HTTP " + response.status);
+  const rawMarker =
+    "raw.githubusercontent.com/Pokemon-3D-api/assets/";
+  if (raw.includes(rawMarker)) {
+    return raw
+      .split(rawMarker)[1]
+      .replace(/^main\//, "")
+      .replace(/^refs\/heads\/main\//, "")
+      .replace(/^heads\/main\//, "");
   }
 
-  const source = await response.arrayBuffer();
-  const view = new DataView(source);
-
-  // GLB v2 header.
-  if (
-    source.byteLength < 20 ||
-    view.getUint32(0, true) !== 0x46546c67 ||
-    view.getUint32(4, true) !== 2
-  ) {
-    return sourceUrl;
+  const githubMarker = "github.com/Pokemon-3D-api/assets/";
+  if (raw.includes(githubMarker)) {
+    return raw
+      .split(githubMarker)[1]
+      .replace(/^blob\/main\//, "")
+      .replace(/^raw\/main\//, "")
+      .replace(/^refs\/heads\/main\//, "")
+      .replace(/^heads\/main\//, "");
   }
 
-  const jsonLength = view.getUint32(12, true);
-  const jsonType = view.getUint32(16, true);
-  if (jsonType !== 0x4e4f534a || 20 + jsonLength > source.byteLength) {
-    return sourceUrl;
+  return null;
+}
+
+function getModelCandidates(model) {
+  const original = String(model?.url || "");
+  const fast = toFastAssetUrl(original);
+  const path = modelAssetPath(fast) || modelAssetPath(original);
+
+  const candidates = [fast];
+
+  if (path) {
+    candidates.push(
+      "https://raw.githubusercontent.com/Pokemon-3D-api/assets/main/" + path
+    );
   }
 
-  const decoder = new TextDecoder();
-  const rawJson = decoder
-    .decode(new Uint8Array(source, 20, jsonLength))
-    .replace(/[\u0000\s]+$/g, "");
-  const documentJson = JSON.parse(rawJson);
+  if (original) candidates.push(original);
 
-  // These models split face/eye/body surfaces into separate material primitives.
-  // Rendering them unlit removes normal/lighting discontinuities at those borders.
-  const used = new Set(documentJson.extensionsUsed || []);
-  used.add("KHR_materials_unlit");
-  documentJson.extensionsUsed = Array.from(used);
+  return [...new Set(candidates.filter(Boolean))];
+}
 
-  for (const material of documentJson.materials || []) {
-    material.extensions = material.extensions || {};
-    material.extensions.KHR_materials_unlit = {};
-    material.pbrMetallicRoughness = material.pbrMetallicRoughness || {};
-    material.pbrMetallicRoughness.metallicFactor = 0;
-    material.pbrMetallicRoughness.roughnessFactor = 1;
+function clearModelLoadTimeout() {
+  if (modelLoadTimeout) {
+    clearTimeout(modelLoadTimeout);
+    modelLoadTimeout = null;
+  }
+}
 
-    // Eye textures are separate overlay meshes. If they stay OPAQUE, the
-    // transparent padding around the actual eye becomes a visible polygon.
-    if (/eye/i.test(String(material.name || ""))) {
-      material.alphaMode = "BLEND";
-      material.doubleSided = true;
-    }
+function startModelCandidate(index) {
+  if (!activeModelCandidates.length) return;
+
+  activeCandidateIndex = index;
+  if (activeCandidateIndex >= activeModelCandidates.length) {
+    clearModelLoadTimeout();
+    messageEl.textContent = "Model failed to load from all available sources";
+    messageEl.classList.remove("hidden");
+    return;
   }
 
-  const encoder = new TextEncoder();
-  const encodedJson = encoder.encode(JSON.stringify(documentJson));
-  const paddedJsonLength = (encodedJson.length + 3) & ~3;
-  const oldTailOffset = 20 + jsonLength;
-  const tail = new Uint8Array(source, oldTailOffset);
+  const candidate = activeModelCandidates[activeCandidateIndex];
+  messageEl.textContent =
+    "Loading 3D model… source " +
+    (activeCandidateIndex + 1) +
+    "/" +
+    activeModelCandidates.length;
+  messageEl.classList.remove("hidden");
 
-  const rebuilt = new ArrayBuffer(20 + paddedJsonLength + tail.length);
-  const rebuiltView = new DataView(rebuilt);
-  const rebuiltBytes = new Uint8Array(rebuilt);
+  viewer.removeAttribute("src");
+  viewer.src = candidate;
 
-  rebuiltView.setUint32(0, 0x46546c67, true);
-  rebuiltView.setUint32(4, 2, true);
-  rebuiltView.setUint32(8, rebuilt.byteLength, true);
-  rebuiltView.setUint32(12, paddedJsonLength, true);
-  rebuiltView.setUint32(16, 0x4e4f534a, true);
-
-  rebuiltBytes.set(encodedJson, 20);
-  rebuiltBytes.fill(0x20, 20 + encodedJson.length, 20 + paddedJsonLength);
-  rebuiltBytes.set(tail, 20 + paddedJsonLength);
-
-  const blobUrl = URL.createObjectURL(
-    new Blob([rebuilt], { type: "model/gltf-binary" })
-  );
-  preparedModelUrls.set(sourceUrl, blobUrl);
-  return blobUrl;
+  clearModelLoadTimeout();
+  modelLoadTimeout = setTimeout(() => {
+    console.warn("Model load timed out:", candidate);
+    startModelCandidate(activeCandidateIndex + 1);
+  }, 15000);
 }
 
 async function loadModel(model) {
-  const url = toFastAssetUrl(model.url);
-  if (url === currentUrl && viewer.loaded) return;
+  const primary = toFastAssetUrl(model.url);
+  if (primary === currentUrl && viewer.loaded) return;
 
-  currentUrl = url;
+  clearIdleBreakTimers();
+  clearModelLoadTimeout();
+
+  currentUrl = primary;
   currentModel = model;
-  const request = ++modelLoadRequest;
+  ++modelLoadRequest;
   loadStartedAt = performance.now();
+  animationDurations = new Map();
 
-  messageEl.textContent = "Preparing 3D model…";
-  messageEl.classList.remove("hidden");
-
-  try {
-    const preparedUrl = await prepareModelForWeb(url);
-    if (request !== modelLoadRequest) return;
-
-    viewer.removeAttribute("src");
-    viewer.src = preparedUrl;
-  } catch (error) {
-    console.warn("Web GLB preparation failed; using source model:", error);
-    if (request !== modelLoadRequest) return;
-
-    viewer.removeAttribute("src");
-    viewer.src = url;
-  }
+  activeModelCandidates = getModelCandidates(model);
+  activeCandidateIndex = 0;
 
   viewer.alt =
     "3D model of " + model.name + ", " + prettyForm(model.form) + " form";
-  viewer.cameraOrbit = "auto auto auto";
-  viewer.cameraTarget = "auto auto auto";
-  viewer.fieldOfView = "28deg";
-  viewer.jumpCameraToGoal?.();
+
+  startModelCandidate(0);
 }
 
 function prefetchNeighbors() {
@@ -516,10 +506,7 @@ prevBtn.addEventListener("click", () => selectModel(selectedIndex - 1));
 nextBtn.addEventListener("click", () => selectModel(selectedIndex + 1));
 
 resetCameraBtn.addEventListener("click", () => {
-  viewer.cameraOrbit = "auto auto auto";
-  viewer.cameraTarget = "auto auto auto";
-  viewer.fieldOfView = "28deg";
-  viewer.jumpCameraToGoal?.();
+  frameLoadedModel();
 });
 
 toggleRotateBtn.addEventListener("click", () => {
@@ -542,45 +529,119 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
   }
 });
 
-function configureTextureSampling() {
+function normalizeMaterials() {
   const materials = viewer.model?.materials || [];
 
   for (const material of materials) {
-    const textureInfos = [
-      material.pbrMetallicRoughness?.baseColorTexture,
-      material.pbrMetallicRoughness?.metallicRoughnessTexture,
-      material.normalTexture,
-      material.occlusionTexture,
-      material.emissiveTexture,
-    ];
-
-    for (const info of textureInfos) {
-      const sampler = info?.texture?.sampler;
-      if (!sampler) continue;
-
-      try {
-        sampler.setWrapS("ClampToEdge");
-        sampler.setWrapT("ClampToEdge");
-        sampler.setMinFilter("Linear");
-        sampler.setMagFilter("Linear");
-      } catch (error) {
-        console.debug("Sampler quality override unavailable:", error);
+    try {
+      // Preserve original PBR colors/textures/accessory materials.
+      // Only make solid materials double-sided so backfaces do not vanish
+      // at certain camera angles.
+      if (material.getAlphaMode?.() !== "BLEND") {
+        material.setDoubleSided?.(true);
       }
+    } catch (error) {
+      console.debug("Material normalization skipped:", error);
     }
   }
+}
+
+function frameLoadedModel() {
+  try {
+    const center = viewer.getBoundingBoxCenter();
+    const dimensions = viewer.getDimensions();
+
+    viewer.cameraTarget =
+      center.x.toFixed(4) + "m " +
+      center.y.toFixed(4) + "m " +
+      center.z.toFixed(4) + "m";
+
+    // Percentage radius uses model-viewer's own ideal framing distance,
+    // avoiding tiny/off-center starts for unusually tall or wide models.
+    viewer.cameraOrbit = "0deg 75deg 112%";
+    viewer.fieldOfView = "30deg";
+    viewer.minCameraOrbit = "auto 1deg 18%";
+    viewer.maxCameraOrbit = "auto 179deg 900%";
+    viewer.jumpCameraToGoal?.();
+
+    console.debug("Framed model", {
+      center,
+      dimensions,
+    });
+  } catch (error) {
+    console.debug("Automatic framing fallback:", error);
+    viewer.cameraTarget = "auto auto auto";
+    viewer.cameraOrbit = "0deg 75deg 112%";
+    viewer.jumpCameraToGoal?.();
+  }
+}
+
+function readAnimationDurations() {
+  const durations = new Map();
+
+  try {
+    const gltf = viewer.originalGltfJson;
+    const animations = gltf?.animations || [];
+    const accessors = gltf?.accessors || [];
+
+    for (let index = 0; index < animations.length; index++) {
+      const animation = animations[index];
+      const name =
+        animation?.name ||
+        viewer.availableAnimations?.[index] ||
+        String(index);
+
+      let duration = 0;
+
+      for (const sampler of animation?.samplers || []) {
+        const accessor = accessors[sampler?.input];
+        const max = Number(accessor?.max?.[0]);
+        if (Number.isFinite(max)) {
+          duration = Math.max(duration, max);
+        }
+      }
+
+      if (duration > 0) durations.set(name, duration);
+    }
+  } catch (error) {
+    console.debug("Animation duration scan skipped:", error);
+  }
+
+  return durations;
+}
+
+function chooseBaseIdle(animations) {
+  const priorities = [
+    /(^|[|_])a?idle($|[|_])/i,
+    /wait|stand|breath/i,
+    /fight[_-]?b/i,
+    /fight[_-]?d/i,
+  ];
+
+  for (const pattern of priorities) {
+    const match = animations.find(name => pattern.test(name));
+    if (match) return match;
+  }
+
+  const safe = animations.find(
+    name => !/ko|death|faint|hit|damage|attack|run|walk|jump/i.test(name)
+  );
+
+  return safe || animations[0] || null;
 }
 
 function animationScore(name) {
   const value = name.toLowerCase();
 
-  // Short jump clips make the best "idle break" for models such as Bulbasaur.
-  if (/jump_s|jump-s|short.*jump/.test(value)) return 140;
-  if (/jump_e|jump-e|jump_l|jump-l|jump/.test(value)) return 125;
-  if (/wait|look|break/.test(value)) return 110;
-  if (/fight_[bd]|fight-b|fight-d/.test(value)) return 70;
-  if (/fight/.test(value)) return 40;
-  if (/run|walk|ko|death|hit|damage|attack/.test(value)) return -100;
-  return 10;
+  // Idle breaks must be conservative. Movement/KO/attack clips are not used
+  // automatically because many species look broken with those outside battle.
+  if (/break|fidget|look|wait/i.test(value)) return 120;
+  if (/fight[_-]?d/i.test(value)) return 80;
+  if (/fight[_-]?b/i.test(value)) return 70;
+  if (/jump|run|walk|ko|death|faint|hit|damage|attack/i.test(value)) {
+    return -100;
+  }
+  return -10;
 }
 
 function clearIdleBreakTimers() {
@@ -645,40 +706,35 @@ function playIdleBreak() {
   viewer.currentTime = 0;
   viewer.play({ repetitions: 1 });
 
-  // model-viewer exposes the active clip duration after animationName changes.
-  requestAnimationFrame(() => {
-    const seconds = Number(viewer.duration);
-    const durationMs =
-      Number.isFinite(seconds) && seconds > 0
-        ? seconds * 1000
-        : 1800;
+  // "finished" is the primary completion signal. This timeout is only
+  // a safety fallback for models that fail to emit it.
+  const seconds =
+    animationDurations.get(clip) ||
+    Number(viewer.duration) ||
+    2;
 
-    if (breakEndTimer) clearTimeout(breakEndTimer);
-    breakEndTimer = setTimeout(() => {
-      breakEndTimer = null;
-      if (!playingBreak) return;
+  if (breakEndTimer) clearTimeout(breakEndTimer);
+  breakEndTimer = setTimeout(() => {
+    breakEndTimer = null;
+    if (!playingBreak) return;
 
-      startBaseIdle();
-      scheduleNextIdleBreak();
-    }, durationMs + 100);
-  });
+    startBaseIdle();
+    scheduleNextIdleBreak();
+  }, Math.max(500, seconds * 1000 + 250));
 }
 
 function setupIdleBreakAnimations() {
   clearIdleBreakTimers();
 
   const animations = Array.from(viewer.availableAnimations || []);
-  idleAnimation =
-    animations.find(name => /idle/i.test(name)) ||
-    animations[0] ||
-    null;
+  animationDurations = readAnimationDurations();
+
+  idleAnimation = chooseBaseIdle(animations);
 
   const overrideNames =
     IDLE_BREAK_OVERRIDES[currentModel?.dex] || [];
 
-  const overrides = overrideNames.filter(name =>
-    animations.includes(name)
-  );
+  const overrides = overrideNames.filter(name => animations.includes(name));
 
   if (overrides.length) {
     breakAnimations = overrides;
@@ -686,42 +742,74 @@ function setupIdleBreakAnimations() {
     breakAnimations = animations
       .filter(name => name !== idleAnimation)
       .filter(name => animationScore(name) > 0)
+      .filter(name => {
+        const duration = animationDurations.get(name);
+        return !duration || (duration >= 0.35 && duration <= 4.5);
+      })
       .sort((a, b) => animationScore(b) - animationScore(a));
 
     if (breakAnimations.length) {
-      const bestScore = animationScore(breakAnimations[0]);
+      const best = animationScore(breakAnimations[0]);
       breakAnimations = breakAnimations.filter(
-        name => animationScore(name) === bestScore
+        name => animationScore(name) === best
       );
     }
   }
 
   startBaseIdle();
 
-  if (idleBreaksEnabled) {
+  const available = Boolean(idleAnimation && breakAnimations.length);
+  toggleIdleBreaksBtn.disabled = !available;
+  toggleIdleBreaksBtn.textContent = available
+    ? "Idle breaks: " + (idleBreaksEnabled ? "On" : "Off")
+    : "Idle breaks: Unavailable";
+
+  if (available && idleBreaksEnabled) {
     scheduleNextIdleBreak();
   }
 }
 
 viewer.addEventListener("load", () => {
+  clearModelLoadTimeout();
+
   const elapsed = Math.max(0, performance.now() - loadStartedAt);
   messageEl.textContent =
     "Loaded in " + (elapsed / 1000).toFixed(1) + "s";
   setTimeout(() => messageEl.classList.add("hidden"), 900);
 
-  viewer.cameraOrbit = "auto auto auto";
-  viewer.cameraTarget = "auto auto auto";
-  viewer.jumpCameraToGoal?.();
-
-  configureTextureSampling();
+  normalizeMaterials();
+  frameLoadedModel();
   setupIdleBreakAnimations();
   prefetchNeighbors();
 });
 
 viewer.addEventListener("error", event => {
-  console.error("Model load error", event);
-  messageEl.textContent = "Model failed to load";
+  console.error(
+    "Model load error",
+    activeModelCandidates[activeCandidateIndex],
+    event
+  );
+
+  if (activeCandidateIndex + 1 < activeModelCandidates.length) {
+    startModelCandidate(activeCandidateIndex + 1);
+    return;
+  }
+
+  clearModelLoadTimeout();
+  messageEl.textContent = "Model failed to load from all available sources";
   messageEl.classList.remove("hidden");
+});
+
+viewer.addEventListener("finished", () => {
+  if (!playingBreak) return;
+
+  if (breakEndTimer) {
+    clearTimeout(breakEndTimer);
+    breakEndTimer = null;
+  }
+
+  startBaseIdle();
+  scheduleNextIdleBreak();
 });
 
 viewer.addEventListener("progress", event => {
