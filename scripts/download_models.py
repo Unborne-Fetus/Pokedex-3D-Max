@@ -134,7 +134,7 @@ def main() -> int:
     target = Path(args.target).resolve()
     target.mkdir(parents=True, exist_ok=True)
 
-    print(f"Loading catalog from {API_URL}")
+    print(f"Loading catalog from {API_URL}", flush=True)
     pokemon = load_catalog()
 
     entries: list[dict] = []
@@ -170,7 +170,9 @@ def main() -> int:
     if args.limit > 0:
         entries = entries[: args.limit]
 
-    print(f"Downloading {len(entries)} model files with {args.workers} workers")
+    print(f"Downloading {len(entries)} model files with {args.workers} workers", flush=True)
+    started_at = time.time()
+    downloaded_bytes = 0
     successes: list[tuple[dict, int]] = []
     failures: list[str] = []
 
@@ -181,12 +183,23 @@ def main() -> int:
             entry = future_map[future]
             completed += 1
             try:
-                successes.append(future.result())
+                result = future.result()
+                successes.append(result)
+                downloaded_bytes += result[1]
             except Exception as exc:  # noqa: BLE001
                 failures.append(str(exc))
 
-            if completed % 25 == 0 or completed == len(entries):
-                print(f"  {completed}/{len(entries)} complete; failures={len(failures)}")
+            if completed % 5 == 0 or completed == len(entries):
+                elapsed = max(time.time() - started_at, 0.001)
+                mib = downloaded_bytes / (1024 * 1024)
+                rate = mib / elapsed
+                percent = (completed / len(entries) * 100) if entries else 100.0
+                print(
+                    f"  {completed}/{len(entries)} ({percent:5.1f}%) | "
+                    f"{mib:,.1f} MiB processed | {rate:,.1f} MiB/s | "
+                    f"failures={len(failures)}",
+                    flush=True,
+                )
 
     successes.sort(
         key=lambda item: (
@@ -240,7 +253,8 @@ def main() -> int:
     total_gib = metadata["totalBytes"] / (1024 ** 3)
     print(
         f"Finished: {metadata['modelCount']} models, "
-        f"{total_gib:.2f} GiB, {metadata['failedCount']} failures"
+        f"{total_gib:.2f} GiB, {metadata['failedCount']} failures",
+        flush=True,
     )
 
     return 0 if not failures else 2
