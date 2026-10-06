@@ -2,9 +2,14 @@ window.__pokedex3dBooted = true;
 const API_URL = "https://pokemon-3d-api.onrender.com/v1/pokemon";
 const CDN_ROOT = "https://cdn.jsdelivr.net/gh/Pokemon-3D-api/assets@main/";
 const CATALOG_CACHE_KEY = "pokedex3dmax.catalog.v2";
-const LOCAL_MODELS = Array.isArray(window.POKEDEX3D_LOCAL_MODELS)
-  ? window.POKEDEX3D_LOCAL_MODELS
-  : [];
+const LOCAL_MODELS = [
+  ...(Array.isArray(window.POKEDEX3D_POKEMINERS_MODELS)
+    ? window.POKEDEX3D_POKEMINERS_MODELS
+    : []),
+  ...(Array.isArray(window.POKEDEX3D_LOCAL_MODELS)
+    ? window.POKEDEX3D_LOCAL_MODELS
+    : []),
+].filter(model => model?.valid !== false);
 
 function localModelKey(model) {
   return String(model?.dex) + "|" + String(model?.form || "regular").toLowerCase();
