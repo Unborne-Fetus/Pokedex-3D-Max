@@ -38,7 +38,7 @@ def find_blender(explicit: str | None) -> str:
 
     candidates = [
         Path(os.environ.get("PROGRAMFILES", "C:/Program Files")) / "Blender Foundation",
-        Path(os.environ.get("PROGRAMFILES(X86", "C:/Program Files (x86)")) / "Blender Foundation",
+        Path(os.environ.get("PROGRAMFILES(X86)", "C:/Program Files (x86)")) / "Blender Foundation",
     ]
     for root in candidates:
         if not root.exists():
