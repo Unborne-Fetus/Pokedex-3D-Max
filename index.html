@@ -75,6 +75,29 @@
     </section>
   </main>
 
-  <script type="module" src="web/app.js"></script>
+  <script>
+    window.__pokedex3dBooted = false;
+    window.addEventListener("error", function (event) {
+      var status = document.getElementById("status");
+      var message = document.getElementById("viewerMessage");
+      if (status) status.textContent = "Web app error";
+      if (message) {
+        message.textContent = "Web app failed to start: " + (event.message || "unknown JavaScript error");
+        message.classList.remove("hidden");
+      }
+    });
+    setTimeout(function () {
+      if (!window.__pokedex3dBooted) {
+        var status = document.getElementById("status");
+        var message = document.getElementById("viewerMessage");
+        if (status) status.textContent = "Web app did not start";
+        if (message) {
+          message.textContent = "app.js did not run. Refresh after pulling the latest files.";
+          message.classList.remove("hidden");
+        }
+      }
+    }, 2500);
+  </script>
+  <script defer src="web/app.js?v=4"></script>
 </body>
 </html>
