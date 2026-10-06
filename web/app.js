@@ -9,6 +9,11 @@ const LOCAL_MODELS = [
   ...(Array.isArray(window.POKEDEX3D_LOCAL_MODELS)
     ? window.POKEDEX3D_LOCAL_MODELS
     : []),
+  // Official-game authored animations are highest priority. Keep this source
+  // last because applyLocalModelOverrides() uses the last duplicate key.
+  ...(Array.isArray(window.POKEDEX3D_PRO_MODELS)
+    ? window.POKEDEX3D_PRO_MODELS
+    : []),
 ].filter(model => model?.valid !== false);
 
 function localModelKey(model) {
