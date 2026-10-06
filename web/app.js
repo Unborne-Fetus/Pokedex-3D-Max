@@ -241,7 +241,7 @@ async function loadModel(model) {
     "3D model of " + model.name + ", " + prettyForm(model.form) + " form";
   viewer.cameraOrbit = "auto auto auto";
   viewer.cameraTarget = "auto auto auto";
-  viewer.fieldOfView = "30deg";
+  viewer.fieldOfView = "28deg";
   viewer.jumpCameraToGoal?.();
 }
 
@@ -349,7 +349,7 @@ nextBtn.addEventListener("click", () => selectModel(selectedIndex + 1));
 resetCameraBtn.addEventListener("click", () => {
   viewer.cameraOrbit = "auto auto auto";
   viewer.cameraTarget = "auto auto auto";
-  viewer.fieldOfView = "30deg";
+  viewer.fieldOfView = "28deg";
   viewer.jumpCameraToGoal?.();
 });
 
