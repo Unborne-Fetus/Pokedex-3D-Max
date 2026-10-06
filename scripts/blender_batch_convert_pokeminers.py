@@ -232,6 +232,137 @@ def choose_idle_breaks(animations, idle):
     return preferred[:4]
 
 
+
+def scan_animations():
+    animations = []
+    for action in bpy.data.actions:
+        animations.append({
+            "name": action.name,
+            "duration": round(action_duration(action), 4),
+        })
+    return animations
+
+
+def is_upper_limb(pose_bone):
+    name = pose_bone.name.lower()
+    parent = pose_bone.parent.name.lower() if pose_bone.parent else ""
+
+    if "shoulder" in name:
+        return True
+    if "upperarm" in name or "upper_arm" in name:
+        return True
+    if "wing" in name and "wing" not in parent:
+        return True
+    if (
+        re.search(r"(^|[^a-z])(?:l|r)?arm(?:[0-9_]|$)", name)
+        and not any(token in parent for token in ("shoulder", "arm", "wing"))
+    ):
+        return True
+    return False
+
+
+def relax_bind_pose(armature):
+    changed = []
+
+    for pose_bone in armature.pose.bones:
+        if not is_upper_limb(pose_bone):
+            continue
+
+        rest = pose_bone.bone
+        vector = rest.tail_local - rest.head_local
+        length = vector.length
+        if length < 1e-5:
+            continue
+
+        # Only touch limbs that are obviously sticking sideways. This avoids
+        # rewriting already-natural quadruped legs or vertically held wings.
+        horizontal_ratio = math.sqrt(vector.x * vector.x + vector.y * vector.y) / length
+        if horizontal_ratio < 0.72:
+            continue
+
+        horizontal = Vector((vector.x, vector.y, 0.0))
+        if horizontal.length < 1e-5:
+            continue
+        horizontal.normalize()
+
+        # Keep a little of the original outward direction while dropping the
+        # limb mostly downward. The child forearm/hand inherits this rotation.
+        target = horizontal * 0.32 + Vector((0.0, 0.0, -0.95))
+        target.normalize()
+
+        armature_delta = vector.normalized().rotation_difference(target)
+        rest_rotation = rest.matrix_local.to_quaternion()
+        local_delta = (
+            rest_rotation.inverted()
+            @ armature_delta
+            @ rest_rotation
+        )
+
+        pose_bone.rotation_mode = "QUATERNION"
+        pose_bone.rotation_quaternion = local_delta
+        changed.append(pose_bone)
+
+    return changed
+
+
+def create_procedural_idle(bounds):
+    armatures = [obj for obj in bpy.context.scene.objects if obj.type == "ARMATURE"]
+    if not armatures:
+        return None
+
+    # Empty/zero-length FBX animation stacks are common in Pokemon GO rigs.
+    # Remove them so the GLB does not advertise a useless clip.
+    for action in list(bpy.data.actions):
+        if action_duration(action) < 0.2:
+            bpy.data.actions.remove(action)
+
+    armature = max(armatures, key=lambda obj: len(obj.data.bones))
+    bpy.context.view_layer.objects.active = armature
+    armature.select_set(True)
+
+    changed = relax_bind_pose(armature)
+
+    action = bpy.data.actions.new("Pokedex3DMax_ProceduralIdle")
+    armature.animation_data_create()
+    armature.animation_data.action = action
+
+    scene = bpy.context.scene
+    scene.render.fps = 30
+    scene.frame_start = 1
+    scene.frame_end = 80
+
+    # Lock the relaxed pose into the whole loop.
+    for frame in (1, 40, 80):
+        scene.frame_set(frame)
+        for bone in changed:
+            bone.keyframe_insert(
+                data_path="rotation_quaternion",
+                frame=frame,
+                group=bone.name,
+            )
+
+    # A small whole-body rise/fall gives models without source animation a
+    # visible idle without risking species-specific limb deformation.
+    size = bounds.get("boundsSize", [1.0, 1.0, 1.0])
+    height = max(float(size[1]) if len(size) > 1 else 1.0, 0.1)
+    base_location = armature.location.copy()
+    bob = min(max(height * 0.012, 0.003), 0.03)
+
+    for frame, offset in ((1, 0.0), (20, bob * 0.45), (40, bob), (60, bob * 0.45), (80, 0.0)):
+        scene.frame_set(frame)
+        armature.location = base_location + Vector((0.0, 0.0, offset))
+        armature.keyframe_insert(data_path="location", frame=frame)
+
+    armature.location = base_location
+    scene.frame_set(1)
+
+    return {
+        "name": action.name,
+        "relaxedBones": [bone.name for bone in changed],
+        "generated": True,
+    }
+
+
 def export_job(job):
     source = Path(job["fbx"]).resolve()
     output = Path(job["output"]).resolve()
@@ -249,14 +380,15 @@ def export_job(job):
     try_relink_textures(source_dir)
     bounds = mesh_bounds_world() or {}
 
-    animations = []
-    for action in bpy.data.actions:
-        animations.append({
-            "name": action.name,
-            "duration": round(action_duration(action), 4),
-        })
-
+    animations = scan_animations()
     idle = choose_idle(animations)
+    procedural = None
+
+    if idle is None:
+        procedural = create_procedural_idle(bounds)
+        animations = scan_animations()
+        idle = choose_idle(animations)
+
     idle_breaks = choose_idle_breaks(animations, idle)
 
     bpy.ops.export_scene.gltf(
@@ -290,6 +422,8 @@ def export_job(job):
         "animations": animations,
         "idleAnimation": idle,
         "idleBreaks": idle_breaks,
+        "proceduralIdle": bool(procedural),
+        "relaxedBones": procedural["relaxedBones"] if procedural else [],
         **bounds,
         "valid": output.is_file() and output.stat().st_size > 1000,
         "warnings": warnings,
@@ -356,7 +490,10 @@ manifest_json.parent.mkdir(parents=True, exist_ok=True)
 manifest_json.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 manifest_js.write_text(
     "window.POKEDEX3D_POKEMINERS_MODELS = " +
-    json.dumps([item for item in manifest if item.get("valid")], separators=(",", ":")) +
+    json.dumps([
+        item for item in manifest
+        if item.get("valid") and item.get("idleAnimation")
+    ], separators=(",", ":")) +
     ";\n",
     encoding="utf-8",
 )
