@@ -26,10 +26,25 @@ function applyLocalModelOverrides(list) {
     const replacement = overrides.get(localModelKey(model));
     if (!replacement) return model;
 
+    const replacementAnimations = Array.isArray(replacement.animations)
+      ? replacement.animations
+      : [];
+    const replacementHasIdle =
+      Boolean(replacement.idleAnimation) || replacementAnimations.length > 0;
+
+    // Never replace an animated catalog model with an animation-less bind pose.
+    if (
+      replacement.source === "PokeMiners/pogo_assets" &&
+      !replacementHasIdle
+    ) {
+      return model;
+    }
+
     return {
       ...model,
       ...replacement,
       url: replacement.url,
+      fallbackUrl: model.url,
       local: true,
     };
   });
@@ -38,6 +53,19 @@ function applyLocalModelOverrides(list) {
   for (const replacement of LOCAL_MODELS) {
     const key = localModelKey(replacement);
     if (!existing.has(key)) {
+      const replacementAnimations = Array.isArray(replacement.animations)
+        ? replacement.animations
+        : [];
+      const replacementHasIdle =
+        Boolean(replacement.idleAnimation) || replacementAnimations.length > 0;
+
+      if (
+        replacement.source === "PokeMiners/pogo_assets" &&
+        !replacementHasIdle
+      ) {
+        continue;
+      }
+
       merged.push({
         ...replacement,
         local: true,
@@ -376,7 +404,8 @@ function getModelCandidates(model) {
   const original = String(model?.url || "");
 
   if (model?.local || original.startsWith("web/models/")) {
-    return [original];
+    const fallback = String(model?.fallbackUrl || "");
+    return [...new Set([original, fallback].filter(Boolean))];
   }
 
   const fast = toFastAssetUrl(original);
@@ -785,6 +814,22 @@ function setupIdleBreakAnimations() {
 
 viewer.addEventListener("load", () => {
   clearModelLoadTimeout();
+
+  const availableAnimations = Array.from(viewer.availableAnimations || []);
+
+  // A successfully decoded GLB can still just be an unanimated bind pose.
+  // If we have another source for this Pokemon/form, immediately try it.
+  if (
+    availableAnimations.length === 0 &&
+    activeCandidateIndex + 1 < activeModelCandidates.length
+  ) {
+    console.warn(
+      "Loaded model has no animation clips; trying animated fallback:",
+      activeModelCandidates[activeCandidateIndex]
+    );
+    startModelCandidate(activeCandidateIndex + 1);
+    return;
+  }
 
   const elapsed = Math.max(0, performance.now() - loadStartedAt);
   messageEl.textContent =
