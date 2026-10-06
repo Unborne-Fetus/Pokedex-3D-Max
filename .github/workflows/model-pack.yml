@@ -1,0 +1,38 @@
+name: Offline Model Pack
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/download_models.py"
+      - ".github/workflows/model-pack.yml"
+  workflow_dispatch:
+
+jobs:
+  build-model-pack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download all available 3D models
+        continue-on-error: true
+        run: python scripts/download_models.py --target offline-models --workers 12
+
+      - name: Show model pack summary
+        run: cat offline-models/pack_info.json
+
+      - name: Upload complete offline model pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex-3D-Max-Offline-Models
+          path: offline-models/
+          compression-level: 0
+          retention-days: 30
