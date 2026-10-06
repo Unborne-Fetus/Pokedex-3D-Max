@@ -18,6 +18,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.material3)
     implementation("io.github.sceneview:sceneview-compose:4.52.0")
+    implementation("org.json:json:20250517")
 }
 
 compose.desktop {
