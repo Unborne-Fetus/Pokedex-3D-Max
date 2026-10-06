@@ -15,5 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Pokedex 3D Max"
-include(":app")
 include(":desktopApp")
