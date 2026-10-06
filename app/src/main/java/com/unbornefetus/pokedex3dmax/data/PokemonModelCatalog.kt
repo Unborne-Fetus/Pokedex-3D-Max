@@ -87,8 +87,17 @@ object PokemonModelCatalog {
             }
 
             val body = connection.inputStream.bufferedReader().use { it.readText() }
-            val root = JSONObject(body)
-            val pokemonArray = root.getJSONArray("pokemon")
+            val pokemonArray = when {
+                body.trimStart().startsWith("[") -> org.json.JSONArray(body)
+                else -> {
+                    val root = JSONObject(body)
+                    when {
+                        root.has("pokemon") -> root.getJSONArray("pokemon")
+                        root.has("data") -> root.getJSONArray("data")
+                        else -> error("Unsupported model catalog JSON shape")
+                    }
+                }
+            }
             val models = ArrayList<PokemonModel>(1400)
 
             for (pokemonIndex in 0 until pokemonArray.length()) {
