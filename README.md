@@ -150,3 +150,38 @@ Planned major systems include:
 The upstream Pokémon 3D asset service is a separate community project and is not maintained by this repository. Its repository is distributed under its stated open-source license.
 
 Pokémon names, character designs, and related intellectual property belong to their respective rights holders. Pokedex 3D Max is an unofficial fan project.
+
+
+## PokeMiners bulk import
+
+Pokedex 3D Max can generate a cleaner local model pack from the public
+`PokeMiners/pogo_assets` repository.
+
+Run:
+
+```bat
+import-pokeminers.bat
+```
+
+The importer uses a sparse Git checkout for `3D Assets/Pokemon`, discovers
+`pm####_##_Rig` folders, converts each FBX to GLB with Blender, and generates
+`web/models/pokeminers-manifest.js`.
+
+Generated assets are kept out of Git history and automatically override the older
+remote model source when present. Re-running the importer resumes from existing
+converted files.
+
+You can test a smaller range first:
+
+```bat
+python scripts\import_pokeminers.py --start-dex 1 --end-dex 20
+```
+
+or a fixed count:
+
+```bat
+python scripts\import_pokeminers.py --limit 10
+```
+
+Nonzero Pokemon GO form codes are preserved as `go-form-XX` until they are
+mapped to human-readable form names.
