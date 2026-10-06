@@ -590,10 +590,37 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
 });
 
 function resetViewerCamera() {
-  viewer.cameraTarget = "auto auto auto";
+  const target = currentModel?.cameraTarget;
+  if (Array.isArray(target) && target.length === 3 && target.every(Number.isFinite)) {
+    viewer.cameraTarget = target.map(value => value.toFixed(4) + "m").join(" ");
+  } else {
+    viewer.cameraTarget = "auto auto auto";
+  }
+
   viewer.cameraOrbit = "auto auto auto";
-  viewer.fieldOfView = "30deg";
+  viewer.fieldOfView = (Number(currentModel?.fieldOfView) || 30) + "deg";
   viewer.jumpCameraToGoal?.();
+}
+
+function animationIdleScore(name) {
+  const value = String(name || "").toLowerCase();
+  let score = 0;
+
+  if (/idle|wait|stand|breath|loop/.test(value)) score += 100;
+  if (/fight[_ -]?a|battle[_ -]?a/.test(value)) score += 80;
+  if (/default|base/.test(value)) score += 30;
+
+  if (/attack|move|damage|hit|faint|die|death|sleep|eat|jump|run|walk|roar|cry|emote/.test(value)) score -= 100;
+  if (/fight[_ -]?b|fight[_ -]?c|battle[_ -]?b|battle[_ -]?c/.test(value)) score -= 20;
+
+  return score;
+}
+
+function chooseSafeIdle(animations) {
+  if (!animations.length) return null;
+  return [...animations]
+    .map((name, index) => ({ name, index, score: animationIdleScore(name) }))
+    .sort((a, b) => b.score - a.score || a.index - b.index)[0].name;
 }
 
 function readAnimationDurations() {
@@ -715,8 +742,9 @@ function setupIdleBreakAnimations() {
   const animations = Array.from(viewer.availableAnimations || []);
   animationDurations = readAnimationDurations();
 
-  // Match the provider's official showcase baseline: first animation wins.
-  idleAnimation = animations[0] || null;
+  // Prefer verified importer metadata, then choose the safest-looking loop.
+  // Falling back to animation index 0 caused many T-poses and attack loops.
+  idleAnimation = chooseSafeIdle(animations);
 
   const manifestIdle = currentModel?.idleAnimation;
   if (manifestIdle && animations.includes(manifestIdle)) {
@@ -733,7 +761,7 @@ function setupIdleBreakAnimations() {
       : (IDLE_BREAK_OVERRIDES[currentModel?.dex] || []);
 
   breakAnimations = overrideNames.filter(name =>
-    animations.includes(name)
+    animations.includes(name) && name !== idleAnimation
   );
 
   if (idleAnimation) {
