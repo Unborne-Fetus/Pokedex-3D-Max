@@ -44,5 +44,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.12.0")
 
+    implementation("io.github.sceneview:sceneview:4.52.0")
+
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
