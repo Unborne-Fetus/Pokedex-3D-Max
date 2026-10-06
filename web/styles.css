@@ -186,7 +186,7 @@ model-viewer {
   .layout {
     grid-template-columns: 1fr;
     height: auto;
-    min-height: calc(100vh - 76px);
+    height: calc(100vh - 76px);\n  min-height: 0;\n  overflow: hidden;
     overflow: visible;
   }
   .sidebar {
