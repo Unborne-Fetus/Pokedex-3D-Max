@@ -1,4 +1,4 @@
-name: PokeMiners Model Smoke Test
+name: PokeMiners Full Animation Backfill
 
 on:
   push:
@@ -8,26 +8,35 @@ on:
       - "scripts/blender_batch_convert_pokeminers.py"
       - ".github/workflows/pokeminers-model-smoke.yml"
   workflow_dispatch:
-    inputs:
-      start_dex:
-        description: "First National Dex number"
-        required: true
-        default: "1"
-      end_dex:
-        description: "Last National Dex number"
-        required: true
-        default: "10"
 
 permissions:
   contents: write
 
+concurrency:
+  group: pokeminers-full-animation-backfill
+  cancel-in-progress: false
+
 jobs:
   convert:
+    name: Convert #${{ matrix.range.start }}-#${{ matrix.range.end }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    env:
-      START_DEX: ${{ github.event.inputs.start_dex || '1' }}
-      END_DEX: ${{ github.event.inputs.end_dex || '10' }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        range:
+          - { start: 1, end: 100 }
+          - { start: 101, end: 200 }
+          - { start: 201, end: 300 }
+          - { start: 301, end: 400 }
+          - { start: 401, end: 500 }
+          - { start: 501, end: 600 }
+          - { start: 601, end: 700 }
+          - { start: 701, end: 800 }
+          - { start: 801, end: 900 }
+          - { start: 901, end: 1000 }
+          - { start: 1001, end: 1025 }
 
     steps:
       - name: Checkout Pokedex 3D Max
@@ -39,66 +48,174 @@ jobs:
           sudo apt-get install -y blender
           blender --version
 
-      - name: Convert requested PokeMiners range
+      - name: Convert PokeMiners rigs
         run: |
           python3 scripts/import_pokeminers.py \
-            --start-dex "$START_DEX" \
-            --end-dex "$END_DEX"
+            --start-dex "${{ matrix.range.start }}" \
+            --end-dex "${{ matrix.range.end }}" \
+            --force
 
-      - name: Validate manifest and GLBs
+      - name: Validate generated idles
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          manifest = Path("web/models/pokeminers-manifest.json")
-          if not manifest.is_file():
+          path = Path("web/models/pokeminers-manifest.json")
+          if not path.is_file():
               raise SystemExit("Missing PokeMiners manifest")
 
-          items = json.loads(manifest.read_text(encoding="utf-8"))
+          items = json.loads(path.read_text(encoding="utf-8"))
           valid = [item for item in items if item.get("valid")]
           if not valid:
-              raise SystemExit("No valid converted models")
+              raise SystemExit("No valid converted models in this range")
 
-          missing = [
-              item["url"]
-              for item in valid
-              if not Path(item["url"]).is_file()
+          bad = [
+              item for item in valid
+              if not item.get("idleAnimation")
+              or not item.get("animations")
+              or not Path(item["url"]).is_file()
           ]
-          if missing:
-              raise SystemExit("Manifest points at missing GLBs: " + ", ".join(missing[:10]))
-
-          print(f"Validated {len(valid)} converted model(s)")
-          for item in valid[:20]:
-              print(
-                  f"#{item['dex']:04d} {item['form']}: "
-                  f"idle={item.get('idleAnimation')!r} "
-                  f"animations={len(item.get('animations', []))}"
+          if bad:
+              preview = ", ".join(
+                  f"#{item.get('dex', 0):04d} {item.get('form')}"
+                  for item in bad[:12]
               )
+              raise SystemExit("Converted models without usable idles: " + preview)
+
+          generated = sum(1 for item in valid if item.get("proceduralIdle"))
+          print(
+              f"Validated {len(valid)} animated model(s); "
+              f"{generated} use generated skeletal idles"
+          )
           PY
 
-      - name: Publish validated models to main
-        if: github.event_name == 'push'
+      - name: Stage chunk manifest
+        run: |
+          cp web/models/pokeminers-manifest.json \
+            "chunk-manifest-${{ matrix.range.start }}-${{ matrix.range.end }}.json"
+
+      - name: Upload converted chunk
+        uses: actions/upload-artifact@v4
+        with:
+          name: pokeminers-${{ matrix.range.start }}-${{ matrix.range.end }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+          path: |
+            web/models/pokeminers/
+            chunk-manifest-${{ matrix.range.start }}-${{ matrix.range.end }}.json
+
+  publish:
+    name: Publish full animated model set
+    needs: convert
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Download all converted chunks
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pokeminers-*
+          path: chunk-artifacts
+
+      - name: Merge models and manifests
+        run: |
+          python3 - <<'PY'
+          import json
+          import shutil
+          from pathlib import Path
+
+          root = Path(".")
+          artifacts = root / "chunk-artifacts"
+          output_models = root / "web" / "models" / "pokeminers"
+          output_models.mkdir(parents=True, exist_ok=True)
+
+          merged = {}
+
+          for artifact in sorted(artifacts.iterdir()):
+              if not artifact.is_dir():
+                  continue
+
+              model_dir = artifact / "web" / "models" / "pokeminers"
+              if model_dir.is_dir():
+                  shutil.copytree(model_dir, output_models, dirs_exist_ok=True)
+
+              manifests = list(artifact.glob("chunk-manifest-*.json"))
+              if len(manifests) != 1:
+                  raise SystemExit(
+                      f"Expected exactly one chunk manifest in {artifact}, "
+                      f"found {len(manifests)}"
+                  )
+
+              for item in json.loads(manifests[0].read_text(encoding="utf-8")):
+                  merged[(int(item["dex"]), str(item["form"]))] = item
+
+          manifest = [
+              merged[key]
+              for key in sorted(merged, key=lambda key: (key[0], key[1]))
+          ]
+
+          valid = [item for item in manifest if item.get("valid")]
+          broken = [
+              item for item in valid
+              if not item.get("idleAnimation")
+              or not Path(item["url"]).is_file()
+          ]
+          if broken:
+              raise SystemExit(
+                  "Merged manifest has broken animated models: " +
+                  ", ".join(
+                      f"#{item['dex']:04d} {item['form']}"
+                      for item in broken[:20]
+                  )
+              )
+
+          manifest_path = root / "web" / "models" / "pokeminers-manifest.json"
+          manifest_js = root / "web" / "models" / "pokeminers-manifest.js"
+
+          manifest_path.write_text(
+              json.dumps(manifest, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          manifest_js.write_text(
+              "window.POKEDEX3D_POKEMINERS_MODELS = " +
+              json.dumps(valid, separators=(",", ":")) +
+              ";\n",
+              encoding="utf-8",
+          )
+
+          regular = [
+              item for item in valid
+              if str(item.get("form", "")).lower() == "regular"
+          ]
+          procedural = [item for item in valid if item.get("proceduralIdle")]
+
+          print(f"Merged {len(valid)} animated model/form files")
+          print(f"Regular species coverage: {len(regular)}")
+          print(f"Generated skeletal idles: {len(procedural)}")
+          PY
+
+      - name: Publish animation backfill to main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f web/models/pokeminers/ web/models/pokeminers-manifest.json web/models/pokeminers-manifest.js
+          git add -f \
+            web/models/pokeminers/ \
+            web/models/pokeminers-manifest.json \
+            web/models/pokeminers-manifest.js
+
           if git diff --cached --quiet; then
             echo "No generated model changes to publish."
-          else
-            git commit -m "Import validated PokeMiners models #${START_DEX}-#${END_DEX}"
-            git fetch origin main
-            git rebase origin/main
-            git push origin HEAD:main
+            exit 0
           fi
 
-      - name: Upload converted model sample
-        uses: actions/upload-artifact@v4
-        with:
-          name: Pokedex-3D-Max-PokeMiners-${{ env.START_DEX }}-${{ env.END_DEX }}
-          if-no-files-found: error
-          compression-level: 0
-          path: |
-            web/models/pokeminers/
-            web/models/pokeminers-manifest.json
-            web/models/pokeminers-manifest.js
+          git commit -m "Backfill skeletal idle animations across Pokedex"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
