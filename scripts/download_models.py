@@ -44,9 +44,26 @@ def fetch_bytes(url: str, timeout: int = 90) -> bytes:
         return response.read()
 
 
-def load_catalog() -> dict:
+def load_catalog() -> list[dict]:
     raw = fetch_bytes(API_URL, timeout=60)
-    return json.loads(raw.decode("utf-8"))
+    decoded = json.loads(raw.decode("utf-8"))
+
+    if isinstance(decoded, list):
+        return decoded
+
+    if isinstance(decoded, dict):
+        pokemon = decoded.get("pokemon")
+        if isinstance(pokemon, list):
+            return pokemon
+
+        data = decoded.get("data")
+        if isinstance(data, list):
+            return data
+
+    raise ValueError(
+        "Unsupported catalog JSON shape: expected a top-level list "
+        "or an object containing a 'pokemon'/'data' list"
+    )
 
 
 def local_relative_path(model_url: str, dex: int, form_name: str, index: int) -> Path:
@@ -118,8 +135,7 @@ def main() -> int:
     target.mkdir(parents=True, exist_ok=True)
 
     print(f"Loading catalog from {API_URL}")
-    catalog = load_catalog()
-    pokemon = catalog.get("pokemon", [])
+    pokemon = load_catalog()
 
     entries: list[dict] = []
     seen: set[tuple[int, str, str]] = set()
