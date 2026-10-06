@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Pokedex 3D Max - Web</title>
+  <link rel="stylesheet" href="web/styles.css" />
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Pokedex 3D Max</h1>
+      <p id="status">Loading 3D catalog…</p>
+    </div>
+    <span class="badge">WEB</span>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <input id="search" type="search" placeholder="Search Pokémon, form, or #" autocomplete="off" />
+      <div class="toolbar">
+        <button id="prevBtn" type="button">← Previous</button>
+        <button id="nextBtn" type="button">Next →</button>
+      </div>
+      <div id="list" class="pokemon-list" aria-live="polite"></div>
+    </aside>
+
+    <section class="viewer-panel">
+      <div class="viewer-header">
+        <div>
+          <div id="dexNumber" class="dex-number">#0001</div>
+          <h2 id="pokemonName">Bulbasaur</h2>
+          <div id="formName" class="form-name">Regular</div>
+        </div>
+        <select id="formSelect" aria-label="Form"></select>
+      </div>
+
+      <div class="viewer-wrap">
+        <model-viewer
+          id="viewer"
+          camera-controls
+          touch-action="pan-y"
+          interaction-prompt="none"
+          shadow-intensity="1"
+          shadow-softness="0.8"
+          exposure="1.15"
+          tone-mapping="aces"
+          environment-image="neutral"
+          min-camera-orbit="auto 5deg 5%"
+          max-camera-orbit="auto 85deg 1000%"
+          field-of-view="30deg"
+          loading="eager"
+          autoplay
+          alt="3D Pokémon model">
+          <div slot="progress-bar" class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </model-viewer>
+
+        <div id="viewerMessage" class="viewer-message">Loading model…</div>
+      </div>
+
+      <div class="viewer-controls">
+        <button id="resetCamera" type="button">Reset camera</button>
+        <button id="toggleRotate" type="button">Auto-rotate: Off</button>
+      </div>
+
+      <p class="hint">Drag to rotate · Scroll/pinch to zoom · Models stream from the shared catalog</p>
+    </section>
+  </main>
+
+  <script type="module" src="web/app.js"></script>
+</body>
+</html>
