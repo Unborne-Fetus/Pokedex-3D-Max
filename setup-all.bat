@@ -2,49 +2,54 @@
 setlocal EnableExtensions
 cd /d "%~dp0"
 
-set "LOG=%~dp0setup-all.log"
->"%LOG%" echo Pokedex 3D Max setup log
+title Pokedex 3D Max - Windows Setup
 
 echo ============================================================
-echo              Pokedex 3D Max - Setup Everything
+echo              Pokedex 3D Max - Windows Setup
 echo ============================================================
 echo.
-echo This one-click setup will bootstrap tools, download all models,
-echo build the Android APK and Windows app, then install what it can.
+echo WINDOWS-ONLY MODE
+echo.
+echo This setup will:
+echo   1. Check/download JDK 22
+echo   2. Check/download Gradle
+echo   3. Check Python
+echo   4. Download/update every offline 3D model
+echo   5. Build Pokedex-3D-Max-Windows.exe
+echo.
+echo Android/APK setup is disabled for now.
+echo.
+echo Live progress will stay visible in this window.
+echo The same output is also saved to setup-all.log.
+echo Existing model files are reused.
+echo.
+echo Press any key to begin.
+pause >nul
 echo.
 
 if not exist "%~dp0scripts\setup_all.ps1" (
   echo ERROR: scripts\setup_all.ps1 is missing.
-  echo Run: git pull
-  echo Then run setup-all.bat again.
+  echo Run git pull, then launch setup-all.bat again.
   echo.
   pause
   exit /b 2
 )
 
-echo Starting PowerShell setup...
-echo Output is being written to:
-echo   %LOG%
-echo.
-
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_all.ps1" >> "%LOG%" 2>&1
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_all.ps1"
 set "EXITCODE=%ERRORLEVEL%"
 
 echo.
 echo ============================================================
 if "%EXITCODE%"=="0" (
-  echo Setup finished successfully.
-  echo Check the dist folder for the APK and Windows installers.
-) else (
-  echo Setup stopped with error code %EXITCODE%.
+  echo Windows setup finished.
   echo.
-  echo Last setup output:
-  echo ------------------------------------------------------------
-  powershell.exe -NoProfile -Command "Get-Content -Path '%LOG%' -Tail 60"
-  echo ------------------------------------------------------------
+  echo Final installer:
+  echo   %~dp0dist\Pokedex-3D-Max-Windows.exe
+) else (
+  echo Setup failed with error code %EXITCODE%.
   echo.
   echo Full log:
-  echo   %LOG%
+  echo   %~dp0setup-all.log
 )
 echo ============================================================
 echo.
