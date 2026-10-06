@@ -2,6 +2,51 @@ window.__pokedex3dBooted = true;
 const API_URL = "https://pokemon-3d-api.onrender.com/v1/pokemon";
 const CDN_ROOT = "https://cdn.jsdelivr.net/gh/Pokemon-3D-api/assets@main/";
 const CATALOG_CACHE_KEY = "pokedex3dmax.catalog.v2";
+const LOCAL_MODELS = Array.isArray(window.POKEDEX3D_LOCAL_MODELS)
+  ? window.POKEDEX3D_LOCAL_MODELS
+  : [];
+
+function localModelKey(model) {
+  return String(model?.dex) + "|" + String(model?.form || "regular").toLowerCase();
+}
+
+function applyLocalModelOverrides(list) {
+  if (!LOCAL_MODELS.length) return list;
+
+  const overrides = new Map(
+    LOCAL_MODELS.map(model => [localModelKey(model), model])
+  );
+
+  const merged = list.map(model => {
+    const replacement = overrides.get(localModelKey(model));
+    if (!replacement) return model;
+
+    return {
+      ...model,
+      ...replacement,
+      url: replacement.url,
+      local: true,
+    };
+  });
+
+  const existing = new Set(merged.map(localModelKey));
+  for (const replacement of LOCAL_MODELS) {
+    const key = localModelKey(replacement);
+    if (!existing.has(key)) {
+      merged.push({
+        ...replacement,
+        local: true,
+      });
+    }
+  }
+
+  return merged.sort(
+    (a, b) =>
+      a.dex - b.dex ||
+      formRank(a.form) - formRank(b.form) ||
+      String(a.form).localeCompare(String(b.form))
+  );
+}
 
 const REGULAR_MODEL = id =>
   CDN_ROOT + "models/opt/regular/" + id + ".glb";
@@ -48,7 +93,7 @@ const IDLE_BREAK_OVERRIDES = {
 };
 
 function makeInstantRegularCatalog() {
-  return Array.from({ length: 1025 }, (_, i) => {
+  const fallback = Array.from({ length: 1025 }, (_, i) => {
     const dex = i + 1;
     return {
       dex,
@@ -57,6 +102,8 @@ function makeInstantRegularCatalog() {
       url: REGULAR_MODEL(dex),
     };
   });
+
+  return applyLocalModelOverrides(fallback);
 }
 
 function toFastAssetUrl(url) {
@@ -124,7 +171,7 @@ function catalogToModels(payload) {
     }
   }
 
-  return out
+  const deduped = out
     .filter((m, i, arr) =>
       arr.findIndex(x => x.dex === m.dex && x.form === m.form && x.url === m.url) === i
     )
@@ -133,6 +180,8 @@ function catalogToModels(payload) {
       formRank(a.form) - formRank(b.form) ||
       a.form.localeCompare(b.form)
     );
+
+  return applyLocalModelOverrides(deduped);
 }
 
 async function enhanceCatalogInBackground() {
@@ -320,6 +369,11 @@ function modelAssetPath(url) {
 
 function getModelCandidates(model) {
   const original = String(model?.url || "");
+
+  if (model?.local || original.startsWith("web/models/")) {
+    return [original];
+  }
+
   const fast = toFastAssetUrl(original);
   const path = modelAssetPath(fast) || modelAssetPath(original);
 
@@ -659,8 +713,20 @@ function setupIdleBreakAnimations() {
   // Match the provider's official showcase baseline: first animation wins.
   idleAnimation = animations[0] || null;
 
+  const manifestIdle = currentModel?.idleAnimation;
+  if (manifestIdle && animations.includes(manifestIdle)) {
+    idleAnimation = manifestIdle;
+  }
+
+  const manifestBreaks = Array.isArray(currentModel?.idleBreaks)
+    ? currentModel.idleBreaks
+    : [];
+
   const overrideNames =
-    IDLE_BREAK_OVERRIDES[currentModel?.dex] || [];
+    manifestBreaks.length
+      ? manifestBreaks
+      : (IDLE_BREAK_OVERRIDES[currentModel?.dex] || []);
+
   breakAnimations = overrideNames.filter(name =>
     animations.includes(name)
   );
