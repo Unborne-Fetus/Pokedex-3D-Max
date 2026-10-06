@@ -45,7 +45,7 @@ fun Pokedex3DMaxApp() {
     var loading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        models = PokemonModelCatalog.load()
+        models = PokemonModelCatalog.load(context)
         selected = models.firstOrNull()
         loading = false
     }
@@ -70,7 +70,7 @@ fun Pokedex3DMaxApp() {
                     Column {
                         Text("Pokedex 3D Max", fontWeight = FontWeight.Bold)
                         Text(
-                            if (loading) "Loading 3D model catalog…" else "${models.size} 3D models available",
+                            if (loading) "Loading 3D model catalog…" else if (models.firstOrNull()?.isOffline == true) "${models.size} offline 3D models" else "${models.size} 3D models available",
                             style = MaterialTheme.typography.labelMedium,
                         )
                     }
