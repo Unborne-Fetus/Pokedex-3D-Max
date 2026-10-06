@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.unbornefetus.pokedex3dmax"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.unbornefetus.pokedex3dmax"
@@ -21,8 +21,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     packaging {
