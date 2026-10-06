@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.unbornefetus.pokedex3dmax"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.unbornefetus.pokedex3dmax"
@@ -44,7 +44,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.12.0")
 
-    implementation("io.github.sceneview:sceneview:4.52.0")
+    implementation("io.github.sceneview:sceneview:4.34.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
