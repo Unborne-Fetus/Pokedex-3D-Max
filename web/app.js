@@ -42,7 +42,8 @@ let modelLoadTimeout = null;
 let animationDurations = new Map();
 
 const IDLE_BREAK_OVERRIDES = {
-  // Bulbasaur: use its actual Pokédex-style break, not a jump clip.
+  // Only verified clips belong here. Unknown species show "Unavailable"
+  // instead of guessing a broken animation.
   1: ["model_skeleton|001fight_b"],
 };
 
@@ -506,7 +507,7 @@ prevBtn.addEventListener("click", () => selectModel(selectedIndex - 1));
 nextBtn.addEventListener("click", () => selectModel(selectedIndex + 1));
 
 resetCameraBtn.addEventListener("click", () => {
-  frameLoadedModel();
+  resetViewerCamera();
 });
 
 toggleRotateBtn.addEventListener("click", () => {
@@ -529,51 +530,11 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
   }
 });
 
-function normalizeMaterials() {
-  const materials = viewer.model?.materials || [];
-
-  for (const material of materials) {
-    try {
-      // Preserve original PBR colors/textures/accessory materials.
-      // Only make solid materials double-sided so backfaces do not vanish
-      // at certain camera angles.
-      if (material.getAlphaMode?.() !== "BLEND") {
-        material.setDoubleSided?.(true);
-      }
-    } catch (error) {
-      console.debug("Material normalization skipped:", error);
-    }
-  }
-}
-
-function frameLoadedModel() {
-  try {
-    const center = viewer.getBoundingBoxCenter();
-    const dimensions = viewer.getDimensions();
-
-    viewer.cameraTarget =
-      center.x.toFixed(4) + "m " +
-      center.y.toFixed(4) + "m " +
-      center.z.toFixed(4) + "m";
-
-    // Percentage radius uses model-viewer's own ideal framing distance,
-    // avoiding tiny/off-center starts for unusually tall or wide models.
-    viewer.cameraOrbit = "0deg 75deg 112%";
-    viewer.fieldOfView = "30deg";
-    viewer.minCameraOrbit = "auto 1deg 18%";
-    viewer.maxCameraOrbit = "auto 179deg 900%";
-    viewer.jumpCameraToGoal?.();
-
-    console.debug("Framed model", {
-      center,
-      dimensions,
-    });
-  } catch (error) {
-    console.debug("Automatic framing fallback:", error);
-    viewer.cameraTarget = "auto auto auto";
-    viewer.cameraOrbit = "0deg 75deg 112%";
-    viewer.jumpCameraToGoal?.();
-  }
+function resetViewerCamera() {
+  viewer.cameraTarget = "auto auto auto";
+  viewer.cameraOrbit = "auto auto auto";
+  viewer.fieldOfView = "30deg";
+  viewer.jumpCameraToGoal?.();
 }
 
 function readAnimationDurations() {
@@ -608,40 +569,6 @@ function readAnimationDurations() {
   }
 
   return durations;
-}
-
-function chooseBaseIdle(animations) {
-  const priorities = [
-    /(^|[|_])a?idle($|[|_])/i,
-    /wait|stand|breath/i,
-    /fight[_-]?b/i,
-    /fight[_-]?d/i,
-  ];
-
-  for (const pattern of priorities) {
-    const match = animations.find(name => pattern.test(name));
-    if (match) return match;
-  }
-
-  const safe = animations.find(
-    name => !/ko|death|faint|hit|damage|attack|run|walk|jump/i.test(name)
-  );
-
-  return safe || animations[0] || null;
-}
-
-function animationScore(name) {
-  const value = name.toLowerCase();
-
-  // Idle breaks must be conservative. Movement/KO/attack clips are not used
-  // automatically because many species look broken with those outside battle.
-  if (/break|fidget|look|wait/i.test(value)) return 120;
-  if (/fight[_-]?d/i.test(value)) return 80;
-  if (/fight[_-]?b/i.test(value)) return 70;
-  if (/jump|run|walk|ko|death|faint|hit|damage|attack/i.test(value)) {
-    return -100;
-  }
-  return -10;
 }
 
 function clearIdleBreakTimers() {
@@ -729,34 +656,22 @@ function setupIdleBreakAnimations() {
   const animations = Array.from(viewer.availableAnimations || []);
   animationDurations = readAnimationDurations();
 
-  idleAnimation = chooseBaseIdle(animations);
+  // Match the provider's official showcase baseline: first animation wins.
+  idleAnimation = animations[0] || null;
 
   const overrideNames =
     IDLE_BREAK_OVERRIDES[currentModel?.dex] || [];
+  breakAnimations = overrideNames.filter(name =>
+    animations.includes(name)
+  );
 
-  const overrides = overrideNames.filter(name => animations.includes(name));
-
-  if (overrides.length) {
-    breakAnimations = overrides;
+  if (idleAnimation) {
+    viewer.animationName = idleAnimation;
+    viewer.currentTime = 0;
+    viewer.play();
   } else {
-    breakAnimations = animations
-      .filter(name => name !== idleAnimation)
-      .filter(name => animationScore(name) > 0)
-      .filter(name => {
-        const duration = animationDurations.get(name);
-        return !duration || (duration >= 0.35 && duration <= 4.5);
-      })
-      .sort((a, b) => animationScore(b) - animationScore(a));
-
-    if (breakAnimations.length) {
-      const best = animationScore(breakAnimations[0]);
-      breakAnimations = breakAnimations.filter(
-        name => animationScore(name) === best
-      );
-    }
+    viewer.pause?.();
   }
-
-  startBaseIdle();
 
   const available = Boolean(idleAnimation && breakAnimations.length);
   toggleIdleBreaksBtn.disabled = !available;
@@ -777,8 +692,7 @@ viewer.addEventListener("load", () => {
     "Loaded in " + (elapsed / 1000).toFixed(1) + "s";
   setTimeout(() => messageEl.classList.add("hidden"), 900);
 
-  normalizeMaterials();
-  frameLoadedModel();
+  resetViewerCamera();
   setupIdleBreakAnimations();
   prefetchNeighbors();
 });
