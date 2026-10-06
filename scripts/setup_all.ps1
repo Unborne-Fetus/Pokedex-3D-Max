@@ -97,30 +97,47 @@ function BootstrapGradle {
 
 function EnsurePython {
     Step "STEP 3/5 - Checking Python"
+    $Command = $null
     if (Get-Command python -ErrorAction SilentlyContinue) {
         $Version = (& python --version 2>&1)
         Stamp ("Found " + $Version)
-        return "python"
-    }
-    if (Get-Command py -ErrorAction SilentlyContinue) {
+        $Command = "python"
+    } elseif (Get-Command py -ErrorAction SilentlyContinue) {
         $Version = (& py -3 --version 2>&1)
         Stamp ("Found " + $Version)
-        return "py"
+        $Command = "py"
+    } else {
+        Stamp "Python was not found."
+        if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+            throw "Python is missing and winget is unavailable. Install Python 3.12, then run setup-all.bat again."
+        }
+        Stamp "Installing Python 3.12 with winget..."
+        & winget install --id Python.Python.3.12 --exact --silent --accept-source-agreements --accept-package-agreements
+        if ($LASTEXITCODE -ne 0) { throw "Python installation failed." }
+        $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User")
+        if (Get-Command python -ErrorAction SilentlyContinue) { $Command = "python" }
+        elseif (Get-Command py -ErrorAction SilentlyContinue) { $Command = "py" }
+        else { throw "Python installed but is not visible yet. Close this window and run setup-all.bat again." }
     }
 
-    Stamp "Python was not found."
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        throw "Python is missing and winget is unavailable. Install Python 3.12, then run setup-all.bat again."
+    Stamp "Checking Pillow for WebP-to-PNG model conversion..."
+    if ($Command -eq "py") {
+        & py -3 -c "import PIL" 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Stamp "Installing Pillow..."
+            & py -3 -m pip install --disable-pip-version-check --quiet Pillow
+            if ($LASTEXITCODE -ne 0) { throw "Pillow installation failed." }
+        }
+    } else {
+        & python -c "import PIL" 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Stamp "Installing Pillow..."
+            & python -m pip install --disable-pip-version-check --quiet Pillow
+            if ($LASTEXITCODE -ne 0) { throw "Pillow installation failed." }
+        }
     }
-
-    Stamp "Installing Python 3.12 with winget..."
-    & winget install --id Python.Python.3.12 --exact --silent --accept-source-agreements --accept-package-agreements
-    if ($LASTEXITCODE -ne 0) { throw "Python installation failed." }
-
-    $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User")
-    if (Get-Command python -ErrorAction SilentlyContinue) { return "python" }
-    if (Get-Command py -ErrorAction SilentlyContinue) { return "py" }
-    throw "Python installed but is not visible yet. Close this window and run setup-all.bat again."
+    Stamp "Pillow is ready."
+    return $Command
 }
 
 function InstallModels([string]$PythonCommand) {
