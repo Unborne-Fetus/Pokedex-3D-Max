@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b1220" />
   <title>Pokedex 3D Max - Web</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin />
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
   <link rel="stylesheet" href="web/styles.css" />
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"></script>
 </head>
@@ -52,6 +55,7 @@
           max-camera-orbit="auto 85deg 1000%"
           field-of-view="30deg"
           loading="eager"
+          reveal="auto"
           autoplay
           alt="3D Pokémon model">
           <div slot="progress-bar" class="progress-bar">
@@ -67,7 +71,7 @@
         <button id="toggleRotate" type="button">Auto-rotate: Off</button>
       </div>
 
-      <p class="hint">Drag to rotate · Scroll/pinch to zoom · Models stream from the shared catalog</p>
+      <p class="hint">Drag to rotate · Scroll/pinch to zoom · CDN-backed models · nearby Pokémon are prefetched</p>
     </section>
   </main>
 
