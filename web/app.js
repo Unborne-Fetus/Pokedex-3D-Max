@@ -935,10 +935,14 @@ async function getFbxRuntime() {
     fbxRuntimePromise = Promise.all([
       import("https://esm.sh/three@0.180.0"),
       import("https://esm.sh/three@0.180.0/examples/jsm/loaders/FBXLoader.js"),
+      import("https://esm.sh/three@0.180.0/examples/jsm/loaders/GLTFLoader.js"),
+      import("https://esm.sh/three@0.180.0/examples/jsm/loaders/DRACOLoader.js"),
       import("https://esm.sh/three@0.180.0/examples/jsm/controls/OrbitControls.js"),
-    ]).then(([THREE, loaderModule, controlsModule]) => ({
+    ]).then(([THREE, fbxModule, gltfModule, dracoModule, controlsModule]) => ({
       THREE,
-      FBXLoader: loaderModule.FBXLoader,
+      FBXLoader: fbxModule.FBXLoader,
+      GLTFLoader: gltfModule.GLTFLoader,
+      DRACOLoader: dracoModule.DRACOLoader,
       OrbitControls: controlsModule.OrbitControls,
     }));
   }
@@ -974,6 +978,7 @@ function disposeFbxFallback() {
       }
     });
 
+    state.draco?.dispose?.();
     state.renderer?.dispose?.();
     state.renderer?.domElement?.remove?.();
   }
@@ -1047,6 +1052,240 @@ function chooseEmbeddedFbxIdle(animations) {
   return chosen
     ? animations.find(animation => animation.name === chosen) || null
     : null;
+}
+
+async function showRiggedGlbFallback(model) {
+  if (!threeFallbackHost) return false;
+
+  const source =
+    activeModelCandidates[activeCandidateIndex] ||
+    String(model?.url || "");
+
+  if (!source) return false;
+
+  const token = ++fbxFallbackLoadToken;
+  messageEl.textContent = "Loading rigged GLB…";
+  messageEl.classList.remove("hidden");
+
+  try {
+    const {
+      THREE,
+      GLTFLoader,
+      DRACOLoader,
+      OrbitControls,
+    } = await getFbxRuntime();
+
+    if (token !== fbxFallbackLoadToken) return false;
+
+    disposeFbxFallback();
+    const activeToken = ++fbxFallbackLoadToken;
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    threeFallbackHost.replaceChildren(renderer.domElement);
+    threeFallbackHost.classList.remove("hidden");
+    viewer.classList.add("fallback-active");
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.01, 100);
+    camera.position.set(0, 0.4, 4);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x41516a, 2.2));
+    const key = new THREE.DirectionalLight(0xffffff, 2.2);
+    key.position.set(3, 5, 4);
+    scene.add(key);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.autoRotate = autoRotate;
+    controls.autoRotateSpeed = 1.5;
+
+    const loader = new GLTFLoader();
+    const draco = new DRACOLoader();
+    draco.setDecoderPath(
+      "https://www.gstatic.com/draco/versioned/decoders/1.5.7/"
+    );
+    loader.setDRACOLoader(draco);
+
+    const gltf = await new Promise((resolve, reject) => {
+      loader.load(source, resolve, undefined, reject);
+    });
+
+    if (activeToken !== fbxFallbackLoadToken) {
+      draco.dispose?.();
+      return false;
+    }
+
+    const rig = gltf.scene;
+    const clips = Array.from(gltf.animations || []);
+
+    scene.add(rig);
+
+    rig.traverse(object => {
+      if (!object.isMesh) return;
+      object.castShadow = true;
+      object.receiveShadow = true;
+
+      const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material];
+
+      for (const material of materials) {
+        if (!material) continue;
+        // Preserve the GLB material exactly. Only ensure maps use the expected
+        // color space; unlike the FBX path, do not replace colors/textures.
+        if (material.map) material.map.colorSpace = THREE.SRGBColorSpace;
+        material.needsUpdate = true;
+      }
+    });
+
+    const initialBox = new THREE.Box3().setFromObject(rig);
+    const size = initialBox.getSize(new THREE.Vector3());
+    const center = initialBox.getCenter(new THREE.Vector3());
+    const maxDimension = Math.max(size.x, size.y, size.z, 0.001);
+    const scale = 2.25 / maxDimension;
+
+    rig.scale.setScalar(scale);
+    rig.position.x -= center.x * scale;
+    rig.position.y -= center.y * scale;
+    rig.position.z -= center.z * scale;
+
+    const fittedBox = new THREE.Box3().setFromObject(rig);
+    const fittedCenter = fittedBox.getCenter(new THREE.Vector3());
+    const fittedSize = fittedBox.getSize(new THREE.Vector3());
+
+    controls.target.copy(fittedCenter);
+    camera.position.set(
+      fittedCenter.x,
+      fittedCenter.y + fittedSize.y * 0.06,
+      fittedCenter.z + Math.max(fittedSize.z, fittedSize.y) * 1.8 + 1.4
+    );
+    camera.near = 0.01;
+    camera.far = 100;
+    camera.updateProjectionMatrix();
+    controls.update();
+    controls.saveState();
+
+    const embeddedIdle = chooseEmbeddedFbxIdle(clips);
+    const mixer = embeddedIdle ? new THREE.AnimationMixer(rig) : null;
+    if (mixer && embeddedIdle) {
+      mixer.clipAction(embeddedIdle).reset().play();
+    }
+
+    const proceduralBones = embeddedIdle ? [] : chooseFbxProceduralBones(rig);
+
+    // If the optimized GLB has no bones at all, it cannot be skeletally
+    // animated. Leave model-viewer visible instead of replacing a correct,
+    // textured model with another rigid duplicate.
+    if (!embeddedIdle && !proceduralBones.length) {
+      scene.remove(rig);
+      renderer.dispose();
+      renderer.domElement.remove();
+      draco.dispose?.();
+      threeFallbackHost.replaceChildren();
+      threeFallbackHost.classList.add("hidden");
+      viewer.classList.remove("fallback-active");
+      return false;
+    }
+
+    const baseY = rig.position.y;
+    const clock = new THREE.Clock();
+    const axisX = new THREE.Vector3(1, 0, 0);
+    const axisY = new THREE.Vector3(0, 1, 0);
+    const axisZ = new THREE.Vector3(0, 0, 1);
+    const deltaQuaternion = new THREE.Quaternion();
+
+    const roleMotion = {
+      head: [axisX, THREE.MathUtils.degToRad(2.2)],
+      neck: [axisX, THREE.MathUtils.degToRad(1.3)],
+      torso: [axisY, THREE.MathUtils.degToRad(0.9)],
+      tail: [axisZ, THREE.MathUtils.degToRad(4.0)],
+      wing: [axisX, THREE.MathUtils.degToRad(2.5)],
+      appendage: [axisY, THREE.MathUtils.degToRad(2.0)],
+    };
+
+    const state = {
+      frame: 0,
+      renderer,
+      scene,
+      camera,
+      controls,
+      model: rig,
+      mixer,
+      proceduralBones,
+      resizeObserver: null,
+      draco,
+    };
+    fbxFallbackState = state;
+
+    const resize = () => {
+      const width = Math.max(1, threeFallbackHost.clientWidth);
+      const height = Math.max(1, threeFallbackHost.clientHeight);
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    state.resizeObserver = new ResizeObserver(resize);
+    state.resizeObserver.observe(threeFallbackHost);
+
+    const render = () => {
+      if (fbxFallbackState !== state) return;
+
+      const delta = Math.min(clock.getDelta(), 0.05);
+      const elapsed = clock.elapsedTime;
+
+      if (mixer) {
+        mixer.update(delta);
+      } else {
+        rig.position.y = baseY + Math.sin(elapsed * 2.0) * 0.008;
+
+        for (const item of proceduralBones) {
+          const motion = roleMotion[item.role];
+          if (!motion) continue;
+
+          const [axis, amplitude] = motion;
+          const phase = item.index % 2 ? Math.PI : 0;
+          const angle = Math.sin(elapsed * 1.45 + phase) * amplitude;
+
+          deltaQuaternion.setFromAxisAngle(axis, angle);
+          item.bone.quaternion.copy(item.base).multiply(deltaQuaternion);
+        }
+      }
+
+      controls.autoRotate = autoRotate;
+      controls.update();
+      renderer.render(scene, camera);
+      state.frame = requestAnimationFrame(render);
+    };
+
+    state.frame = requestAnimationFrame(render);
+
+    messageEl.textContent = embeddedIdle
+      ? "Loaded textured rigged GLB with embedded idle"
+      : "Loaded textured rigged GLB with generated skeletal idle";
+
+    setTimeout(() => {
+      if (fbxFallbackState === state) messageEl.classList.add("hidden");
+    }, 1000);
+
+    toggleIdleBreaksBtn.disabled = true;
+    toggleIdleBreaksBtn.textContent = "Idle breaks: Rigged idle";
+    return true;
+  } catch (error) {
+    console.warn("Rigged GLB fallback failed:", error);
+    if (token === fbxFallbackLoadToken) disposeFbxFallback();
+    return false;
+  }
 }
 
 async function showRiggedFbxFallback(model) {
@@ -1433,7 +1672,7 @@ viewer.addEventListener("load", async () => {
   // skeleton directly in-browser. This avoids shipping hundreds of generated
   // GLBs just to give static Pokemon a natural idle.
   if (availableAnimations.length === 0) {
-    const rigged = await showRiggedFbxFallback(currentModel);
+    const rigged = await showRiggedGlbFallback(currentModel);
     if (rigged) return;
 
     if (activeCandidateIndex + 1 < activeModelCandidates.length) {
