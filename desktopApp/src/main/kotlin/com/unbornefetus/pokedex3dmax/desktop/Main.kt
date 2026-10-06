@@ -229,7 +229,7 @@ private fun PokemonViewport(model: DesktopModel, bytes: ByteArray) {
                         val scrollY = event.changes.firstOrNull()?.scrollDelta?.y ?: 0f
                         if (scrollY != 0f) {
                             val exponent = (scrollY * 0.10f).coerceIn(-1.0f, 1.0f)
-                            val zoomFactor = exp(exponent)
+                            val zoomFactor = exp(exponent.toDouble()).toFloat()
                             camera.distance = (camera.distance * zoomFactor)
                                 .coerceIn(minDistance, maxDistance)
                         }
