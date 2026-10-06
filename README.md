@@ -1,62 +1,152 @@
 # Pokedex 3D Max
 
-An Android-first, modern spiritual successor to the idea of a fully interactive 3D Pokédex.
+A modern, unofficial 3D Pokédex for Android and Windows.
 
-## Current 3D model support
+## Current platform support
 
-The app now integrates the community-maintained Pokémon 3D API model catalog and can load its optimized GLB assets directly at runtime.
+### Android
+- Jetpack Compose
+- SceneView + Google Filament
+- Interactive GLB viewer
+- Drag to rotate
+- Pinch to zoom
+- Automatic model animation where clips are present
+- Online model catalog fallback
+- Automatic preference for an installed offline model pack
 
-Current catalog coverage includes 1,300+ models across:
+### Windows
+- Compose Desktop
+- SceneView Compose + Filament desktop renderer
+- Native Windows `.exe` and `.msi` builds
+- Offline model-pack support
+- Search by Pokémon, form, or National Dex number
+- Mouse orbit / zoom through the SceneView desktop viewer
 
-- Regular Pokémon forms
+The Windows renderer requires JDK 22 at build time. The packaged Windows app includes its runtime, so end users do not need to install Java separately.
+
+## 3D model library
+
+Pokedex 3D Max integrates the community-maintained Pokémon 3D API asset library.
+
+Current upstream coverage is 1,300+ optimized GLB models, including:
+
+- Regular forms
 - Shiny variants
 - Mega Evolutions
 - Gigantamax forms
 - Regional forms
 - Alternate and special forms
 
-The model library is loaded dynamically rather than committing gigabytes of GLB files into this repository. The viewer uses SceneView + Google Filament and supports touch rotation, zooming, and automatic model animations when animation clips are present.
+The upstream asset repository uses optimized Draco-compressed GLBs and WebP textures.
 
-If the model catalog endpoint is unavailable, the app falls back to regular National Dex model paths so the Pokédex can still attempt to load standard models.
+## Offline model pack
 
-## Vision
+The full model library is intentionally **not committed directly into Git history** because it is roughly 1.4–1.5 GB and would make normal clones unnecessarily huge.
 
-Pokedex 3D Max is intended to grow into an all-in-one Pokémon reference app centered around an interactive 3D Pokémon viewer, with complete species/form data, moves, abilities, items, evolutions, cries, collection tracking, and modern Pokédex tools.
+Instead, the repository contains:
 
-## Phase 1
+`scripts/download_models.py`
 
-- Android-native app
-- Interactive 3D GLB viewer
-- 1,300+ model catalog integration
-- Touch rotate and zoom
-- Automatic model animation
-- Search by Pokémon, form, or National Dex number
-- Form-aware data model
-- Modern Material 3 UI
+This downloads every currently available model from the upstream catalog, mirrors the model structure locally, and generates:
 
-## Planned
+- `model_catalog.tsv`
+- `pack_info.json`
+- `ASSET_SOURCE.txt`
+- upstream license information
+- all successfully downloaded GLB files
 
-- Complete Pokémon metadata database
+Run locally:
+
+```bash
+python scripts/download_models.py --target offline-models
+```
+
+GitHub Actions also contains **Offline Model Pack**, which produces a downloadable artifact named:
+
+`Pokedex-3D-Max-Offline-Models`
+
+That workflow is configured to run when the model-pack script/workflow itself changes and can also be run manually.
+
+### Windows model-pack locations
+
+The Windows app looks in this order:
+
+1. Folder specified by `POKEDEX_3D_MAX_MODELS`
+2. `./offline-models`
+3. `%LOCALAPPDATA%\Pokedex3DMax\offline-models`
+4. `%USERPROFILE%\Pokedex3DMax\offline-models`
+
+### Android model-pack locations
+
+Android automatically checks:
+
+- internal app files: `files/offline-models`
+- app-specific external files: `Android/data/com.unbornefetus.pokedex3dmax/files/offline-models`
+
+When the pack is present, the app uses local `file://` GLBs and does not need Wi-Fi for those models. If no local pack is found, it falls back to the online catalog.
+
+A friendlier in-app model-pack importer is planned so users will not need to manually place files.
+
+## Builds
+
+### Android
+
+GitHub Actions workflow: **Android**
+
+Output artifact:
+
+`Pokedex-3D-Max-Android-debug`
+
+### Windows
+
+GitHub Actions workflow: **Windows**
+
+Outputs:
+
+- Windows `.exe`
+- Windows `.msi`
+
+Artifact:
+
+`Pokedex-3D-Max-Windows`
+
+## Project direction
+
+Pokedex 3D Max is intended to become an all-in-one modern Pokédex centered around the 3D Pokémon viewer.
+
+Planned major systems include:
+
+- Complete Pokémon metadata
+- Form and shiny switching
+- Animation selection
 - Cry playback
-- Shiny/form switching controls
-- Animation selector
 - Evolution trees
-- Move / Ability / Item Dex
+- Move Dex
+- Ability Dex
+- Item Dex
 - Location data
-- Advanced filters
+- Advanced search/filtering
 - Favorites and collection tracking
-- Offline model caching / downloadable asset packs
+- Offline-first data
+- Download/install model-pack UI
+- Better lighting/background controls
+- Size comparison
+- Full Pokédex 3D Pro-style navigation and presentation
 
 ## Tech
 
-- Kotlin
+- Kotlin 2.4.20
 - Jetpack Compose
+- Compose Multiplatform / Compose Desktop
 - Material 3
-- SceneView
+- SceneView 4.52
 - Google Filament
 - GLB / glTF
-- Android 8.0+ (API 26)
+- Android API 26+
+- Windows desktop target
 
-## Asset note
+## Asset and trademark note
 
-Pokémon names, designs, imagery, and related assets are property of their respective rights holders. Pokedex 3D Max is an unofficial fan project. The external Pokémon 3D model service is a separate community project and is not part of this repository.
+The upstream Pokémon 3D asset service is a separate community project and is not maintained by this repository. Its repository is distributed under its stated open-source license.
+
+Pokémon names, character designs, and related intellectual property belong to their respective rights holders. Pokedex 3D Max is an unofficial fan project.
