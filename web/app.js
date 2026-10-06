@@ -118,6 +118,8 @@ let activeModelCandidates = [];
 let activeCandidateIndex = 0;
 let modelLoadTimeout = null;
 let animationDurations = new Map();
+let proceduralFallbackFrame = null;
+let proceduralFallbackStartedAt = 0;
 
 const IDLE_BREAK_OVERRIDES = {
   // Only verified clips belong here. Unknown species show "Unavailable"
@@ -465,6 +467,7 @@ async function loadModel(model) {
   if (primary === currentUrl && viewer.loaded) return;
 
   clearIdleBreakTimers();
+  clearProceduralFallbackMotion();
   clearModelLoadTimeout();
 
   currentUrl = primary;
@@ -697,9 +700,53 @@ function clearIdleBreakTimers() {
   }
 }
 
-function startBaseIdle() {
-  if (!idleAnimation) return;
+function clearProceduralFallbackMotion() {
+  if (proceduralFallbackFrame !== null) {
+    cancelAnimationFrame(proceduralFallbackFrame);
+    proceduralFallbackFrame = null;
+  }
 
+  proceduralFallbackStartedAt = 0;
+  viewer.orientation = "0deg 0deg 0deg";
+}
+
+function startProceduralFallbackMotion() {
+  clearProceduralFallbackMotion();
+
+  // Some upstream GLBs contain a rigged or posed Pokemon but zero animation
+  // tracks. Keep those entries visibly alive instead of leaving a frozen bind
+  // pose while the higher-quality PokeMiners animation backfill is generated.
+  proceduralFallbackStartedAt = performance.now();
+
+  const tick = now => {
+    if (!viewer.loaded || idleAnimation) {
+      clearProceduralFallbackMotion();
+      return;
+    }
+
+    const seconds = (now - proceduralFallbackStartedAt) / 1000;
+    const sway = Math.sin(seconds * 1.7) * 2.4;
+    const lean = Math.sin(seconds * 0.85 + 0.8) * 0.8;
+
+    // model-viewer applies orientation to the model itself, so this is genuine
+    // visible model motion rather than moving the page or camera.
+    viewer.orientation =
+      lean.toFixed(2) + "deg " +
+      sway.toFixed(2) + "deg 0deg";
+
+    proceduralFallbackFrame = requestAnimationFrame(tick);
+  };
+
+  proceduralFallbackFrame = requestAnimationFrame(tick);
+}
+
+function startBaseIdle() {
+  if (!idleAnimation) {
+    startProceduralFallbackMotion();
+    return;
+  }
+
+  clearProceduralFallbackMotion();
   playingBreak = false;
   viewer.animationName = idleAnimation;
   viewer.currentTime = 0;
@@ -767,6 +814,7 @@ function playIdleBreak() {
 
 function setupIdleBreakAnimations() {
   clearIdleBreakTimers();
+  clearProceduralFallbackMotion();
 
   const animations = Array.from(viewer.availableAnimations || []);
   animationDurations = readAnimationDurations();
@@ -794,11 +842,13 @@ function setupIdleBreakAnimations() {
   );
 
   if (idleAnimation) {
+    clearProceduralFallbackMotion();
     viewer.animationName = idleAnimation;
     viewer.currentTime = 0;
     viewer.play();
   } else {
     viewer.pause?.();
+    startProceduralFallbackMotion();
   }
 
   const available = Boolean(idleAnimation && breakAnimations.length);
@@ -842,6 +892,7 @@ viewer.addEventListener("load", () => {
 });
 
 viewer.addEventListener("error", event => {
+  clearProceduralFallbackMotion();
   console.error(
     "Model load error",
     activeModelCandidates[activeCandidateIndex],
