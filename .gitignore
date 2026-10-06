@@ -11,3 +11,10 @@ app/build
 desktopApp/build
 offline-models/
 *.part
+
+# Locally generated Pokemon GO model pack
+web/models/pokeminers/
+web/models/pokeminers-manifest.json
+web/models/pokeminers-manifest.js
+.cache/pokeminers-pogo-assets/
+.cache/pokeminers-jobs.json
