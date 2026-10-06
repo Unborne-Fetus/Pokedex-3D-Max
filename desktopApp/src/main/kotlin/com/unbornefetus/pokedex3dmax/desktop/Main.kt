@@ -1,6 +1,7 @@
 package com.unbornefetus.pokedex3dmax.desktop
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,28 +23,46 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import dev.romainguy.kotlin.math.Float3
+import io.github.sceneview.compose.EnvironmentSource
+import io.github.sceneview.compose.Lighting
 import io.github.sceneview.compose.ModelSource
 import io.github.sceneview.compose.SceneViewer
+import io.github.sceneview.compose.rememberUnsavedCameraState
+import org.json.JSONObject
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.math.exp
+import kotlin.math.sqrt
 
 private data class DesktopModel(
     val dex: Int,
     val name: String,
     val form: String,
     val path: Path,
+)
+
+private data class ModelBounds(
+    val center: Float3,
+    val radius: Float,
+    val maxDimension: Float,
 )
 
 fun main() = application {
@@ -142,10 +161,7 @@ private fun DesktopApp() {
                                     "#%04d  %s".format(model.dex, model.name),
                                     fontWeight = FontWeight.SemiBold,
                                 )
-                                Text(
-                                    model.form,
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
+                                Text(model.form, style = MaterialTheme.typography.bodySmall)
                             }
                         }
                     }
@@ -167,17 +183,162 @@ private fun DesktopApp() {
                     }
 
                     bytes?.let {
-                        SceneViewer(
-                            model = ModelSource.Bytes(it),
-                            modifier = Modifier.fillMaxSize(),
-                            onError = { error ->
-                                System.err.println("3D load failed: " + error.message)
-                            },
-                        )
+                        PokemonViewport(current, it)
                     } ?: Text("Loading " + current.name + "…")
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PokemonViewport(model: DesktopModel, bytes: ByteArray) {
+    key(model.path.toString()) {
+        val bounds = remember(bytes) { readModelBounds(bytes) }
+        val initialDistance = remember(bounds) {
+            maxOf(bounds.radius * 3.0f, bounds.maxDimension * 2.2f, 0.75f)
+        }
+        val minDistance = remember(bounds) {
+            maxOf(bounds.radius * 0.45f, 0.05f)
+        }
+        val maxDistance = remember(bounds, initialDistance) {
+            maxOf(initialDistance * 10f, bounds.radius * 24f, 8f)
+        }
+        val camera = rememberUnsavedCameraState(
+            target = bounds.center,
+            distance = initialDistance,
+            azimuth = 0f,
+            elevation = 8f,
+        )
+
+        // Disable SceneView desktop gestures. Its current scroll implementation multiplies
+        // distance directly by the raw wheel delta and can jump to an invalid camera state.
+        camera.gesturesEnabled = false
+
+        val controls = Modifier
+            .pointerInput(camera, minDistance, maxDistance) {
+                detectDragGestures { _, drag ->
+                    camera.azimuth -= drag.x * 0.28f
+                    camera.elevation += drag.y * 0.28f
+                }
+            }
+            .pointerInput(camera, minDistance, maxDistance) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val scrollY = event.changes.firstOrNull()?.scrollDelta?.y ?: 0f
+                        if (scrollY != 0f) {
+                            val exponent = (scrollY * 0.10f).coerceIn(-1.0f, 1.0f)
+                            val zoomFactor = exp(exponent)
+                            camera.distance = (camera.distance * zoomFactor)
+                                .coerceIn(minDistance, maxDistance)
+                        }
+                    }
+                }
+            }
+
+        SceneViewer(
+            model = ModelSource.Bytes(bytes),
+            modifier = Modifier.fillMaxSize().then(controls),
+            camera = camera,
+            lighting = Lighting(
+                direction = Float3(0.35f, -1.0f, -0.55f),
+                intensity = 180_000f,
+                ambientIntensity = 1f,
+                castShadows = false,
+            ),
+            environment = EnvironmentSource.Default,
+            onError = { error ->
+                System.err.println("3D load failed for " + model.name + ": " + error.message)
+            },
+        )
+    }
+}
+
+private fun readModelBounds(bytes: ByteArray): ModelBounds {
+    return runCatching {
+        val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+        if (buffer.remaining() < 20 || buffer.int != 0x46546C67) {
+            error("Not a GLB file")
+        }
+        val version = buffer.int
+        val totalLength = buffer.int
+        if (version != 2 || totalLength > bytes.size) {
+            error("Unsupported GLB")
+        }
+
+        var json: JSONObject? = null
+        while (buffer.position() + 8 <= totalLength) {
+            val chunkLength = buffer.int
+            val chunkType = buffer.int
+            if (chunkLength < 0 || buffer.position() + chunkLength > totalLength) break
+            val chunk = ByteArray(chunkLength)
+            buffer.get(chunk)
+            if (chunkType == 0x4E4F534A) {
+                val text = String(chunk, StandardCharsets.UTF_8)
+                    .trimEnd { it == '\u0000' || it.isWhitespace() }
+                json = JSONObject(text)
+                break
+            }
+        }
+
+        val doc = json ?: error("GLB JSON chunk not found")
+        val meshes = doc.optJSONArray("meshes") ?: error("No meshes")
+        val accessors = doc.optJSONArray("accessors") ?: error("No accessors")
+        val positionAccessors = linkedSetOf<Int>()
+
+        for (meshIndex in 0 until meshes.length()) {
+            val mesh = meshes.optJSONObject(meshIndex) ?: continue
+            val primitives = mesh.optJSONArray("primitives") ?: continue
+            for (primitiveIndex in 0 until primitives.length()) {
+                val primitive = primitives.optJSONObject(primitiveIndex) ?: continue
+                val attributes = primitive.optJSONObject("attributes") ?: continue
+                val accessorIndex = attributes.optInt("POSITION", -1)
+                if (accessorIndex >= 0) positionAccessors += accessorIndex
+            }
+        }
+
+        var minX = Float.POSITIVE_INFINITY
+        var minY = Float.POSITIVE_INFINITY
+        var minZ = Float.POSITIVE_INFINITY
+        var maxX = Float.NEGATIVE_INFINITY
+        var maxY = Float.NEGATIVE_INFINITY
+        var maxZ = Float.NEGATIVE_INFINITY
+
+        for (index in positionAccessors) {
+            val accessor = accessors.optJSONObject(index) ?: continue
+            val min = accessor.optJSONArray("min") ?: continue
+            val max = accessor.optJSONArray("max") ?: continue
+            if (min.length() < 3 || max.length() < 3) continue
+
+            minX = minOf(minX, min.optDouble(0).toFloat())
+            minY = minOf(minY, min.optDouble(1).toFloat())
+            minZ = minOf(minZ, min.optDouble(2).toFloat())
+            maxX = maxOf(maxX, max.optDouble(0).toFloat())
+            maxY = maxOf(maxY, max.optDouble(1).toFloat())
+            maxZ = maxOf(maxZ, max.optDouble(2).toFloat())
+        }
+
+        if (!minX.isFinite() || !maxX.isFinite()) error("No POSITION bounds")
+
+        val dx = (maxX - minX).coerceAtLeast(0.001f)
+        val dy = (maxY - minY).coerceAtLeast(0.001f)
+        val dz = (maxZ - minZ).coerceAtLeast(0.001f)
+        ModelBounds(
+            center = Float3(
+                (minX + maxX) * 0.5f,
+                (minY + maxY) * 0.5f,
+                (minZ + maxZ) * 0.5f,
+            ),
+            radius = (sqrt(dx * dx + dy * dy + dz * dz) * 0.5f).coerceAtLeast(0.05f),
+            maxDimension = maxOf(dx, dy, dz),
+        )
+    }.getOrElse {
+        ModelBounds(
+            center = Float3(0f, 0.5f, 0f),
+            radius = 0.75f,
+            maxDimension = 1.5f,
+        )
     }
 }
 
@@ -206,21 +367,15 @@ private fun MissingPackScreen() {
 
 private fun findModelPack(): Path? {
     val candidates = buildList {
-        System.getenv("POKEDEX_3D_MAX_MODELS")?.takeIf { it.isNotBlank() }?.let {
-            add(Paths.get(it))
-        }
-
+        System.getenv("POKEDEX_3D_MAX_MODELS")?.takeIf { it.isNotBlank() }?.let { add(Paths.get(it)) }
         add(Paths.get("offline-models").toAbsolutePath())
-
         System.getenv("LOCALAPPDATA")?.takeIf { it.isNotBlank() }?.let {
             add(Paths.get(it, "Pokedex3DMax", "offline-models"))
         }
-
         System.getProperty("user.home")?.takeIf { it.isNotBlank() }?.let {
             add(Paths.get(it, "Pokedex3DMax", "offline-models"))
         }
     }
-
     return candidates.firstOrNull { Files.isRegularFile(it.resolve("model_catalog.tsv")) }
 }
 
@@ -233,15 +388,12 @@ private fun loadManifest(root: Path): List<DesktopModel> {
         .mapNotNull { line ->
             val columns = line.split('\t')
             if (columns.size < 4) return@mapNotNull null
-
             val dex = columns[0].toIntOrNull() ?: return@mapNotNull null
-            val relative = columns[3]
-
             DesktopModel(
                 dex = dex,
                 name = columns[1],
                 form = columns[2],
-                path = root.resolve(relative),
+                path = root.resolve(columns[3]),
             )
         }
         .filter { Files.isRegularFile(it.path) }
