@@ -19,11 +19,13 @@ const prevBtn = document.querySelector("#prevBtn");
 const nextBtn = document.querySelector("#nextBtn");
 const resetCameraBtn = document.querySelector("#resetCamera");
 const toggleRotateBtn = document.querySelector("#toggleRotate");
+const toggleIdleBreaksBtn = document.querySelector("#toggleIdleBreaks");
 
 let models = makeInstantRegularCatalog();
 let filtered = models;
 let selectedIndex = 0;
 let autoRotate = false;
+let idleBreaksEnabled = true;
 let currentUrl = "";
 let loadStartedAt = 0;
 let idleBreakTimer = null;
@@ -383,6 +385,24 @@ toggleRotateBtn.addEventListener("click", () => {
     "Auto-rotate: " + (autoRotate ? "On" : "Off");
 });
 
+toggleIdleBreaksBtn.addEventListener("click", () => {
+  idleBreaksEnabled = !idleBreaksEnabled;
+  toggleIdleBreaksBtn.textContent =
+    "Idle breaks: " + (idleBreaksEnabled ? "On" : "Off");
+
+  if (!idleBreaksEnabled) {
+    clearIdleBreakTimer();
+    if (idleAnimation) {
+      playingBreak = false;
+      viewer.animationName = idleAnimation;
+      viewer.currentTime = 0;
+      viewer.play();
+    }
+  } else {
+    scheduleNextIdleBreak();
+  }
+});
+
 function configureTextureSampling() {
   const materials = viewer.model?.materials || [];
 
@@ -402,8 +422,10 @@ function configureTextureSampling() {
       try {
         sampler.setWrapS("ClampToEdge");
         sampler.setWrapT("ClampToEdge");
+        sampler.setMinFilter("Linear");
+        sampler.setMagFilter("Linear");
       } catch (error) {
-        console.debug("Sampler clamp unavailable:", error);
+        console.debug("Sampler quality override unavailable:", error);
       }
     }
   }
@@ -411,18 +433,63 @@ function configureTextureSampling() {
 
 function animationScore(name) {
   const value = name.toLowerCase();
-  if (/idle|wait|look|break/.test(value)) return 100;
-  if (/fight_[bd]|fight-b|fight-d/.test(value)) return 80;
-  if (/fight/.test(value)) return 50;
-  if (/run|walk|jump|ko|death|hit|damage|attack/.test(value)) return -100;
+
+  // Short jump clips make the best "idle break" for models such as Bulbasaur.
+  if (/jump_s|jump-s|short.*jump/.test(value)) return 140;
+  if (/jump_e|jump-e|jump_l|jump-l|jump/.test(value)) return 125;
+  if (/wait|look|break/.test(value)) return 110;
+  if (/fight_[bd]|fight-b|fight-d/.test(value)) return 70;
+  if (/fight/.test(value)) return 40;
+  if (/run|walk|ko|death|hit|damage|attack/.test(value)) return -100;
   return 10;
 }
 
-function setupIdleBreakAnimations() {
+function clearIdleBreakTimer() {
   if (idleBreakTimer) {
-    clearInterval(idleBreakTimer);
+    clearTimeout(idleBreakTimer);
     idleBreakTimer = null;
   }
+}
+
+function scheduleNextIdleBreak() {
+  clearIdleBreakTimer();
+
+  if (
+    !idleBreaksEnabled ||
+    !viewer.loaded ||
+    !idleAnimation ||
+    !breakAnimations.length
+  ) {
+    return;
+  }
+
+  // Wait a full three seconds AFTER the previous break has ended.
+  idleBreakTimer = setTimeout(() => {
+    if (
+      !idleBreaksEnabled ||
+      !viewer.loaded ||
+      document.hidden ||
+      playingBreak
+    ) {
+      scheduleNextIdleBreak();
+      return;
+    }
+
+    const bestScore = animationScore(breakAnimations[0]);
+    const pool = breakAnimations.filter(
+      name => animationScore(name) === bestScore
+    );
+    const clip = pool[Math.floor(Math.random() * pool.length)];
+
+    playingBreak = true;
+    viewer.animationName = clip;
+    viewer.currentTime = 0;
+    viewer.play({ repetitions: 1 });
+  }, 3000);
+}
+
+function setupIdleBreakAnimations() {
+  clearIdleBreakTimer();
 
   const animations = Array.from(viewer.availableAnimations || []);
   idleAnimation =
@@ -443,20 +510,7 @@ function setupIdleBreakAnimations() {
   viewer.currentTime = 0;
   viewer.play();
 
-  if (!breakAnimations.length) return;
-
-  idleBreakTimer = setInterval(() => {
-    if (!viewer.loaded || document.hidden || playingBreak) return;
-
-    const bestScore = animationScore(breakAnimations[0]);
-    const pool = breakAnimations.filter(name => animationScore(name) === bestScore);
-    const clip = pool[Math.floor(Math.random() * pool.length)];
-
-    playingBreak = true;
-    viewer.animationName = clip;
-    viewer.currentTime = 0;
-    viewer.play({ repetitions: 1 });
-  }, 3000);
+  scheduleNextIdleBreak();
 }
 
 viewer.addEventListener("finished", () => {
@@ -466,6 +520,9 @@ viewer.addEventListener("finished", () => {
   viewer.animationName = idleAnimation;
   viewer.currentTime = 0;
   viewer.play();
+
+  // The next break is scheduled only after this one has completely finished.
+  scheduleNextIdleBreak();
 });
 
 viewer.addEventListener("load", () => {
