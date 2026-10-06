@@ -30,10 +30,11 @@ jobs:
 
       - name: Prepare static site
         run: |
-          mkdir -p _site/web
+          mkdir -p _site
           cp index.html _site/index.html
-          cp web/styles.css _site/web/styles.css
-          cp web/app.js _site/web/app.js
+          cp -R web _site/web
+          echo "Static model files:"
+          find _site/web/models -maxdepth 3 -type f 2>/dev/null | head -100 || true
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
