@@ -85,6 +85,7 @@ const REGULAR_MODEL = id =>
   CDN_ROOT + "models/opt/regular/" + id + ".glb";
 
 const viewer = document.querySelector("#viewer");
+const threeFallbackHost = document.querySelector("#threeFallback");
 const statusEl = document.querySelector("#status");
 const listEl = document.querySelector("#list");
 const searchEl = document.querySelector("#search");
@@ -120,6 +121,9 @@ let modelLoadTimeout = null;
 let animationDurations = new Map();
 let proceduralFallbackFrame = null;
 let proceduralFallbackStartedAt = 0;
+let fbxRuntimePromise = null;
+let fbxFallbackState = null;
+let fbxFallbackLoadToken = 0;
 
 const IDLE_BREAK_OVERRIDES = {
   // Only verified clips belong here. Unknown species show "Unavailable"
@@ -468,6 +472,7 @@ async function loadModel(model) {
 
   clearIdleBreakTimers();
   clearProceduralFallbackMotion();
+  disposeFbxFallback();
   clearModelLoadTimeout();
 
   currentUrl = primary;
@@ -622,6 +627,11 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
 });
 
 function resetViewerCamera() {
+  if (fbxFallbackState?.controls) {
+    fbxFallbackState.controls.reset();
+    return;
+  }
+
   const target = currentModel?.cameraTarget;
   if (Array.isArray(target) && target.length === 3 && target.every(Number.isFinite)) {
     viewer.cameraTarget = target.map(value => value.toFixed(4) + "m").join(" ");
@@ -703,6 +713,349 @@ function clearIdleBreakTimers() {
   if (breakEndTimer) {
     clearTimeout(breakEndTimer);
     breakEndTimer = null;
+  }
+}
+
+function pokeMinersFbxUrl(model) {
+  if (!model || String(model.form || "regular").toLowerCase() !== "regular") {
+    return null;
+  }
+
+  const id = String(model.dex).padStart(4, "0");
+  const base =
+    "https://cdn.jsdelivr.net/gh/PokeMiners/pogo_assets@master/" +
+    "3D%20Assets/Pokemon/pm" + id + "_00_Rig/";
+
+  return base + "pm" + id + "_00_Rig.fbx";
+}
+
+async function getFbxRuntime() {
+  if (!fbxRuntimePromise) {
+    fbxRuntimePromise = Promise.all([
+      import("https://esm.sh/three@0.180.0"),
+      import("https://esm.sh/three@0.180.0/examples/jsm/loaders/FBXLoader.js"),
+      import("https://esm.sh/three@0.180.0/examples/jsm/controls/OrbitControls.js"),
+    ]).then(([THREE, loaderModule, controlsModule]) => ({
+      THREE,
+      FBXLoader: loaderModule.FBXLoader,
+      OrbitControls: controlsModule.OrbitControls,
+    }));
+  }
+
+  return fbxRuntimePromise;
+}
+
+function disposeMaterial(material) {
+  if (!material) return;
+  for (const value of Object.values(material)) {
+    if (value && value.isTexture) value.dispose?.();
+  }
+  material.dispose?.();
+}
+
+function disposeFbxFallback() {
+  ++fbxFallbackLoadToken;
+
+  const state = fbxFallbackState;
+  fbxFallbackState = null;
+
+  if (state) {
+    cancelAnimationFrame(state.frame || 0);
+    state.resizeObserver?.disconnect?.();
+    state.controls?.dispose?.();
+
+    state.model?.traverse?.(object => {
+      object.geometry?.dispose?.();
+      if (Array.isArray(object.material)) {
+        object.material.forEach(disposeMaterial);
+      } else {
+        disposeMaterial(object.material);
+      }
+    });
+
+    state.renderer?.dispose?.();
+    state.renderer?.domElement?.remove?.();
+  }
+
+  threeFallbackHost?.replaceChildren();
+  threeFallbackHost?.classList.add("hidden");
+  viewer.classList.remove("fallback-active");
+}
+
+function fbxBoneRole(name) {
+  const value = String(name || "").toLowerCase();
+  if (/head|face|skull/.test(value)) return "head";
+  if (/neck/.test(value)) return "neck";
+  if (/tail/.test(value)) return "tail";
+  if (/wing|fin/.test(value)) return "wing";
+  if (/ear|antenna|feel|horn|leaf|petal/.test(value)) return "appendage";
+  if (/spine|chest|body|torso/.test(value)) return "torso";
+  return null;
+}
+
+function chooseFbxProceduralBones(model) {
+  const roles = new Map();
+  const selected = [];
+  const limits = {
+    head: 1,
+    neck: 1,
+    torso: 2,
+    tail: 2,
+    wing: 2,
+    appendage: 3,
+  };
+
+  const bones = [];
+  model.traverse(object => {
+    if (object.isBone) bones.push(object);
+  });
+
+  bones.sort((a, b) => {
+    let da = 0;
+    let db = 0;
+    for (let p = a.parent; p; p = p.parent) da++;
+    for (let p = b.parent; p; p = p.parent) db++;
+    return da - db;
+  });
+
+  for (const bone of bones) {
+    const role = fbxBoneRole(bone.name);
+    if (!role) continue;
+
+    const low = String(bone.name || "").toLowerCase();
+    if (/end|tip|dummy|helper|\bik\b|ctrl/.test(low)) continue;
+
+    const used = roles.get(role) || 0;
+    if (used >= limits[role]) continue;
+
+    selected.push({
+      bone,
+      role,
+      base: bone.quaternion.clone(),
+      index: selected.length,
+    });
+    roles.set(role, used + 1);
+  }
+
+  return selected;
+}
+
+function chooseEmbeddedFbxIdle(animations) {
+  const names = animations.map(animation => animation.name || "");
+  const chosen = chooseSafeIdle(names);
+  return chosen
+    ? animations.find(animation => animation.name === chosen) || null
+    : null;
+}
+
+async function showRiggedFbxFallback(model) {
+  const url = pokeMinersFbxUrl(model);
+  if (!url || !threeFallbackHost) return false;
+
+  const token = ++fbxFallbackLoadToken;
+  messageEl.textContent = "Loading rigged animated model…";
+  messageEl.classList.remove("hidden");
+
+  try {
+    const { THREE, FBXLoader, OrbitControls } = await getFbxRuntime();
+    if (token !== fbxFallbackLoadToken) return false;
+
+    disposeFbxFallback();
+    const activeToken = ++fbxFallbackLoadToken;
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    threeFallbackHost.replaceChildren(renderer.domElement);
+    threeFallbackHost.classList.remove("hidden");
+    viewer.classList.add("fallback-active");
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.01, 100);
+    camera.position.set(0, 0.4, 4);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x41516a, 2.2));
+    const key = new THREE.DirectionalLight(0xffffff, 3.0);
+    key.position.set(3, 5, 4);
+    key.castShadow = true;
+    scene.add(key);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.autoRotate = autoRotate;
+    controls.autoRotateSpeed = 1.5;
+
+    const manager = new THREE.LoadingManager();
+    const baseUrl = url.slice(0, url.lastIndexOf("/") + 1);
+    manager.setURLModifier(resource => {
+      const clean = String(resource || "").split("?")[0];
+      const file = clean.split(/[\\/]/).pop();
+      if (!file || !/\.(png|jpg|jpeg|webp)$/i.test(file)) return resource;
+      return baseUrl + encodeURIComponent(decodeURIComponent(file));
+    });
+
+    const loader = new FBXLoader(manager);
+    loader.setCrossOrigin("anonymous");
+
+    const rig = await new Promise((resolve, reject) => {
+      loader.load(url, resolve, undefined, reject);
+    });
+
+    if (activeToken !== fbxFallbackLoadToken) {
+      rig.traverse?.(object => object.geometry?.dispose?.());
+      return false;
+    }
+
+    rig.traverse(object => {
+      if (object.isMesh) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+
+        const materials = Array.isArray(object.material)
+          ? object.material
+          : [object.material];
+        for (const material of materials) {
+          if (!material) continue;
+          if ("transparent" in material && material.map) {
+            material.transparent = true;
+            material.alphaTest = Math.max(Number(material.alphaTest) || 0, 0.01);
+          }
+        }
+      }
+    });
+
+    scene.add(rig);
+
+    const initialBox = new THREE.Box3().setFromObject(rig);
+    const size = initialBox.getSize(new THREE.Vector3());
+    const center = initialBox.getCenter(new THREE.Vector3());
+    const maxDimension = Math.max(size.x, size.y, size.z, 0.001);
+    const scale = 2.25 / maxDimension;
+
+    rig.scale.setScalar(scale);
+    rig.position.x -= center.x * scale;
+    rig.position.y -= center.y * scale;
+    rig.position.z -= center.z * scale;
+
+    const fittedBox = new THREE.Box3().setFromObject(rig);
+    const fittedCenter = fittedBox.getCenter(new THREE.Vector3());
+    const fittedSize = fittedBox.getSize(new THREE.Vector3());
+
+    controls.target.copy(fittedCenter);
+    camera.position.set(
+      fittedCenter.x,
+      fittedCenter.y + fittedSize.y * 0.06,
+      fittedCenter.z + Math.max(fittedSize.z, fittedSize.y) * 1.8 + 1.4
+    );
+    camera.near = 0.01;
+    camera.far = 100;
+    camera.updateProjectionMatrix();
+    controls.update();
+    controls.saveState();
+
+    const embeddedIdle = chooseEmbeddedFbxIdle(Array.from(rig.animations || []));
+    const mixer = embeddedIdle ? new THREE.AnimationMixer(rig) : null;
+    if (mixer && embeddedIdle) {
+      mixer.clipAction(embeddedIdle).reset().play();
+    }
+
+    const proceduralBones = embeddedIdle ? [] : chooseFbxProceduralBones(rig);
+    const baseY = rig.position.y;
+    const clock = new THREE.Clock();
+    const axisX = new THREE.Vector3(1, 0, 0);
+    const axisY = new THREE.Vector3(0, 1, 0);
+    const axisZ = new THREE.Vector3(0, 0, 1);
+    const deltaQuaternion = new THREE.Quaternion();
+
+    const roleMotion = {
+      head: [axisX, THREE.MathUtils.degToRad(2.2)],
+      neck: [axisX, THREE.MathUtils.degToRad(1.3)],
+      torso: [axisY, THREE.MathUtils.degToRad(0.9)],
+      tail: [axisZ, THREE.MathUtils.degToRad(4.0)],
+      wing: [axisX, THREE.MathUtils.degToRad(2.5)],
+      appendage: [axisY, THREE.MathUtils.degToRad(2.0)],
+    };
+
+    const state = {
+      frame: 0,
+      renderer,
+      scene,
+      camera,
+      controls,
+      model: rig,
+      mixer,
+      proceduralBones,
+      resizeObserver: null,
+    };
+    fbxFallbackState = state;
+
+    const resize = () => {
+      const width = Math.max(1, threeFallbackHost.clientWidth);
+      const height = Math.max(1, threeFallbackHost.clientHeight);
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    state.resizeObserver = new ResizeObserver(resize);
+    state.resizeObserver.observe(threeFallbackHost);
+
+    const render = () => {
+      if (fbxFallbackState !== state) return;
+
+      const delta = Math.min(clock.getDelta(), 0.05);
+      const elapsed = clock.elapsedTime;
+
+      if (mixer) {
+        mixer.update(delta);
+      } else {
+        rig.position.y = baseY + Math.sin(elapsed * 2.0) * 0.008;
+
+        for (const item of proceduralBones) {
+          const motion = roleMotion[item.role];
+          if (!motion) continue;
+
+          const [axis, amplitude] = motion;
+          const phase = item.index % 2 ? Math.PI : 0;
+          const angle = Math.sin(elapsed * 1.45 + phase) * amplitude;
+
+          deltaQuaternion.setFromAxisAngle(axis, angle);
+          item.bone.quaternion.copy(item.base).multiply(deltaQuaternion);
+        }
+      }
+
+      controls.autoRotate = autoRotate;
+      controls.update();
+      renderer.render(scene, camera);
+      state.frame = requestAnimationFrame(render);
+    };
+
+    state.frame = requestAnimationFrame(render);
+
+    messageEl.textContent = embeddedIdle
+      ? "Loaded rigged model with embedded idle"
+      : "Loaded rigged model with generated skeletal idle";
+    setTimeout(() => {
+      if (fbxFallbackState === state) messageEl.classList.add("hidden");
+    }, 1000);
+
+    toggleIdleBreaksBtn.disabled = true;
+    toggleIdleBreaksBtn.textContent = "Idle breaks: Rigged idle";
+    return true;
+  } catch (error) {
+    console.warn("Rigged PokeMiners fallback failed:", error);
+    if (token === fbxFallbackLoadToken) {
+      disposeFbxFallback();
+    }
+    return false;
   }
 }
 
@@ -867,24 +1220,30 @@ function setupIdleBreakAnimations() {
   }
 }
 
-viewer.addEventListener("load", () => {
+viewer.addEventListener("load", async () => {
   clearModelLoadTimeout();
 
   const availableAnimations = Array.from(viewer.availableAnimations || []);
 
-  // A successfully decoded GLB can still just be an unanimated bind pose.
-  // If we have another source for this Pokemon/form, immediately try it.
-  if (
-    availableAnimations.length === 0 &&
-    activeCandidateIndex + 1 < activeModelCandidates.length
-  ) {
-    console.warn(
-      "Loaded model has no animation clips; trying animated fallback:",
-      activeModelCandidates[activeCandidateIndex]
-    );
-    startModelCandidate(activeCandidateIndex + 1);
-    return;
+  // A successfully decoded GLB can still be an unanimated bind pose. For
+  // regular forms, prefer the public rigged PokeMiners FBX and animate its
+  // skeleton directly in-browser. This avoids shipping hundreds of generated
+  // GLBs just to give static Pokemon a natural idle.
+  if (availableAnimations.length === 0) {
+    const rigged = await showRiggedFbxFallback(currentModel);
+    if (rigged) return;
+
+    if (activeCandidateIndex + 1 < activeModelCandidates.length) {
+      console.warn(
+        "Loaded model has no animation clips; trying another source:",
+        activeModelCandidates[activeCandidateIndex]
+      );
+      startModelCandidate(activeCandidateIndex + 1);
+      return;
+    }
   }
+
+  disposeFbxFallback();
 
   const elapsed = Math.max(0, performance.now() - loadStartedAt);
   messageEl.textContent =
