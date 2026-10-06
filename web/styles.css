@@ -146,6 +146,20 @@ model-viewer {
   background: transparent;
   --poster-color: transparent;
 }
+model-viewer.fallback-active { visibility: hidden; }
+
+.three-fallback {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+}
+.three-fallback.hidden { display: none; }
+.three-fallback canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 
 .viewer-message {
   position: absolute;
