@@ -1,8 +1,11 @@
 package com.unbornefetus.pokedex3dmax.data
 
+import android.content.Context
+import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -18,14 +21,55 @@ data class PokemonModel(
         } else {
             "$name · ${formName.replaceFirstChar { it.uppercase() }}"
         }
+
+    val isOffline: Boolean
+        get() = modelUrl.startsWith("file://")
 }
 
 object PokemonModelCatalog {
     private const val API_URL = "https://pokemon-3d-api.onrender.com/v1/pokemon"
+    private const val PACK_FOLDER = "offline-models"
 
-    suspend fun load(): List<PokemonModel> = withContext(Dispatchers.IO) {
+    suspend fun load(context: Context): List<PokemonModel> = withContext(Dispatchers.IO) {
+        findOfflinePack(context)?.let { packRoot ->
+            val offline = loadFromOfflinePack(packRoot)
+            if (offline.isNotEmpty()) return@withContext offline
+        }
+
         runCatching { loadFromApi() }
             .getOrElse { fallbackRegularModels() }
+    }
+
+    private fun findOfflinePack(context: Context): File? {
+        val candidates = buildList {
+            add(File(context.filesDir, PACK_FOLDER))
+            context.getExternalFilesDir(null)?.let { add(File(it, PACK_FOLDER)) }
+        }
+
+        return candidates.firstOrNull { File(it, "model_catalog.tsv").isFile }
+    }
+
+    private fun loadFromOfflinePack(root: File): List<PokemonModel> {
+        val manifest = File(root, "model_catalog.tsv")
+        if (!manifest.isFile) return emptyList()
+
+        return manifest.useLines { lines ->
+            lines.drop(1).mapNotNull { line ->
+                val columns = line.split('\t')
+                if (columns.size < 4) return@mapNotNull null
+
+                val dex = columns[0].toIntOrNull() ?: return@mapNotNull null
+                val file = File(root, columns[3])
+                if (!file.isFile) return@mapNotNull null
+
+                PokemonModel(
+                    nationalDexNumber = dex,
+                    name = columns[1],
+                    formName = columns[2],
+                    modelUrl = Uri.fromFile(file).toString(),
+                )
+            }.toList()
+        }
     }
 
     private fun loadFromApi(): List<PokemonModel> {
