@@ -140,7 +140,7 @@ async function enhanceCatalogInBackground() {
         models = cachedModels;
         statusEl.textContent =
           models.length.toLocaleString() + " 3D models · cached catalog";
-        applyFilter(false);
+        refreshCurrentPokemonAfterCatalogUpdate();
       }
     } catch {
       localStorage.removeItem(CATALOG_CACHE_KEY);
@@ -165,7 +165,7 @@ async function enhanceCatalogInBackground() {
     models = richer;
     statusEl.textContent =
       models.length.toLocaleString() + " 3D models available";
-    applyFilter(false);
+    refreshCurrentPokemonAfterCatalogUpdate();
   } catch (error) {
     console.warn("Background catalog update skipped:", error);
     if (!cached) {
@@ -188,6 +188,42 @@ function formRank(form) {
   if (value === "regular") return 0;
   if (value.includes("shiny")) return 2;
   return 1;
+}
+
+function refreshCurrentPokemonAfterCatalogUpdate() {
+  const dex = currentModel?.dex || filtered[selectedIndex]?.dex || 1;
+  const currentForm = currentModel?.form || "regular";
+
+  applyFilter(false);
+
+  const exact = models.find(
+    model => model.dex === dex && model.form === currentForm
+  );
+  const regular =
+    models.find(
+      model =>
+        model.dex === dex &&
+        !isShiny(model) &&
+        String(model.form).toLowerCase() === "regular"
+    ) ||
+    models.find(model => model.dex === dex && !isShiny(model));
+
+  const target = exact || regular;
+  if (!target) return;
+
+  currentModel = target;
+  dexEl.textContent = "#" + String(target.dex).padStart(4, "0");
+  nameEl.textContent = target.name;
+  formEl.textContent = prettyForm(target.form);
+  populateFormSelect(target);
+
+  const visibleIndex = filtered.findIndex(
+    model => model.dex === target.dex && model.form === target.form
+  );
+  if (visibleIndex >= 0) {
+    selectedIndex = visibleIndex;
+    updateSelectedRow();
+  }
 }
 
 function applyFilter(loadFirst = true) {
@@ -297,6 +333,13 @@ async function prepareModelForWeb(sourceUrl) {
     material.pbrMetallicRoughness = material.pbrMetallicRoughness || {};
     material.pbrMetallicRoughness.metallicFactor = 0;
     material.pbrMetallicRoughness.roughnessFactor = 1;
+
+    // Eye textures are separate overlay meshes. If they stay OPAQUE, the
+    // transparent padding around the actual eye becomes a visible polygon.
+    if (/eye/i.test(String(material.name || ""))) {
+      material.alphaMode = "BLEND";
+      material.doubleSided = true;
+    }
   }
 
   const encoder = new TextEncoder();
