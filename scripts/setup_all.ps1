@@ -12,8 +12,8 @@ $ToolsDir = Join-Path $RepoRoot ".tools"
 $DistDir = Join-Path $RepoRoot "dist"
 $GradleVersion = "9.6.0"
 $JdkMajor = "22"
-$AndroidApi = "37"
-$AndroidBuildTools = "37.0.0"
+$AndroidApi = "36"
+$AndroidBuildTools = "36.0.0"
 $PackageName = "com.unbornefetus.pokedex3dmax"
 
 function Step([string]$Text) {
