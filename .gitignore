@@ -8,3 +8,6 @@
 .externalNativeBuild
 .cxx
 app/build
+desktopApp/build
+offline-models/
+*.part
