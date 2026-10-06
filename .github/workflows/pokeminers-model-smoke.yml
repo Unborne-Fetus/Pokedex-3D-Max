@@ -1,0 +1,86 @@
+name: PokeMiners Model Smoke Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/import_pokeminers.py"
+      - "scripts/blender_batch_convert_pokeminers.py"
+      - ".github/workflows/pokeminers-model-smoke.yml"
+  workflow_dispatch:
+    inputs:
+      start_dex:
+        description: "First National Dex number"
+        required: true
+        default: "1"
+      end_dex:
+        description: "Last National Dex number"
+        required: true
+        default: "10"
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      START_DEX: ${{ github.event.inputs.start_dex || '1' }}
+      END_DEX: ${{ github.event.inputs.end_dex || '10' }}
+
+    steps:
+      - name: Checkout Pokedex 3D Max
+        uses: actions/checkout@v4
+
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender
+          blender --version
+
+      - name: Convert requested PokeMiners range
+        run: |
+          python3 scripts/import_pokeminers.py \
+            --start-dex "$START_DEX" \
+            --end-dex "$END_DEX"
+
+      - name: Validate manifest and GLBs
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = Path("web/models/pokeminers-manifest.json")
+          if not manifest.is_file():
+              raise SystemExit("Missing PokeMiners manifest")
+
+          items = json.loads(manifest.read_text(encoding="utf-8"))
+          valid = [item for item in items if item.get("valid")]
+          if not valid:
+              raise SystemExit("No valid converted models")
+
+          missing = [
+              item["url"]
+              for item in valid
+              if not Path(item["url"]).is_file()
+          ]
+          if missing:
+              raise SystemExit("Manifest points at missing GLBs: " + ", ".join(missing[:10]))
+
+          print(f"Validated {len(valid)} converted model(s)")
+          for item in valid[:20]:
+              print(
+                  f"#{item['dex']:04d} {item['form']}: "
+                  f"idle={item.get('idleAnimation')!r} "
+                  f"animations={len(item.get('animations', []))}"
+              )
+          PY
+
+      - name: Upload converted model sample
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokedex-3D-Max-PokeMiners-${{ env.START_DEX }}-${{ env.END_DEX }}
+          if-no-files-found: error
+          compression-level: 0
+          path: |
+            web/models/pokeminers/
+            web/models/pokeminers-manifest.json
+            web/models/pokeminers-manifest.js
