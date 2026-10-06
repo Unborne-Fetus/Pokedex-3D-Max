@@ -1,8 +1,10 @@
 import bpy
 import json
 import math
+import re
 import sys
 from pathlib import Path
+from mathutils import Vector
 
 argv = sys.argv
 argv = argv[argv.index("--") + 1 :]
@@ -18,14 +20,92 @@ def reset_scene():
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
 
-def try_relink_textures(source_dir: Path):
-    # FBX imports often retain image basenames but lose absolute paths.
-    candidates = {
+def texture_candidates(source_dir: Path):
+    return {
         p.name.lower(): p
         for p in source_dir.iterdir()
         if p.is_file() and p.suffix.lower() in {".png", ".jpg", ".jpeg", ".tga"}
     }
 
+
+def normalized_words(value: str):
+    return {
+        word
+        for word in re.split(r"[^a-z0-9]+", value.lower())
+        if len(word) >= 3 and word not in {"mat", "material", "tex", "texture", "png"}
+    }
+
+
+def best_texture_for_material(material_name: str, candidates):
+    mat_words = normalized_words(material_name)
+    ranked = []
+
+    for path in candidates.values():
+        stem_words = normalized_words(path.stem)
+        overlap = len(mat_words & stem_words)
+        score = overlap * 20
+
+        low = path.stem.lower()
+        mat_low = material_name.lower()
+        for token in ("body", "face", "eye", "mouth", "wing", "flame", "fire", "hair"):
+            if token in mat_low and token in low:
+                score += 50
+
+        if score:
+            ranked.append((score, path))
+
+    if not ranked:
+        return None
+
+    ranked.sort(key=lambda item: (-item[0], item[1].name.lower()))
+    return ranked[0][1]
+
+
+def configure_alpha(material, image_path: Path):
+    name = image_path.stem.lower()
+    if not any(token in name for token in ("eye", "face", "mouth", "flame", "fire", "wing", "mask")):
+        return
+
+    try:
+        material.surface_render_method = "DITHERED"
+    except Exception:
+        try:
+            material.blend_method = "BLEND"
+        except Exception:
+            pass
+
+    try:
+        material.use_transparency_overlap = False
+    except Exception:
+        pass
+
+
+def attach_image_to_principled(material, image_path: Path):
+    material.use_nodes = True
+    nodes = material.node_tree.nodes
+    links = material.node_tree.links
+
+    principled = next((n for n in nodes if n.type == "BSDF_PRINCIPLED"), None)
+    if not principled:
+        return False
+
+    image = bpy.data.images.load(str(image_path), check_existing=True)
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = image
+    tex.name = "Pokedex3DMax_AutoTexture"
+
+    links.new(tex.outputs["Color"], principled.inputs["Base Color"])
+    if "Alpha" in tex.outputs and "Alpha" in principled.inputs:
+        links.new(tex.outputs["Alpha"], principled.inputs["Alpha"])
+
+    configure_alpha(material, image_path)
+    return True
+
+
+def try_relink_textures(source_dir: Path):
+    candidates = texture_candidates(source_dir)
+
+    # First restore any image references that survived FBX import by basename.
     for image in bpy.data.images:
         if not image.name:
             continue
@@ -33,27 +113,123 @@ def try_relink_textures(source_dir: Path):
         if wanted:
             image.filepath = str(wanted)
 
-    # If a material has no image node, use the likely Body texture as a safe fallback.
-    body = next((p for p in candidates.values() if "body" in p.name.lower()), None)
-    if body is None:
-        return
+    # Never paint every missing material with Body.png. That caused special
+    # surfaces such as flames/eyes to receive the body texture.
+    materials = list(bpy.data.materials)
+    only_material = len(materials) == 1
+    body = next((p for p in candidates.values() if "body" in p.stem.lower()), None)
 
-    for material in bpy.data.materials:
+    for material in materials:
         material.use_nodes = True
         nodes = material.node_tree.nodes
-        if any(node.type == "TEX_IMAGE" and node.image for node in nodes):
+
+        existing = next(
+            (node for node in nodes if node.type == "TEX_IMAGE" and node.image),
+            None,
+        )
+        if existing:
+            wanted = candidates.get(Path(existing.image.name).name.lower())
+            if wanted:
+                existing.image.filepath = str(wanted)
+                configure_alpha(material, wanted)
             continue
 
-        principled = next((n for n in nodes if n.type == "BSDF_PRINCIPLED"), None)
-        if not principled:
+        best = best_texture_for_material(material.name, candidates)
+        if best is None and body is not None:
+            # Body is a safe fallback only for an explicitly body-like material
+            # or a one-material model.
+            if only_material or "body" in material.name.lower():
+                best = body
+
+        if best is not None:
+            attach_image_to_principled(material, best)
+
+
+def mesh_bounds_world():
+    points = []
+    for obj in bpy.context.scene.objects:
+        if obj.type != "MESH":
+            continue
+        for corner in obj.bound_box:
+            points.append(obj.matrix_world @ Vector(corner))
+
+    if not points:
+        return None
+
+    mins = Vector((
+        min(p.x for p in points),
+        min(p.y for p in points),
+        min(p.z for p in points),
+    ))
+    maxs = Vector((
+        max(p.x for p in points),
+        max(p.y for p in points),
+        max(p.z for p in points),
+    ))
+    center = (mins + maxs) * 0.5
+    size = maxs - mins
+
+    # Blender is Z-up. glTF export_yup maps this to X, Y, -Z.
+    gltf_center = [float(center.x), float(center.z), float(-center.y)]
+    gltf_size = [abs(float(size.x)), abs(float(size.z)), abs(float(size.y))]
+
+    return {
+        "cameraTarget": [round(v, 5) for v in gltf_center],
+        "boundsSize": [round(v, 5) for v in gltf_size],
+    }
+
+
+def action_duration(action):
+    start, end = action.frame_range
+    fps = bpy.context.scene.render.fps or 30
+    return max(0.0, float(end - start) / float(fps))
+
+
+def idle_score(name: str):
+    value = (name or "").lower()
+    score = 0
+
+    if re.search(r"idle|wait|stand|breath|loop", value):
+        score += 100
+    if re.search(r"fight[_ -]?a|battle[_ -]?a", value):
+        score += 80
+    if re.search(r"default|base", value):
+        score += 30
+
+    if re.search(r"attack|move|damage|hit|faint|die|death|sleep|eat|jump|run|walk|cry|emote", value):
+        score -= 100
+    if re.search(r"fight[_ -]?[bc]|battle[_ -]?[bc]", value):
+        score -= 20
+
+    return score
+
+
+def choose_idle(animations):
+    usable = [a for a in animations if a["duration"] >= 0.2]
+    if not usable:
+        return None
+
+    ranked = sorted(
+        enumerate(usable),
+        key=lambda pair: (-idle_score(pair[1]["name"]), pair[0]),
+    )
+    return ranked[0][1]["name"]
+
+
+def choose_idle_breaks(animations, idle):
+    preferred = []
+    for animation in animations:
+        name = animation["name"]
+        low = name.lower()
+        duration = animation["duration"]
+
+        if name == idle or duration < 0.2 or duration > 12:
             continue
 
-        image = bpy.data.images.load(str(body), check_existing=True)
-        tex = nodes.new("ShaderNodeTexImage")
-        tex.image = image
-        material.node_tree.links.new(tex.outputs["Color"], principled.inputs["Base Color"])
-        if "Alpha" in principled.inputs:
-            material.node_tree.links.new(tex.outputs["Alpha"], principled.inputs["Alpha"])
+        if re.search(r"idle[_ -]?[bc]|wait[_ -]?[bc]|fight[_ -]?[bc]|battle[_ -]?[bc]|look|roar|special", low):
+            preferred.append(name)
+
+    return preferred[:4]
 
 
 def export_job(job):
@@ -67,8 +243,21 @@ def export_job(job):
         filepath=str(source),
         use_anim=True,
         automatic_bone_orientation=False,
+        use_prepost_rot=True,
     )
+
     try_relink_textures(source_dir)
+    bounds = mesh_bounds_world() or {}
+
+    animations = []
+    for action in bpy.data.actions:
+        animations.append({
+            "name": action.name,
+            "duration": round(action_duration(action), 4),
+        })
+
+    idle = choose_idle(animations)
+    idle_breaks = choose_idle_breaks(animations, idle)
 
     bpy.ops.export_scene.gltf(
         filepath=str(output),
@@ -85,33 +274,30 @@ def export_job(job):
         export_apply=False,
     )
 
-    animations = []
-    for action in bpy.data.actions:
-        start, end = action.frame_range
-        fps = bpy.context.scene.render.fps or 30
-        duration = max(0.0, float(end - start) / float(fps))
-        animations.append({
-            "name": action.name,
-            "duration": round(duration, 4),
-        })
+    warnings = []
+    if not animations:
+        warnings.append("No embedded animation actions found")
+    elif not idle:
+        warnings.append("No safe idle animation selected")
 
     return {
         "dex": job["dex"],
         "form": job["form"],
+        "formCode": job.get("formCode"),
         "url": "web/models/pokeminers/%04d/%s.glb" % (job["dex"], job["form"]),
         "source": "PokeMiners/pogo_assets",
         "sourceRig": Path(job["fbx"]).name,
         "animations": animations,
-        "idleAnimation": animations[0]["name"] if animations else None,
-        "idleBreaks": [],
+        "idleAnimation": idle,
+        "idleBreaks": idle_breaks,
+        **bounds,
         "valid": output.is_file() and output.stat().st_size > 1000,
-        "warnings": [] if animations else ["No embedded animation actions found"],
+        "warnings": warnings,
     }
 
 
 results = {}
 
-# Keep prior successful output metadata for models skipped because they were already converted.
 if manifest_json.is_file():
     try:
         for item in json.loads(manifest_json.read_text(encoding="utf-8")):
@@ -131,6 +317,7 @@ for index, job in enumerate(jobs, 1):
         result = {
             "dex": job["dex"],
             "form": job["form"],
+            "formCode": job.get("formCode"),
             "url": "web/models/pokeminers/%04d/%s.glb" % (job["dex"], job["form"]),
             "source": "PokeMiners/pogo_assets",
             "sourceRig": Path(job["fbx"]).name,
@@ -143,7 +330,6 @@ for index, job in enumerate(jobs, 1):
 
     results[(job["dex"], job["form"])] = result
 
-# Add placeholders for source rigs not converted yet only if no prior record exists.
 for job in manifest_jobs:
     key = (job["dex"], job["form"])
     if key not in results:
@@ -151,6 +337,7 @@ for job in manifest_jobs:
         results[key] = {
             "dex": job["dex"],
             "form": job["form"],
+            "formCode": job.get("formCode"),
             "url": "web/models/pokeminers/%04d/%s.glb" % (job["dex"], job["form"]),
             "source": "PokeMiners/pogo_assets",
             "sourceRig": Path(job["fbx"]).name,
