@@ -650,9 +650,15 @@ function animationIdleScore(name) {
 
 function chooseSafeIdle(animations) {
   if (!animations.length) return null;
-  return [...animations]
+
+  const ranked = [...animations]
     .map((name, index) => ({ name, index, score: animationIdleScore(name) }))
-    .sort((a, b) => b.score - a.score || a.index - b.index)[0].name;
+    .sort((a, b) => b.score - a.score || a.index - b.index);
+
+  // Do not play an arbitrary clip just because it is the only one present.
+  // Attack/damage/malformed clips were being mistaken for idles and could
+  // stretch skinned meshes or leave Pokemon in obviously broken poses.
+  return ranked[0].score >= 30 ? ranked[0].name : null;
 }
 
 function readAnimationDurations() {
@@ -819,14 +825,13 @@ function setupIdleBreakAnimations() {
   const animations = Array.from(viewer.availableAnimations || []);
   animationDurations = readAnimationDurations();
 
-  // Prefer verified importer metadata, then choose the safest-looking loop.
-  // Falling back to animation index 0 caused many T-poses and attack loops.
-  idleAnimation = chooseSafeIdle(animations);
-
+  // Prefer verified importer metadata. Only use a heuristic clip when its
+  // name strongly resembles an idle. Never fall back to an arbitrary clip.
   const manifestIdle = currentModel?.idleAnimation;
-  if (manifestIdle && animations.includes(manifestIdle)) {
-    idleAnimation = manifestIdle;
-  }
+  idleAnimation =
+    manifestIdle && animations.includes(manifestIdle)
+      ? manifestIdle
+      : chooseSafeIdle(animations);
 
   const manifestBreaks = Array.isArray(currentModel?.idleBreaks)
     ? currentModel.idleBreaks
