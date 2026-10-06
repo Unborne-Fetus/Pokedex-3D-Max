@@ -26,6 +26,10 @@ let selectedIndex = 0;
 let autoRotate = false;
 let currentUrl = "";
 let loadStartedAt = 0;
+let idleBreakTimer = null;
+let idleAnimation = null;
+let breakAnimations = [];
+let playingBreak = false;
 const warmed = new Set();
 
 function makeInstantRegularCatalog() {
@@ -162,6 +166,12 @@ async function enhanceCatalogInBackground() {
   }
 }
 
+function isShiny(model) {
+  const form = String(model?.form || "").toLowerCase();
+  const name = String(model?.name || "").toLowerCase();
+  return form.includes("shiny") || name.startsWith("shiny ");
+}
+
 function formRank(form) {
   const value = String(form || "").toLowerCase();
   if (value === "regular") return 0;
@@ -172,13 +182,15 @@ function formRank(form) {
 function applyFilter(loadFirst = true) {
   const q = searchEl.value.trim().toLowerCase().replace(/^#/, "");
 
+  const listModels = models.filter(m => !isShiny(m));
+
   filtered = q
-    ? models.filter(m =>
+    ? listModels.filter(m =>
         String(m.dex) === q ||
         m.name.toLowerCase().includes(q) ||
         m.form.toLowerCase().includes(q)
       )
-    : models;
+    : listModels;
 
   renderList();
 
@@ -289,7 +301,7 @@ function populateFormSelect(model) {
   for (const form of samePokemon) {
     const option = document.createElement("option");
     option.value = form.url;
-    option.textContent = prettyForm(form.form);
+    option.textContent = dropdownLabel(form);
     option.selected = form.url === model.url;
     option.dataset.dex = String(form.dex);
     formSelect.appendChild(option);
@@ -309,6 +321,17 @@ function prettyForm(value) {
   return String(value || "regular")
     .replace(/[_-]+/g, " ")
     .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function dropdownLabel(model) {
+  const form = prettyForm(model.form);
+  if (isShiny(model)) {
+    const cleaned = form.replace(/\bShiny\b/gi, "").trim();
+    return cleaned && cleaned.toLowerCase() !== "regular"
+      ? "Shiny · " + cleaned
+      : "Shiny";
+  }
+  return form;
 }
 
 function escapeHtml(value) {
@@ -360,6 +383,91 @@ toggleRotateBtn.addEventListener("click", () => {
     "Auto-rotate: " + (autoRotate ? "On" : "Off");
 });
 
+function configureTextureSampling() {
+  const materials = viewer.model?.materials || [];
+
+  for (const material of materials) {
+    const textureInfos = [
+      material.pbrMetallicRoughness?.baseColorTexture,
+      material.pbrMetallicRoughness?.metallicRoughnessTexture,
+      material.normalTexture,
+      material.occlusionTexture,
+      material.emissiveTexture,
+    ];
+
+    for (const info of textureInfos) {
+      const sampler = info?.texture?.sampler;
+      if (!sampler) continue;
+
+      try {
+        sampler.setWrapS("ClampToEdge");
+        sampler.setWrapT("ClampToEdge");
+      } catch (error) {
+        console.debug("Sampler clamp unavailable:", error);
+      }
+    }
+  }
+}
+
+function animationScore(name) {
+  const value = name.toLowerCase();
+  if (/idle|wait|look|break/.test(value)) return 100;
+  if (/fight_[bd]|fight-b|fight-d/.test(value)) return 80;
+  if (/fight/.test(value)) return 50;
+  if (/run|walk|jump|ko|death|hit|damage|attack/.test(value)) return -100;
+  return 10;
+}
+
+function setupIdleBreakAnimations() {
+  if (idleBreakTimer) {
+    clearInterval(idleBreakTimer);
+    idleBreakTimer = null;
+  }
+
+  const animations = Array.from(viewer.availableAnimations || []);
+  idleAnimation =
+    animations.find(name => /idle/i.test(name)) ||
+    animations[0] ||
+    null;
+
+  breakAnimations = animations
+    .filter(name => name !== idleAnimation)
+    .filter(name => animationScore(name) > 0)
+    .sort((a, b) => animationScore(b) - animationScore(a));
+
+  playingBreak = false;
+
+  if (!idleAnimation) return;
+
+  viewer.animationName = idleAnimation;
+  viewer.currentTime = 0;
+  viewer.play();
+
+  if (!breakAnimations.length) return;
+
+  idleBreakTimer = setInterval(() => {
+    if (!viewer.loaded || document.hidden || playingBreak) return;
+
+    const bestScore = animationScore(breakAnimations[0]);
+    const pool = breakAnimations.filter(name => animationScore(name) === bestScore);
+    const clip = pool[Math.floor(Math.random() * pool.length)];
+
+    playingBreak = true;
+    viewer.animationName = clip;
+    viewer.currentTime = 0;
+    viewer.play({ repetitions: 1 });
+  }, 3000);
+}
+
+viewer.addEventListener("finished", () => {
+  if (!playingBreak || !idleAnimation) return;
+
+  playingBreak = false;
+  viewer.animationName = idleAnimation;
+  viewer.currentTime = 0;
+  viewer.play();
+});
+
 viewer.addEventListener("load", () => {
   const elapsed = Math.max(0, performance.now() - loadStartedAt);
   messageEl.textContent =
@@ -370,6 +478,8 @@ viewer.addEventListener("load", () => {
   viewer.cameraTarget = "auto auto auto";
   viewer.jumpCameraToGoal?.();
 
+  configureTextureSampling();
+  setupIdleBreakAnimations();
   prefetchNeighbors();
 });
 
@@ -395,6 +505,12 @@ statusEl.textContent = "1,025 regular models ready";
 renderList();
 
 customElements.whenDefined("model-viewer").then(() => {
+  const ModelViewerElement = customElements.get("model-viewer");
+  if (ModelViewerElement) {
+    ModelViewerElement.minimumRenderScale = 1;
+    ModelViewerElement.modelCacheSize = 8;
+  }
+
   selectModel(0);
   enhanceCatalogInBackground();
 });
