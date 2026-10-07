@@ -9,12 +9,15 @@ const LOCAL_MODELS = [
   ...(Array.isArray(window.POKEDEX3D_LOCAL_MODELS)
     ? window.POKEDEX3D_LOCAL_MODELS
     : []),
-  // Official-game authored animations are highest priority. Keep this source
-  // last because applyLocalModelOverrides() uses the last duplicate key.
   ...(Array.isArray(window.POKEDEX3D_PRO_MODELS)
     ? window.POKEDEX3D_PRO_MODELS
     : []),
-].filter(model => model?.valid !== false);
+  // Native Switch-game imports are highest priority once they are validated
+  // and animation-ready. Staged bind-pose imports stay out of the live viewer.
+  ...(Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
+    ? window.POKEDEX3D_SWITCH_MODELS
+    : []),
+].filter(model => model?.valid !== false && model?.ready !== false);
 
 function localModelKey(model) {
   return String(model?.dex) + "|" + String(model?.form || "regular").toLowerCase();
