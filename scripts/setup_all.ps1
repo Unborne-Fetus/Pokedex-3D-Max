@@ -121,21 +121,67 @@ function EnsurePython {
     }
 
     Stamp "Checking Pillow for WebP-to-PNG model conversion..."
-    if ($Command -eq "py") {
-        & py -3 -c "import PIL" 2>$null
-        if ($LASTEXITCODE -ne 0) {
-            Stamp "Installing Pillow..."
-            & py -3 -m pip install --disable-pip-version-check --quiet Pillow
-            if ($LASTEXITCODE -ne 0) { throw "Pillow installation failed." }
+
+    # Missing Python modules write a traceback to stderr. With the script-wide
+    # ErrorActionPreference set to Stop, Windows PowerShell can terminate here
+    # before setup gets a chance to install Pillow. Probe native Python with
+    # non-terminating error handling and inspect its exit code instead.
+    $PreviousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        if ($Command -eq "py") {
+            & py -3 -c "import PIL" *> $null
+            $PillowCheckExitCode = $LASTEXITCODE
+        } else {
+            & python -c "import PIL" *> $null
+            $PillowCheckExitCode = $LASTEXITCODE
+        }
+    } finally {
+        $ErrorActionPreference = $PreviousErrorActionPreference
+    }
+
+    if ($PillowCheckExitCode -ne 0) {
+        Stamp "Pillow is not installed. Installing it now..."
+
+        $PreviousErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        try {
+            if ($Command -eq "py") {
+                & py -3 -m pip install --disable-pip-version-check Pillow
+                $PillowInstallExitCode = $LASTEXITCODE
+            } else {
+                & python -m pip install --disable-pip-version-check Pillow
+                $PillowInstallExitCode = $LASTEXITCODE
+            }
+        } finally {
+            $ErrorActionPreference = $PreviousErrorActionPreference
+        }
+
+        if ($PillowInstallExitCode -ne 0) {
+            throw "Pillow installation failed. Install Pillow with pip and rerun setup-all.bat."
+        }
+
+        $PreviousErrorActionPreference = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        try {
+            if ($Command -eq "py") {
+                & py -3 -c "import PIL; print(PIL.__version__)"
+                $PillowVerifyExitCode = $LASTEXITCODE
+            } else {
+                & python -c "import PIL; print(PIL.__version__)"
+                $PillowVerifyExitCode = $LASTEXITCODE
+            }
+        } finally {
+            $ErrorActionPreference = $PreviousErrorActionPreference
+        }
+
+        if ($PillowVerifyExitCode -ne 0) {
+            throw "Pillow was installed but Python still cannot import it."
         }
     } else {
-        & python -c "import PIL" 2>$null
-        if ($LASTEXITCODE -ne 0) {
-            Stamp "Installing Pillow..."
-            & python -m pip install --disable-pip-version-check --quiet Pillow
-            if ($LASTEXITCODE -ne 0) { throw "Pillow installation failed." }
-        }
+        Stamp "Pillow is already installed."
     }
+
     Stamp "Pillow is ready."
     return $Command
 }
