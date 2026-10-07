@@ -45,7 +45,7 @@ function ExpandFresh([string]$Zip, [string]$Destination) {
 }
 
 function BootstrapJdk {
-    Step "STEP 1/5 - Checking JDK 22"
+    Step "STEP 1/7 - Checking JDK 22"
     $Root = Join-Path $ToolsDir ("jdk-" + $JdkMajor)
     $Marker = Join-Path $Root ".ready"
 
@@ -70,7 +70,7 @@ function BootstrapJdk {
 }
 
 function BootstrapGradle {
-    Step "STEP 2/5 - Checking Gradle"
+    Step "STEP 2/7 - Checking Gradle"
     $Root = Join-Path $ToolsDir ("gradle-" + $GradleVersion)
     $GradleBat = Join-Path $Root "bin\gradle.bat"
 
@@ -96,7 +96,7 @@ function BootstrapGradle {
 }
 
 function EnsurePython {
-    Step "STEP 3/5 - Checking Python"
+    Step "STEP 3/7 - Checking Python"
     $Command = $null
     if (Get-Command python -ErrorAction SilentlyContinue) {
         $Version = (& python --version 2>&1)
@@ -186,8 +186,136 @@ function EnsurePython {
     return $Command
 }
 
+function EnsureBlender {
+    Step "STEP 4/7 - Checking Blender"
+
+    $Blender = $null
+    if (Get-Command blender -ErrorAction SilentlyContinue) {
+        $Blender = (Get-Command blender).Source
+    }
+
+    $BlenderRoot = Join-Path $env:ProgramFiles "Blender Foundation"
+    if ((-not $Blender) -and (Test-Path $BlenderRoot)) {
+        $Blender = Get-ChildItem $BlenderRoot -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1 -ExpandProperty FullName
+    }
+
+    if (-not $Blender) {
+        if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+            Stamp "Blender was not found and winget is unavailable. Switch-game model import will be skipped."
+            return $null
+        }
+        Stamp "Blender was not found. Installing Blender automatically..."
+        & winget install --id BlenderFoundation.Blender --exact --silent --accept-source-agreements --accept-package-agreements
+        if ($LASTEXITCODE -ne 0) {
+            Stamp "Blender installation failed. Switch-game model import will be skipped."
+            return $null
+        }
+        $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User")
+        if (Get-Command blender -ErrorAction SilentlyContinue) {
+            $Blender = (Get-Command blender).Source
+        } elseif (Test-Path $BlenderRoot) {
+            $Blender = Get-ChildItem $BlenderRoot -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue |
+                Sort-Object FullName -Descending |
+                Select-Object -First 1 -ExpandProperty FullName
+        }
+    }
+
+    if ($Blender) { Stamp ("Blender = " + $Blender) }
+    return $Blender
+}
+
+function EnsureSevenZip {
+    if (Get-Command 7z -ErrorAction SilentlyContinue) { return (Get-Command 7z).Source }
+    $Seven = Join-Path $env:ProgramFiles "7-Zip\7z.exe"
+    if (Test-Path $Seven) {
+        $env:Path = (Split-Path -Parent $Seven) + ";" + $env:Path
+        return $Seven
+    }
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+        Stamp "Installing 7-Zip for BDSP .7z extraction..."
+        & winget install --id 7zip.7zip --exact --silent --accept-source-agreements --accept-package-agreements
+        if ($LASTEXITCODE -eq 0 -and (Test-Path $Seven)) {
+            $env:Path = (Split-Path -Parent $Seven) + ";" + $env:Path
+            return $Seven
+        }
+    }
+    return $null
+}
+
+function FindSwitchAssetArchives {
+    $Names = @(
+        "ZA-Poke.zip",
+        "LA-Poke.zip",
+        "LGPE-Poke.zip",
+        "SwSh-PokeGen1.zip",
+        "SwSh-PokeGen2-3.zip",
+        "SwSh-PokeGen4-5.zip",
+        "SwSh-PokeGen6-7.zip",
+        "SwSh-PokeGen8.zip",
+        "BDSP-Poke.7z"
+    )
+    $Roots = @(
+        $RepoRoot,
+        (Join-Path $RepoRoot "switch-assets"),
+        (Join-Path $env:USERPROFILE "Downloads"),
+        (Join-Path $env:USERPROFILE "Desktop")
+    ) | Select-Object -Unique
+    $Found = New-Object System.Collections.Generic.List[string]
+    foreach ($Name in $Names) {
+        foreach ($Root in $Roots) {
+            if (-not $Root -or -not (Test-Path $Root)) { continue }
+            $Path = Join-Path $Root $Name
+            if (Test-Path $Path) {
+                $Found.Add((Resolve-Path $Path).Path)
+                break
+            }
+        }
+    }
+    return $Found.ToArray()
+}
+
+function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
+    Step "STEP 5/7 - Importing Switch-game Pokemon models"
+    if ($SkipSwitchAssets) {
+        Stamp "Skipping Switch-game asset import because -SkipSwitchAssets was supplied."
+        return
+    }
+    if (-not $Blender) {
+        Stamp "Blender is unavailable. Skipping Switch-game model conversion."
+        return
+    }
+    $Archives = @(FindSwitchAssetArchives)
+    if ($Archives.Count -eq 0) {
+        Stamp "No Switch-game model archives were found."
+        Stamp "Put them in the repo root, switch-assets, Downloads, or Desktop. Setup will detect them automatically next time."
+        return
+    }
+    Stamp ("Found " + $Archives.Count + " Switch model archive(s).")
+    foreach ($Archive in $Archives) { Stamp ("  " + (Split-Path -Leaf $Archive)) }
+    if ($Archives | Where-Object { $_.ToLowerInvariant().EndsWith(".7z") }) {
+        [void](EnsureSevenZip)
+    }
+    $Script = Join-Path $RepoRoot "scripts\import_switch_game_assets.py"
+    if (-not (Test-Path $Script)) { throw "Switch model importer script is missing." }
+    $Args = @("-u", $Script)
+    $Args += $Archives
+    $Args += @("--blender", $Blender)
+    $env:PYTHONUNBUFFERED = "1"
+    Push-Location $RepoRoot
+    try {
+        if ($PythonCommand -eq "py") { & py -3 @Args } else { & python @Args }
+        $ImportExit = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    if ($ImportExit -ne 0) { throw "Switch-game model import failed with exit code $ImportExit." }
+    Stamp "Switch-game model import finished."
+}
+
 function InstallModels([string]$PythonCommand) {
-    Step "STEP 4/5 - Preparing offline 3D model pack"
+    Step "STEP 6/7 - Preparing offline 3D model pack"
     $Pack = Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"
 
     if ($SkipModels) {
@@ -239,7 +367,7 @@ function InstallModels([string]$PythonCommand) {
 }
 
 function BuildWindows([string]$GradleBat) {
-    Step "STEP 5/5 - Building Windows EXE"
+    Step "STEP 7/7 - Building Windows EXE"
     Push-Location $RepoRoot
     try {
         Stamp "Starting Gradle desktop build. Gradle output will remain visible."
@@ -286,7 +414,7 @@ try {
     Write-Host "============================================================"
     Write-Host "        Pokedex 3D Max - Windows Setup"
     Write-Host "============================================================"
-    Stamp "Windows-only mode: Android/APK steps are disabled."
+    Stamp "One-click mode: tools, Switch model import, offline model pack, and Windows build are automatic."
     Stamp "Nothing is frozen if timestamps keep appearing or a download/build counter changes."
     Stamp ("Log file: " + $LogFile)
 
