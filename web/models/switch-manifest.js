@@ -1,0 +1,1 @@
+window.POKEDEX3D_SWITCH_MODELS = [];
