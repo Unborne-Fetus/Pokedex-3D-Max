@@ -13,7 +13,7 @@ $LogFile = Join-Path $RepoRoot "setup-all.log"
 $GradleVersion = "9.6.0"
 $JdkMajor = "22"
 $BlenderPortableVersion = "4.5.14"
-$BlenderPortableUrl = "https://download.blender.org/release/Blender4.5/blender-4.5.14-windows-x64.zip"
+$BlenderPortableUrl = "https://mirror.blender.org/release/Blender4.5/blender-4.5.14-windows-x64.zip"
 $MegaFolderLink = "https://mega.nz/folder/elJhVC5D#NU-yzmXuTlsIIzXAMLKVaA"
 $MegaAssetCache = Join-Path $RepoRoot ".cache\mega-switch-assets"
 
