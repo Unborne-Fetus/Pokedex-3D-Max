@@ -18,3 +18,8 @@ web/models/pokeminers-manifest.json
 web/models/pokeminers-manifest.js
 .cache/pokeminers-pogo-assets/
 .cache/pokeminers-jobs.json
+
+# Locally generated official-game model conversions
+web/models/switch/
+.cache/switch-game-assets/
+.tools/pokemon_switch_model_importer/
