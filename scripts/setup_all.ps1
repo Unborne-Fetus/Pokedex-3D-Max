@@ -421,6 +421,8 @@ try {
     BootstrapJdk
     $Gradle = BootstrapGradle
     $Python = EnsurePython
+    $Blender = EnsureBlender
+    ImportSwitchGameAssets $Python $Blender
     $Pack = InstallModels $Python
     BuildWindows $Gradle
     $Exe = CollectExe
