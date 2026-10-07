@@ -12,6 +12,8 @@ $DistDir = Join-Path $RepoRoot "dist"
 $LogFile = Join-Path $RepoRoot "setup-all.log"
 $GradleVersion = "9.6.0"
 $JdkMajor = "22"
+$MegaFolderLink = "https://mega.nz/folder/elJhVC5D#NU-yzmXuTlsIIzXAMLKVaA"
+$MegaAssetCache = Join-Path $RepoRoot ".cache\mega-switch-assets"
 
 function Stamp([string]$Text) {
     $Now = Get-Date -Format "HH:mm:ss"
@@ -244,33 +246,105 @@ function EnsureSevenZip {
     return $null
 }
 
-function FindSwitchAssetArchives {
-    $Names = @(
-        "ZA-Poke.zip",
-        "LA-Poke.zip",
-        "LGPE-Poke.zip",
-        "SwSh-PokeGen1.zip",
-        "SwSh-PokeGen2-3.zip",
-        "SwSh-PokeGen4-5.zip",
-        "SwSh-PokeGen6-7.zip",
-        "SwSh-PokeGen8.zip",
-        "BDSP-Poke.7z"
+function FindMegaGet {
+    $Candidates = @(
+        (Join-Path $env:LOCALAPPDATA "MEGAcmd\mega-get.bat"),
+        (Join-Path $env:ProgramFiles "MEGAcmd\mega-get.bat"),
+        (Join-Path $env:ProgramFiles "MEGAcmd\mega-get.exe")
     )
+    if (Get-Command mega-get -ErrorAction SilentlyContinue) {
+        return (Get-Command mega-get).Source
+    }
+    foreach ($Candidate in $Candidates) {
+        if ($Candidate -and (Test-Path $Candidate)) { return $Candidate }
+    }
+    return $null
+}
+
+function EnsureMegaCmd {
+    $MegaGet = FindMegaGet
+    if ($MegaGet) {
+        Stamp ("MEGAcmd = " + $MegaGet)
+        return $MegaGet
+    }
+
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        throw "MEGAcmd is required to download the shared asset folder, but winget is unavailable."
+    }
+
+    Stamp "MEGAcmd was not found. Installing it automatically..."
+    $PreviousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & winget install --name MEGAcmd --exact --silent --accept-source-agreements --accept-package-agreements
+        $MegaInstallExit = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $PreviousErrorActionPreference
+    }
+
+    $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" +
+        [Environment]::GetEnvironmentVariable("Path","User") + ";" +
+        (Join-Path $env:LOCALAPPDATA "MEGAcmd") + ";" +
+        (Join-Path $env:ProgramFiles "MEGAcmd")
+
+    $MegaGet = FindMegaGet
+    if (-not $MegaGet) {
+        throw "MEGAcmd could not be installed automatically (winget exit $MegaInstallExit)."
+    }
+
+    Stamp ("MEGAcmd = " + $MegaGet)
+    return $MegaGet
+}
+
+function DownloadMegaSwitchAssets {
+    EnsureDir $MegaAssetCache
+
+    $Existing = Get-ChildItem $MegaAssetCache -File -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.Extension -in @(".zip", ".7z") } |
+        Select-Object -First 1
+    if ($Existing) {
+        Stamp "MEGA asset cache already contains archives. Reusing it and checking for missing files."
+    } else {
+        Stamp "Downloading the shared Pokemon game-asset folder from MEGA."
+        Stamp "This is a large one-time download; later setup runs reuse the cache."
+    }
+
+    $MegaGet = EnsureMegaCmd
+    $PreviousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & $MegaGet -m $MegaFolderLink $MegaAssetCache
+        $MegaExit = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $PreviousErrorActionPreference
+    }
+
+    if ($MegaExit -ne 0) {
+        throw "MEGA asset download failed with exit code $MegaExit."
+    }
+
+    Stamp "MEGA asset download/sync finished."
+}
+
+function FindSwitchAssetArchives {
     $Roots = @(
         $RepoRoot,
         (Join-Path $RepoRoot "switch-assets"),
         (Join-Path $env:USERPROFILE "Downloads"),
-        (Join-Path $env:USERPROFILE "Desktop")
+        (Join-Path $env:USERPROFILE "Desktop"),
+        $MegaAssetCache
     ) | Select-Object -Unique
+
     $Found = New-Object System.Collections.Generic.List[string]
-    foreach ($Name in $Names) {
-        foreach ($Root in $Roots) {
-            if (-not $Root -or -not (Test-Path $Root)) { continue }
-            $Path = Join-Path $Root $Name
-            if (Test-Path $Path) {
-                $Found.Add((Resolve-Path $Path).Path)
-                break
-            }
+    foreach ($Root in $Roots) {
+        if (-not $Root -or -not (Test-Path $Root)) { continue }
+        $Files = Get-ChildItem $Root -File -Recurse -ErrorAction SilentlyContinue | Where-Object {
+            ($_.Extension -in @(".zip", ".7z")) -and
+            ($_.BaseName -match "(?i)(Poke|Pokemon)") -and
+            ($_.BaseName -notmatch "(?i)(anim|animation)")
+        }
+        foreach ($File in $Files) {
+            if (-not $Found.Contains($File.FullName)) { $Found.Add($File.FullName) }
         }
     }
     return $Found.ToArray()
@@ -288,9 +362,12 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     }
     $Archives = @(FindSwitchAssetArchives)
     if ($Archives.Count -eq 0) {
-        Stamp "No Switch-game model archives were found."
-        Stamp "Put them in the repo root, switch-assets, Downloads, or Desktop. Setup will detect them automatically next time."
-        return
+        Stamp "No local Switch-game model archives were found."
+        DownloadMegaSwitchAssets
+        $Archives = @(FindSwitchAssetArchives)
+    }
+    if ($Archives.Count -eq 0) {
+        throw "The MEGA download completed, but no Pokemon model archives were discovered."
     }
     Stamp ("Found " + $Archives.Count + " Switch model archive(s).")
     foreach ($Archive in $Archives) { Stamp ("  " + (Split-Path -Leaf $Archive)) }
