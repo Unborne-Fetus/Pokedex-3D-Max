@@ -52,6 +52,51 @@ def import_model(source: Path) -> None:
         raise RuntimeError(f"Importer returned {result}")
 
 
+
+def active_armature():
+    armatures = [obj for obj in bpy.context.scene.objects if obj.type == "ARMATURE"]
+    if not armatures:
+        return None
+    armature = armatures[0]
+    bpy.ops.object.select_all(action="DESELECT")
+    armature.select_set(True)
+    bpy.context.view_layer.objects.active = armature
+    return armature
+
+
+def import_animations(job: dict) -> int:
+    clips = job.get("animations") or []
+    if not clips:
+        return 0
+
+    armature = active_armature()
+    if armature is None:
+        print("No armature found; animation clips skipped.", flush=True)
+        return 0
+
+    imported = 0
+    for clip in clips:
+        source = Path(clip["source"]).resolve()
+        if not source.is_file():
+            continue
+        try:
+            result = bpy.ops.import_scene.gfbanm(filepath=str(source))
+            if "FINISHED" in result:
+                imported += 1
+                action = armature.animation_data.action if armature.animation_data else None
+                if action and not action.name:
+                    action.name = clip.get("name") or source.stem
+            else:
+                print(f"Animation importer returned {result} for {source.name}", flush=True)
+        except Exception:
+            print(f"Animation import failed for {source.name}", flush=True)
+            traceback.print_exc()
+
+    if imported:
+        print(f"Imported {imported}/{len(clips)} animation clip(s).", flush=True)
+    return imported
+
+
 def export_glb(destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.export_scene.gltf(
@@ -72,6 +117,7 @@ for index, job in enumerate(jobs, start=1):
     try:
         clear_scene()
         import_model(source)
+        import_animations(job)
         export_glb(destination)
     except Exception as exc:
         failures.append({"source": str(source), "error": str(exc)})
