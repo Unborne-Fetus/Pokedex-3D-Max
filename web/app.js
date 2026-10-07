@@ -108,7 +108,7 @@ const resetCameraBtn = document.querySelector("#resetCamera");
 const toggleRotateBtn = document.querySelector("#toggleRotate");
 const toggleIdleBreaksBtn = document.querySelector("#toggleIdleBreaks");
 
-let models = makeInstantRegularCatalog();
+let models = makeInstantRegularCatalog();\nwindow.POKEDEX3D_MODELS = models;
 let filtered = models;
 let selectedIndex = 0;
 let autoRotate = false;
@@ -238,7 +238,7 @@ async function enhanceCatalogInBackground() {
     try {
       const cachedModels = catalogToModels(JSON.parse(cached));
       if (cachedModels.length) {
-        models = cachedModels;
+        models = cachedModels;\n        window.POKEDEX3D_MODELS = models;
         statusEl.textContent =
           models.length.toLocaleString() + " 3D models · cached catalog";
         refreshCurrentPokemonAfterCatalogUpdate();
@@ -263,7 +263,7 @@ async function enhanceCatalogInBackground() {
     if (!richer.length) throw new Error("Catalog contained no model entries");
 
     localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(payload));
-    models = richer;
+    models = richer;\n    window.POKEDEX3D_MODELS = models;
     statusEl.textContent =
       models.length.toLocaleString() + " 3D models available";
     refreshCurrentPokemonAfterCatalogUpdate();
