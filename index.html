@@ -17,10 +17,10 @@
       <h1>Pokedex 3D Max</h1>
       <p id="status">Loading 3D catalog…</p>
     </div>
-    <span class="badge">WEB</span>
+    <div class="top-actions"><button id="showDex" class="top-nav active" type="button">Pokédex</button><button id="showBattle" class="top-nav" type="button">Battle Sim</button><span class="badge">WEB</span></div>
   </header>
 
-  <main class="layout">
+  <main id="dexView" class="layout">
     <aside class="sidebar">
       <input id="search" type="search" placeholder="Search Pokémon, form, or #" autocomplete="off" />
       <div class="toolbar">
@@ -77,6 +77,47 @@
     </section>
   </main>
 
+  <section id="battleView" class="battle-view hidden">
+    <div class="battle-head">
+      <div><h2>3D Battle Simulator</h2><p id="battleStatus">Ready</p></div>
+      <button id="battleReset" class="hidden" type="button">New battle</button>
+    </div>
+
+    <div id="battlePanel">
+      <div id="battleBuilder" class="battle-builder">
+        <h3>Your team</h3>
+        <p>Choose three Pokémon by name or National Dex number. Battles run at level 50.</p>
+        <div class="battle-team-fields">
+          <input class="battle-team-input" value="charizard" aria-label="Team slot 1" />
+          <input class="battle-team-input" value="pikachu" aria-label="Team slot 2" />
+          <input class="battle-team-input" value="lucario" aria-label="Team slot 3" />
+        </div>
+        <label class="battle-difficulty">AI
+          <select id="battleDifficulty">
+            <option value="easy">Easy</option>
+            <option value="normal" selected>Normal</option>
+            <option value="hard">Hard</option>
+          </select>
+        </label>
+        <button id="battleStart" class="battle-primary" type="button">Start Battle</button>
+      </div>
+
+      <div id="battleArena" class="battle-arena hidden">
+        <div class="battle-stage">
+          <div class="battle-hud foe"><strong id="battleFoeName"></strong><div class="battle-hp-track"><span id="battleFoeHp"></span></div><small id="battleFoeHpText"></small></div>
+          <model-viewer id="battleFoeModel" class="battle-model foe" autoplay interaction-prompt="none" shadow-intensity="1" camera-orbit="0deg 75deg auto"></model-viewer>
+          <model-viewer id="battlePlayerModel" class="battle-model player" autoplay interaction-prompt="none" shadow-intensity="1" camera-orbit="180deg 75deg auto"></model-viewer>
+          <div class="battle-hud player"><strong id="battlePlayerName"></strong><div class="battle-hp-track"><span id="battlePlayerHp"></span></div><small id="battlePlayerHpText"></small></div>
+          <div id="battleTurn" class="battle-turn">Turn 1</div>
+        </div>
+        <div class="battle-controls">
+          <div><h3>Fight</h3><div id="battleMoves" class="battle-moves"></div><h3>Switch</h3><div id="battleSwitches" class="battle-switches"></div></div>
+          <div class="battle-log-wrap"><h3>Battle Log</h3><div id="battleLog" class="battle-log" aria-live="polite"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <script>
     window.__pokedex3dBooted = false;
     window.addEventListener("error", function (event) {
@@ -104,6 +145,20 @@
   <script src="web/models/pokedex3dpro-manifest.js?v=1" onerror="this.remove()"></script>
   <script src="web/models/manifest.js?v=1"></script>
   <script src="web/models/switch-manifest.js?v=1" onerror="this.remove()"></script>
-  <script defer src="web/app.js?v=23"></script>
+  <script defer src="web/app.js?v=24"></script>
+  <script defer src="web/battle-sim.js?v=1"></script>
+  <script>
+    (function(){
+      var dex=document.getElementById("dexView"), battle=document.getElementById("battleView");
+      var dexBtn=document.getElementById("showDex"), battleBtn=document.getElementById("showBattle");
+      function show(which){
+        var isBattle=which==="battle";
+        dex.classList.toggle("hidden",isBattle); battle.classList.toggle("hidden",!isBattle);
+        dexBtn.classList.toggle("active",!isBattle); battleBtn.classList.toggle("active",isBattle);
+      }
+      dexBtn.addEventListener("click",function(){show("dex")});
+      battleBtn.addEventListener("click",function(){show("battle")});
+    })();
+  </script>
 </body>
 </html>
