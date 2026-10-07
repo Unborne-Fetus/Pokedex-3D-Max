@@ -16,6 +16,8 @@ $BlenderPortableVersion = "4.5.14"
 $BlenderPortableUrl = "https://mirror.blender.org/release/Blender4.5/blender-4.5.14-windows-x64.zip"
 $MegaFolderLink = "https://mega.nz/folder/elJhVC5D#NU-yzmXuTlsIIzXAMLKVaA"
 $MegaAssetCache = Join-Path $RepoRoot ".cache\mega-switch-assets"
+$MegaNoProgressTimeoutSeconds = 300
+$MegaDownloadRetries = 3
 
 function Stamp([string]$Text) {
     $Now = Get-Date -Format "HH:mm:ss"
@@ -270,19 +272,25 @@ function EnsureSevenZip {
     return $null
 }
 
-function FindMegaGet {
-    $Candidates = @(
-        (Join-Path $env:LOCALAPPDATA "MEGAcmd\mega-get.bat"),
-        (Join-Path $env:ProgramFiles "MEGAcmd\mega-get.bat"),
-        (Join-Path $env:ProgramFiles "MEGAcmd\mega-get.exe")
-    )
-    if (Get-Command mega-get -ErrorAction SilentlyContinue) {
-        return (Get-Command mega-get).Source
+function FindMegaTool([string]$Name) {
+    $CommandName = "mega-" + $Name
+    if (Get-Command $CommandName -ErrorAction SilentlyContinue) {
+        return (Get-Command $CommandName).Source
     }
+    $Candidates = @(
+        (Join-Path $env:LOCALAPPDATA ("MEGAcmd\" + $CommandName + ".bat")),
+        (Join-Path $env:LOCALAPPDATA ("MEGAcmd\" + $CommandName + ".exe")),
+        (Join-Path $env:ProgramFiles ("MEGAcmd\" + $CommandName + ".bat")),
+        (Join-Path $env:ProgramFiles ("MEGAcmd\" + $CommandName + ".exe"))
+    )
     foreach ($Candidate in $Candidates) {
         if ($Candidate -and (Test-Path $Candidate)) { return $Candidate }
     }
     return $null
+}
+
+function FindMegaGet {
+    return FindMegaTool "get"
 }
 
 function EnsureMegaCmd {
@@ -309,16 +317,12 @@ function EnsureMegaCmd {
                 $ErrorActionPreference = $PreviousErrorActionPreference
             }
         }
-        if (-not $Downloaded) {
-            DownloadFile $MegaInstallerUrl $Installer
-        }
+        if (-not $Downloaded) { DownloadFile $MegaInstallerUrl $Installer }
     }
 
     Stamp "Installing MEGAcmd silently..."
     $Process = Start-Process -FilePath $Installer -ArgumentList "/S" -Wait -PassThru
-    if ($Process.ExitCode -ne 0) {
-        throw "MEGAcmd installer failed with exit code $($Process.ExitCode)."
-    }
+    if ($Process.ExitCode -ne 0) { throw "MEGAcmd installer failed with exit code $($Process.ExitCode)." }
 
     $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" +
         [Environment]::GetEnvironmentVariable("Path","User") + ";" +
@@ -327,42 +331,135 @@ function EnsureMegaCmd {
 
     Start-Sleep -Seconds 2
     $MegaGet = FindMegaGet
-    if (-not $MegaGet) {
-        throw "MEGAcmd installed, but mega-get could not be located."
-    }
-
+    if (-not $MegaGet) { throw "MEGAcmd installed, but mega-get could not be located." }
     Stamp ("MEGAcmd = " + $MegaGet)
     return $MegaGet
 }
 
-function DownloadMegaSwitchAssets {
+function InvokeMegaScriptable([string]$ToolPath, [string[]]$Arguments) {
+    if ($ToolPath.ToLowerInvariant().EndsWith(".bat")) {
+        $Quoted = @()
+        foreach ($Arg in $Arguments) { $Quoted += ('"' + ($Arg -replace '"', '""') + '"') }
+        $CmdLine = '/d /s /c ""' + $ToolPath + '" ' + ($Quoted -join " ") + '"'
+        $Output = & cmd.exe $CmdLine 2>&1
+        return @{ ExitCode = $LASTEXITCODE; Output = @($Output) }
+    }
+    $Output = & $ToolPath @Arguments 2>&1
+    return @{ ExitCode = $LASTEXITCODE; Output = @($Output) }
+}
+
+function GetDirectoryBytes([string]$Path) {
+    if (-not (Test-Path $Path)) { return [int64]0 }
+    $Sum = (Get-ChildItem $Path -File -Recurse -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum
+    if ($null -eq $Sum) { return [int64]0 }
+    return [int64]$Sum
+}
+
+function GetMegaDesiredRemoteArchives {
+    [void](EnsureMegaCmd)
+    $MegaLogin = FindMegaTool "login"
+    $MegaFind = FindMegaTool "find"
+    if (-not $MegaLogin -or -not $MegaFind) { throw "MEGAcmd login/find commands could not be located." }
+
+    Stamp "Opening the shared MEGA folder in read-only mode..."
+    $Login = InvokeMegaScriptable $MegaLogin @($MegaFolderLink, "--resume")
+    if ($Login.ExitCode -ne 0) {
+        $Login = InvokeMegaScriptable $MegaLogin @($MegaFolderLink)
+    }
+    if ($Login.ExitCode -ne 0) {
+        throw ("Could not open the shared MEGA folder: " + (($Login.Output | Select-Object -Last 5) -join " "))
+    }
+
+    Stamp "Scanning MEGA metadata only; the full 14 GB folder will NOT be downloaded."
+    $Found = InvokeMegaScriptable $MegaFind @("/", "--type=f", "--pattern=*.zip")
+    $Found7z = InvokeMegaScriptable $MegaFind @("/", "--type=f", "--pattern=*.7z")
+    $Lines = @($Found.Output) + @($Found7z.Output)
+
+    $Selected = New-Object System.Collections.Generic.List[string]
+    foreach ($Line in $Lines) {
+        $Path = ([string]$Line).Trim()
+        if (-not $Path -or $Path.StartsWith("[err:")) { continue }
+        $Leaf = Split-Path $Path -Leaf
+        if ($Leaf -match "(?i)(poke|pokemon)" -and
+            $Leaf -match "(?i)(anim|pokeanim|model|poke|pokemon|dlc)" -and
+            ($Leaf.EndsWith(".zip", [StringComparison]::OrdinalIgnoreCase) -or $Leaf.EndsWith(".7z", [StringComparison]::OrdinalIgnoreCase))) {
+            if (-not $Selected.Contains($Path)) { $Selected.Add($Path) }
+        }
+    }
+
+    if ($Selected.Count -eq 0) {
+        throw "MEGA metadata scan succeeded, but no Pokemon model/animation archives matched."
+    }
+
+    Stamp ("Selected " + $Selected.Count + " Pokemon model/animation archive(s) instead of the whole folder.")
+    foreach ($Path in $Selected) { Stamp ("  " + $Path) }
+    return $Selected.ToArray()
+}
+
+function DownloadMegaArchiveWithWatchdog([string]$RemotePath) {
     EnsureDir $MegaAssetCache
+    $MegaGet = EnsureMegaCmd
+    $Leaf = Split-Path $RemotePath -Leaf
 
     $Existing = Get-ChildItem $MegaAssetCache -File -Recurse -ErrorAction SilentlyContinue |
-        Where-Object { $_.Extension -in @(".zip", ".7z") } |
-        Select-Object -First 1
+        Where-Object { $_.Name -eq $Leaf -and $_.Length -gt 1MB } | Select-Object -First 1
     if ($Existing) {
-        Stamp "MEGA asset cache already contains archives. Reusing it and checking for missing files."
-    } else {
-        Stamp "Downloading the shared Pokemon game-asset folder from MEGA."
-        Stamp "This is a large one-time download; later setup runs reuse the cache."
+        Stamp ("Already downloaded: " + $Leaf)
+        return
     }
 
-    $MegaGet = EnsureMegaCmd
-    $PreviousErrorActionPreference = $ErrorActionPreference
-    $ErrorActionPreference = "Continue"
-    try {
-        & $MegaGet -m $MegaFolderLink $MegaAssetCache
-        $MegaExit = $LASTEXITCODE
-    } finally {
-        $ErrorActionPreference = $PreviousErrorActionPreference
+    for ($Attempt = 1; $Attempt -le $MegaDownloadRetries; $Attempt++) {
+        Stamp ("Downloading " + $Leaf + " (attempt " + $Attempt + "/" + $MegaDownloadRetries + ")...")
+        $BeforeBytes = GetDirectoryBytes $MegaAssetCache
+        $LastBytes = $BeforeBytes
+        $LastProgress = Get-Date
+
+        if ($MegaGet.ToLowerInvariant().EndsWith(".bat")) {
+            $ArgLine = '/d /s /c ""' + $MegaGet + '" -m "' + $RemotePath + '" "' + $MegaAssetCache + '" "'
+            $Proc = Start-Process -FilePath "cmd.exe" -ArgumentList $ArgLine -PassThru -NoNewWindow
+        } else {
+            $Proc = Start-Process -FilePath $MegaGet -ArgumentList @("-m", $RemotePath, $MegaAssetCache) -PassThru -NoNewWindow
+        }
+
+        while (-not $Proc.HasExited) {
+            Start-Sleep -Seconds 10
+            $Proc.Refresh()
+            $NowBytes = GetDirectoryBytes $MegaAssetCache
+            if ($NowBytes -gt $LastBytes) {
+                $DeltaMB = [math]::Round(($NowBytes - $BeforeBytes) / 1MB, 1)
+                Stamp ("  transfer active: +" + $DeltaMB + " MB this attempt")
+                $LastBytes = $NowBytes
+                $LastProgress = Get-Date
+            } elseif (((Get-Date) - $LastProgress).TotalSeconds -ge $MegaNoProgressTimeoutSeconds) {
+                Stamp ("  no disk progress for " + $MegaNoProgressTimeoutSeconds + " seconds; restarting this archive download.")
+                try { Stop-Process -Id $Proc.Id -Force -ErrorAction SilentlyContinue } catch {}
+                break
+            }
+        }
+
+        $Existing = Get-ChildItem $MegaAssetCache -File -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -eq $Leaf -and $_.Length -gt 1MB } | Select-Object -First 1
+        if ($Existing) {
+            Stamp ("Completed: " + $Leaf + " (" + [math]::Round($Existing.Length / 1MB, 1) + " MB)")
+            return
+        }
+
+        if ($Attempt -lt $MegaDownloadRetries) {
+            Stamp "  retrying after 20 seconds; existing MEGA/cache data is preserved."
+            Start-Sleep -Seconds 20
+        }
     }
 
-    if ($MegaExit -ne 0) {
-        throw "MEGA asset download failed with exit code $MegaExit."
-    }
+    throw ("Download repeatedly stalled for " + $Leaf + ". Setup stopped instead of hanging forever. Rerun setup later; completed archives are reused.")
+}
 
-    Stamp "MEGA asset download/sync finished."
+function DownloadMegaSwitchAssets {
+    EnsureDir $MegaAssetCache
+    $RemoteArchives = @(GetMegaDesiredRemoteArchives)
+    foreach ($RemotePath in $RemoteArchives) {
+        DownloadMegaArchiveWithWatchdog $RemotePath
+    }
+    Stamp "Selective MEGA model/animation download finished."
 }
 
 function FindSwitchAssetArchives {
@@ -379,8 +476,7 @@ function FindSwitchAssetArchives {
         if (-not $Root -or -not (Test-Path $Root)) { continue }
         $Files = Get-ChildItem $Root -File -Recurse -ErrorAction SilentlyContinue | Where-Object {
             ($_.Extension -in @(".zip", ".7z")) -and
-            ($_.BaseName -match "(?i)(Poke|Pokemon)") -and
-            ($_.BaseName -notmatch "(?i)(anim|animation)")
+            ($_.BaseName -match "(?i)(Poke|Pokemon)")
         }
         foreach ($File in $Files) {
             if (-not $Found.Contains($File.FullName)) { $Found.Add($File.FullName) }
@@ -398,17 +494,21 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     if (-not $Blender) {
         throw "Blender is unavailable, so Switch-game models cannot be converted."
     }
-    $Archives = @(FindSwitchAssetArchives)
+    $AllArchives = @(FindSwitchAssetArchives)
+    $Archives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
     if ($Archives.Count -eq 0) {
         Stamp "No local Switch-game model archives were found."
         DownloadMegaSwitchAssets
-        $Archives = @(FindSwitchAssetArchives)
+        $AllArchives = @(FindSwitchAssetArchives)
+        $Archives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
     }
     if ($Archives.Count -eq 0) {
-        throw "The MEGA download completed, but no Pokemon model archives were discovered."
+        throw "The selective MEGA download completed, but no Pokemon model archives were discovered."
     }
-    Stamp ("Found " + $Archives.Count + " Switch model archive(s).")
-    foreach ($Archive in $Archives) { Stamp ("  " + (Split-Path -Leaf $Archive)) }
+    $AnimArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -match "(?i)(anim|animation|pokeanim)" })
+    Stamp ("Found " + $Archives.Count + " Switch model archive(s) and " + $AnimArchives.Count + " animation archive(s).")
+    foreach ($Archive in $Archives) { Stamp ("  model: " + (Split-Path -Leaf $Archive)) }
+    foreach ($Archive in $AnimArchives) { Stamp ("  anim:  " + (Split-Path -Leaf $Archive)) }
     if ($Archives | Where-Object { $_.ToLowerInvariant().EndsWith(".7z") }) {
         [void](EnsureSevenZip)
     }
