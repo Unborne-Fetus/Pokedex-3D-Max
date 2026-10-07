@@ -2,41 +2,37 @@
 setlocal EnableExtensions
 cd /d "%~dp0"
 
-title Pokedex 3D Max - Windows Setup
+title Pokedex 3D Max - One-Click Setup
 
-set "MODE=FAST"
-set "MODEL_ARGS=-SkipModels"
+set "SETUP_ARGS="
+set "MODE=FULL"
 
-if /I "%~1"=="full" (
-  set "MODE=FULL"
-  set "MODEL_ARGS=-RefreshModels"
+if /I "%~1"=="fast" (
+  set "MODE=FAST"
+  set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
 )
 
 echo ============================================================
-echo              Pokedex 3D Max - Windows Setup
+echo            Pokedex 3D Max - One-Click Setup
 echo ============================================================
 echo.
 echo Mode: %MODE%
 echo.
-if "%MODE%"=="FAST" (
-  echo FAST SETUP ^(recommended^)
+if "%MODE%"=="FULL" (
+  echo This setup automatically:
+  echo   1. Reuses/installs JDK
+  echo   2. Reuses/installs Gradle
+  echo   3. Reuses/installs Python + Pillow
+  echo   4. Reuses/installs Blender
+  echo   5. Detects and imports Switch Pokemon model archives
+  echo   6. Reuses/downloads missing offline models
+  echo   7. Builds the Windows EXE
   echo.
-  echo This setup will:
-  echo   1. Reuse/download JDK only if needed
-  echo   2. Reuse/download Gradle only if needed
-  echo   3. Skip the huge offline model sync
-  echo   4. Build the Windows EXE using Gradle cache/parallel mode
-  echo.
-  echo Existing offline models are still reused if you already have them.
-  echo The app can use online model sources when no offline pack exists.
-  echo.
-  echo To refresh/download the COMPLETE offline model pack, run:
-  echo   setup-all.bat full
+  echo Existing downloads and conversions are reused whenever possible.
 ) else (
-  echo FULL OFFLINE SETUP
-  echo.
-  echo This also refreshes/downloads the complete offline 3D model pack.
-  echo This mode can take much longer.
+  echo FAST MODE:
+  echo   Skips Switch archive importing and the offline model sync.
+  echo   Use this only when you just want to rebuild the app.
 )
 echo.
 echo Live progress is saved to setup-all.log.
@@ -53,13 +49,13 @@ if not exist "%~dp0scripts\setup_all.ps1" (
   exit /b 2
 )
 
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_all.ps1" %MODEL_ARGS%
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_all.ps1" %SETUP_ARGS%
 set "EXITCODE=%ERRORLEVEL%"
 
 echo.
 echo ============================================================
 if "%EXITCODE%"=="0" (
-  echo Windows setup finished.
+  echo Setup finished successfully.
   echo.
   echo Final installer:
   echo   %~dp0dist\Pokedex-3D-Max-Windows.exe
