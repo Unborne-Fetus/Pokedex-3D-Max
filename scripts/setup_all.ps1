@@ -495,20 +495,21 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         throw "Blender is unavailable, so Switch-game models cannot be converted."
     }
     $AllArchives = @(FindSwitchAssetArchives)
-    $Archives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
-    if ($Archives.Count -eq 0) {
+    $ModelArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
+    if ($ModelArchives.Count -eq 0) {
         Stamp "No local Switch-game model archives were found."
         DownloadMegaSwitchAssets
         $AllArchives = @(FindSwitchAssetArchives)
-        $Archives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
+        $ModelArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
     }
-    if ($Archives.Count -eq 0) {
+    if ($ModelArchives.Count -eq 0) {
         throw "The selective MEGA download completed, but no Pokemon model archives were discovered."
     }
     $AnimArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -match "(?i)(anim|animation|pokeanim)" })
-    Stamp ("Found " + $Archives.Count + " Switch model archive(s) and " + $AnimArchives.Count + " animation archive(s).")
-    foreach ($Archive in $Archives) { Stamp ("  model: " + (Split-Path -Leaf $Archive)) }
+    Stamp ("Found " + $ModelArchives.Count + " Switch model archive(s) and " + $AnimArchives.Count + " animation archive(s).")
+    foreach ($Archive in $ModelArchives) { Stamp ("  model: " + (Split-Path -Leaf $Archive)) }
     foreach ($Archive in $AnimArchives) { Stamp ("  anim:  " + (Split-Path -Leaf $Archive)) }
+    $Archives = $AllArchives
     if ($Archives | Where-Object { $_.ToLowerInvariant().EndsWith(".7z") }) {
         [void](EnsureSevenZip)
     }
