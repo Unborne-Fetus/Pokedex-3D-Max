@@ -4,24 +4,42 @@ cd /d "%~dp0"
 
 title Pokedex 3D Max - Windows Setup
 
+set "MODE=FAST"
+set "MODEL_ARGS=-SkipModels"
+
+if /I "%~1"=="full" (
+  set "MODE=FULL"
+  set "MODEL_ARGS=-RefreshModels"
+)
+
 echo ============================================================
 echo              Pokedex 3D Max - Windows Setup
 echo ============================================================
 echo.
-echo WINDOWS-ONLY MODE
+echo Mode: %MODE%
 echo.
-echo This setup will:
-echo   1. Check/download JDK 22
-echo   2. Check/download Gradle
-echo   3. Check Python
-echo   4. Download/update every offline 3D model
-echo   5. Build Pokedex-3D-Max-Windows.exe
+if "%MODE%"=="FAST" (
+  echo FAST SETUP ^(recommended^)
+  echo.
+  echo This setup will:
+  echo   1. Reuse/download JDK only if needed
+  echo   2. Reuse/download Gradle only if needed
+  echo   3. Skip the huge offline model sync
+  echo   4. Build the Windows EXE using Gradle cache/parallel mode
+  echo.
+  echo Existing offline models are still reused if you already have them.
+  echo The app can use online model sources when no offline pack exists.
+  echo.
+  echo To refresh/download the COMPLETE offline model pack, run:
+  echo   setup-all.bat full
+) else (
+  echo FULL OFFLINE SETUP
+  echo.
+  echo This also refreshes/downloads the complete offline 3D model pack.
+  echo This mode can take much longer.
+)
 echo.
-echo Android/APK setup is disabled for now.
-echo.
-echo Live progress will stay visible in this window.
-echo The same output is also saved to setup-all.log.
-echo Existing model files are reused.
+echo Live progress is saved to setup-all.log.
 echo.
 echo Press any key to begin.
 pause >nul
@@ -35,7 +53,7 @@ if not exist "%~dp0scripts\setup_all.ps1" (
   exit /b 2
 )
 
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_all.ps1"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_all.ps1" %MODEL_ARGS%
 set "EXITCODE=%ERRORLEVEL%"
 
 echo.
