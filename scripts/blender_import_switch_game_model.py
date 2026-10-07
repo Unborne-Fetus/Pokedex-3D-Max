@@ -12,8 +12,19 @@ argv = sys.argv[sys.argv.index("--") + 1 :]
 jobs_path = Path(argv[0]).resolve()
 addon_parent = Path(argv[1]).resolve()
 addon_name = argv[2]
+blender_deps = Path(argv[3]).resolve()
 
+# Make setup-installed dependencies visible before the add-on registers.
+# This avoids Blender's disabled "Online Access" package installer path.
+sys.path.insert(0, str(blender_deps))
 sys.path.insert(0, str(addon_parent))
+try:
+    import flatbuffers  # noqa: F401
+except Exception as exc:
+    raise RuntimeError(
+        f"flatbuffers is unavailable in Blender; expected dependency cache at {blender_deps}: {exc}"
+    ) from exc
+
 addon = importlib.import_module(addon_name)
 addon.register()
 
