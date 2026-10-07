@@ -28,7 +28,7 @@ android {
     // index.html + web/ are the canonical UI and 3D renderer.
     sourceSets {
         getByName("main") {
-            assets.srcDir(layout.buildDirectory.dir("generated/pokedexWebAssets"))
+            assets.srcDir(layout.buildDirectory.dir("generated/pokedexWebAssets").get().asFile)
         }
     }
 
