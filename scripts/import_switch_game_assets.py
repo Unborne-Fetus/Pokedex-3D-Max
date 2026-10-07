@@ -338,8 +338,11 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
     payload = []
     for job in jobs:
         out = WEB_ROOT / f"{job['dex']:04d}" / f"{job['form']}.glb"
-        if out.is_file() and out.stat().st_size > 1024:
+        has_animation_candidates = bool(job.get("animations"))
+        if out.is_file() and out.stat().st_size > 1024 and not has_animation_candidates:
             continue
+        # If matching animation files are now available, reconvert an existing
+        # static GLB so it can become active instead of remaining staged forever.
         out.parent.mkdir(parents=True, exist_ok=True)
         payload.append({**job, "output": str(out)})
 
