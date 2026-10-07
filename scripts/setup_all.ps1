@@ -187,29 +187,52 @@ function EnsurePython {
 }
 
 function InstallModels([string]$PythonCommand) {
-    Step "STEP 4/5 - Preparing complete offline 3D model pack"
+    Step "STEP 4/5 - Preparing offline 3D model pack"
+    $Pack = Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"
+
     if ($SkipModels) {
-        Stamp "Skipping model download because -SkipModels was supplied."
+        if (Test-Path $Pack) {
+            Stamp "Fast mode: skipping model sync and reusing the existing offline model folder."
+            return $Pack
+        }
+        Stamp "Fast mode: skipping the optional offline model download."
+        Stamp "The app can use its online/CDN model sources instead."
         return $null
     }
 
-    $Pack = Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"
     EnsureDir $Pack
+    $Info = Join-Path $Pack "pack_info.json"
+
+    if ((-not $RefreshModels) -and (Test-Path $Info)) {
+        try {
+            $PackInfo = Get-Content $Info -Raw | ConvertFrom-Json
+            if (($PackInfo.modelCount -gt 0) -and ($PackInfo.failedCount -eq 0)) {
+                Stamp ("Offline model pack is already complete (" + $PackInfo.modelCount + " models).")
+                Stamp "Skipping network scan/download. Use -RefreshModels to force a refresh."
+                return $Pack
+            }
+        } catch {
+            Stamp "Existing pack_info.json could not be validated; continuing with model sync."
+        }
+    }
+
     $Script = Join-Path $RepoRoot "scripts\download_models.py"
+    $Workers = [Math]::Min(24, [Math]::Max(8, [Environment]::ProcessorCount * 2))
+
     Stamp ("Model folder: " + $Pack)
-    Stamp "The downloader will print progress continuously."
-    Stamp "Existing model files are reused, so rerunning setup does not start over."
+    Stamp ("Using " + $Workers + " parallel model download workers.")
+    Stamp "Existing files are reused; only missing/changed files need network work."
 
     $env:PYTHONUNBUFFERED = "1"
     if ($PythonCommand -eq "py") {
-        & py -3 -u $Script --target $Pack --workers 12
+        & py -3 -u $Script --target $Pack --workers $Workers
     } else {
-        & python -u $Script --target $Pack --workers 12
+        & python -u $Script --target $Pack --workers $Workers
     }
 
     if ($LASTEXITCODE -notin @(0,2)) { throw "Model-pack download failed." }
-    $Info = Join-Path $Pack "pack_info.json"
     if (-not (Test-Path $Info)) { throw "Model pack did not produce pack_info.json." }
+
     Stamp "Model pack summary:"
     Get-Content $Info | Out-Host
     return $Pack
