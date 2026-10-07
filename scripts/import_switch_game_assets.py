@@ -22,6 +22,7 @@ ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blende
 BLENDER_DEPS = CACHE / "blender-python-deps"
 
 MODEL_EXTS = {".trmdl", ".gfbmdl"}
+ANIM_EXTS = {".tranm", ".gfbanm"}
 DEX_RE = re.compile(r"pm(\d{4})", re.I)
 FORM_RE = re.compile(r"pm\d{4}(?:_(\d{2}))?(?:_(\d{2}))?", re.I)
 SAFE_RE = re.compile(r"[^a-z0-9_-]+")
@@ -133,6 +134,83 @@ def scan_models(root: Path, game: str) -> list[dict]:
             }
         )
     return jobs
+
+
+
+def scan_animations(root: Path, game: str) -> list[dict]:
+    animations: list[dict] = []
+    for path in root.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in ANIM_EXTS:
+            continue
+        match = DEX_RE.search(str(path))
+        if not match:
+            continue
+        dex = int(match.group(1))
+        if dex <= 0 or dex > 2000:
+            continue
+        animations.append(
+            {
+                "dex": dex,
+                "form": infer_form(path),
+                "game": game,
+                "source": str(path),
+                "name": path.stem,
+                "extension": path.suffix.lower(),
+            }
+        )
+    return animations
+
+
+def animation_score(item: dict) -> tuple[int, int, str]:
+    """Prefer calm/idle clips and then shorter, simpler filenames."""
+    name = item["name"].lower()
+    score = 0
+    preferred = (
+        ("idle", 1000),
+        ("wait", 950),
+        ("stand", 900),
+        ("battlewait", 875),
+        ("battle_wait", 875),
+        ("breath", 850),
+        ("rest", 800),
+        ("loop", 500),
+    )
+    bad = ("attack", "damage", "faint", "death", "down", "hit", "move", "run", "walk", "jump")
+    for token, value in preferred:
+        if token in name:
+            score = max(score, value)
+    if any(token in name for token in bad):
+        score -= 300
+    return (score, -len(name), name)
+
+
+def attach_animations(jobs: list[dict], animations: list[dict], max_clips: int = 6) -> None:
+    by_exact: dict[tuple[int, str], list[dict]] = {}
+    by_dex: dict[int, list[dict]] = {}
+    for anim in animations:
+        by_exact.setdefault((anim["dex"], anim["form"]), []).append(anim)
+        by_dex.setdefault(anim["dex"], []).append(anim)
+
+    for job in jobs:
+        exact = by_exact.get((job["dex"], job["form"]), [])
+        candidates = exact or by_dex.get(job["dex"], [])
+        candidates = sorted(candidates, key=animation_score, reverse=True)
+
+        # Keep a small useful set: one best idle-like clip plus a few distinct
+        # alternatives. This avoids exploding GLB size while getting models out
+        # of bind pose immediately.
+        selected: list[dict] = []
+        seen_names: set[str] = set()
+        for anim in candidates:
+            name = anim["name"].lower()
+            if name in seen_names:
+                continue
+            selected.append(anim)
+            seen_names.add(name)
+            if len(selected) >= max_clips:
+                break
+
+        job["animations"] = selected
 
 
 def dedupe_jobs(jobs: list[dict]) -> list[dict]:
@@ -421,20 +499,25 @@ def main() -> int:
     args = parser.parse_args()
 
     all_jobs: list[dict] = []
+    all_animations: list[dict] = []
     for source in args.inputs:
         root, game = extract_input(source)
         found = scan_models(root, game)
-        print(f"{source.name}: {len(found)} model files ({game})")
+        anims = scan_animations(root, game)
+        print(f"{source.name}: {len(found)} model files, {len(anims)} animation files ({game})")
         all_jobs.extend(found)
+        all_animations.extend(anims)
 
     jobs = dedupe_jobs(all_jobs)
+    attach_animations(jobs, all_animations)
     if args.dex:
         wanted = set(args.dex)
         jobs = [job for job in jobs if job["dex"] in wanted]
     if args.limit > 0:
         jobs = jobs[: args.limit]
 
-    print(f"Selected {len(jobs)} unique Pokémon/form model jobs")
+    models_with_anim = sum(1 for job in jobs if job.get("animations"))
+    print(f"Selected {len(jobs)} unique Pokémon/form model jobs; {models_with_anim} have matching animation candidates")
     if args.inventory_only:
         inventory = CACHE / "switch-model-inventory.json"
         inventory.parent.mkdir(parents=True, exist_ok=True)
