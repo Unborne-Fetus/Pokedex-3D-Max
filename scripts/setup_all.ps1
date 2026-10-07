@@ -12,6 +12,8 @@ $DistDir = Join-Path $RepoRoot "dist"
 $LogFile = Join-Path $RepoRoot "setup-all.log"
 $GradleVersion = "9.6.0"
 $JdkMajor = "22"
+$BlenderPortableVersion = "4.5.14"
+$BlenderPortableUrl = "https://download.blender.org/release/Blender4.5/blender-4.5.14-windows-x64.zip"
 $MegaFolderLink = "https://mega.nz/folder/elJhVC5D#NU-yzmXuTlsIIzXAMLKVaA"
 $MegaAssetCache = Join-Path $RepoRoot ".cache\mega-switch-assets"
 
@@ -203,28 +205,50 @@ function EnsureBlender {
             Select-Object -First 1 -ExpandProperty FullName
     }
 
+    $PortableRoot = Join-Path $ToolsDir ("blender-" + $BlenderPortableVersion)
+    $PortableExe = Get-ChildItem $PortableRoot -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty FullName
+    if ((-not $Blender) -and $PortableExe) { $Blender = $PortableExe }
+
     if (-not $Blender) {
-        if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-            Stamp "Blender was not found and winget is unavailable. Switch-game model import will be skipped."
-            return $null
+        Stamp ("Blender was not found. Downloading portable Blender " + $BlenderPortableVersion + "...")
+        $Zip = Join-Path $ToolsDir ("blender-" + $BlenderPortableVersion + ".zip")
+        if (-not (Test-Path $Zip)) {
+            $Downloaded = $false
+            if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
+                $PreviousErrorActionPreference = $ErrorActionPreference
+                $ErrorActionPreference = "Continue"
+                try {
+                    & curl.exe -L --fail --retry 3 --retry-delay 2 -A "Mozilla/5.0" -o $Zip $BlenderPortableUrl
+                    $Downloaded = ($LASTEXITCODE -eq 0 -and (Test-Path $Zip) -and ((Get-Item $Zip).Length -gt 100MB))
+                } finally {
+                    $ErrorActionPreference = $PreviousErrorActionPreference
+                }
+            }
+            if (-not $Downloaded) {
+                try {
+                    DownloadFile $BlenderPortableUrl $Zip
+                    $Downloaded = (Test-Path $Zip) -and ((Get-Item $Zip).Length -gt 100MB)
+                } catch {
+                    $Downloaded = $false
+                }
+            }
+            if (-not $Downloaded) {
+                if (Test-Path $Zip) { Remove-Item -Force $Zip }
+                throw "Could not download portable Blender from the official Blender archive."
+            }
+        } else {
+            Stamp "Portable Blender ZIP already exists. Reusing it."
         }
-        Stamp "Blender was not found. Installing Blender automatically..."
-        & winget install --id BlenderFoundation.Blender --exact --silent --accept-source-agreements --accept-package-agreements
-        if ($LASTEXITCODE -ne 0) {
-            Stamp "Blender installation failed. Switch-game model import will be skipped."
-            return $null
-        }
-        $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User")
-        if (Get-Command blender -ErrorAction SilentlyContinue) {
-            $Blender = (Get-Command blender).Source
-        } elseif (Test-Path $BlenderRoot) {
-            $Blender = Get-ChildItem $BlenderRoot -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue |
-                Sort-Object FullName -Descending |
-                Select-Object -First 1 -ExpandProperty FullName
-        }
+
+        if (Test-Path $PortableRoot) { Remove-Item -Recurse -Force $PortableRoot }
+        ExpandFresh $Zip $PortableRoot
+        $Blender = Get-ChildItem $PortableRoot -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue |
+            Select-Object -First 1 -ExpandProperty FullName
+        if (-not $Blender) { throw "Portable Blender extracted but blender.exe was not found." }
     }
 
-    if ($Blender) { Stamp ("Blender = " + $Blender) }
+    Stamp ("Blender = " + $Blender)
     return $Blender
 }
 
@@ -268,18 +292,32 @@ function EnsureMegaCmd {
         return $MegaGet
     }
 
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        throw "MEGAcmd is required to download the shared asset folder, but winget is unavailable."
+    Stamp "MEGAcmd was not found. Downloading the official installer directly..."
+    $Installer = Join-Path $ToolsDir "MEGAcmdSetup64.exe"
+    $MegaInstallerUrl = "https://mega.nz/MEGAcmdSetup64.exe"
+
+    if (-not (Test-Path $Installer) -or (Get-Item $Installer).Length -lt 10MB) {
+        if (Test-Path $Installer) { Remove-Item -Force $Installer }
+        $Downloaded = $false
+        if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
+            $PreviousErrorActionPreference = $ErrorActionPreference
+            $ErrorActionPreference = "Continue"
+            try {
+                & curl.exe -L --fail --retry 3 --retry-delay 2 -A "Mozilla/5.0" -o $Installer $MegaInstallerUrl
+                $Downloaded = ($LASTEXITCODE -eq 0 -and (Test-Path $Installer) -and ((Get-Item $Installer).Length -gt 10MB))
+            } finally {
+                $ErrorActionPreference = $PreviousErrorActionPreference
+            }
+        }
+        if (-not $Downloaded) {
+            DownloadFile $MegaInstallerUrl $Installer
+        }
     }
 
-    Stamp "MEGAcmd was not found. Installing it automatically..."
-    $PreviousErrorActionPreference = $ErrorActionPreference
-    $ErrorActionPreference = "Continue"
-    try {
-        & winget install --name MEGAcmd --exact --silent --accept-source-agreements --accept-package-agreements
-        $MegaInstallExit = $LASTEXITCODE
-    } finally {
-        $ErrorActionPreference = $PreviousErrorActionPreference
+    Stamp "Installing MEGAcmd silently..."
+    $Process = Start-Process -FilePath $Installer -ArgumentList "/S" -Wait -PassThru
+    if ($Process.ExitCode -ne 0) {
+        throw "MEGAcmd installer failed with exit code $($Process.ExitCode)."
     }
 
     $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" +
@@ -287,9 +325,10 @@ function EnsureMegaCmd {
         (Join-Path $env:LOCALAPPDATA "MEGAcmd") + ";" +
         (Join-Path $env:ProgramFiles "MEGAcmd")
 
+    Start-Sleep -Seconds 2
     $MegaGet = FindMegaGet
     if (-not $MegaGet) {
-        throw "MEGAcmd could not be installed automatically (winget exit $MegaInstallExit)."
+        throw "MEGAcmd installed, but mega-get could not be located."
     }
 
     Stamp ("MEGAcmd = " + $MegaGet)
@@ -357,8 +396,7 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         return
     }
     if (-not $Blender) {
-        Stamp "Blender is unavailable. Skipping Switch-game model conversion."
-        return
+        throw "Blender is unavailable, so Switch-game models cannot be converted."
     }
     $Archives = @(FindSwitchAssetArchives)
     if ($Archives.Count -eq 0) {
