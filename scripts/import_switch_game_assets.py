@@ -19,6 +19,7 @@ MANIFEST_JSON = ROOT / "web" / "models" / "switch-manifest.json"
 MANIFEST_JS = ROOT / "web" / "models" / "switch-manifest.js"
 ADDON_DIR = TOOLS / "pokemon_switch_model_importer"
 ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blender.git"
+BLENDER_DEPS = CACHE / "blender-python-deps"
 
 MODEL_EXTS = {".trmdl", ".gfbmdl"}
 DEX_RE = re.compile(r"pm(\d{4})", re.I)
@@ -168,6 +169,76 @@ def ensure_addon() -> Path:
     return ADDON_DIR
 
 
+
+def ensure_blender_python_deps() -> Path:
+    """Install pure-Python importer dependencies outside Blender.
+
+    Blender 4.5 blocks add-ons from fetching Python packages when Online Access
+    is disabled. Install flatbuffers with the normal setup Python instead, then
+    put that directory on Blender's sys.path before registering the importer.
+    """
+    marker = BLENDER_DEPS / ".flatbuffers-ready"
+    if marker.is_file():
+        return BLENDER_DEPS
+
+    BLENDER_DEPS.mkdir(parents=True, exist_ok=True)
+
+    # Verify an existing cached install before touching the network.
+    probe = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import sys; "
+                f"sys.path.insert(0, {str(BLENDER_DEPS)!r}); "
+                "import flatbuffers; print(flatbuffers.__version__)"
+            ),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if probe.returncode == 0:
+        marker.write_text("ok\n", encoding="utf-8")
+        print(f"Blender dependency cache already has flatbuffers ({probe.stdout.strip()}).", flush=True)
+        return BLENDER_DEPS
+
+    print("Installing flatbuffers for Blender importer (outside Blender) ...", flush=True)
+    cmd = [
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--upgrade",
+        "--target",
+        str(BLENDER_DEPS),
+        "flatbuffers",
+    ]
+    result = subprocess.run(cmd)
+    if result.returncode:
+        raise RuntimeError("Could not install the flatbuffers dependency required by the Blender importer.")
+
+    verify = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import sys; "
+                f"sys.path.insert(0, {str(BLENDER_DEPS)!r}); "
+                "import flatbuffers; print(flatbuffers.__version__)"
+            ),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if verify.returncode:
+        raise RuntimeError("flatbuffers installed, but the dependency cache could not import it.")
+
+    marker.write_text("ok\n", encoding="utf-8")
+    print(f"flatbuffers ready for Blender ({verify.stdout.strip()}).", flush=True)
+    return BLENDER_DEPS
+
+
 def find_blender(explicit: str | None) -> str:
     candidates = [explicit, os.environ.get("BLENDER"), shutil.which("blender")]
     if os.name == "nt":
@@ -184,7 +255,7 @@ def find_blender(explicit: str | None) -> str:
     raise RuntimeError("Blender was not found. Install Blender 3.6+ or pass --blender PATH.")
 
 
-def run_blender(jobs: list[dict], blender: str, addon: Path) -> None:
+def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path) -> None:
     WEB_ROOT.mkdir(parents=True, exist_ok=True)
     payload = []
     for job in jobs:
@@ -211,6 +282,7 @@ def run_blender(jobs: list[dict], blender: str, addon: Path) -> None:
         str(jobs_file),
         str(addon.parent),
         addon.name,
+        str(blender_deps),
     ]
     print(f"Converting {len(payload)} Switch models in one Blender session ...", flush=True)
     result = subprocess.run(cmd, cwd=ROOT)
@@ -375,7 +447,8 @@ def main() -> int:
 
     blender = find_blender(args.blender)
     addon = ensure_addon()
-    run_blender(jobs, blender, addon)
+    blender_deps = ensure_blender_python_deps()
+    run_blender(jobs, blender, addon, blender_deps)
     entries = build_manifest(jobs, args.allow_static)
     write_manifest(entries)
     if not args.no_desktop_install:
