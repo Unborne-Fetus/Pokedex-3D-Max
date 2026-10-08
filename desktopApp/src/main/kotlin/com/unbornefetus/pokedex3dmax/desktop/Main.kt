@@ -83,7 +83,7 @@ private data class ModelBounds(
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Pokedex 3D Max",
+        title = "Pokedex 3D Max v0.2.0",
         state = rememberWindowState(width = 1280.dp, height = 820.dp),
     ) {
         MaterialTheme(colorScheme = darkColorScheme()) {
