@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.application")
+    id("com.android.application") version "9.4.1"
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
@@ -71,3 +71,4 @@ dependencies {
     implementation("io.github.sceneview:sceneview:4.34.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
+
