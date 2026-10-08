@@ -1,30 +1,52 @@
 # Pokedex 3D Max
 
-A modern, unofficial 3D Pokédex for Android and Windows.
+Pokedex 3D Max is currently in a **Switch-model baseline phase**. The project has intentionally been reduced to the smallest useful scope so model conversion, animation playback, and textures can be made reliable before any larger features return.
 
-## Current platform support
+## Current scope
 
-### Android
-- Jetpack Compose
-- SceneView + Google Filament
-- Interactive GLB viewer
-- Drag to rotate
-- Pinch to zoom
-- Automatic model animation where clips are present
-- Online model catalog fallback
-- Automatic preference for an installed offline model pack
+`main` now contains only the core 3D viewer pipeline:
 
-### Windows and browser index
-- The Windows EXE has its own native Compose/Filament viewer and reads installed GLBs directly.
-- The browser index is a separate viewer. It uses the same installed Switch assets after setup or `launch-index.bat` syncs them.
-- Both prefer Switch models for matching species/forms; older models fill gaps where no Switch replacement is installed.
-- Search, forms, skeletal idle animation, camera controls, idle breaks and auto-rotate are available in both viewers.
-- Both include the adapted Brisk battle simulator. Windows executes the engine directly inside the native app.
-- Windows MSI/EXE installers plus a portable app in `dist/Pokedex-3D-Max-Portable`.
+- Regular Pokémon models from the downloaded Nintendo Switch game asset archives
+- Compatible animations from the same Switch game/form
+- Embedded GLB animation playback
+- Strict texture validation
+- Windows native viewer
+- Browser viewer
+- Android viewer using the same canonical web runtime
+- Search, camera controls, auto-rotate, and verified idle animation playback
 
-Building requires JDK 22. The packaged native app includes Java and does not require Chrome, Edge, an HTTP server, or index.html. Browser assets and its Draco decoder are bundled; remote fallback models require internet.
+The current baseline deliberately excludes:
 
-After pulling updates, run in PowerShell:
+- Mega Evolutions
+- Gigantamax forms
+- Shiny models
+- Other non-regular model forms
+- Battle simulator / Brisk battle engine
+- PokeMiners model fallbacks
+- Pokémon 3D API/CDN model fallbacks
+- Generic offline model-pack fallbacks
+
+The removed feature-heavy state is preserved on:
+
+`archive/full-features-before-switch-baseline`
+
+Nothing on that branch needs to be re-created if those systems are wanted later.
+
+## Strict model rules
+
+A model is allowed into the live catalog only when all of the following are true:
+
+1. It is a regular-form Switch model.
+2. The converted GLB contains mesh geometry.
+3. A compatible Switch animation is embedded and a verified idle can be selected.
+4. Every used mesh material has a valid base-color texture binding.
+5. The model passes the importer/export validation gates.
+
+Textureless or partially textured GLBs are rejected instead of being shown with white/broken pieces. Static/T-pose replacements are not silently substituted. If a Switch model fails, the viewer reports the failure rather than loading an older model source.
+
+## Setup
+
+From PowerShell:
 
 ```powershell
 cd "C:\ROM Hacks\Pokedex-3D-Max"
@@ -32,173 +54,75 @@ git pull
 .\setup-all.bat full
 ```
 
-If Windows cancels installation with code 1602, setup retains the new portable app and writes `dist/windows-install.log`. Run `dist/Pokedex-3D-Max-Portable/Pokedex 3D Max.exe` to use the new build without installing. A cancelled install does not update the existing shortcut.
+### Full
 
-Run `launch-index.bat` to sync already-downloaded Switch assets and open the index over local HTTP. Setup also syncs these assets automatically. Directly opening `index.html` can block local GLB loading because of browser file restrictions. Battle data remains embedded.
+`setup-all.bat full`
 
-Current restoration mode keeps the original animated Switch exports active even when their textures are unfinished. Setup recovers exports from the installed pack, `web/models/switch`, and its original-export backup. When original archives are present, it also converts missing exports previously rejected for their textures; existing exports are reused. It skips the online replacement pack and old generic downloads. Both viewers show the restored Switch catalog only; texture work is deferred.
+- Checks/installs the required tools.
+- Finds the original Switch model, animation, and texture archives.
+- Reuses only already-valid regular Switch GLBs.
+- Reconverts missing, texture-incomplete, or otherwise invalid models.
+- Runs importer and desktop preflight checks.
+- Builds the Windows MSI/EXE.
 
-To restore the downloaded models without rebuilding the app, run `setup-all.bat switch`. To rebuild/update the native EXE as well, run `setup-all.bat full`.
+### Switch assets only
 
-## 3D model library
+`setup-all.bat switch`
 
-Pokedex 3D Max integrates the community-maintained Pokémon 3D API asset library.
+Use this while working specifically on models, animations, or textures. It skips the Windows app build and installer.
 
-Current upstream coverage is 1,300+ optimized GLB models, including:
+### Fast
 
-- Regular forms
-- Shiny variants
-- Mega Evolutions
-- Gigantamax forms
-- Regional forms
-- Alternate and special forms
+`setup-all.bat fast`
 
-The upstream asset repository uses optimized Draco-compressed GLBs and WebP textures.
+Revalidates the existing strict Switch pack without doing a full reconversion. If the existing files do not satisfy the baseline rules, setup fails rather than falling back to another model library.
 
-## Offline model pack
+## Browser viewer
 
-The full model library is intentionally **not committed directly into Git history** because it is roughly 1.4–1.5 GB and would make normal clones unnecessarily huge.
+Run:
 
-Instead, the repository contains:
-
-`scripts/download_models.py`
-
-This downloads every currently available model from the upstream catalog, mirrors the model structure locally, and generates:
-
-- `model_catalog.tsv`
-- `pack_info.json`
-- `ASSET_SOURCE.txt`
-- upstream license information
-- all successfully downloaded GLB files
-
-Run locally:
-
-```bash
-python scripts/download_models.py --target offline-models
+```powershell
+.\launch-index.bat
 ```
 
-GitHub Actions also contains **Offline Model Pack**, which produces a downloadable artifact named:
+The browser viewer reads only `web/models/switch-manifest.js`. It has no CDN, PokeMiners, generic-model, or battle-engine fallback path.
 
-`Pokedex-3D-Max-Offline-Models`
+## Windows model location
 
-That workflow is configured to run when the model-pack script/workflow itself changes and can also be run manually.
+The native Windows viewer reads the validated model pack from:
 
-### Windows model-pack locations
-
-The Windows app looks in this order:
-
-1. Folder specified by `POKEDEX_3D_MAX_MODELS`
+1. `POKEDEX_3D_MAX_MODELS`, when set
 2. `%LOCALAPPDATA%\Pokedex3DMax\offline-models`
 3. `./offline-models`
 4. `%USERPROFILE%\Pokedex3DMax\offline-models`
 
-### Android model-pack locations
+Even if an older mixed catalog exists in one of those locations, the native viewer accepts only regular models inside its `switch/` tree.
 
-Android automatically checks:
+## Development priority
 
-- internal app files: `files/offline-models`
-- app-specific external files: `Android/data/com.unbornefetus.pokedex3dmax/files/offline-models`
+Do not add major Pokédex features back to `main` until the Switch pipeline is dependable across the target species set.
 
-When the pack is present, the app uses local `file://` GLBs and does not need Wi-Fi for those models. If no local pack is found, it falls back to the online catalog.
+The immediate priorities are:
 
-A friendlier in-app model-pack importer is planned so users will not need to manually place files.
+- Correct Switch model mapping
+- Correct same-game/same-form animation mapping
+- No bind-pose/T-pose live entries
+- Complete base-color texture coverage
+- Correct texture/material assignment
+- Reliable loading in Windows, browser, and Android viewers
 
-## Builds
-
-### Android
-
-GitHub Actions workflow: **Android**
-
-Output artifact:
-
-`Pokedex-3D-Max-Android-debug`
-
-### Windows
-
-GitHub Actions workflow: **Windows**
-
-Outputs:
-
-- Windows `.exe`
-- Windows `.msi`
-
-Artifact:
-
-`Pokedex-3D-Max-Windows`
-
-## Project direction
-
-Pokedex 3D Max is intended to become an all-in-one modern Pokédex centered around the 3D Pokémon viewer.
-
-Planned major systems include:
-
-- Complete Pokémon metadata
-- Form and shiny switching
-- Animation selection
-- Cry playback
-- Evolution trees
-- Move Dex
-- Ability Dex
-- Item Dex
-- Location data
-- Advanced search/filtering
-- Favorites and collection tracking
-- Offline-first data
-- Download/install model-pack UI
-- Better lighting/background controls
-- Size comparison
-- Full Pokédex 3D Pro-style navigation and presentation
+Once those are stable, features can be reintroduced deliberately from the archive branch.
 
 ## Tech
 
-- Kotlin 2.4.20
-- Jetpack Compose
-- Compose Multiplatform / Compose Desktop
-- Material 3
-- SceneView 4.52
-- Google Filament
+- Kotlin / Jetpack Compose
+- Compose Desktop
+- Filament
+- `<model-viewer>` for the canonical browser/Android viewer
 - GLB / glTF
-- Android API 26+
-- Windows desktop target
+- Blender-based Switch asset conversion
+- Python conversion/validation tooling
 
 ## Asset and trademark note
 
-The upstream Pokémon 3D asset service is a separate community project and is not maintained by this repository. Its repository is distributed under its stated open-source license.
-
-Pokémon names, character designs, and related intellectual property belong to their respective rights holders. Pokedex 3D Max is an unofficial fan project.
-
-
-## PokeMiners bulk import
-
-Pokedex 3D Max can generate a cleaner local model pack from the public
-`PokeMiners/pogo_assets` repository.
-
-Run:
-
-```bat
-import-pokeminers.bat
-```
-
-The importer uses a sparse Git checkout for `3D Assets/Pokemon`, discovers
-`pm####_##_Rig` folders, converts each FBX to GLB with Blender, and generates
-`web/models/pokeminers-manifest.js`.
-
-Generated assets are kept out of Git history and automatically override the older
-remote model source when present. Re-running the importer resumes from existing
-converted files.
-
-You can test a smaller range first:
-
-```bat
-python scripts\import_pokeminers.py --start-dex 1 --end-dex 20
-```
-
-or a fixed count:
-
-```bat
-python scripts\import_pokeminers.py --limit 10
-```
-
-Nonzero Pokemon GO form codes are preserved as `go-form-XX` until they are
-mapped to human-readable form names.
-
+Pokedex 3D Max is an unofficial fan project. Pokémon names, character designs, game assets, and related intellectual property belong to their respective rights holders.
