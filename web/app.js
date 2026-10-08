@@ -2,36 +2,19 @@ window.__pokedex3dBooted = true;
 const API_URL = "https://pokemon-3d-api.onrender.com/v1/pokemon";
 const CDN_ROOT = "https://cdn.jsdelivr.net/gh/Pokemon-3D-api/assets@main/";
 const CATALOG_CACHE_KEY = "pokedex3dmax.catalog.v2";
-const LOCAL_MODELS = [
-  ...(Array.isArray(window.POKEDEX3D_POKEMINERS_MODELS)
-    ? window.POKEDEX3D_POKEMINERS_MODELS
-    : []),
-  ...(Array.isArray(window.POKEDEX3D_LOCAL_MODELS)
-    ? window.POKEDEX3D_LOCAL_MODELS
-    : []),
-  ...(Array.isArray(window.POKEDEX3D_PRO_MODELS)
-    ? window.POKEDEX3D_PRO_MODELS
-    : []),
-  // Native Switch-game imports are highest priority once they are validated
-  // and animation-ready. Staged bind-pose imports stay out of the live viewer.
-  ...(Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
-    ? window.POKEDEX3D_SWITCH_MODELS
-    : []),
-].filter(model => model?.valid !== false && model?.ready !== false)
- .filter(model => !window.POKEDEX3D_MODEL_POLICY?.switchOnly || String(model.url).includes("/switch/"));
+const LOCAL_MODELS = (Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
+  ? window.POKEDEX3D_SWITCH_MODELS
+  : [])
+  .filter(model => model?.valid !== false && model?.ready !== false)
+  .filter(model => String(model?.form || "regular").toLowerCase() === "regular")
+  .filter(model => String(model?.url || "").includes("/switch/"));
 
 function localModelKey(model) {
-  let form = String(model?.form || "regular").trim().toLowerCase().replace(/-00$/, "");
-  if (Number(model?.dex) === 6) {
-    if (["form-51", "51", "mega-x", "megax", "x", "xy"].includes(form)) form = "mega-x";
-    if (["form-52", "52", "mega-y", "megay", "y"].includes(form)) form = "mega-y";
-    if (["gmax", "gigantamax"].includes(form)) form = "gmax";
-  }
-  return String(model?.dex) + "|" + (form || "regular");
+  return String(model?.dex) + "|regular";
 }
 
 function applyLocalModelOverrides(list) {
-  if (window.POKEDEX3D_MODEL_POLICY?.switchOnly) list = [];
+  list = [];
   if (!LOCAL_MODELS.length) return list;
   list = [...new Map(list.map(model => [localModelKey(model), model])).values()];
 
@@ -151,17 +134,7 @@ const IDLE_BREAK_OVERRIDES = {
 };
 
 function makeInstantRegularCatalog() {
-  const fallback = Array.from({ length: 1025 }, (_, i) => {
-    const dex = i + 1;
-    return {
-      dex,
-      name: window.POKEDEX3D_NAMES?.[dex] || "#" + String(dex).padStart(4, "0"),
-      form: "regular",
-      url: REGULAR_MODEL(dex),
-    };
-  });
-
-  return applyLocalModelOverrides(fallback);
+  return applyLocalModelOverrides([]);
 }
 
 function toFastAssetUrl(url) {
@@ -243,69 +216,11 @@ function catalogToModels(payload) {
 }
 
 async function enhanceCatalogInBackground() {
-  if (window.POKEDEX3D_MODEL_POLICY?.switchOnly) {
-    statusEl.textContent = models.length.toLocaleString() + " restored Switch models · textures unfinished";
-    return;
-  }
-  let cached = null;
-  try { cached = localStorage.getItem(CATALOG_CACHE_KEY); } catch {}
-  if (cached) {
-    try {
-      const cachedModels = catalogToModels(JSON.parse(cached));
-      if (cachedModels.length) {
-        models = cachedModels;
-        window.POKEDEX3D_MODELS = models;
-        statusEl.textContent =
-          models.length.toLocaleString() + " 3D models · cached catalog";
-        refreshCurrentPokemonAfterCatalogUpdate();
-      }
-    } catch {
-      try { localStorage.removeItem(CATALOG_CACHE_KEY); } catch {}
-    }
-  }
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
-
-  try {
-    const response = await fetch(API_URL, {
-      cache: "force-cache",
-      signal: controller.signal,
-    });
-    if (!response.ok) throw new Error("Catalog HTTP " + response.status);
-
-    const payload = await response.json();
-    const richer = catalogToModels(payload);
-    if (!richer.length) throw new Error("Catalog contained no model entries");
-
-    try { localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(payload)); } catch {}
-    models = richer.filter(model => !isShiny(model));
-    window.POKEDEX3D_MODELS = models;
-    statusEl.textContent =
-      models.length.toLocaleString() + " 3D models available";
-    refreshCurrentPokemonAfterCatalogUpdate();
-  } catch (error) {
-    console.warn("Background catalog update skipped:", error);
-    if (!cached) {
-      statusEl.textContent =
-        "1,025 regular models ready · forms will update when catalog responds";
-    }
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-function isShiny(model) {
-  const form = String(model?.form || "").toLowerCase();
-  const name = String(model?.name || "").toLowerCase();
-  return form.includes("shiny") || name.startsWith("shiny ");
+  statusEl.textContent = models.length.toLocaleString() + " regular animated Switch models";
 }
 
 function formRank(form) {
-  const value = String(form || "").toLowerCase();
-  if (value === "regular") return 0;
-  if (value.includes("shiny")) return 2;
-  return 1;
+  return String(form || "").toLowerCase() === "regular" ? 0 : 1;
 }
 
 function refreshCurrentPokemonAfterCatalogUpdate() {
@@ -317,14 +232,9 @@ function refreshCurrentPokemonAfterCatalogUpdate() {
   const exact = models.find(
     model => model.dex === dex && model.form === currentForm
   );
-  const regular =
-    models.find(
-      model =>
-        model.dex === dex &&
-        !isShiny(model) &&
-        String(model.form).toLowerCase() === "regular"
-    ) ||
-    models.find(model => model.dex === dex && !isShiny(model));
+  const regular = models.find(
+    model => model.dex === dex && String(model.form).toLowerCase() === "regular"
+  );
 
   const target = exact || regular;
   if (!target) return;
@@ -347,15 +257,13 @@ function refreshCurrentPokemonAfterCatalogUpdate() {
 function applyFilter(loadFirst = true) {
   const q = searchEl.value.trim().toLowerCase().replace(/^#/, "");
 
-  const listModels = models.filter(m => !isShiny(m));
-
   filtered = q
-    ? listModels.filter(m =>
+    ? models.filter(m =>
         String(m.dex) === q ||
         m.name.toLowerCase().includes(q) ||
         m.form.toLowerCase().includes(q)
       )
-    : listModels;
+    : models;
 
   renderList();
 
@@ -439,8 +347,7 @@ function getModelCandidates(model) {
     // A selected Switch model stays selected on failure so import problems
     // cannot silently replace the newer asset with an old CDN model.
     if (model?.source === "Switch game assets" || original.includes("/switch/")) return [original];
-    const fallback = String(model?.fallbackUrl || REGULAR_MODEL(model?.dex));
-    return [...new Set([original, fallback].filter(Boolean))];
+    return [original];
   }
 
   const fast = toFastAssetUrl(original);
@@ -586,14 +493,7 @@ function prettyForm(value) {
 }
 
 function dropdownLabel(model) {
-  const form = prettyForm(model.form);
-  if (isShiny(model)) {
-    const cleaned = form.replace(/\bShiny\b/gi, "").trim();
-    return cleaned && cleaned.toLowerCase() !== "regular"
-      ? "Shiny · " + cleaned
-      : "Shiny";
-  }
-  return form;
+  return prettyForm(model.form);
 }
 
 function escapeHtml(value) {
@@ -1770,7 +1670,7 @@ viewer.addEventListener("progress", event => {
 });
 
 // Render immediately. Do not wait for the remote catalog.
-statusEl.textContent = "1,025 regular models ready";
+statusEl.textContent = models.length.toLocaleString() + " regular animated Switch models";
 renderList();
 
 customElements.whenDefined("model-viewer").then(() => {
