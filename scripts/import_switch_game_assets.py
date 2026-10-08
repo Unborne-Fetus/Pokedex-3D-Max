@@ -892,7 +892,7 @@ def choose_idle(names: list[str]) -> str | None:
         for name in names:
             if rx.search(name) and not rejected.search(name):
                 return name
-    return names[0] if names and not rejected.search(names[0]) else None
+    return None
 
 
 def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
@@ -926,7 +926,17 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
 
         names = [a["name"] for a in animations]
         idle = choose_idle(names)
-        ready = actual_animated or allow_static
+        ready = bool(idle) or allow_static
+        if ready:
+            warnings = []
+        elif actual_animated:
+            warnings = [
+                "Model has animation data but no verified idle-like clip; kept staged to avoid starting in a non-idle pose."
+            ]
+        else:
+            warnings = [
+                "Model imported successfully but no compatible animation exists for this exact game/form/rig; kept staged to avoid a bind/T-pose."
+            ]
         entries.append(
             {
                 "dex": job["dex"],
@@ -942,9 +952,7 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
                 "idleBreaks": [],
                 "ready": ready,
                 "valid": True,
-                "warnings": [] if ready else [
-                    "Model imported successfully but no compatible animation exists for this exact game/form/rig; kept staged to avoid a bind/T-pose."
-                ],
+                "warnings": warnings,
             }
         )
     return entries
