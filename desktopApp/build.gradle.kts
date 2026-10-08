@@ -22,7 +22,6 @@ dependencies {
     // advance skeletal animations. Use the same pinned Filament KMP backend
     // directly for the animated desktop viewport.
     implementation("io.github.erkko68.filament:filament-compose:0.6.0")
-    implementation("io.github.erkko68.filament:gltfio:0.6.0")
     implementation("org.json:json:20250517")
 }
 
