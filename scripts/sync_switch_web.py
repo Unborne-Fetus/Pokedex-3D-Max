@@ -56,7 +56,7 @@ def sync_pack(target: Path, repo: Path = ROOT) -> int:
         if not source.is_relative_to(target) or not source.is_file():
             continue
         dex, name, form = int(cells[0]), cells[1], cells[2]
-        if "shiny" in form.lower():
+        if form.lower() != "regular":
             continue
         try:
             names = animation_names(source)
@@ -92,6 +92,7 @@ def sync_pack(target: Path, repo: Path = ROOT) -> int:
         entries.append(entry)
     policy_path = target / "model_source_policy.json"
     policy = json.loads(policy_path.read_text(encoding="utf-8")) if policy_path.is_file() else {}
+    policy.update({"switchOnly": True, "regularOnly": True, "allowBrokenTextures": False})
     entries.sort(key=lambda e: (e["dex"], e["form"]))
     old_manifest.parent.mkdir(parents=True, exist_ok=True)
     for path, text in [(old_manifest, json.dumps(entries, indent=2) + "\n"),
@@ -99,7 +100,7 @@ def sync_pack(target: Path, repo: Path = ROOT) -> int:
         temp = path.with_suffix(path.suffix + ".tmp")
         temp.write_text(text, encoding="utf-8")
         temp.replace(path)
-    print(f"Browser index synced: {len(entries)} animated Switch model(s).")
+    print(f"Browser index synced: {len(entries)} regular animated Switch model(s).")
     return len(entries)
 
 
