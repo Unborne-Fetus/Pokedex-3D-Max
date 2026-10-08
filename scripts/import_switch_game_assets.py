@@ -25,7 +25,7 @@ ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blende
 ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
 BLENDER_DEPS = CACHE / "blender-python-deps"
 CONVERSION_CACHE = CACHE / "switch-conversion-cache.json"
-CONVERSION_PIPELINE_VERSION = 10
+CONVERSION_PIPELINE_VERSION = 11
 PIPELINE_READY = CACHE / f"pipeline-v{CONVERSION_PIPELINE_VERSION}.ready.json"
 COVERAGE_REPORT = CACHE / "switch-animation-coverage.json"
 
@@ -676,6 +676,26 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
             if insertion_point < 0:
                 insertion_point = 0
             text = text[:insertion_point + 2] + helper + text[insertion_point + 2:]
+
+        # V2 treated an empty optional texture name as the model directory.
+        # os.path.exists(directory) is true, so the upstream importer then tried
+        # to load that directory as an image and aborted every TRMDL conversion.
+        # Migrate already-patched cached add-ons in place instead of requiring
+        # users to delete .tools or redownload the pinned importer.
+        old_empty_reference = '''def _pokedex3d_texture_path(filep, reference, textureextension):
+    reference = str(reference or "")
+    if not reference:
+        return os.path.join(filep, reference)
+'''
+        new_empty_reference = '''def _pokedex3d_texture_path(filep, reference, textureextension):
+    reference = str(reference or "")
+    if not reference:
+        # Return a guaranteed non-file. Callers guard with os.path.exists(),
+        # so absent optional maps are skipped instead of loading a directory.
+        return os.path.join(filep, "__pokedex3d_missing_texture__" + textureextension)
+'''
+        if old_empty_reference in text:
+            text = text.replace(old_empty_reference, new_empty_reference, 1)
 
         # Route the add-on's normal texture lookups through the resolver.
         text = re.sub(
