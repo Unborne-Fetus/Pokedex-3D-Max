@@ -322,66 +322,36 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
             path.unlink()
 
     catalog_path = target / "model_catalog.tsv"
-    generic_catalog_path = target / "generic_model_catalog.tsv"
     runtime_species_names = target / "species_names.tsv"
     if SPECIES_NAMES.is_file():
         shutil.copy2(SPECIES_NAMES, runtime_species_names)
 
     catalog = read_catalog(catalog_path)
-    generic = read_catalog(generic_catalog_path)
 
-    # Preserve meaningful names before generic rows or remote overlays mutate
-    # the catalog. Older Switch installs may already know the species name even
-    # when a generic fallback row is missing for a particular form.
+    # Preserve meaningful names from the previous catalog for display only.
+    # Runtime selection is rebuilt from Switch entries below.
     preserved_names: dict[tuple[int, str], str] = {
         key: row[1]
         for key, row in catalog.items()
         if len(row) >= 2 and row[1] and not row[1].startswith("#")
     }
     names_by_dex: dict[int, str] = read_species_names()
-    for source_rows in (catalog, generic):
+    for source_rows in (catalog,):
         for (dex, _form), row in source_rows.items():
             if len(row) >= 2 and row[1] and not row[1].startswith("#"):
                 names_by_dex.setdefault(dex, row[1])
 
-    # Restore generic rows first, then overlay every remote Switch model.
-    if generic:
-        for key, row in generic.items():
-            catalog[key] = row
-    else:
-        catalog = {
-            key: row
-            for key, row in catalog.items()
-            if len(row) >= 4 and not row[3].replace("\\", "/").startswith("switch/")
-        }
-
+    # Rebuild the runtime catalog from validated regular Switch entries only.
+    catalog = {}
     remote_keys: set[tuple[int, str]] = set()
     for entry in entries:
         dex = int(entry["dex"])
         form = str(entry["form"])
         key = (dex, form)
         remote_keys.add(key)
-        fallback = generic.get(key)
-        name = names_by_dex.get(dex)
-        if not name and fallback and len(fallback) >= 2 and fallback[1]:
-            name = fallback[1]
-        if not name:
-            name = preserved_names.get(key) or f"#{dex:04d}"
+        name = names_by_dex.get(dex) or preserved_names.get(key) or f"#{dex:04d}"
         catalog[key] = [str(dex), name, form, str(entry["path"]).replace("\\", "/")]
 
-    # If an old Switch row survived for a no-longer-published form, restore its
-    # generic fallback or remove it from runtime selection.
-    for key, row in list(catalog.items()):
-        if len(row) < 4:
-            continue
-        if not row[3].replace("\\", "/").startswith("switch/"):
-            continue
-        if key in remote_keys:
-            continue
-        if key in generic:
-            catalog[key] = generic[key]
-        else:
-            catalog.pop(key, None)
 
     write_catalog(catalog_path, catalog)
     atomic_json(target / "switch-model-metadata.json", entries)
