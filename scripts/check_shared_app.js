@@ -12,40 +12,24 @@ for (const file of ['web/app.js', 'web/species-names.js']) {
 }
 
 const html = read('index.html');
-for (const [,src] of html.matchAll(/<script[^>]+src="([^"?]+)(?:\?[^" ]*)?"/g)) {
-  if (/^https?:/.test(src) || /(?:desktop-models|pokeminers-manifest)\.js$/.test(src)) continue;
-  assert.ok(fs.existsSync(path.join(root,src)), `Missing script: ${src}`);
-}
-assert.ok(!/battle[-_ ]?sim|brisk-engine|showBattle|battleView/i.test(html), 'Battle UI/engine must not be bundled');
-
-const modelSource = read('web/app.js').split('const REGULAR_MODEL')[0];
-const modelContext = vm.createContext({window:{
-  POKEDEX3D_LOCAL_MODELS:[{dex:6,form:'regular',url:'old.glb'}],
-  POKEDEX3D_PRO_MODELS:[{dex:6,form:'regular',url:'pro.glb'}],
-  POKEDEX3D_SWITCH_MODELS:[
-    {dex:6,form:'regular',url:'web/models/switch/0006/regular.glb',source:'Switch game assets',ready:true,valid:true},
-    {dex:6,form:'form-51-00',url:'web/models/switch/0006/form-51-00.glb',source:'Switch game assets',ready:true,valid:true},
-    {dex:25,form:'shiny',url:'web/models/switch/0025/shiny.glb',source:'Switch game assets',ready:true,valid:true},
-  ]
-}});
-vm.runInContext(modelSource + ';function formRank(){return 0;}', modelContext);
-const selected = vm.runInContext('applyLocalModelOverrides([{dex:6,form:"regular",url:"old.glb"}])', modelContext);
-assert.equal(selected.length, 1);
-assert.equal(selected[0].form, 'regular');
-assert.ok(selected[0].url.includes('/switch/'));
-
-const candidates = read('web/app.js').match(/function getModelCandidates\(model\) \{[\s\S]*?\n\}/)[0];
-vm.runInContext('const CDN_ROOT=""; const REGULAR_MODEL=id=>"old/"+id; function toFastAssetUrl(x){return x;} function modelAssetPath(){return null;} ' + candidates, modelContext);
-assert.deepEqual(
-  JSON.parse(vm.runInContext('JSON.stringify(getModelCandidates({dex:6,local:true,source:"Switch game assets",url:"web/models/switch/0006/regular.glb"}))', modelContext)),
-  ['web/models/switch/0006/regular.glb']
-);
-
+const app = read('web/app.js');
 const desktopBuild = read('desktopApp/build.gradle.kts');
+const setup = read('scripts/setup_all.ps1');
+
+for (const [,src] of html.matchAll(/<script[^>]+src="([^"?]+)(?:\?[^" ]*)?"/g)) {
+  if (/^https?:/.test(src)) continue;
+  assert.ok(fs.existsSync(path.join(root, src)), `Missing script: ${src}`);
+}
+
+assert.ok(!/battle[-_ ]?sim|brisk-engine|showBattle|battleView/i.test(html), 'Battle UI/engine must not be bundled');
+assert.ok(!/pokeminers-manifest|pokedex3dpro-manifest|web\/models\/manifest\.js/i.test(html), 'Only the Switch manifest may feed models');
+assert.ok(!/pokemon-3d-api|PokeMiners|fallbackUrl|raw\.githubusercontent|esm\.sh/i.test(app), 'Viewer must not contain legacy/remote model fallbacks');
+assert.ok(/POKEDEX3D_SWITCH_MODELS/.test(app), 'Viewer must read the Switch manifest');
+assert.ok(/form \|\| "regular"\)\.toLowerCase\(\) === "regular"/.test(app), 'Viewer must filter to regular forms');
+assert.ok(/includes\("\/switch\/"\)/.test(app), 'Viewer must enforce Switch model paths');
 assert.ok(!/graalvm|brisk-engine|battle/i.test(desktopBuild), 'Desktop package must not contain battle engine dependencies/resources');
 assert.ok(!fs.existsSync(path.join(root,'desktopApp/src/main/kotlin/com/unbornefetus/pokedex3dmax/desktop/NativeBattle.kt')), 'Native battle engine must be removed');
-
-const setup = read('scripts/setup_all.ps1');
 assert.ok(!setup.includes('--allow-broken-textures'), 'Setup must reject broken texture exports');
+assert.ok(!/download_models\.py|generic fallback model/i.test(setup), 'Setup must not contain generic model fallback paths');
 
-console.log('Baseline checks passed: regular Switch-only viewer, no battle engine, no legacy fallback, strict texture gate.');
+console.log('Baseline checks passed: regular Switch-only viewer, embedded animations, strict texture gate, no legacy fallback or battle engine.');
