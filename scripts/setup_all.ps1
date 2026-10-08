@@ -488,7 +488,7 @@ function FindSwitchAssetArchives {
 }
 
 function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
-    Step "STEP 5/7 - Importing Switch-game Pokemon models"
+    Step "STEP 6/7 - Importing Switch-game Pokemon models"
     if ($SkipSwitchAssets) {
         Stamp "Skipping Switch-game asset import because -SkipSwitchAssets was supplied."
         return
@@ -533,7 +533,7 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
 }
 
 function InstallModels([string]$PythonCommand) {
-    Step "STEP 6/7 - Preparing offline 3D model pack"
+    Step "STEP 5/7 - Preparing offline 3D model pack"
     $Pack = Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"
 
     if ($SkipModels) {
@@ -640,8 +640,11 @@ try {
     $Gradle = BootstrapGradle
     $Python = EnsurePython
     $Blender = EnsureBlender
-    ImportSwitchGameAssets $Python $Blender
+    # Build the generic fallback pack first, then let validated Switch models
+    # override it. This keeps names/fallbacks deterministic and prevents a later
+    # generic catalog refresh from hiding the Switch import.
     $Pack = InstallModels $Python
+    ImportSwitchGameAssets $Python $Blender
     BuildWindows $Gradle
     $Exe = CollectExe
 
