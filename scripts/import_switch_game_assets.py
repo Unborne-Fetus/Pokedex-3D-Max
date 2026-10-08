@@ -1301,6 +1301,36 @@ def run_self_tests() -> None:
     assert len(jobs[0]["animations"]) == 1
     assert jobs[0]["animations"][0]["extension"] == ".gfbanm"
 
+    legends_arceus_model = {
+        "dex": 58,
+        "form": "regular",
+        "formKey": "regular",
+        "game": "la",
+        "source": "pm0058_00.gfbmdl",
+        "extension": ".gfbmdl",
+    }
+    legends_arceus_tranm = {
+        "dex": 58,
+        "form": "regular",
+        "formKey": "regular",
+        "game": "la",
+        "source": "pm0058_00_defaultwait01.tranm",
+        "name": "pm0058_00_defaultwait01",
+        "extension": ".tranm",
+    }
+    legends_arceus_gfbanm = {
+        **legends_arceus_tranm,
+        "source": "pm0058_00_defaultwait01.gfbanm",
+        "extension": ".gfbanm",
+    }
+    jobs = [dict(legends_arceus_model)]
+    attach_animations(jobs, [legends_arceus_gfbanm, legends_arceus_tranm])
+    assert len(jobs[0]["animations"]) == 1
+    assert jobs[0]["animations"][0]["extension"] == ".tranm"
+
+    assert choose_idle(["pm0001_defaultwait01_loop"]) == "pm0001_defaultwait01_loop"
+    assert choose_idle(["pm0001_attack01", "pm0001_damage01"]) is None
+
     wrong_form_job = {
         **legacy_model,
         "form": "form-11",
