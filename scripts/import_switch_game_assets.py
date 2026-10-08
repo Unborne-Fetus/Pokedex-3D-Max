@@ -182,6 +182,39 @@ def detect_game(path: Path) -> str:
     return "unknown"
 
 
+def decode_bntx_textures(root: Path) -> int:
+    """Decode raw Switch BNTX texture files alongside models into PNGs."""
+    textures = list(root.rglob("*.bntx"))
+    if not textures:
+        return 0
+    decoder = os.environ.get("POKEDEX3D_BNTX_DECODER") or shutil.which("wimgt")
+    if not decoder and TOOLS.exists():
+        decoder = next((str(p) for p in TOOLS.rglob("wimgt.exe")), None)
+    if not decoder:
+        raise RuntimeError(
+            f"Found {len(textures)} raw .bntx files in {root}, but no decoder. "
+            "Install a wimgt binary supporting BNTX and put it on PATH, "
+            "or set POKEDEX3D_BNTX_DECODER. Raw BNTX cannot be loaded by Blender."
+        )
+    done = 0
+    for source in textures:
+        target = source.with_suffix(".png")
+        if target.is_file() and target.stat().st_size > 0:
+            continue
+        result = subprocess.run(
+            [str(decoder), "DECODE", str(source), "--dest", str(target)],
+            capture_output=True, text=True,
+        )
+        if result.returncode or not target.is_file() or target.stat().st_size == 0:
+            target.unlink(missing_ok=True)
+            raise RuntimeError(
+                f"Cannot decode {source.name}: {(result.stderr or result.stdout)[-400:]}"
+            )
+        done += 1
+    if done:
+        print(f"Decoded {done} BNTX textures into PNG images under {root}.", flush=True)
+    return done
+
 def first_image_asset(root: Path) -> Path | None:
     if not root.is_dir():
         return None
@@ -2710,6 +2743,8 @@ def main() -> int:
 
         found = scan_models(root, game)
         anims = scan_animations(root, game)
+        if found and first_image_asset(root) is None:
+            decode_bntx_textures(root)
         embedded_image = first_image_asset(root)
         if embedded_image is not None:
             add_texture_root(texture_roots, texture_roots_by_game, root, game)
