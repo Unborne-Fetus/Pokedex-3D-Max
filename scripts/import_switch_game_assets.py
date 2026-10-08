@@ -459,6 +459,99 @@ def patch_addon_for_batch_imports() -> None:
     if switch_source.is_file():
         text = switch_source.read_text(encoding="utf-8")
 
+        # Nintendo material references are not always spelled/cased exactly
+        # like the extracted image files. Resolve texture files conservatively
+        # by exact path first, then normalized basename across nearby folders.
+        texture_marker = "# POKEDEX3D_TEXTURE_RESOLVER_V1"
+        if texture_marker not in text:
+            helper = r'''
+# POKEDEX3D_TEXTURE_RESOLVER_V1
+_POKEDEX3D_TEXTURE_INDEX = {}
+
+def _pokedex3d_texture_key(value):
+    name = os.path.basename(str(value or "").replace("\\\\", "/"))
+    stem = os.path.splitext(name)[0]
+    return re.sub(r"[^a-z0-9]+", "", stem.casefold())
+
+def _pokedex3d_texture_path(filep, reference, textureextension):
+    reference = str(reference or "")
+    if not reference:
+        return os.path.join(filep, reference)
+
+    raw = reference.replace("\\\\", "/")
+    no_ext = raw[:-5] if len(raw) > 5 and raw.lower().endswith(".bntx") else os.path.splitext(raw)[0]
+    candidates = [
+        os.path.normpath(os.path.join(filep, no_ext + textureextension)),
+        os.path.join(filep, os.path.basename(no_ext) + textureextension),
+    ]
+    for candidate in candidates:
+        if os.path.isfile(candidate):
+            return candidate
+
+    key = _pokedex3d_texture_key(reference)
+    if not key:
+        return candidates[0]
+
+    search_root = os.path.abspath(filep)
+    cache_key = search_root.casefold()
+    index = _POKEDEX3D_TEXTURE_INDEX.get(cache_key)
+    if index is None:
+        index = {}
+        roots = [search_root]
+        parent = os.path.dirname(search_root)
+        if parent and parent != search_root:
+            roots.append(parent)
+        image_exts = {".png", ".tga", ".jpg", ".jpeg", ".bmp", ".dds"}
+        visited = set()
+        for root in roots:
+            root = os.path.abspath(root)
+            if root in visited or not os.path.isdir(root):
+                continue
+            visited.add(root)
+            for current, dirs, files in os.walk(root):
+                # Avoid crawling giant unrelated extraction siblings.
+                rel_depth = os.path.relpath(current, root).count(os.sep)
+                if rel_depth >= 4:
+                    dirs[:] = []
+                for filename in files:
+                    if os.path.splitext(filename)[1].lower() not in image_exts:
+                        continue
+                    path = os.path.join(current, filename)
+                    index.setdefault(_pokedex3d_texture_key(filename), []).append(path)
+        _POKEDEX3D_TEXTURE_INDEX[cache_key] = index
+
+    matches = index.get(key) or []
+    if matches:
+        # Prefer the closest path to the model directory, then shortest name.
+        matches = sorted(
+            matches,
+            key=lambda path: (
+                len(os.path.relpath(path, search_root).split(os.sep)),
+                len(path),
+                path.casefold(),
+            ),
+        )
+        resolved = matches[0]
+        print("Pokedex3D texture resolve:", reference, "->", resolved)
+        return resolved
+
+    print("Pokedex3D texture missing:", reference)
+    return candidates[0]
+'''
+            if "import re\n" not in text:
+                text = text.replace("import os\n", "import os\nimport re\n", 1)
+            insertion_point = text.find("\n\n", text.find("import "))
+            if insertion_point < 0:
+                insertion_point = 0
+            text = text[:insertion_point + 2] + helper + text[insertion_point + 2:]
+
+        # Route the add-on's normal texture lookups through the resolver.
+        text = re.sub(
+            r'os\.path\.join\(filep,\s*mat\["([^"]+)"\]\[:-5\]\s*\+\s*textureextension\)',
+            r'_pokedex3d_texture_path(filep, mat["\1"], textureextension)',
+            text,
+        )
+
         noisy = "    print(weight_array)\n"
         if noisy in text:
             text = text.replace(noisy, "    # Suppressed huge vertex-weight debug dump for batch imports.\n")
@@ -801,6 +894,17 @@ def parse_glb_doc(path: Path) -> dict:
     raise ValueError("GLB JSON chunk missing")
 
 
+
+def glb_texture_count(path: Path) -> int:
+    try:
+        doc = parse_glb_doc(path)
+    except Exception:
+        return 0
+    images = doc.get("images") or []
+    textures = doc.get("textures") or []
+    return min(len(images), len(textures))
+
+
 def existing_glb_is_complete(path: Path, wants_animations: bool) -> bool:
     if not path.is_file() or path.stat().st_size <= 1024:
         return False
@@ -898,9 +1002,12 @@ def run_blender(
             cached_rejected = bool(cached.get("animationRejected"))
             cached_rejection_reason = cached.get("animationRejectionReason")
 
-        structurally_complete = existing_glb_is_complete(
-            out,
-            wants_animations and not cached_rejected,
+        structurally_complete = (
+            existing_glb_is_complete(
+                out,
+                wants_animations and not cached_rejected,
+            )
+            and glb_texture_count(out) > 0
         )
         fingerprint_matches = cached_fingerprint == fingerprint
 
