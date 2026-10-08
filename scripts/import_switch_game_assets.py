@@ -1092,7 +1092,13 @@ def main() -> int:
     if args.self_test:
         return 0
 
-    full_runtime_refresh = not args.dex and args.limit <= 0 and not args.no_desktop_install
+    full_runtime_refresh = (
+        not args.dex
+        and args.limit <= 0
+        and not args.no_desktop_install
+        and not args.inventory_only
+        and not args.allow_static
+    )
     if full_runtime_refresh and PIPELINE_READY.is_file():
         PIPELINE_READY.unlink()
 
