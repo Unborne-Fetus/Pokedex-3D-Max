@@ -290,20 +290,19 @@ def patch_addon_for_batch_imports() -> None:
         gfbmdl_source.write_text(text, encoding="utf-8")
 
 
-    # Preserve every imported GFBANM/TRANM action in NLA before the add-on
-    # returns. Some cached revisions create/keyframe an Action internally but
-    # do not leave it reachable through armature.animation_data.action, so the
-    # batch wrapper cannot recover it afterward.
+    # Restore the add-on's normal NLA guard. An earlier compatibility patch
+    # forced every Action into NLA and cleared the armature's active Action,
+    # which made ACTIVE_ACTIONS glTF export produce static GLBs.
     gfbanm_source = ADDON_DIR / "gfbanm_importer.py"
     if gfbanm_source.is_file():
         text = gfbanm_source.read_text(encoding="utf-8")
-        legacy_guard = "    if nla_import and action is not None:\n"
         forced_guard = (
             "    # Pokedex3D batch mode: always preserve imported actions in NLA.\n"
             "    if action is not None:\n"
         )
-        if legacy_guard in text:
-            text = text.replace(legacy_guard, forced_guard, 1)
+        legacy_guard = "    if nla_import and action is not None:\n"
+        if forced_guard in text:
+            text = text.replace(forced_guard, legacy_guard, 1)
         gfbanm_source.write_text(text, encoding="utf-8")
 
 
