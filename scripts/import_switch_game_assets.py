@@ -868,7 +868,14 @@ def output_cache_key(job: dict) -> str:
     return f"{job['dex']:04d}/{job['form']}.glb"
 
 
-def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path) -> None:
+def run_blender(
+    jobs: list[dict],
+    blender: str,
+    addon: Path,
+    blender_deps: Path,
+    refresh_changed: bool = False,
+    force: bool = False,
+) -> None:
     WEB_ROOT.mkdir(parents=True, exist_ok=True)
     cache = load_conversion_cache()
     payload: list[dict] = []
@@ -891,18 +898,39 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
             cached_rejected = bool(cached.get("animationRejected"))
             cached_rejection_reason = cached.get("animationRejectionReason")
 
-        if (
-            cached_fingerprint == fingerprint
-            and existing_glb_is_complete(
-                out,
-                wants_animations and not cached_rejected,
-            )
-        ):
+        structurally_complete = existing_glb_is_complete(
+            out,
+            wants_animations and not cached_rejected,
+        )
+        fingerprint_matches = cached_fingerprint == fingerprint
+
+        reuse_existing = False
+        reuse_reason = None
+        if not force:
+            if refresh_changed:
+                reuse_existing = structurally_complete and fingerprint_matches
+                reuse_reason = "unchanged"
+            else:
+                # Incremental is the default: a valid output is already imported,
+                # even if source/archive mtimes or pipeline metadata changed.
+                # The only exception is when the current job now requires an
+                # animation but the existing GLB does not contain one.
+                reuse_existing = structurally_complete
+                reuse_reason = "already imported"
+
+        if reuse_existing:
             if cached_rejected:
                 job["animationCandidates"] = list(job.get("animations") or [])
                 job["animations"] = []
                 job["animationRejected"] = True
                 job["animationRejectionReason"] = cached_rejection_reason
+            # Seed/refresh the fingerprint cache for outputs that predate the
+            # cache so future --refresh-changed runs can compare them.
+            cache[cache_key] = {
+                "fingerprint": fingerprint,
+                "animationRejected": cached_rejected,
+                "animationRejectionReason": cached_rejection_reason,
+            }
             reused += 1
             continue
 
@@ -915,10 +943,12 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
         })
 
     if reused:
-        print(f"Reusing {reused} fingerprint-matched Switch model(s).", flush=True)
+        mode = "unchanged" if refresh_changed else "already-imported"
+        print(f"Reusing {reused} {mode} Switch model(s).", flush=True)
+        save_conversion_cache(cache)
 
     if not payload:
-        print("All selected models are already converted with the current pipeline.")
+        print("All selected models are already imported; nothing to convert.")
         return
 
     jobs_file = CACHE / "switch-model-jobs.json"
@@ -942,7 +972,16 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
         addon.name,
         str(blender_deps),
     ]
-    print(f"Converting {len(payload)} stale/missing Switch models in one Blender session ...", flush=True)
+    if force:
+        reason = "forced"
+    elif refresh_changed:
+        reason = "missing/invalid/changed"
+    else:
+        reason = "missing/invalid or newly animatable"
+    print(
+        f"Converting {len(payload)} {reason} Switch model(s) in one Blender session ...",
+        flush=True,
+    )
     result = subprocess.run(cmd, cwd=ROOT)
 
     outcomes: dict[str, dict] = {}
@@ -1527,6 +1566,16 @@ def main() -> int:
         help="activate models with no animation clips (normally staged but disabled to prevent T-poses)",
     )
     parser.add_argument("--no-desktop-install", action="store_true")
+    parser.add_argument(
+        "--refresh-changed",
+        action="store_true",
+        help="also reconvert models whose source/model/animation fingerprint changed",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="reconvert every selected model even when a valid GLB already exists",
+    )
     args = parser.parse_args()
 
     run_self_tests()
@@ -1605,7 +1654,14 @@ def main() -> int:
     blender = find_blender(args.blender)
     addon = ensure_addon()
     blender_deps = ensure_blender_python_deps()
-    run_blender(jobs, blender, addon, blender_deps)
+    run_blender(
+        jobs,
+        blender,
+        addon,
+        blender_deps,
+        refresh_changed=args.refresh_changed,
+        force=args.force,
+    )
     converted_entries = build_manifest(jobs, args.allow_static)
 
     partial_run = bool(args.dex) or args.limit > 0
