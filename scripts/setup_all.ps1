@@ -22,6 +22,7 @@ $MegaAssetCache = Join-Path $RepoRoot ".cache\mega-switch-assets"
 $MegaNoProgressTimeoutSeconds = 300
 $MegaDownloadRetries = 3
 $script:SwitchAssetSyncSucceeded = $null
+$script:RemoteSwitchPackSucceeded = $false
 
 function Stamp([string]$Text) {
     $Now = Get-Date -Format "HH:mm:ss"
@@ -501,6 +502,52 @@ function FindSwitchAssetArchives {
     return $Found.ToArray()
 }
 
+function InstallRemoteSwitchModelPack([string]$PythonCommand) {
+    Step "STEP 6/7 - Checking validated online Switch model pack"
+    $Script = Join-Path $RepoRoot "scripts\remote_model_pack.py"
+    if (-not (Test-Path $Script)) {
+        Stamp "Remote model-pack installer is missing; using local Switch archives."
+        return $false
+    }
+
+    $Target = Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"
+    EnsureDir $Target
+
+    Stamp "Trying the validated online GLB pack first."
+    Stamp "Downloaded original Switch archives are kept untouched as the backup source."
+    $env:PYTHONUNBUFFERED = "1"
+
+    $PreviousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        if ($PythonCommand -eq "py") {
+            & py -3 -u $Script install --target $Target
+        } else {
+            & python -u $Script install --target $Target
+        }
+        $RemoteExit = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $PreviousErrorActionPreference
+    }
+
+    if ($RemoteExit -eq 0) {
+        $script:RemoteSwitchPackSucceeded = $true
+        Stamp "Validated online Switch model pack is ready."
+        return $true
+    }
+
+    if ($RemoteExit -eq 3) {
+        Stamp "Online Switch model pack is unavailable or incomplete."
+        Stamp "Falling back to downloaded Switch archives + Blender."
+        return $false
+    }
+
+    Stamp ("Online Switch model pack installer exited with code " + $RemoteExit + ".")
+    Stamp "Falling back to downloaded Switch archives + Blender."
+    return $false
+}
+
+
 function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     Step "STEP 6/7 - Importing Switch-game Pokemon models"
     if ($SkipSwitchAssets) {
@@ -617,15 +664,16 @@ function PreflightSwitchImporter([string]$PythonCommand) {
 
     $Importer = Join-Path $RepoRoot "scripts\import_switch_game_assets.py"
     $BlenderHelper = Join-Path $RepoRoot "scripts\blender_import_switch_game_model.py"
-    if (-not (Test-Path $Importer) -or -not (Test-Path $BlenderHelper)) {
+    $RemotePack = Join-Path $RepoRoot "scripts\remote_model_pack.py"
+    if (-not (Test-Path $Importer) -or -not (Test-Path $BlenderHelper) -or -not (Test-Path $RemotePack)) {
         throw "Importer preflight files are missing."
     }
 
     Stamp "Compiling Python importer scripts..."
     if ($PythonCommand -eq "py") {
-        & py -3 -m py_compile $Importer $BlenderHelper
+        & py -3 -m py_compile $Importer $BlenderHelper $RemotePack
     } else {
-        & python -m py_compile $Importer $BlenderHelper
+        & python -m py_compile $Importer $BlenderHelper $RemotePack
     }
     if ($LASTEXITCODE -ne 0) { throw "Python importer syntax preflight failed." }
 
@@ -712,16 +760,21 @@ try {
         Stamp "Switch-assets-only mode: skipping JDK, Gradle, fallback-pack, and Windows packaging."
         $Python = EnsurePython
         PreflightSwitchImporter $Python
-        $Blender = EnsureBlender
-        ImportSwitchGameAssets $Python $Blender
+        $RemoteReady = InstallRemoteSwitchModelPack $Python
+        if (-not $RemoteReady) {
+            $Blender = EnsureBlender
+            ImportSwitchGameAssets $Python $Blender
+        }
 
         Write-Host ""
         Write-Host "============================================================" -ForegroundColor Green
-        if ($script:SwitchAssetSyncSucceeded) {
-            Stamp "SUCCESS - Switch model assets were synced and imported."
+        if ($script:RemoteSwitchPackSucceeded) {
+            Stamp "SUCCESS - validated online Switch model pack installed."
+        } elseif ($script:SwitchAssetSyncSucceeded) {
+            Stamp "SUCCESS - local backup archives were synced and imported."
         } else {
-            Stamp "SUCCESS WITH LOCAL ASSETS - remote Switch asset sync was unavailable."
-            Stamp "The importer completed using the validated archives already on disk."
+            Stamp "SUCCESS WITH LOCAL BACKUP - remote sources were unavailable."
+            Stamp "The importer completed using the downloaded archives already on disk."
         }
         Write-Host "============================================================" -ForegroundColor Green
         Write-Host ("Offline models: " + (Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"))
@@ -732,12 +785,15 @@ try {
     $Gradle = BootstrapGradle
     $Python = EnsurePython
     PreflightCode $Python $Gradle
-    $Blender = EnsureBlender
-    # Build the generic fallback pack first, then let validated Switch models
-    # override it. This keeps names/fallbacks deterministic and prevents a later
-    # generic catalog refresh from hiding the Switch import.
+    # Build the generic fallback pack first, then let the validated online
+    # Switch pack override it. The downloaded original archives remain cached
+    # and are used automatically if the online pack is unavailable.
     $Pack = InstallModels $Python
-    ImportSwitchGameAssets $Python $Blender
+    $RemoteReady = InstallRemoteSwitchModelPack $Python
+    if (-not $RemoteReady) {
+        $Blender = EnsureBlender
+        ImportSwitchGameAssets $Python $Blender
+    }
     BuildWindows $Gradle
     $Exe = CollectExe
 
