@@ -594,9 +594,9 @@ function RestoreOrImportSwitchExports([string]$PythonCommand) {
     $Recovered = RestoreInstalledSwitchExports $PythonCommand
 
     if ($SkipSwitchAssets) {
-        $ReadyMarker = Join-Path $RepoRoot ".cache\switch-game-assets\pipeline-v10.ready.json"
+        $ReadyMarker = Join-Path $RepoRoot ".cache\switch-game-assets\pipeline-v11.ready.json"
         if (-not (Test-Path $ReadyMarker)) {
-            throw "Fast mode requires a completed pipeline-v10 baseline. Run setup-all.bat switch or setup-all.bat full first."
+            throw "Fast mode requires a completed pipeline-v11 baseline. Run setup-all.bat switch or setup-all.bat full first."
         }
         if (-not $Recovered) {
             throw "No validated regular Switch exports remain. Run setup-all.bat switch or setup-all.bat full."
@@ -605,12 +605,12 @@ function RestoreOrImportSwitchExports([string]$PythonCommand) {
     }
 
     # Full/switch mode always runs the current conversion pipeline. The importer
-    # reuses unchanged v10 outputs but reconverts anything from an older pipeline.
+    # reuses unchanged v11 outputs but reconverts anything from an older pipeline.
     $Blender = EnsureBlender
     ImportSwitchGameAssets $PythonCommand $Blender
     $Recovered = RestoreInstalledSwitchExports $PythonCommand
     if (-not $Recovered) {
-        throw "No validated regular animated Switch models survived the strict v10 import."
+        throw "No validated regular animated Switch models survived the strict v11 import."
     }
 }
 
