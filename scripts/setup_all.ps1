@@ -564,7 +564,7 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     if (-not (Test-Path $Script)) { throw "Switch model importer script is missing." }
     $Args = @("-u", $Script)
     $Args += $Archives
-    $Args += @("--blender", $Blender)
+    $Args += @("--blender", $Blender, "--refresh-changed")
     $env:PYTHONUNBUFFERED = "1"
     Push-Location $RepoRoot
     try {
@@ -574,11 +574,9 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         Pop-Location
     }
     if ($ImportExit -ne 0) {
-        Stamp "Some original models could not be converted (exit $ImportExit). Restoring the usable exports that remain."
-        # The caller requires a nonempty restored catalog before building.
-        return
+        throw "Strict Switch import is incomplete (exit $ImportExit). Check the conversion/failure reports; no partial baseline is accepted."
     }
-    Stamp "Switch-game model import finished."
+    Stamp "Strict Switch-game model import finished."
 }
 
 function RestoreInstalledSwitchExports([string]$PythonCommand) {
@@ -594,18 +592,25 @@ function RestoreInstalledSwitchExports([string]$PythonCommand) {
 
 function RestoreOrImportSwitchExports([string]$PythonCommand) {
     $Recovered = RestoreInstalledSwitchExports $PythonCommand
-    $OriginalArchives = @(FindSwitchAssetArchives | Where-Object {
-        (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
-    })
-    # Only textured animated GLBs are reused; missing or textureless models reconvert.
-    if ((-not $Recovered) -or ($OriginalArchives.Count -gt 0 -and (-not $SkipSwitchAssets))) {
-        if ($SkipSwitchAssets) { throw "No original Switch exports remain. Run setup-all.bat full to restore the downloaded source archives." }
-        $Blender = EnsureBlender
-        ImportSwitchGameAssets $PythonCommand $Blender
-        $Recovered = RestoreInstalledSwitchExports $PythonCommand
+
+    if ($SkipSwitchAssets) {
+        $ReadyMarker = Join-Path $RepoRoot ".cache\switch-game-assets\pipeline-v10.ready.json"
+        if (-not (Test-Path $ReadyMarker)) {
+            throw "Fast mode requires a completed pipeline-v10 baseline. Run setup-all.bat switch or setup-all.bat full first."
+        }
+        if (-not $Recovered) {
+            throw "No validated regular Switch exports remain. Run setup-all.bat switch or setup-all.bat full."
+        }
+        return
     }
+
+    # Full/switch mode always runs the current conversion pipeline. The importer
+    # reuses unchanged v10 outputs but reconverts anything from an older pipeline.
+    $Blender = EnsureBlender
+    ImportSwitchGameAssets $PythonCommand $Blender
+    $Recovered = RestoreInstalledSwitchExports $PythonCommand
     if (-not $Recovered) {
-        throw "No original animated Switch models could be restored. No older model pack was activated. Run setup-all.bat full with the original downloaded archives."
+        throw "No validated regular animated Switch models survived the strict v10 import."
     }
 }
 
