@@ -87,7 +87,14 @@ def import_animations(job: dict) -> int:
         if not source.is_file():
             continue
         try:
-            result = bpy.ops.import_scene.gfbanm(filepath=str(source))
+            # Preserve every imported clip as its own NLA strip. Without
+            # nla_import the add-on replaces the armature's active Action on
+            # each import, and Blender's glTF exporter can emit a static GLB
+            # even though all clips reported successful imports.
+            result = bpy.ops.import_scene.gfbanm(
+                filepath=str(source),
+                nla_import=True,
+            )
             if "FINISHED" in result:
                 imported += 1
                 action = armature.animation_data.action if armature.animation_data else None
