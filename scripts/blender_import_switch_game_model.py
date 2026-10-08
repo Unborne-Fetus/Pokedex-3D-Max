@@ -82,47 +82,21 @@ def import_animations(job: dict) -> int:
         print("No armature found; animation clips skipped.", flush=True)
         return 0
 
-    if armature.animation_data is None:
-        armature.animation_data_create()
-
     imported = 0
     for clip in clips:
         source = Path(clip["source"]).resolve()
         if not source.is_file():
             continue
         try:
-            # Do not rely on the add-on's optional NLA mode: different cached
-            # revisions expose different operator properties. Import normally,
-            # then preserve the resulting Action ourselves.
-            before = set(bpy.data.actions)
+            # The cached importer is patched by import_switch_game_assets.py to
+            # push each successfully-created Action into NLA before returning.
+            # Count operator success here; the exported GLB is verified below.
             result = bpy.ops.import_scene.gfbanm(filepath=str(source))
-            if "FINISHED" not in result:
+            if "FINISHED" in result:
+                imported += 1
+                print(f"Imported animation: {clip.get('name') or source.stem}", flush=True)
+            else:
                 print(f"Animation importer returned {result} for {source.name}", flush=True)
-                continue
-
-            action = armature.animation_data.action if armature.animation_data else None
-            if action is None:
-                created = [candidate for candidate in bpy.data.actions if candidate not in before]
-                action = created[-1] if created else None
-            if action is None:
-                print(f"Animation import produced no Action for {source.name}", flush=True)
-                continue
-
-            action.name = clip.get("name") or source.stem
-            action.use_fake_user = True
-
-            track = armature.animation_data.nla_tracks.new()
-            track.name = action.name
-            start, end = action.frame_range
-            strip = track.strips.new(action.name, float(start), action)
-            strip.action_frame_start = float(start)
-            strip.action_frame_end = float(end)
-            strip.frame_start = float(start)
-            strip.frame_end = float(end)
-            armature.animation_data.action = None
-
-            imported += 1
-            print(f"Preserved animation in NLA: {action.name}", flush=True)
         except Exception:
             print(f"Animation import failed for {source.name}", flush=True)
             traceback.print_exc()
@@ -130,7 +104,6 @@ def import_animations(job: dict) -> int:
     if imported:
         print(f"Imported {imported}/{len(clips)} animation clip(s).", flush=True)
     return imported
-
 
 def glb_animation_count(path: Path) -> int:
     data = path.read_bytes()
