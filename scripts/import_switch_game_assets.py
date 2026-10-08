@@ -346,18 +346,40 @@ def ensure_blender_python_deps() -> Path:
 
 def find_blender(explicit: str | None) -> str:
     candidates = [explicit, os.environ.get("BLENDER"), shutil.which("blender")]
+
+    # setup-all installs a portable Blender under .tools. Reuse that exact copy
+    # when the manual importer is launched directly.
+    portable_root = TOOLS
+    if portable_root.exists():
+        portable_name = "blender.exe" if os.name == "nt" else "blender"
+        for exe in sorted(
+            portable_root.rglob(portable_name),
+            key=lambda p: p.stat().st_mtime if p.exists() else 0,
+            reverse=True,
+        ):
+            candidates.append(str(exe))
+
     if os.name == "nt":
         program_files = Path(os.environ.get("PROGRAMFILES", r"C:\Program Files"))
         blender_root = program_files / "Blender Foundation"
         if blender_root.exists():
             for exe in sorted(blender_root.glob("Blender */blender.exe"), reverse=True):
                 candidates.append(str(exe))
+
     for candidate in candidates:
         if candidate and Path(candidate).is_file():
-            return str(Path(candidate).resolve())
+            resolved = str(Path(candidate).resolve())
+            print(f"Using Blender: {resolved}", flush=True)
+            return resolved
         if candidate and shutil.which(candidate):
-            return str(shutil.which(candidate))
-    raise RuntimeError("Blender was not found. Install Blender 3.6+ or pass --blender PATH.")
+            resolved = str(Path(shutil.which(candidate)).resolve())
+            print(f"Using Blender: {resolved}", flush=True)
+            return resolved
+
+    raise RuntimeError(
+        "Blender was not found. Run setup-all.bat full once, install Blender 3.6+, "
+        "or pass --blender PATH."
+    )
 
 
 def parse_glb_doc(path: Path) -> dict:
