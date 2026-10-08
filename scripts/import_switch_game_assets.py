@@ -447,10 +447,25 @@ def write_animation_coverage_report(jobs: list[dict], animations: list[dict]) ->
             ],
         }
 
+    remapped_jobs = [
+        job
+        for job in jobs
+        if int(job.get("modelId", job["dex"])) != int(job["dex"])
+    ]
     report = {
         "pipelineVersion": CONVERSION_PIPELINE_VERSION,
         "addonRevision": ADDON_REV,
         "selectedModels": len(jobs),
+        "remappedInternalModelIds": len(remapped_jobs),
+        "remapExamples": [
+            {
+                "modelId": int(job.get("modelId", job["dex"])),
+                "dex": int(job["dex"]),
+                "form": job["form"],
+                "source": Path(job["source"]).name,
+            }
+            for job in remapped_jobs[:50]
+        ],
         "modelsWithCompatibleAnimation": sum(1 for job in jobs if job.get("animations")),
         "modelsMissingCompatibleAnimation": sum(1 for job in jobs if not job.get("animations")),
         "games": game_reports,
@@ -1640,6 +1655,7 @@ def job_fingerprint(job: dict) -> str:
         "pipeline": CONVERSION_PIPELINE_VERSION,
         "addonRevision": ADDON_REV,
         "dex": job["dex"],
+        "modelId": job.get("modelId", job["dex"]),
         "form": job["form"],
         "formKey": job.get("formKey"),
         "game": job["game"],
@@ -2034,6 +2050,55 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
     return entries
 
 
+def prune_generated_switch_outputs(entries: list[dict]) -> None:
+    expected = {
+        (
+            WEB_ROOT
+            / f"{int(entry['dex']):04d}"
+            / f"{entry['form']}.glb"
+        ).resolve()
+        for entry in entries
+    }
+    if not WEB_ROOT.is_dir():
+        return
+
+    removed = 0
+    for path in WEB_ROOT.rglob("*.glb"):
+        if path.resolve() in expected:
+            continue
+        path.unlink()
+        removed += 1
+
+    for directory in sorted(
+        (path for path in WEB_ROOT.rglob("*") if path.is_dir()),
+        key=lambda path: len(path.parts),
+        reverse=True,
+    ):
+        try:
+            directory.rmdir()
+        except OSError:
+            pass
+
+    if removed:
+        print(f"Removed {removed} stale generated Switch GLB(s).", flush=True)
+
+
+def prune_conversion_cache(jobs: list[dict]) -> None:
+    cache = load_conversion_cache()
+    expected = {output_cache_key(job) for job in jobs}
+    pruned = {
+        key: value
+        for key, value in cache.items()
+        if key in expected
+    }
+    if len(pruned) != len(cache):
+        save_conversion_cache(pruned)
+        print(
+            f"Removed {len(cache) - len(pruned)} stale Switch conversion cache entrie(s).",
+            flush=True,
+        )
+
+
 def write_manifest(entries: list[dict]) -> None:
     MANIFEST_JSON.parent.mkdir(parents=True, exist_ok=True)
 
@@ -2174,6 +2239,32 @@ def install_desktop(
     # A full import is authoritative for every Switch row. A targeted --dex run
     # is authoritative only for those dex numbers. This prevents old spellings
     # such as form-16-00 from surviving after canonical form matching changes.
+    if prune_missing:
+        expected_runtime_switch = {
+            (
+                root
+                / "switch"
+                / f"{int(entry['dex']):04d}"
+                / f"{entry['form']}.glb"
+            ).resolve()
+            for entry in entries
+            if entry.get("ready") is not False
+        }
+        runtime_switch_root = root / "switch"
+        if runtime_switch_root.is_dir():
+            for stale in runtime_switch_root.rglob("*.glb"):
+                if stale.resolve() not in expected_runtime_switch:
+                    stale.unlink()
+            for directory in sorted(
+                (path for path in runtime_switch_root.rglob("*") if path.is_dir()),
+                key=lambda path: len(path.parts),
+                reverse=True,
+            ):
+                try:
+                    directory.rmdir()
+                except OSError:
+                    pass
+
     for key, cols in list(existing.items()):
         if not row_is_switch(cols):
             continue
@@ -2549,9 +2640,15 @@ def main() -> int:
     )
     if incompatible_pairs:
         raise RuntimeError(f"Internal compatibility error: {incompatible_pairs} invalid model/animation pair(s)")
+    remapped_jobs = sum(
+        1
+        for job in jobs
+        if int(job.get("modelId", job["dex"])) != int(job["dex"])
+    )
     print(
         f"Selected {len(jobs)} unique Pokémon/form model jobs; "
-        f"{models_with_anim} have compatible same-game/form animations"
+        f"{models_with_anim} have compatible same-game/form animations; "
+        f"{remapped_jobs} use internal-ID to National-Dex remapping"
     )
     if args.inventory_only:
         inventory = CACHE / "switch-model-inventory.json"
@@ -2589,6 +2686,8 @@ def main() -> int:
         )
     else:
         entries = converted_entries
+        prune_generated_switch_outputs(entries)
+        prune_conversion_cache(jobs)
 
     write_manifest(entries)
     if not args.no_desktop_install:
