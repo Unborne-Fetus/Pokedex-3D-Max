@@ -7,6 +7,7 @@ on:
       - "scripts/import_switch_game_assets.py"
       - "scripts/blender_import_switch_game_model.py"
       - "scripts/test_switch_materials.py"
+      - "scripts/verify_switch_baseline.py"
       - "scripts/sync_switch_web.py"
       - "scripts/test_sync_switch_web.py"
       - "scripts/setup_all.ps1"
@@ -42,7 +43,7 @@ jobs:
 
       - name: Compile importer scripts
         run: |
-          python -m py_compile             scripts/import_switch_game_assets.py             scripts/blender_import_switch_game_model.py
+          python -m py_compile             scripts/import_switch_game_assets.py             scripts/blender_import_switch_game_model.py             scripts/verify_switch_baseline.py
 
       - name: Run Switch importer self-tests
         run: python scripts/import_switch_game_assets.py --self-test
@@ -50,6 +51,7 @@ jobs:
       - name: Test material selection and browser synchronization
         run: |
           python scripts/test_switch_materials.py
+          python scripts/verify_switch_baseline.py --self-test
           python scripts/test_sync_switch_web.py
 
       - name: Parse PowerShell setup
