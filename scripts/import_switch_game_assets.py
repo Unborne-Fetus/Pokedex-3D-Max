@@ -117,6 +117,10 @@ def is_switch_texture_archive(path: Path) -> bool:
             or "poke-texture" in stem
             or "texture" in stem
             or "textures" in stem
+            or "texpack" in stem
+            or stem.startswith("tex-")
+            or "-tex-" in stem
+            or stem.endswith("-tex")
         )
     )
 
@@ -2391,6 +2395,8 @@ def run_self_tests() -> None:
     assert is_switch_texture_archive(Path("SV-PokeTex.zip"))
     assert is_switch_texture_archive(Path("ZA-PokeTexture.zip"))
     assert is_switch_texture_archive(Path("SwSh-Textures.zip"))
+    assert is_switch_texture_archive(Path("Textures-SwSh.zip"))
+    assert is_switch_texture_archive(Path("SwSh-TexPack.7z"))
     assert not is_switch_texture_archive(Path("SV-Poke.zip"))
 
     assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
