@@ -719,43 +719,121 @@ function PreflightCode([string]$PythonCommand, [string]$GradleBat) {
 }
 
 function BuildWindows([string]$GradleBat) {
-    Step "STEP 7/7 - Building Windows EXE"
+    Step "STEP 7/7 - Building Windows installers"
     Push-Location $RepoRoot
     try {
         Stamp "Starting Gradle desktop build. Gradle output will remain visible."
-        & $GradleBat --console=plain --no-daemon :desktopApp:packageExe
-        if ($LASTEXITCODE -ne 0) { throw "Windows EXE build failed." }
+        & $GradleBat --console=plain --no-daemon :desktopApp:packageMsi :desktopApp:packageExe
+        if ($LASTEXITCODE -ne 0) { throw "Windows installer build failed." }
     } finally {
         Pop-Location
     }
     Stamp "Gradle build completed."
 }
 
-function CollectExe {
-    Step "Collecting final EXE"
+function CollectInstallers {
+    Step "Collecting final Windows installers"
     EnsureDir $DistDir
-    $ExeSource = Get-ChildItem (Join-Path $RepoRoot "desktopApp\build\compose\binaries\main\exe") -Filter *.exe -File -Recurse -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-    if (-not $ExeSource) { throw "Windows EXE output was not found after a successful Gradle build." }
-    $Exe = Join-Path $DistDir "Pokedex-3D-Max-Windows.exe"
-    Copy-Item $ExeSource.FullName $Exe -Force
-    Stamp ("Final EXE: " + $Exe)
-    Stamp ("Size: " + [math]::Round((Get-Item $Exe).Length / 1MB, 1).ToString() + " MB")
-    return $Exe
+
+    $MsiSource = Get-ChildItem (Join-Path $RepoRoot "desktopApp\build\compose\binaries\main\msi") -Filter *.msi -File -Recurse -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending |
+        Select-Object -First 1
+    $ExeSource = Get-ChildItem (Join-Path $RepoRoot "desktopApp\build\compose\binaries\main\exe") -Filter *.exe -File -Recurse -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending |
+        Select-Object -First 1
+
+    if (-not $MsiSource -and -not $ExeSource) {
+        throw "No Windows installer output was found after a successful Gradle build."
+    }
+
+    $Result = @{}
+    if ($MsiSource) {
+        $Msi = Join-Path $DistDir "Pokedex-3D-Max-Windows.msi"
+        Copy-Item $MsiSource.FullName $Msi -Force
+        Stamp ("Final MSI: " + $Msi)
+        Stamp ("MSI size: " + [math]::Round((Get-Item $Msi).Length / 1MB, 1).ToString() + " MB")
+        $Result["Msi"] = $Msi
+    }
+    if ($ExeSource) {
+        $Exe = Join-Path $DistDir "Pokedex-3D-Max-Windows.exe"
+        Copy-Item $ExeSource.FullName $Exe -Force
+        Stamp ("Final EXE: " + $Exe)
+        Stamp ("EXE size: " + [math]::Round((Get-Item $Exe).Length / 1MB, 1).ToString() + " MB")
+        $Result["Exe"] = $Exe
+    }
+
+    return $Result
 }
 
-function InstallExe([string]$Exe) {
+function FindInstalledPokedex {
+    $Roots = @(
+        "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*",
+        "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*",
+        "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
+    )
+
+    foreach ($Root in $Roots) {
+        $Match = Get-ItemProperty $Root -ErrorAction SilentlyContinue |
+            Where-Object {
+                $_.DisplayName -and
+                ($_.DisplayName -eq "Pokedex 3D Max" -or $_.DisplayName -eq "Pokedex3DMax")
+            } |
+            Select-Object -First 1
+        if ($Match) { return $Match }
+    }
+    return $null
+}
+
+function InstallOrUpdateWindows([hashtable]$Installers) {
     if ($SkipInstall) {
         Stamp "Skipping installer launch because -SkipInstall was supplied."
         return
     }
-    Write-Host ""
-    $Answer = Read-Host "Build finished. Launch the Windows installer now? (Y/n)"
-    if ([string]::IsNullOrWhiteSpace($Answer) -or $Answer.ToLowerInvariant() -eq "y") {
-        Stamp "Launching Windows installer..."
-        Start-Process -FilePath $Exe
+
+    $Installed = FindInstalledPokedex
+    if ($Installed) {
+        $Version = if ($Installed.DisplayVersion) { $Installed.DisplayVersion } else { "unknown" }
+        Stamp ("Existing Pokedex 3D Max installation detected (version " + $Version + ").")
+        Stamp "Updating the existing installation automatically."
     } else {
-        Stamp "Installer was not launched. The EXE is ready in dist."
+        Stamp "No existing Pokedex 3D Max installation detected."
+        Stamp "Installing Pokedex 3D Max automatically."
     }
+
+    if ($Installers.ContainsKey("Msi") -and (Test-Path $Installers["Msi"])) {
+        $Msi = $Installers["Msi"]
+        $Arguments = @(
+            "/i",
+            ('"' + $Msi + '"'),
+            "/passive",
+            "/norestart",
+            "REINSTALL=ALL",
+            "REINSTALLMODE=amus"
+        )
+        Stamp ("Launching Windows Installer: " + $Msi)
+        $Process = Start-Process -FilePath "msiexec.exe" -ArgumentList $Arguments -Wait -PassThru
+        if ($Process.ExitCode -notin @(0, 1641, 3010)) {
+            throw "Pokedex 3D Max MSI install/update failed with exit code $($Process.ExitCode)."
+        }
+        if ($Process.ExitCode -eq 3010) {
+            Stamp "Install/update succeeded; Windows reports that a restart may be required."
+        } else {
+            Stamp "Install/update completed successfully."
+        }
+        return
+    }
+
+    if ($Installers.ContainsKey("Exe") -and (Test-Path $Installers["Exe"])) {
+        $Exe = $Installers["Exe"]
+        Stamp "MSI was unavailable; launching the EXE installer fallback."
+        $Process = Start-Process -FilePath $Exe -Wait -PassThru
+        if ($Process.ExitCode -ne 0) {
+            throw "Pokedex 3D Max EXE installer exited with code $($Process.ExitCode)."
+        }
+        return
+    }
+
+    throw "No usable Windows installer was collected."
 }
 
 EnsureDir $ToolsDir
@@ -835,15 +913,16 @@ try {
         ImportSwitchGameAssets $Python $Blender
     }
     BuildWindows $Gradle
-    $Exe = CollectExe
+    $Installers = CollectInstallers
 
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
     Stamp "SUCCESS - Windows build is ready."
     Write-Host "============================================================" -ForegroundColor Green
-    Write-Host ("EXE: " + $Exe)
+    if ($Installers.ContainsKey("Msi")) { Write-Host ("MSI: " + $Installers["Msi"]) }
+    if ($Installers.ContainsKey("Exe")) { Write-Host ("EXE: " + $Installers["Exe"]) }
     if ($Pack) { Write-Host ("Offline models: " + $Pack) }
-    InstallExe $Exe
+    InstallOrUpdateWindows $Installers
 } catch {
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Red
