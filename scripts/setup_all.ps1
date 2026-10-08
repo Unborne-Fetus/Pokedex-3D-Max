@@ -25,6 +25,17 @@ $MegaDownloadRetries = 3
 $script:SwitchAssetSyncSucceeded = $null
 $script:RemoteSwitchPackSucceeded = $false
 
+function GetTargetPackageVersion {
+    $BuildFile = Join-Path $RepoRoot "desktopApp\build.gradle.kts"
+    if (-not (Test-Path $BuildFile)) { return $null }
+    $Content = Get-Content $BuildFile -Raw
+    $Match = [regex]::Match($Content, 'packageVersion\s*=\s*"([^"]+)"')
+    if ($Match.Success) { return $Match.Groups[1].Value }
+    return $null
+}
+
+$script:TargetPackageVersion = GetTargetPackageVersion
+
 function Stamp([string]$Text) {
     $Now = Get-Date -Format "HH:mm:ss"
     Write-Host ("[" + $Now + "] " + $Text)
@@ -818,7 +829,7 @@ function InstallOrUpdateWindows([hashtable]$Installers) {
             "/passive",
             "/norestart"
         )
-        if ($Installed -and $Installed.DisplayVersion -eq "0.2.1") {
+        if ($Installed -and $script:TargetPackageVersion -and $Installed.DisplayVersion -eq $script:TargetPackageVersion) {
             Stamp "Same package version detected; running an in-place repair/update."
             $Arguments += @("REINSTALL=ALL", "REINSTALLMODE=amus")
         }
