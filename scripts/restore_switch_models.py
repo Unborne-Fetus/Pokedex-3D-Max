@@ -43,8 +43,9 @@ def restore(target: Path, repo: Path = ROOT) -> int:
             if not 1 <= dex <= 1025:
                 continue
             entry = dict(metadata.get((dex, form), {}))
-            if entry.get('animationRejected'):
-                continue
+            # Trust the GLB itself, not stale metadata from an earlier failed conversion.
+            # Older Switch exports can be correctly animated even when an old manifest
+            # marked the same dex/form as animationRejected.
             try:
                 doc = parse_glb_doc(path)
                 if not isinstance(doc, dict) or not doc.get('meshes') or not doc.get('scenes'):
@@ -52,6 +53,12 @@ def restore(target: Path, repo: Path = ROOT) -> int:
                 clips = [a.get('name') or f'animation_{i}' for i, a in enumerate(doc.get('animations', []))
                          if isinstance(a, dict) and a.get('channels') and a.get('samplers')]
                 idle = entry.get('idleAnimation') if entry.get('idleAnimation') in clips else choose_idle(clips)
+                # Some of the original Switch packs use clip names that our idle-name
+                # heuristic does not recognize. If the GLB is genuinely animated,
+                # keep it and use the first embedded clip as its default idle rather
+                # than discarding the whole model pack.
+                if not idle and clips:
+                    idle = clips[0]
                 if not idle:
                     continue
                 missing_texture = glb_texture_count(path) == 0
