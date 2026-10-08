@@ -1705,6 +1705,8 @@ viewer.addEventListener("load", async () => {
 
   disposeFbxFallback();
 
+  formEl.textContent = prettyForm(currentModel.form) +
+    (/\/(?:models|offline)\/switch\//.test(activeModelCandidates[activeCandidateIndex]) ? " · Switch assets" : "");
   const elapsed = Math.max(0, performance.now() - loadStartedAt);
   messageEl.textContent =
     "Loaded in " + (elapsed / 1000).toFixed(1) + "s";

@@ -29,7 +29,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check shared app
-        run: node scripts/check_shared_app.js
+        run: |
+          node scripts/check_shared_app.js
+          python3 scripts/test_sync_switch_web.py
 
       - name: Prepare static site
         run: |

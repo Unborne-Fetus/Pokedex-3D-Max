@@ -42,7 +42,9 @@ jobs:
           gradle-version: "9.6.0"
 
       - name: Check shared app
-        run: node scripts/check_shared_app.js
+        run: |
+          node scripts/check_shared_app.js
+          python scripts/test_sync_switch_web.py
 
       - name: Build Windows EXE and MSI
         shell: pwsh

@@ -975,6 +975,10 @@ try {
         $Blender = EnsureBlender
         ImportSwitchGameAssets $Python $Blender
     }
+    Stamp "Syncing installed Switch models into the browser index..."
+    $WebSync = Join-Path $RepoRoot "scripts\sync_switch_web.py"
+    if ($Python -eq "py") { & py -3 $WebSync } else { & python $WebSync }
+    if ($LASTEXITCODE -ne 0) { throw "Browser Switch-model sync failed." }
     BuildWindows $Gradle
     $Installers = CollectInstallers
 

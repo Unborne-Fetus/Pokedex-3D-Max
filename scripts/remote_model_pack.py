@@ -384,6 +384,9 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
             catalog.pop(key, None)
 
     write_catalog(catalog_path, catalog)
+    atomic_json(target / "switch-model-metadata.json", entries)
+    from sync_switch_web import sync_pack
+    sync_pack(target)
 
     state = {
         "format": 1,
@@ -453,3 +456,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

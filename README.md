@@ -33,7 +33,7 @@ git pull
 
 If Windows cancels installation with code 1602, setup retains the new portable app and writes `dist/windows-install.log`. Run `dist/Pokedex-3D-Max-Portable/Pokedex 3D Max.exe` to use the new build without installing. A cancelled install does not update the existing shortcut.
 
-Open `index.html` directly or serve the repository with `python -m http.server 8000`. Battle data is embedded so battles also work when opening the index directly.
+Run `launch-index.bat` to sync already-downloaded Switch assets and open the index over local HTTP. Setup also syncs these assets automatically. Directly opening `index.html` can block local GLB loading because of browser file restrictions. Battle data remains embedded.
 
 ## 3D model library
 
