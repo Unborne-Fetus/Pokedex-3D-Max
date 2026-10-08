@@ -333,18 +333,63 @@ def find_blender(explicit: str | None) -> str:
     raise RuntimeError("Blender was not found. Install Blender 3.6+ or pass --blender PATH.")
 
 
+def parse_glb_doc(path: Path) -> dict:
+    import struct
+
+    data = path.read_bytes()
+    if len(data) < 20 or data[:4] != b"glTF":
+        raise ValueError("not a GLB")
+    _, version, total = struct.unpack_from("<III", data, 0)
+    if version != 2 or total > len(data):
+        raise ValueError("invalid GLB")
+    offset = 12
+    while offset + 8 <= total:
+        length, chunk_type = struct.unpack_from("<II", data, offset)
+        offset += 8
+        chunk = data[offset : offset + length]
+        offset += length
+        if chunk_type == 0x4E4F534A:
+            return json.loads(chunk.rstrip(b" \t\r\n\x00").decode("utf-8"))
+    raise ValueError("GLB JSON chunk missing")
+
+
+def existing_glb_is_complete(path: Path, wants_animations: bool) -> bool:
+    """Return True when a previously exported GLB already satisfies this job.
+
+    The old importer reconverted every model that had animation candidates on
+    every setup run. That made incremental setup nearly as expensive as the
+    initial import. Validate the existing GLB once and reuse it when it already
+    contains animations.
+    """
+    if not path.is_file() or path.stat().st_size <= 1024:
+        return False
+    if not wants_animations:
+        return True
+    try:
+        doc = parse_glb_doc(path)
+    except Exception:
+        return False
+    return bool(doc.get("animations"))
+
+
 def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path) -> None:
     WEB_ROOT.mkdir(parents=True, exist_ok=True)
     payload = []
+    reused = 0
     for job in jobs:
         out = WEB_ROOT / f"{job['dex']:04d}" / f"{job['form']}.glb"
-        has_animation_candidates = bool(job.get("animations"))
-        if out.is_file() and out.stat().st_size > 1024 and not has_animation_candidates:
+        wants_animations = bool(job.get("animations"))
+        if existing_glb_is_complete(out, wants_animations):
+            reused += 1
             continue
-        # If matching animation files are now available, reconvert an existing
-        # static GLB so it can become active instead of remaining staged forever.
+
+        # Existing static GLBs are reconverted only when animation candidates
+        # are available and the current GLB does not already contain animation.
         out.parent.mkdir(parents=True, exist_ok=True)
         payload.append({**job, "output": str(out)})
+
+    if reused:
+        print(f"Reusing {reused} already-complete Switch model(s).", flush=True)
 
     if not payload:
         print("All selected models are already converted.")
@@ -365,30 +410,10 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
         addon.name,
         str(blender_deps),
     ]
-    print(f"Converting {len(payload)} Switch models in one Blender session ...", flush=True)
+    print(f"Converting {len(payload)} missing/incomplete Switch models in one Blender session ...", flush=True)
     result = subprocess.run(cmd, cwd=ROOT)
     if result.returncode:
         raise RuntimeError(f"Blender conversion failed with code {result.returncode}")
-
-
-def parse_glb_doc(path: Path) -> dict:
-    import struct
-
-    data = path.read_bytes()
-    if len(data) < 20 or data[:4] != b"glTF":
-        raise ValueError("not a GLB")
-    _, version, total = struct.unpack_from("<III", data, 0)
-    if version != 2 or total > len(data):
-        raise ValueError("invalid GLB")
-    offset = 12
-    while offset + 8 <= total:
-        length, chunk_type = struct.unpack_from("<II", data, offset)
-        offset += 8
-        chunk = data[offset : offset + length]
-        offset += length
-        if chunk_type == 0x4E4F534A:
-            return json.loads(chunk.rstrip(b" \t\r\n\x00").decode("utf-8"))
-    raise ValueError("GLB JSON chunk missing")
 
 
 def choose_idle(names: list[str]) -> str | None:
