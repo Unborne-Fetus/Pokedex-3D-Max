@@ -27,7 +27,7 @@ function modelForSpecies(species){
   const dex=window.BRISK_BATTLE_DATA?.species?.[species]?.nationalDex||species;
   const exact=list.find(m=>Number(m.dex)===Number(dex)&&String(m.form||"").toLowerCase()==="regular")
     ||list.find(m=>Number(m.dex)===Number(dex)&&!String(m.form||"").toLowerCase().includes("shiny"));
-  return exact?.url||(MODEL_CDN+Number(dex)+".glb");
+  return exact?.url||(window.POKEDEX3D_MODEL_POLICY?.switchOnly ? "" : MODEL_CDN+Number(dex)+".glb");
 }
 function engine(){
   if(!window.BriskBattleEngine)throw new Error("Brisk battle engine did not load.");
@@ -50,6 +50,7 @@ function setHp(bar,text,mon){
 }
 function setViewer(viewer,mon,back){
   const url=modelForSpecies(mon.species);
+  if(!url){viewer.removeAttribute("src");viewer.setAttribute("alt","No restored Switch model for "+mon.name);return;}
   if(viewer.getAttribute("src")!==url)viewer.setAttribute("src",url);
   viewer.setAttribute("alt","3D model of "+mon.name);
   viewer.cameraOrbit=back?"180deg 75deg auto":"0deg 75deg auto";

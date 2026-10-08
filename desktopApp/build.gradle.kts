@@ -36,7 +36,7 @@ compose.desktop {
             modules("jdk.unsupported", "java.management", "java.logging")
             targetFormats(TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Pokedex 3D Max"
-            packageVersion = "0.2.6"
+            packageVersion = "0.2.7"
 
             windows {
                 menuGroup = "Pokedex 3D Max"
@@ -68,4 +68,11 @@ tasks.register<JavaExec>("verifyDesktop") {
 // Incremental builds may retain the deleted Java launcher class until clean.
 tasks.jar {
     exclude("shared-web/**", "**/SharedApp.class")
+}
+
+// jpackage refuses an existing image when version/input changes on a rebuild.
+tasks.matching { it.name == "createDistributable" }.configureEach {
+    doFirst {
+        delete(layout.buildDirectory.dir("compose/binaries/main/app/Pokedex 3D Max"))
+    }
 }

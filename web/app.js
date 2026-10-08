@@ -17,7 +17,8 @@ const LOCAL_MODELS = [
   ...(Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
     ? window.POKEDEX3D_SWITCH_MODELS
     : []),
-].filter(model => model?.valid !== false && model?.ready !== false);
+].filter(model => model?.valid !== false && model?.ready !== false)
+ .filter(model => !window.POKEDEX3D_MODEL_POLICY?.switchOnly || String(model.url).includes("/switch/"));
 
 function localModelKey(model) {
   let form = String(model?.form || "regular").trim().toLowerCase().replace(/-00$/, "");
@@ -30,6 +31,7 @@ function localModelKey(model) {
 }
 
 function applyLocalModelOverrides(list) {
+  if (window.POKEDEX3D_MODEL_POLICY?.switchOnly) list = [];
   if (!LOCAL_MODELS.length) return list;
   list = [...new Map(list.map(model => [localModelKey(model), model])).values()];
 
@@ -241,6 +243,10 @@ function catalogToModels(payload) {
 }
 
 async function enhanceCatalogInBackground() {
+  if (window.POKEDEX3D_MODEL_POLICY?.switchOnly) {
+    statusEl.textContent = models.length.toLocaleString() + " restored Switch models · textures unfinished";
+    return;
+  }
   let cached = null;
   try { cached = localStorage.getItem(CATALOG_CACHE_KEY); } catch {}
   if (cached) {

@@ -36,6 +36,10 @@ If Windows cancels installation with code 1602, setup retains the new portable a
 
 Run `launch-index.bat` to sync already-downloaded Switch assets and open the index over local HTTP. Setup also syncs these assets automatically. Directly opening `index.html` can block local GLB loading because of browser file restrictions. Battle data remains embedded.
 
+Current restoration mode keeps the original animated Switch exports active even when their textures are unfinished. Setup recovers exports from the installed pack, `web/models/switch`, and its original-export backup. When original archives are present, it also converts missing exports previously rejected for their textures; existing exports are reused. It skips the online replacement pack and old generic downloads. Both viewers show the restored Switch catalog only; texture work is deferred.
+
+To restore the downloaded models without rebuilding the app, run `setup-all.bat switch`. To rebuild/update the native EXE as well, run `setup-all.bat full`.
+
 ## 3D model library
 
 Pokedex 3D Max integrates the community-maintained Pokémon 3D API asset library.

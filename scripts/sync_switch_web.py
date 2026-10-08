@@ -90,10 +90,12 @@ def sync_pack(target: Path, repo: Path = ROOT) -> int:
                      idleBreaks=[n for n in entry.get("idleBreaks", []) if n in names and n != idle],
                      source="Switch game assets")
         entries.append(entry)
+    policy_path = target / "model_source_policy.json"
+    policy = json.loads(policy_path.read_text(encoding="utf-8")) if policy_path.is_file() else {}
     entries.sort(key=lambda e: (e["dex"], e["form"]))
     old_manifest.parent.mkdir(parents=True, exist_ok=True)
     for path, text in [(old_manifest, json.dumps(entries, indent=2) + "\n"),
-                       (old_manifest.with_suffix(".js"), "window.POKEDEX3D_SWITCH_MODELS = " + json.dumps(entries) + ";\n")]:
+                       (old_manifest.with_suffix(".js"), "window.POKEDEX3D_MODEL_POLICY = " + json.dumps(policy) + ";\nwindow.POKEDEX3D_SWITCH_MODELS = " + json.dumps(entries) + ";\n")]:
         temp = path.with_suffix(path.suffix + ".tmp")
         temp.write_text(text, encoding="utf-8")
         temp.replace(path)

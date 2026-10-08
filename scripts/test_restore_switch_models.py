@@ -1,0 +1,85 @@
+import os
+import json
+import struct
+import tempfile
+import unittest
+from unittest.mock import patch
+import import_switch_game_assets as importer
+from pathlib import Path
+from restore_switch_models import restore
+from import_switch_game_assets import glb_texture_count
+
+
+def glb(path, textured=False, animation=True):
+    doc = {'asset': {'version': '2.0'}, 'meshes': [{'primitives': [{'attributes': {'POSITION': 0}}]}],
+           'scenes': [{'nodes': [0]}], 'nodes': [{'mesh': 0}],
+           'extras': {'padding': 'x' * 1100}}
+    if animation:
+        doc['animations'] = [{'name': 'defaultwait', 'channels': [{'sampler': 0, 'target': {'node': 0, 'path': 'translation'}}],
+                              'samplers': [{'input': 1, 'output': 2}]}]
+    if textured:
+        doc['textures'] = [{'source': 0}]
+        doc['materials'] = [{'pbrMetallicRoughness': {'baseColorTexture': {'index': 0}}}]
+    chunk = json.dumps(doc).encode()
+    chunk += b' ' * (-len(chunk) % 4)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(struct.pack('<IIIII', 0x46546C67, 2, len(chunk) + 20, len(chunk), 0x4E4F534A) + chunk)
+
+
+class RestoreTests(unittest.TestCase):
+    def test_restore_untextured_original_and_keep_it_after_pack_replacement(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); repo = root / 'repo'; pack = root / 'pack'
+            original = repo / 'web/models/switch/0006/regular.glb'
+            glb(original)
+            original_bytes = original.read_bytes()
+            glb(pack / 'switch/0006/regular.glb', textured=True)
+            glb(repo / 'web/models/switch/0007/regular.glb', animation=False)
+            (pack / 'model_catalog.tsv').write_text('dex\tname\tform\tpath\n6\tCharizard\tregular\told.glb\n')
+            # Previous texture rejection must not keep the original staged.
+            (pack / 'switch-model-metadata.json').write_text(json.dumps([
+                {'dex': 6, 'form': 'regular', 'ready': False, 'valid': False}]))
+            self.assertEqual(restore(pack, repo), 1)
+            restored = pack / 'switch/0006/regular.glb'
+            self.assertEqual(restored.read_bytes(), original_bytes)
+            self.assertEqual(glb_texture_count(restored), 0)
+            self.assertNotIn('old.glb', (pack / 'model_catalog.tsv').read_text())
+            self.assertTrue(json.loads((pack / 'model_source_policy.json').read_text())['switchOnly'])
+            manifest = (repo / 'web/models/switch-manifest.js').read_text()
+            self.assertIn('window.POKEDEX3D_MODEL_POLICY', manifest)
+            metadata = json.loads((pack / 'switch-model-metadata.json').read_text())[0]
+            self.assertTrue(metadata['ready'])
+            self.assertTrue(metadata['textureIssues'])
+            # A later pack overwrite must not erase the retained broken-texture original.
+            glb(restored, textured=True)
+            glb(original, textured=True)
+            self.assertEqual(restore(pack, repo), 1)
+            self.assertEqual(restored.read_bytes(), original_bytes)
+
+    def test_importer_reuses_untextured_export_in_restore_mode(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            glb(root / '0006/regular.glb')
+            job = {'dex': 6, 'form': 'regular', 'animations': [{'name': 'defaultwait'}]}
+            with patch.object(importer, 'WEB_ROOT', root), \
+                 patch.object(importer, 'load_conversion_cache', return_value={}), \
+                 patch.object(importer, 'save_conversion_cache'), \
+                 patch.object(importer, 'job_fingerprint', return_value='unchanged'), \
+                 patch.dict(os.environ, {'POKEDEX3D_ALLOW_BROKEN_TEXTURES': '1'}), \
+                 patch.object(importer.subprocess, 'run', side_effect=AssertionError('Existing broken-texture export must be reused')):
+                importer.run_blender([job], 'unused', root, root)
+            self.assertEqual(glb_texture_count(root / '0006/regular.glb'), 0)
+
+    def test_no_originals_does_not_claim_success_or_replace_catalog(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); pack = root / 'pack'; repo = root / 'repo'
+            pack.mkdir()
+            catalog = pack / 'model_catalog.tsv'
+            catalog.write_text('old catalog')
+            self.assertEqual(restore(pack, repo), 0)
+            self.assertEqual(catalog.read_text(), 'old catalog')
+            self.assertFalse((pack / 'model_source_policy.json').exists())
+
+
+if __name__ == '__main__':
+    unittest.main()

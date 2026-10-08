@@ -34,23 +34,23 @@ if "%MODE%"=="FULL" (
   echo   2. Reuses/installs Gradle
   echo   3. Reuses/installs Python + Pillow
   echo   4. Reuses/installs Blender
-  echo   5. Reuses/downloads missing offline fallback models
-  echo   6. Uses downloaded Switch archives first
-  echo      ^(uses the online pack when local archives are absent^)
+  echo   5. Restores existing original Switch GLBs
+  echo   6. Allows unfinished textures; originals stay active
+  echo      ^(converts cached original archives only if exports are missing^)
   echo   7. Builds Windows MSI/EXE installers
   echo      and automatically installs or updates the existing app
   echo.
   echo Existing downloads and conversions are reused whenever possible.
 ) else if "%MODE%"=="SWITCH" (
   echo SWITCH ASSET MODE:
-  echo   Tries the validated online Switch GLB pack first.
-  echo   Falls back to cached model/animation archives + Blender if needed.
+  echo   Restores existing original Switch exports, including broken textures.
+  echo   Converts cached original archives only when exported models are missing.
   echo   Runs importer syntax checks and self-tests.
   echo   Skips JDK, Gradle, generic model download, EXE build, and installer.
 ) else (
   echo FAST MODE:
   echo   Reuses your already-imported models and skips expensive asset work.
-  echo   This is the default only after a fully validated v8 model import.
+  echo   This is the default only after a fully validated v9 model import.
   echo   Run setup-all.bat switch to refresh Switch assets without rebuilding the app.
   echo   Run setup-all.bat full when you intentionally want the complete build pipeline.
 )

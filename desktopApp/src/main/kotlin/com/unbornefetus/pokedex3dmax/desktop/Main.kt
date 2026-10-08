@@ -105,7 +105,7 @@ fun main(args: Array<String>) {
 private fun launchDesktop() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Pokedex 3D Max v0.2.6",
+        title = "Pokedex 3D Max v0.2.7",
         state = rememberWindowState(width = 1280.dp, height = 820.dp),
     ) {
         MaterialTheme(colorScheme = darkColorScheme()) {
@@ -877,6 +877,8 @@ private fun loadManifest(root: Path): List<DesktopModel> {
         val entry = metadata.getJSONObject(i)
         (entry.getInt("dex") to entry.getString("form")) to entry
     }
+    val policy = runCatching { JSONObject(Files.readString(root.resolve("model_source_policy.json"))) }.getOrDefault(JSONObject())
+    val switchOnly = policy.optBoolean("switchOnly", false)
     val absoluteRoot = root.toAbsolutePath().normalize()
 
     return Files.readAllLines(manifest)
@@ -891,6 +893,7 @@ private fun loadManifest(root: Path): List<DesktopModel> {
                 !path.toRealPath().startsWith(absoluteRoot.toRealPath())) return@mapNotNull null
             val entry = byKey[dex to columns[2]]
             val isSwitch = absoluteRoot.relativize(path).toString().replace('\\', '/').startsWith("switch/")
+            if (switchOnly && !isSwitch) return@mapNotNull null
             if (isSwitch && entry?.optBoolean("ready", true) == false) return@mapNotNull null
             DesktopModel(
                 dex = dex,
@@ -945,6 +948,8 @@ private fun verifyDesktop() {
         Files.writeString(root.resolve("switch-model-metadata.json"),
             "[{\"dex\":6,\"form\":\"regular\",\"ready\":false}]")
         check(loadManifest(root).first { it.form == "regular" }.path == root.resolve("old/regular.glb"))
+        Files.writeString(root.resolve("model_source_policy.json"), "{\"switchOnly\":true}")
+        check(loadManifest(root).all { it.path.startsWith(root.resolve("switch")) })
     } finally {
         Files.walk(root).use { paths -> paths.sorted(Comparator.reverseOrder()).forEach { Files.deleteIfExists(it) } }
     }

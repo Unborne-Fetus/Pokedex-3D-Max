@@ -581,7 +581,7 @@ for index, job in enumerate(jobs, start=1):
         except Exception as error:
             if not allow_broken_textures:
                 raise
-            print(f"Keeping geometry and animations with unfinished textures: {error}", flush=True)
+            print(f"Keeping imported geometry with unfinished materials: {error}", flush=True)
             total_materials, textured_materials = 0, 0
         if not any(obj.type == "MESH" for obj in bpy.context.scene.objects):
             raise RuntimeError("Imported model contains no mesh geometry")

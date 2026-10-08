@@ -1999,11 +1999,12 @@ def choose_idle(names: list[str]) -> str | None:
     preferred = (
         r"default(?:idle|wait)",
         r"battle(?:idle|wait)",
+        r"fight[_ -]?a",
         r"(^|[_-])idle([0-9]*|[_-].*)?$",
         r"wait|stand|breath|rest",
     )
     rejected = re.compile(
-        r"attack|damage|faint|death|down|hit|move|run|walk|jump",
+        r"attack|damage|faint|death|down|hit|move|run|walk|jump|bind|t[-_ ]?pose",
         re.I,
     )
     for pattern in preferred:
@@ -2619,7 +2620,7 @@ def main() -> int:
     )
     parser.add_argument("--allow-broken-textures", action="store_true",
                         default=os.environ.get("POKEDEX3D_ALLOW_BROKEN_TEXTURES") == "1",
-                        help="keep animated Switch exports with unfinished albedo textures")
+                        help="keep Switch geometry/animation even when albedo bindings are unfinished")
     args = parser.parse_args()
     if args.allow_broken_textures:
         os.environ["POKEDEX3D_ALLOW_BROKEN_TEXTURES"] = "1"
@@ -2706,7 +2707,7 @@ def main() -> int:
         print(
             f"WARNING - {textureless_legacy_jobs} legacy GFBMDL job(s) have no "
             "same-game PNG/DDS/TGA/JPG/WebP texture source. They will be "
-            "converted with available materials; missing textures remain repairable.",
+            "quarantined instead of wasting Blender conversion time.",
             flush=True,
         )
 
@@ -2869,5 +2870,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 

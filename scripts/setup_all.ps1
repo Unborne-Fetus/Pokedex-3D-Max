@@ -600,13 +600,11 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
     })
 
-    # Full setup should fill in missing Switch-era archives, not stop merely
-    # because one old model ZIP happens to be present. The downloader reuses
-    # completed files by leaf name. If the remote source is temporarily
-    # unavailable, an existing local model set can still be validated/imported.
+    # Restore the source archives already downloaded for these models.
+    # Only download original archives if none are present locally.
     $script:SwitchAssetSyncSucceeded = $false
     try {
-        DownloadMegaSwitchAssets
+        if ($ModelArchives.Count -eq 0) { DownloadMegaSwitchAssets }
         $script:SwitchAssetSyncSucceeded = $true
         $AllArchives = @(FindSwitchAssetArchives)
         $ModelArchives = @($AllArchives | Where-Object {
@@ -647,9 +645,42 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     } finally {
         Pop-Location
     }
-    if ($ImportExit -ne 0) { throw "Switch-game model import failed with exit code $ImportExit." }
+    if ($ImportExit -ne 0) {
+        Stamp "Some original models could not be converted (exit $ImportExit). Restoring the usable exports that remain."
+        # The caller requires a nonempty restored catalog before building.
+        return
+    }
     $script:SwitchImportCompleted = $true
     Stamp "Switch-game model import finished."
+}
+
+function RestoreInstalledSwitchExports([string]$PythonCommand) {
+    Stamp "Restoring original Switch GLBs; unfinished textures are allowed."
+    $Restore = Join-Path $RepoRoot "scripts\restore_switch_models.py"
+    if ($PythonCommand -eq "py") { & py -3 -u $Restore | ForEach-Object { Write-Host $_ } }
+    else { & python -u $Restore | ForEach-Object { Write-Host $_ } }
+    $RestoreExit = $LASTEXITCODE
+    if ($RestoreExit -eq 0) { return $true }
+    if ($RestoreExit -eq 2) { return $false }
+    throw "Switch export restoration failed with exit code $RestoreExit."
+}
+
+function RestoreOrImportSwitchExports([string]$PythonCommand) {
+    $Recovered = RestoreInstalledSwitchExports $PythonCommand
+    $OriginalArchives = @(FindSwitchAssetArchives | Where-Object {
+        (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
+    })
+    # Also recover exports previously deleted by the texture gate. Existing
+    # GLBs are reused, including untextured ones; only missing models convert.
+    if ((-not $Recovered) -or ($OriginalArchives.Count -gt 0 -and (-not $SkipSwitchAssets))) {
+        if ($SkipSwitchAssets) { throw "No original Switch exports remain. Run setup-all.bat full to restore the downloaded source archives." }
+        $Blender = EnsureBlender
+        ImportSwitchGameAssets $PythonCommand $Blender
+        $Recovered = RestoreInstalledSwitchExports $PythonCommand
+    }
+    if (-not $Recovered) {
+        throw "No original animated Switch models could be restored. No older model pack was activated. Run setup-all.bat full with the original downloaded archives."
+    }
 }
 
 function InstallModels([string]$PythonCommand) {
@@ -954,26 +985,10 @@ try {
         Stamp "Switch-assets-only mode: skipping JDK, Gradle, fallback-pack, and Windows packaging."
         $Python = EnsurePython
         PreflightSwitchImporter $Python
-        $RemoteReady = InstallRemoteSwitchModelPack $Python
-        if (-not $RemoteReady) {
-            $Blender = EnsureBlender
-            ImportSwitchGameAssets $Python $Blender
-        }
-
-        SyncSwitchWeb $Python
-
+        RestoreOrImportSwitchExports $Python
         Write-Host ""
         Write-Host "============================================================" -ForegroundColor Green
-        if ($script:RemoteSwitchPackSucceeded) {
-            Stamp "SUCCESS - validated online Switch model pack installed."
-        } elseif ($script:SwitchImportCompleted -and $script:SwitchAssetSyncSucceeded) {
-            Stamp "SUCCESS - local backup archives were synced and imported."
-        } elseif ($script:SwitchImportCompleted) {
-            Stamp "SUCCESS WITH LOCAL BACKUP - remote sources were unavailable."
-            Stamp "The importer completed using the downloaded archives already on disk."
-        } else {
-            throw "Switch asset mode finished without installing the remote pack or running the local importer."
-        }
+        Stamp "SUCCESS - original Switch exports restored. Textures left unfinished."
         Write-Host "============================================================" -ForegroundColor Green
         Write-Host ("Offline models: " + (Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"))
         return
@@ -983,16 +998,10 @@ try {
     $Gradle = BootstrapGradle
     $Python = EnsurePython
     PreflightCode $Python $Gradle
-    # Build the generic fallback pack first, then let the validated online
-    # Switch pack override it. The downloaded original archives remain cached
-    # and are used automatically if the online pack is unavailable.
-    $Pack = InstallModels $Python
-    $RemoteReady = InstallRemoteSwitchModelPack $Python
-    if (-not $RemoteReady) {
-        $Blender = EnsureBlender
-        ImportSwitchGameAssets $Python $Blender
-    }
-    SyncSwitchWeb $Python
+    # Restore the user's original Switch models. Do not replace them with the
+    # online pack or download the old generic models during restoration.
+    RestoreOrImportSwitchExports $Python
+    $Pack = Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"
     BuildWindows $Gradle
     $Installers = CollectInstallers
 
@@ -1018,4 +1027,3 @@ try {
         try { Stop-Transcript | Out-Null } catch {}
     }
 }
-
