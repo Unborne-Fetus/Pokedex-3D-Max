@@ -4,7 +4,7 @@ import argparse
 import json
 import shutil
 from pathlib import Path
-from import_switch_game_assets import parse_glb_doc, choose_idle, glb_texture_count
+from import_switch_game_assets import parse_glb_doc, choose_idle, glb_textures_complete
 from sync_switch_web import ROOT, default_pack, sync_pack
 
 
@@ -61,8 +61,7 @@ def restore(target: Path, repo: Path = ROOT) -> int:
                     idle = clips[0]
                 if not idle:
                     continue
-                missing_texture = glb_texture_count(path) == 0
-                if missing_texture:
+                if not glb_textures_complete(path):
                     continue
             except (OSError, ValueError, KeyError, TypeError) as error:
                 print(f'Skipping damaged Switch GLB {path}: {error}')
@@ -74,7 +73,7 @@ def restore(target: Path, repo: Path = ROOT) -> int:
                 entry.update(dex=dex, name=names.get(dex, entry.get('name', f'#{dex:04d}')), form=form,
                              ready=True, valid=True, idleAnimation=idle, animations=clips,
                              idleBreaks=[n for n in entry.get('idleBreaks', []) if n in clips and n != idle],
-                             source='Switch game assets', textureIssues=missing_texture)
+                             source='Switch game assets', textureIssues=False)
                 found[key] = (score, path, entry)
     if not found:
         print('No usable animated Switch exports remain. Original archives must be converted again; no old-model fallback was activated.')
