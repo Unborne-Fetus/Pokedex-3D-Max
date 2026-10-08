@@ -17,7 +17,7 @@ if /I "%~1"=="full" (
 ) else if /I "%~1"=="fast" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
-) else if exist "%~dp0.cache\switch-game-assets\pipeline-v7.ready.json" (
+) else if exist "%~dp0.cache\switch-game-assets\pipeline-v8.ready.json" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
 )
@@ -50,7 +50,7 @@ if "%MODE%"=="FULL" (
 ) else (
   echo FAST MODE:
   echo   Reuses your already-imported models and skips expensive asset work.
-  echo   This is the default only after a fully validated v7 model import.
+  echo   This is the default only after a fully validated v8 model import.
   echo   Run setup-all.bat switch to refresh Switch assets without rebuilding the app.
   echo   Run setup-all.bat full when you intentionally want the complete build pipeline.
 )
