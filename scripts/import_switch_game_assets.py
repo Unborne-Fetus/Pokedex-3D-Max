@@ -19,6 +19,7 @@ MANIFEST_JSON = ROOT / "web" / "models" / "switch-manifest.json"
 MANIFEST_JS = ROOT / "web" / "models" / "switch-manifest.js"
 ADDON_DIR = TOOLS / "pokemon_switch_model_importer"
 ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blender.git"
+ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
 BLENDER_DEPS = CACHE / "blender-python-deps"
 
 MODEL_EXTS = {".trmdl", ".gfbmdl"}
@@ -290,38 +291,70 @@ def patch_addon_for_batch_imports() -> None:
         gfbmdl_source.write_text(text, encoding="utf-8")
 
 
-    # Restore the add-on's normal NLA guard. An earlier compatibility patch
-    # forced every Action into NLA and cleared the armature's active Action,
-    # which made ACTIVE_ACTIONS glTF export produce static GLBs.
-    gfbanm_source = ADDON_DIR / "gfbanm_importer.py"
-    if gfbanm_source.is_file():
-        text = gfbanm_source.read_text(encoding="utf-8")
-        forced_guard = (
-            "    # Pokedex3D batch mode: always preserve imported actions in NLA.\n"
-            "    if action is not None:\n"
-        )
-        legacy_guard = "    if nla_import and action is not None:\n"
-        if forced_guard in text:
-            text = text.replace(forced_guard, legacy_guard, 1)
-        gfbanm_source.write_text(text, encoding="utf-8")
 
-
-def ensure_addon() -> Path:
+def addon_checkout_is_usable(git: str) -> bool:
     init_py = ADDON_DIR / "__init__.py"
-    if init_py.is_file():
-        patch_addon_for_batch_imports()
-        return ADDON_DIR
+    anim_py = ADDON_DIR / "gfbanm_importer.py"
+    if not init_py.is_file() or not anim_py.is_file():
+        return False
+
+    try:
+        rev = subprocess.run(
+            [git, "-C", str(ADDON_DIR), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    except Exception:
+        return False
+    if rev != ADDON_REV:
+        return False
+
+    # These markers are required by the batch wrapper. In particular, the
+    # active-action fallback was added upstream after older cached checkouts.
+    text = anim_py.read_text(encoding="utf-8", errors="replace")
+    return (
+        "if nla_import and action is not None:" in text
+        and "Action {anim_name} created and set as active action." in text
+    )
+
+
+def install_pinned_addon(git: str) -> None:
     TOOLS.mkdir(parents=True, exist_ok=True)
     if ADDON_DIR.exists():
         shutil.rmtree(ADDON_DIR)
+
+    print(f"Installing pinned Pokémon Switch importer {ADDON_REV[:12]} ...", flush=True)
+    subprocess.run([git, "clone", "--no-checkout", ADDON_REPO, str(ADDON_DIR)], check=True)
+    subprocess.run(
+        [git, "-C", str(ADDON_DIR), "fetch", "--depth", "1", "origin", ADDON_REV],
+        check=True,
+    )
+    subprocess.run(
+        [git, "-C", str(ADDON_DIR), "checkout", "--detach", ADDON_REV],
+        check=True,
+    )
+
+
+def ensure_addon() -> Path:
     git = shutil.which("git")
     if not git:
         raise RuntimeError("Git is required to fetch the Pokémon Switch Blender importer.")
-    print("Downloading Pokémon Switch model importer ...", flush=True)
-    subprocess.run([git, "clone", "--depth", "1", ADDON_REPO, str(ADDON_DIR)], check=True)
-    if not init_py.is_file():
-        raise RuntimeError("Model importer checkout was incomplete")
+
+    if not addon_checkout_is_usable(git):
+        print(
+            "Cached Pokémon Switch importer is stale or incompatible; replacing it.",
+            flush=True,
+        )
+        install_pinned_addon(git)
+
+    if not addon_checkout_is_usable(git):
+        raise RuntimeError(
+            "Pinned Pokémon Switch importer was installed but failed validation."
+        )
+
     patch_addon_for_batch_imports()
+    print(f"Using Pokémon Switch importer revision {ADDON_REV[:12]}.", flush=True)
     return ADDON_DIR
 
 
