@@ -284,14 +284,17 @@ def job_choice_score(job: dict) -> tuple[int, int, int, int]:
 
 
 def dedupe_jobs(jobs: list[dict]) -> list[dict]:
-    """Prefer a compatible animated duplicate over a newer static duplicate."""
+    """Prefer one best source per canonical Pokémon/form identity."""
     chosen: dict[tuple[int, str], dict] = {}
     for job in jobs:
-        key = (job["dex"], job["form"])
+        key = (job["dex"], job.get("formKey", job["form"]))
         current = chosen.get(key)
         if current is None or job_choice_score(job) > job_choice_score(current):
             chosen[key] = job
-    return sorted(chosen.values(), key=lambda item: (item["dex"], item["form"]))
+    return sorted(
+        chosen.values(),
+        key=lambda item: (item["dex"], item.get("formKey", item["form"]), item["form"]),
+    )
 
 
 def patch_addon_for_batch_imports() -> None:
@@ -801,7 +804,22 @@ def merge_partial_manifest(
     ]
 
 
-def install_desktop(entries: list[dict], prune_missing: bool = False) -> None:
+def read_catalog_rows(path: Path) -> dict[tuple[int, str], list[str]]:
+    rows: dict[tuple[int, str], list[str]] = {}
+    if not path.is_file():
+        return rows
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines()[1:]:
+        cols = line.split("\t")
+        if len(cols) >= 4 and cols[0].isdigit():
+            rows[(int(cols[0]), cols[2])] = cols[:4]
+    return rows
+
+
+def install_desktop(
+    entries: list[dict],
+    prune_missing: bool = False,
+    replace_dexes: set[int] | None = None,
+) -> None:
     local = os.environ.get("LOCALAPPDATA")
     if not local:
         return
@@ -809,27 +827,47 @@ def install_desktop(entries: list[dict], prune_missing: bool = False) -> None:
     root = Path(local) / "Pokedex3DMax" / "offline-models"
     root.mkdir(parents=True, exist_ok=True)
     catalog = root / "model_catalog.tsv"
+    generic_catalog = root / "generic_model_catalog.tsv"
 
-    existing: dict[tuple[int, str], list[str]] = {}
-    if catalog.is_file():
-        for line in catalog.read_text(encoding="utf-8", errors="replace").splitlines()[1:]:
-            cols = line.split("\t")
-            if len(cols) >= 4 and cols[0].isdigit():
-                existing[(int(cols[0]), cols[2])] = cols[:4]
-
+    existing = read_catalog_rows(catalog)
+    generic = read_catalog_rows(generic_catalog)
     manifest_keys = {(int(entry["dex"]), str(entry["form"])) for entry in entries}
 
-    # Only a full import is authoritative enough to prune unrelated Switch
-    # entries. Targeted --dex/--limit runs update their own keys only.
-    if prune_missing:
-        for key, cols in list(existing.items()):
-            rel = cols[3].replace("\\", "/") if len(cols) >= 4 else ""
-            if not rel.startswith("switch/") or key in manifest_keys:
-                continue
-            stale = root / Path(rel)
-            if stale.is_file():
-                stale.unlink()
+    def row_is_switch(cols: list[str] | None) -> bool:
+        if not cols or len(cols) < 4:
+            return False
+        return cols[3].replace("\\", "/").startswith("switch/")
+
+    def restore_generic(key: tuple[int, str]) -> None:
+        fallback = generic.get(key)
+        if fallback and len(fallback) >= 4 and (root / Path(fallback[3])).is_file():
+            existing[key] = fallback
+        else:
             existing.pop(key, None)
+
+    def remove_switch_row(key: tuple[int, str], cols: list[str]) -> None:
+        rel = cols[3].replace("\\", "/")
+        stale = root / Path(rel)
+        if stale.is_file():
+            stale.unlink()
+        restore_generic(key)
+
+    # A full import is authoritative for every Switch row. A targeted --dex run
+    # is authoritative only for those dex numbers. This prevents old spellings
+    # such as form-16-00 from surviving after canonical form matching changes.
+    for key, cols in list(existing.items()):
+        if not row_is_switch(cols):
+            continue
+        should_prune = (
+            (prune_missing and key not in manifest_keys)
+            or (
+                replace_dexes is not None
+                and key[0] in replace_dexes
+                and key not in manifest_keys
+            )
+        )
+        if should_prune:
+            remove_switch_row(key, cols)
 
     for entry in entries:
         key = (int(entry["dex"]), str(entry["form"]))
@@ -837,11 +875,12 @@ def install_desktop(entries: list[dict], prune_missing: bool = False) -> None:
         dst = root / rel
 
         if entry.get("ready") is False:
-            # A model that became staged must not leave an old, previously
-            # animated copy in the runtime catalog/cache.
             if dst.is_file():
                 dst.unlink()
-            existing.pop(key, None)
+            # Never delete a working generic fallback. Only replace an old
+            # Switch override with the generic row when one exists.
+            if row_is_switch(existing.get(key)):
+                restore_generic(key)
             continue
 
         src = ROOT / entry["url"]
@@ -850,8 +889,15 @@ def install_desktop(entries: list[dict], prune_missing: bool = False) -> None:
 
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
+
+        generic_row = generic.get(key)
         previous = existing.get(key)
-        previous_name = previous[1].strip() if previous and len(previous) >= 2 else ""
+        previous_name = ""
+        if generic_row and len(generic_row) >= 2:
+            previous_name = generic_row[1].strip()
+        elif previous and len(previous) >= 2:
+            previous_name = previous[1].strip()
+
         display_name = (
             previous_name
             if previous_name and not previous_name.startswith("#")
@@ -938,6 +984,23 @@ def run_self_tests() -> None:
     chosen = dedupe_jobs([static_newer, animated_older])
     assert len(chosen) == 1
     assert chosen[0]["source"] == "old.gfbmdl"
+
+    form_a = {
+        **legacy_model,
+        "form": "form-16",
+        "formKey": "16",
+        "animations": [legacy_right],
+    }
+    form_b = {
+        **legacy_model,
+        "form": "form-16-00",
+        "formKey": "16",
+        "source": "duplicate.gfbmdl",
+        "animations": [],
+    }
+    chosen = dedupe_jobs([form_a, form_b])
+    assert len(chosen) == 1
+    assert chosen[0]["source"] == "pm0479_16.gfbmdl"
 
     # Partial-import replacement must be scoped: one selected Dex may not
     # imply any other Dex should be removed.
@@ -1063,6 +1126,7 @@ def main() -> int:
         install_desktop(
             converted_entries if partial_run else entries,
             prune_missing=not partial_run,
+            replace_dexes=selected_dexes if partial_run else None,
         )
 
     ready = sum(1 for entry in converted_entries if entry.get("ready") is not False)
