@@ -713,13 +713,23 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
 
 
 def choose_idle(names: list[str]) -> str | None:
-    patterns = [r"(^|[|_])idle($|[|_])", r"wait|stand|breath", r"fight[_-]?a|battle[_-]?a"]
-    for pattern in patterns:
+    preferred = (
+        r"default(?:idle|wait)",
+        r"battle(?:idle|wait)",
+        r"(^|[_-])idle([0-9]*|[_-].*)?$",
+        r"wait|stand|breath|rest",
+        r"loop",
+    )
+    rejected = re.compile(
+        r"attack|damage|faint|death|down|hit|move|run|walk|jump",
+        re.I,
+    )
+    for pattern in preferred:
         rx = re.compile(pattern, re.I)
         for name in names:
-            if rx.search(name):
+            if rx.search(name) and not rejected.search(name):
                 return name
-    return None
+    return names[0] if names and not rejected.search(names[0]) else None
 
 
 def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
@@ -737,6 +747,9 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
         animations = [
             {"name": animation.get("name") or f"animation_{index}"}
             for index, animation in enumerate(doc.get("animations") or [])
+            if isinstance(animation, dict)
+            and bool(animation.get("channels"))
+            and bool(animation.get("samplers"))
         ]
         expected_animated = bool(job.get("animations"))
         actual_animated = bool(animations)
