@@ -79,46 +79,73 @@ def import_animations(job: dict) -> int:
 
     armature = active_armature()
     if armature is None:
-        print("No armature found; animation clips skipped.", flush=True)
-        return 0
+        raise RuntimeError("Animation candidates exist, but imported model has no armature")
 
-    # For legacy GFBMDL rigs, exporting multiple add-on-created Actions via
-    # NLA is unreliable across Blender/add-on revisions. The job's animation
-    # list is already ranked with idle/wait loops first, so import the best
-    # clip as the active Action and export that one deterministically.
     clip = clips[0]
     source = Path(clip["source"]).resolve()
     if not source.is_file():
-        return 0
+        raise RuntimeError(f"Animation source does not exist: {source}")
 
-    try:
-        result = bpy.ops.import_scene.gfbanm(
-            filepath=str(source),
-            set_scene_end=True,
-            nla_import=False,
-        )
-        if "FINISHED" not in result:
-            print(f"Animation importer returned {result} for {source.name}", flush=True)
-            return 0
+    before_actions = {action.as_pointer() for action in bpy.data.actions}
 
-        action = armature.animation_data.action if armature.animation_data else None
-        if action is None:
-            raise RuntimeError(
-                f"Animation importer finished for {source.name}, but left no active Action"
+    result = bpy.ops.import_scene.gfbanm(
+        filepath=str(source),
+        set_scene_end=True,
+        nla_import=False,
+    )
+    if "FINISHED" not in result:
+        raise RuntimeError(f"Animation importer returned {result} for {source.name}")
+
+    if armature.animation_data is None:
+        armature.animation_data_create()
+    animation_data = armature.animation_data
+    action = animation_data.action
+
+    # Be defensive across add-on/Blender revisions. If the importer created an
+    # Action but did not leave it active, recover the newly-created Action.
+    if action is None:
+        new_actions = [
+            candidate
+            for candidate in bpy.data.actions
+            if candidate.as_pointer() not in before_actions
+        ]
+        if new_actions:
+            exact = next(
+                (candidate for candidate in new_actions if candidate.name == source.stem),
+                None,
             )
+            action = exact or new_actions[-1]
 
-        action.name = clip.get("name") or source.stem
-        action.use_fake_user = True
-        print(
-            f"Using active animation: {action.name} "
-            f"({len(action.fcurves)} F-curves, frames {tuple(action.frame_range)})",
-            flush=True,
+    # Older importer revisions may push the Action to NLA and clear it. Recover
+    # it from the strip before exporting, then remove the NLA tracks so the
+    # active Action is the single source of truth for glTF export.
+    if action is None and animation_data is not None:
+        for track in reversed(list(animation_data.nla_tracks)):
+            for strip in reversed(list(track.strips)):
+                if strip.action is not None:
+                    action = strip.action
+                    break
+            if action is not None:
+                break
+
+    if action is None:
+        raise RuntimeError(
+            f"Animation importer finished for {source.name}, but produced no recoverable Action"
         )
-        return 1
-    except Exception:
-        print(f"Animation import failed for {source.name}", flush=True)
-        traceback.print_exc()
-        return 0
+
+    for track in list(animation_data.nla_tracks):
+        animation_data.nla_tracks.remove(track)
+
+    animation_data.action = action
+    action.name = clip.get("name") or source.stem
+    action.use_fake_user = True
+    bpy.context.view_layer.update()
+
+    print(
+        f"Using active animation: {action.name}; frames {tuple(action.frame_range)}",
+        flush=True,
+    )
+    return 1
 
 def glb_animation_count(path: Path) -> int:
     data = path.read_bytes()
@@ -186,9 +213,14 @@ for index, job in enumerate(jobs, start=1):
     try:
         clear_scene()
         import_model(source)
+        wants_animation = bool(job.get("animations"))
         imported_animations = import_animations(job)
+        if wants_animation and imported_animations <= 0:
+            raise RuntimeError("Animation candidates were selected but none were imported")
+
         export_glb(destination)
-        if imported_animations:
+
+        if wants_animation:
             embedded = glb_animation_count(destination)
             if embedded <= 0:
                 raise RuntimeError(
