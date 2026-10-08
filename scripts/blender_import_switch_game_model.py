@@ -82,28 +82,40 @@ def import_animations(job: dict) -> int:
         print("No armature found; animation clips skipped.", flush=True)
         return 0
 
-    imported = 0
-    for clip in clips:
-        source = Path(clip["source"]).resolve()
-        if not source.is_file():
-            continue
-        try:
-            # The cached importer is patched by import_switch_game_assets.py to
-            # push each successfully-created Action into NLA before returning.
-            # Count operator success here; the exported GLB is verified below.
-            result = bpy.ops.import_scene.gfbanm(filepath=str(source))
-            if "FINISHED" in result:
-                imported += 1
-                print(f"Imported animation: {clip.get('name') or source.stem}", flush=True)
-            else:
-                print(f"Animation importer returned {result} for {source.name}", flush=True)
-        except Exception:
-            print(f"Animation import failed for {source.name}", flush=True)
-            traceback.print_exc()
+    # For legacy GFBMDL rigs, exporting multiple add-on-created Actions via
+    # NLA is unreliable across Blender/add-on revisions. The job's animation
+    # list is already ranked with idle/wait loops first, so import the best
+    # clip as the active Action and export that one deterministically.
+    clip = clips[0]
+    source = Path(clip["source"]).resolve()
+    if not source.is_file():
+        return 0
 
-    if imported:
-        print(f"Imported {imported}/{len(clips)} animation clip(s).", flush=True)
-    return imported
+    try:
+        result = bpy.ops.import_scene.gfbanm(
+            filepath=str(source),
+            set_scene_end=True,
+            nla_import=False,
+        )
+        if "FINISHED" not in result:
+            print(f"Animation importer returned {result} for {source.name}", flush=True)
+            return 0
+
+        action = armature.animation_data.action if armature.animation_data else None
+        if action is not None:
+            action.name = clip.get("name") or source.stem
+            action.use_fake_user = True
+            print(f"Using active animation: {action.name}", flush=True)
+        else:
+            print(
+                f"Animation importer finished for {source.name}; exporting scene animation directly.",
+                flush=True,
+            )
+        return 1
+    except Exception:
+        print(f"Animation import failed for {source.name}", flush=True)
+        traceback.print_exc()
+        return 0
 
 def glb_animation_count(path: Path) -> int:
     data = path.read_bytes()
@@ -136,16 +148,30 @@ def export_glb(destination: Path) -> None:
         "export_yup": True,
     }
 
-    # Blender changed animation-export flags across versions. Enable whichever
-    # NLA-specific option this installed Blender actually supports.
+    # Legacy Switch animation imports are most reliable as the armature's
+    # active Action. Export that explicitly instead of NLA tracks; if this
+    # Blender only supports scene baking, use SCENE as the fallback.
     try:
-        props = set(bpy.ops.export_scene.gltf.get_rna_type().properties.keys())
+        props = bpy.ops.export_scene.gltf.get_rna_type().properties
+        prop_names = set(props.keys())
     except Exception:
-        props = set()
-    if "export_animation_mode" in props:
-        kwargs["export_animation_mode"] = "NLA_TRACKS"
-    if "export_nla_strips" in props:
-        kwargs["export_nla_strips"] = True
+        props = None
+        prop_names = set()
+
+    if "export_animation_mode" in prop_names:
+        enum_items = {
+            item.identifier
+            for item in props["export_animation_mode"].enum_items
+        }
+        if "ACTIVE_ACTIONS" in enum_items:
+            kwargs["export_animation_mode"] = "ACTIVE_ACTIONS"
+        elif "ACTIONS" in enum_items:
+            kwargs["export_animation_mode"] = "ACTIONS"
+        elif "SCENE" in enum_items:
+            kwargs["export_animation_mode"] = "SCENE"
+
+    if "export_nla_strips" in prop_names:
+        kwargs["export_nla_strips"] = False
 
     bpy.ops.export_scene.gltf(**kwargs)
 
