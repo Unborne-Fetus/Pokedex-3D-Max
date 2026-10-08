@@ -11,10 +11,13 @@ rem Normal reruns should be fast once imported assets already exist.
 rem Use "setup-all.bat full" to force the complete asset/setup pipeline.
 if /I "%~1"=="full" (
   set "MODE=FULL"
+) else if /I "%~1"=="switch" (
+  set "MODE=SWITCH"
+  set "SETUP_ARGS=-SwitchAssetsOnly -SkipInstall"
 ) else if /I "%~1"=="fast" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
-) else if exist "%~dp0.cache\switch-game-assets\pipeline-v3.ready.json" (
+) else if exist "%~dp0.cache\switch-game-assets\pipeline-v4.ready.json" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
 )
@@ -36,11 +39,18 @@ if "%MODE%"=="FULL" (
   echo   7. Builds the Windows EXE
   echo.
   echo Existing downloads and conversions are reused whenever possible.
+) else if "%MODE%"=="SWITCH" (
+  echo SWITCH ASSET MODE:
+  echo   Syncs missing Switch Pokemon model/animation archives.
+  echo   Runs importer syntax checks and self-tests.
+  echo   Imports only stale/missing models with the v4 validation pipeline.
+  echo   Skips JDK, Gradle, generic model download, EXE build, and installer.
 ) else (
   echo FAST MODE:
   echo   Reuses your already-imported models and skips expensive asset work.
-  echo   This is the default only after a fully validated v3 model import.
-  echo   Run setup-all.bat full only when you intentionally want to refresh assets.
+  echo   This is the default only after a fully validated v4 model import.
+  echo   Run setup-all.bat switch to refresh Switch assets without rebuilding the app.
+  echo   Run setup-all.bat full when you intentionally want the complete build pipeline.
 )
 echo.
 echo Live progress is saved to setup-all.log.
@@ -65,8 +75,13 @@ echo ============================================================
 if "%EXITCODE%"=="0" (
   echo Setup finished successfully.
   echo.
-  echo Final installer:
-  echo   %~dp0dist\Pokedex-3D-Max-Windows.exe
+  if "%MODE%"=="SWITCH" (
+    echo Switch assets were synced and imported into:
+    echo   %LOCALAPPDATA%\Pokedex3DMax\offline-models
+  ) else (
+    echo Final installer:
+    echo   %~dp0dist\Pokedex-3D-Max-Windows.exe
+  )
 ) else (
   echo Setup failed with error code %EXITCODE%.
   echo.
