@@ -480,7 +480,8 @@ function FindSwitchAssetArchives {
         if (-not $Root -or -not (Test-Path $Root)) { continue }
         $Files = Get-ChildItem $Root -File -Recurse -ErrorAction SilentlyContinue | Where-Object {
             ($_.Extension -in @(".zip", ".7z")) -and
-            ($_.BaseName -match "(?i)(Poke|Pokemon)")
+            ($_.BaseName -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke") -and
+            ($_.BaseName -notmatch "(?i)(PokeTex|Texture)")
         }
         foreach ($File in $Files) {
             if (-not $Found.Contains($File.FullName)) { $Found.Add($File.FullName) }
