@@ -343,20 +343,78 @@ def main() -> int:
     )
 
     manifest = target / "model_catalog.tsv"
-    with manifest.open("w", encoding="utf-8", newline="\n") as handle:
+
+    # Switch imports are installed before this generic pack refresh in setup-all.
+    # Preserve those validated rows instead of silently erasing them. A Switch
+    # row replaces the generic row for the same dex/form; staged Switch models
+    # are absent from the catalog, so the generic fallback remains available.
+    preserved_switch: dict[tuple[int, str], list[str]] = {}
+    if manifest.is_file():
+        for line in manifest.read_text(encoding="utf-8", errors="replace").splitlines()[1:]:
+            cols = line.split("\t")
+            if len(cols) < 4 or not cols[0].isdigit():
+                continue
+            rel = cols[3].replace("\\", "/")
+            if not rel.startswith("switch/"):
+                continue
+            path = target / Path(rel)
+            if not path.is_file():
+                continue
+            size = str(path.stat().st_size)
+            preserved_switch[(int(cols[0]), cols[2])] = [
+                cols[0],
+                cols[1],
+                cols[2],
+                rel,
+                size,
+            ]
+
+    switch_keys = set(preserved_switch)
+    generic_rows = [
+        (
+            int(entry["dex"]),
+            str(entry["form"]),
+            [
+                str(entry["dex"]),
+                str(entry["name"]),
+                str(entry["form"]),
+                str(entry["relative"]),
+                str(size),
+            ],
+        )
+        for entry, size in successes
+        if (int(entry["dex"]), str(entry["form"])) not in switch_keys
+    ]
+
+    combined_rows = generic_rows + [
+        (dex, form, cols)
+        for (dex, form), cols in preserved_switch.items()
+    ]
+    combined_rows.sort(
+        key=lambda item: (
+            item[0],
+            0 if item[1].lower() == "regular" else 1,
+            item[1],
+            item[2][3],
+        )
+    )
+
+    temp_manifest = manifest.with_suffix(".tmp")
+    with temp_manifest.open("w", encoding="utf-8", newline="\n") as handle:
         handle.write("dex\tname\tform\tpath\tbytes\n")
-        for entry, size in successes:
-            handle.write(
-                f"{entry['dex']}\t{entry['name']}\t{entry['form']}\t"
-                f"{entry['relative']}\t{size}\n"
-            )
+        for _, _, cols in combined_rows:
+            handle.write("\t".join(cols) + "\n")
+    temp_manifest.replace(manifest)
 
     metadata = {
         "source": ASSET_REPO,
         "catalog": API_URL,
         "modelCount": len(successes),
+        "switchModelCount": len(preserved_switch),
+        "catalogModelCount": len(combined_rows),
         "failedCount": len(failures),
-        "totalBytes": sum(size for _, size in successes),
+        "totalBytes": sum(size for _, size in successes)
+        + sum(int(cols[4]) for cols in preserved_switch.values()),
     }
     (target / "pack_info.json").write_text(
         json.dumps(metadata, indent=2) + "\n",
