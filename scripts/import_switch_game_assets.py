@@ -183,18 +183,20 @@ def detect_game(path: Path) -> str:
 
 
 def decode_bntx_textures(root: Path) -> int:
-    """Decode raw Switch BNTX texture files alongside models into PNGs."""
+    """Decode local BNTX files with the verified ultimate_tex_cli converter."""
     textures = list(root.rglob("*.bntx"))
     if not textures:
         return 0
-    decoder = os.environ.get("POKEDEX3D_BNTX_DECODER") or shutil.which("wimgt")
+    decoder = os.environ.get("POKEDEX3D_BNTX_DECODER") or shutil.which("ultimate_tex_cli")
     if not decoder and TOOLS.exists():
-        decoder = next((str(p) for p in TOOLS.rglob("wimgt.exe")), None)
+        decoder = next((str(p) for p in TOOLS.rglob("ultimate_tex_cli.exe")), None)
     if not decoder:
         raise RuntimeError(
-            f"Found {len(textures)} raw .bntx files in {root}, but no decoder. "
-            "Install a wimgt binary supporting BNTX and put it on PATH, "
-            "or set POKEDEX3D_BNTX_DECODER. Raw BNTX cannot be loaded by Blender."
+            f"Found {len(textures)} BNTX textures under {root}, but "
+            "ultimate_tex_cli is missing. Download its Windows CLI release from "
+            "https://github.com/ScanMountGoat/ultimate_tex/releases and place "
+            "ultimate_tex_cli.exe in .tools, or set POKEDEX3D_BNTX_DECODER "
+            "to its full path. No models were converted with missing textures."
         )
     done = 0
     for source in textures:
@@ -202,17 +204,17 @@ def decode_bntx_textures(root: Path) -> int:
         if target.is_file() and target.stat().st_size > 0:
             continue
         result = subprocess.run(
-            [str(decoder), "DECODE", str(source), "--dest", str(target)],
+            [str(decoder), str(source), str(target)],
             capture_output=True, text=True,
         )
         if result.returncode or not target.is_file() or target.stat().st_size == 0:
             target.unlink(missing_ok=True)
             raise RuntimeError(
-                f"Cannot decode {source.name}: {(result.stderr or result.stdout)[-400:]}"
+                f"BNTX decode failed for {source.name}: {(result.stderr or result.stdout)[-400:]}"
             )
         done += 1
     if done:
-        print(f"Decoded {done} BNTX textures into PNG images under {root}.", flush=True)
+        print(f"Decoded {done} BNTX textures to PNG under {root}.", flush=True)
     return done
 
 def first_image_asset(root: Path) -> Path | None:
