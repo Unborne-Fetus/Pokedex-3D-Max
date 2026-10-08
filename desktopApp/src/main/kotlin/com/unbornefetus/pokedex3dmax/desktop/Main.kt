@@ -72,7 +72,10 @@ private data class DesktopModel(
     val name: String,
     val form: String,
     val path: Path,
-)
+) {
+    val stableKey: String
+        get() = "%04d|%s|%s".format(dex, form.lowercase(), path.toAbsolutePath().normalize())
+}
 
 private data class ModelBounds(
     val center: Float3,
@@ -83,7 +86,7 @@ private data class ModelBounds(
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Pokedex 3D Max v0.2.1",
+        title = "Pokedex 3D Max v0.2.2",
         state = rememberWindowState(width = 1280.dp, height = 820.dp),
     ) {
         MaterialTheme(colorScheme = darkColorScheme()) {
@@ -97,7 +100,14 @@ private fun DesktopApp() {
     val packRoot = remember { findModelPack() }
     val models = remember(packRoot) { packRoot?.let(::loadManifest).orEmpty() }
     var query by remember { mutableStateOf("") }
-    var selected by remember { mutableStateOf<DesktopModel?>(models.firstOrNull()) }
+    var selectedKey by remember(models) {
+        mutableStateOf(models.firstOrNull()?.stableKey)
+    }
+
+    val selected = remember(models, selectedKey) {
+        selectedKey?.let { key -> models.firstOrNull { it.stableKey == key } }
+            ?: models.firstOrNull()
+    }
 
     val filtered = remember(query, models) {
         val q = query.trim().removePrefix("#")
@@ -162,9 +172,9 @@ private fun DesktopApp() {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { selected = model },
+                                .clickable { selectedKey = model.stableKey },
                             colors = CardDefaults.cardColors(
-                                containerColor = if (selected == model) {
+                                containerColor = if (selected?.stableKey == model.stableKey) {
                                     MaterialTheme.colorScheme.secondaryContainer
                                 } else {
                                     MaterialTheme.colorScheme.surfaceContainer
@@ -193,13 +203,15 @@ private fun DesktopApp() {
                 if (current == null) {
                     Text("Choose a Pokémon")
                 } else {
-                    val bytes by produceState<ByteArray?>(null, current.path) {
-                        value = runCatching { Files.readAllBytes(current.path) }.getOrNull()
-                    }
+                    key(current.stableKey) {
+                        val bytes by produceState<ByteArray?>(null, current.stableKey) {
+                            value = runCatching { Files.readAllBytes(current.path) }.getOrNull()
+                        }
 
-                    bytes?.let {
-                        PokemonViewport(current, it)
-                    } ?: Text("Loading " + current.name + "…")
+                        bytes?.let {
+                            PokemonViewport(current, it)
+                        } ?: Text("Loading " + current.name + "…")
+                    }
                 }
             }
         }
@@ -588,4 +600,10 @@ private fun loadManifest(root: Path): List<DesktopModel> {
                 !it.form.contains("shiny", ignoreCase = true) &&
                 !it.name.startsWith("Shiny ", ignoreCase = true)
         }
+        .distinctBy { it.stableKey }
+        .sortedWith(
+            compareBy<DesktopModel> { it.dex }
+                .thenBy { if (it.form.equals("regular", ignoreCase = true)) 0 else 1 }
+                .thenBy { it.form.lowercase() },
+        )
 }
