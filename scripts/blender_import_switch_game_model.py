@@ -238,6 +238,20 @@ def _linked_base_color_image(material):
     if material is None or not material.use_nodes or material.node_tree is None:
         return None
 
+    tagged_name = str(material.get("pokedex3d_basecolor_image", "") or "")
+    if tagged_name:
+        tagged = bpy.data.images.get(tagged_name)
+        if tagged is not None:
+            return tagged
+
+    tagged_path = str(material.get("pokedex3d_basecolor_path", "") or "")
+    if tagged_path:
+        tagged_abs = os.path.abspath(tagged_path)
+        for image in bpy.data.images:
+            image_path = str(getattr(image, "filepath", "") or "")
+            if image_path and os.path.abspath(bpy.path.abspath(image_path)) == tagged_abs:
+                return image
+
     # The upstream importer wires the real albedo image into the custom
     # PokemonShader Group socket named "Albedo". Prefer that exact semantic
     # link instead of guessing from filenames.
@@ -267,12 +281,57 @@ def _linked_base_color_image(material):
     return candidates[0] if candidates else None
 
 
-def prepare_materials_for_gltf() -> tuple[int, int]:
-    """Flatten custom PokemonShader materials into glTF-compatible PBR nodes.
+def _material_base_color_factor(material):
+    tagged = material.get("pokedex3d_basecolor_factor")
+    if tagged is not None:
+        try:
+            values = tuple(float(value) for value in tagged)
+            if len(values) >= 3:
+                return (
+                    max(0.0, min(1.0, values[0])),
+                    max(0.0, min(1.0, values[1])),
+                    max(0.0, min(1.0, values[2])),
+                    max(0.0, min(1.0, values[3] if len(values) > 3 else 1.0)),
+                )
+        except Exception:
+            pass
 
-    Blender's glTF exporter does not serialize the upstream custom shader group
-    as a baseColorTexture. Keeping the same material datablock preserves mesh
-    assignments while replacing only the shader graph.
+    if material.use_nodes and material.node_tree is not None:
+        for node in material.node_tree.nodes:
+            if node.type == "BSDF_PRINCIPLED":
+                socket = node.inputs.get("Base Color")
+                if socket is not None:
+                    try:
+                        value = tuple(float(v) for v in socket.default_value)
+                        if len(value) >= 4:
+                            return value[:4]
+                    except Exception:
+                        pass
+
+        for node in material.node_tree.nodes:
+            if node.type != "GROUP":
+                continue
+            for socket_name in ("BaseColor", "Base Color", "Albedo"):
+                socket = node.inputs.get(socket_name)
+                if socket is None:
+                    continue
+                try:
+                    value = tuple(float(v) for v in socket.default_value)
+                    if len(value) >= 4:
+                        return value[:4]
+                except Exception:
+                    pass
+
+    return (0.8, 0.8, 0.8, 1.0)
+
+
+def prepare_materials_for_gltf() -> tuple[int, int]:
+    """Flatten imported Pokémon materials into glTF-compatible PBR nodes.
+
+    Both the newer TRMDL importer and the legacy GFBMDL importer can build
+    Blender graphs that do not serialize cleanly to glTF. Preserve the selected
+    albedo image (or authored base-color factor) and replace the graph with a
+    standard Principled BSDF before export.
     """
     total = 0
     textured = 0
@@ -291,9 +350,7 @@ def prepare_materials_for_gltf() -> tuple[int, int]:
 
         total += 1
         image = _linked_base_color_image(material)
-        if image is None:
-            print(f"GLTF material flatten: no albedo image for {material.name}", flush=True)
-            continue
+        base_factor = _material_base_color_factor(material)
 
         material.use_nodes = True
         nodes = material.node_tree.nodes
@@ -302,10 +359,6 @@ def prepare_materials_for_gltf() -> tuple[int, int]:
 
         output = nodes.new("ShaderNodeOutputMaterial")
         principled = nodes.new("ShaderNodeBsdfPrincipled")
-        tex = nodes.new("ShaderNodeTexImage")
-        tex.image = image
-        tex.interpolation = "Linear"
-
         base_socket = principled.inputs.get("Base Color")
         alpha_socket = principled.inputs.get("Alpha")
         if base_socket is None:
@@ -313,9 +366,24 @@ def prepare_materials_for_gltf() -> tuple[int, int]:
                 f"Principled BSDF Base Color socket missing for {material.name}"
             )
 
-        links.new(tex.outputs["Color"], base_socket)
-        if alpha_socket is not None and "Alpha" in tex.outputs:
-            links.new(tex.outputs["Alpha"], alpha_socket)
+        base_socket.default_value = base_factor
+        if alpha_socket is not None:
+            alpha_socket.default_value = base_factor[3]
+
+        if image is not None:
+            tex = nodes.new("ShaderNodeTexImage")
+            tex.name = "POKEDEX3D_ALBEDO"
+            tex.label = "Pokedex3D Albedo"
+            tex.image = image
+            tex.interpolation = "Linear"
+            try:
+                image.colorspace_settings.name = "sRGB"
+            except Exception:
+                pass
+
+            links.new(tex.outputs["Color"], base_socket)
+            if alpha_socket is not None and "Alpha" in tex.outputs:
+                links.new(tex.outputs["Alpha"], alpha_socket)
 
         links.new(principled.outputs["BSDF"], output.inputs["Surface"])
 
@@ -326,12 +394,18 @@ def prepare_materials_for_gltf() -> tuple[int, int]:
         if metallic is not None:
             metallic.default_value = 0.0
 
-        material["pokedex3d_gltf_basecolor"] = image.name
-        textured += 1
-        print(
-            f"GLTF material flatten: {material.name} -> {image.name}",
-            flush=True,
-        )
+        if image is not None:
+            material["pokedex3d_gltf_basecolor"] = image.name
+            textured += 1
+            print(
+                f"GLTF material flatten: {material.name} -> {image.name}",
+                flush=True,
+            )
+        else:
+            print(
+                f"GLTF material flatten: {material.name} -> color {base_factor}",
+                flush=True,
+            )
 
     print(
         f"GLTF material flatten summary: {textured}/{total} mesh material(s) "
