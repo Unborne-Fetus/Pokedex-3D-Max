@@ -182,40 +182,85 @@ def detect_game(path: Path) -> str:
     return "unknown"
 
 
+def ensure_bntx_decoder() -> str:
+    """Install the pinned official Windows CLI binary once, without a GUI."""
+    configured = os.environ.get("POKEDEX3D_BNTX_DECODER")
+    if configured:
+        if Path(configured).is_file():
+            return str(Path(configured).resolve())
+        located = shutil.which(configured)
+        if located:
+            return located
+        raise RuntimeError(f"POKEDEX3D_BNTX_DECODER not found: {configured}")
+    found = shutil.which("ultimate_tex_cli")
+    if found:
+        return found
+    if TOOLS.exists():
+        found = next((str(p) for p in TOOLS.rglob("ultimate_tex_cli.exe")), None)
+        if found:
+            return found
+    if os.name != "nt":
+        raise RuntimeError("Install ultimate_tex_cli or set POKEDEX3D_BNTX_DECODER.")
+    import urllib.request
+    version = "0.3.1"
+    url = (
+        "https://github.com/ScanMountGoat/ultimate_tex/releases/download/"
+        f"{version}/ultimate_tex_cli_win_x64.zip"
+    )
+    folder = TOOLS / "ultimate_tex_cli"
+    executable = folder / "ultimate_tex_cli.exe"
+    if executable.is_file() and executable.stat().st_size > 0:
+        return str(executable)
+    folder.mkdir(parents=True, exist_ok=True)
+    archive = folder / "ultimate_tex_cli_win_x64.zip"
+    print(f"Downloading official Ultimate Tex CLI {version} for BNTX textures...", flush=True)
+    try:
+        urllib.request.urlretrieve(url, archive)
+        with zipfile.ZipFile(archive) as zf:
+            binaries = [m for m in zf.infolist() if
+                        Path(m.filename.replace("\\", "/")).name.lower() == "ultimate_tex_cli.exe"
+                        and not m.is_dir()]
+            if len(binaries) != 1:
+                raise RuntimeError("Ultimate Tex archive lacks a unique Windows CLI executable.")
+            with zf.open(binaries[0]) as source, executable.open("wb") as target:
+                shutil.copyfileobj(source, target)
+        if executable.stat().st_size == 0:
+            raise RuntimeError("Downloaded Ultimate Tex CLI is empty.")
+    except Exception as exc:
+        executable.unlink(missing_ok=True)
+        raise RuntimeError(f"Cannot install official Ultimate Tex CLI from {url}: {exc}") from exc
+    finally:
+        archive.unlink(missing_ok=True)
+    print(f"Installed Ultimate Tex CLI: {executable}", flush=True)
+    return str(executable)
+
+
 def decode_bntx_textures(root: Path) -> int:
-    """Decode local BNTX files with the verified ultimate_tex_cli converter."""
+    """Decode original BNTX companions to PNG; preserve all source files."""
     textures = list(root.rglob("*.bntx"))
-    if not textures:
+    pending = [p for p in textures if not p.with_suffix(".png").is_file()
+               or p.with_suffix(".png").stat().st_size == 0]
+    if not pending:
         return 0
-    decoder = os.environ.get("POKEDEX3D_BNTX_DECODER") or shutil.which("ultimate_tex_cli")
-    if not decoder and TOOLS.exists():
-        decoder = next((str(p) for p in TOOLS.rglob("ultimate_tex_cli.exe")), None)
-    if not decoder:
-        raise RuntimeError(
-            f"Found {len(textures)} BNTX textures under {root}, but "
-            "ultimate_tex_cli is missing. Download its Windows CLI release from "
-            "https://github.com/ScanMountGoat/ultimate_tex/releases and place "
-            "ultimate_tex_cli.exe in .tools, or set POKEDEX3D_BNTX_DECODER "
-            "to its full path. No models were converted with missing textures."
-        )
-    done = 0
-    for source in textures:
-        target = source.with_suffix(".png")
-        if target.is_file() and target.stat().st_size > 0:
-            continue
+    decoder = ensure_bntx_decoder()
+    completed = 0
+    for source in pending:
+        output = source.with_suffix(".png")
         result = subprocess.run(
-            [str(decoder), str(source), str(target)],
+            [decoder, str(source), str(output)],
             capture_output=True, text=True,
         )
-        if result.returncode or not target.is_file() or target.stat().st_size == 0:
-            target.unlink(missing_ok=True)
+        if result.returncode or not output.is_file() or output.stat().st_size == 0:
+            output.unlink(missing_ok=True)
             raise RuntimeError(
                 f"BNTX decode failed for {source.name}: {(result.stderr or result.stdout)[-400:]}"
             )
-        done += 1
-    if done:
-        print(f"Decoded {done} BNTX textures to PNG under {root}.", flush=True)
-    return done
+        completed += 1
+        if completed % 250 == 0:
+            print(f"Decoded {completed}/{len(pending)} BNTX textures in {root.name}...", flush=True)
+    if completed:
+        print(f"Decoded {completed} BNTX textures to PNG in {root.name}.", flush=True)
+    return completed
 
 def first_image_asset(root: Path) -> Path | None:
     if not root.is_dir():
@@ -2745,7 +2790,7 @@ def main() -> int:
 
         found = scan_models(root, game)
         anims = scan_animations(root, game)
-        if found and first_image_asset(root) is None:
+        if found:
             decode_bntx_textures(root)
         embedded_image = first_image_asset(root)
         if embedded_image is not None:
