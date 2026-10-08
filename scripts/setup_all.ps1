@@ -650,13 +650,26 @@ function InstallModels([string]$PythonCommand) {
         & python -u $Script --target $Pack --workers $Workers
     }
 
-    if ($LASTEXITCODE -ne 0) {
-        throw ("Model-pack download incomplete; downloader exited with code " + $LASTEXITCODE + ". Rerun setup to retry only missing files.")
+    $ModelDownloadExit = $LASTEXITCODE
+    if ($ModelDownloadExit -notin @(0, 2)) {
+        throw ("Model-pack download failed with unexpected exit code " + $ModelDownloadExit + ".")
     }
-    if (-not (Test-Path $Info)) { throw "Model pack did not produce pack_info.json." }
+    if (-not (Test-Path $Info)) {
+        if ($ModelDownloadExit -eq 2) {
+            Stamp "Generic fallback model sync was incomplete and produced no pack_info.json."
+            Stamp "Continuing without a complete generic fallback pack; the validated online Switch pack will be tried next."
+            return $Pack
+        }
+        throw "Model pack did not produce pack_info.json."
+    }
 
     Stamp "Model pack summary:"
     Get-Content $Info | Out-Host
+
+    if ($ModelDownloadExit -eq 2) {
+        Stamp "WARNING - some generic fallback models could not be downloaded."
+        Stamp "Setup will continue; online Switch GLBs and cached local archives remain available as higher-priority sources."
+    }
     return $Pack
 }
 
