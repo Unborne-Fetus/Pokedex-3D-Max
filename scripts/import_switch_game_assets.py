@@ -690,34 +690,47 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
     for job in jobs:
         glb = WEB_ROOT / f"{job['dex']:04d}" / f"{job['form']}.glb"
         if not glb.is_file() or glb.stat().st_size <= 1024:
-            continue
+            raise RuntimeError(f"Missing or undersized converted GLB: {glb}")
+
         try:
             doc = parse_glb_doc(glb)
         except Exception as exc:
-            print(f"Skipping damaged GLB {glb}: {exc}")
-            continue
+            raise RuntimeError(f"Damaged GLB {glb}: {exc}") from exc
+
         animations = [
             {"name": animation.get("name") or f"animation_{index}"}
             for index, animation in enumerate(doc.get("animations") or [])
         ]
+        expected_animated = bool(job.get("animations"))
+        actual_animated = bool(animations)
+
+        if expected_animated != actual_animated:
+            raise RuntimeError(
+                "Converted GLB animation invariant failed for "
+                f"#{job['dex']:04d} {job['form']}: "
+                f"expected_animated={expected_animated}, actual_animated={actual_animated}"
+            )
+
         names = [a["name"] for a in animations]
         idle = choose_idle(names)
-        ready = bool(idle or animations) or allow_static
+        ready = actual_animated or allow_static
         entries.append(
             {
                 "dex": job["dex"],
                 "form": job["form"],
+                "formKey": job.get("formKey"),
                 "url": f"web/models/switch/{job['dex']:04d}/{job['form']}.glb",
                 "source": f"official-game-assets:{job['game']}",
                 "sourceGame": job["game"],
                 "sourceFormat": job["extension"],
+                "animationMatch": job.get("animationMatch", "none"),
                 "animations": animations,
                 "idleAnimation": idle,
                 "idleBreaks": [],
                 "ready": ready,
                 "valid": True,
                 "warnings": [] if ready else [
-                    "Model imported successfully but no animation clip is attached yet; kept staged to avoid showing a bind/T-pose."
+                    "Model imported successfully but no compatible animation exists for this exact game/form/rig; kept staged to avoid a bind/T-pose."
                 ],
             }
         )
@@ -726,17 +739,27 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
 
 def write_manifest(entries: list[dict]) -> None:
     MANIFEST_JSON.parent.mkdir(parents=True, exist_ok=True)
-    MANIFEST_JSON.write_text(json.dumps(entries, indent=2) + "\n", encoding="utf-8")
-    MANIFEST_JS.write_text(
-        "window.POKEDEX3D_SWITCH_MODELS = " + json.dumps(entries, separators=(",", ":")) + ";\n",
+
+    json_temp = MANIFEST_JSON.with_suffix(".json.tmp")
+    js_temp = MANIFEST_JS.with_suffix(".js.tmp")
+
+    json_temp.write_text(json.dumps(entries, indent=2) + "\n", encoding="utf-8")
+    js_temp.write_text(
+        "window.POKEDEX3D_SWITCH_MODELS = "
+        + json.dumps(entries, separators=(",", ":"))
+        + ";\n",
         encoding="utf-8",
     )
+
+    json_temp.replace(MANIFEST_JSON)
+    js_temp.replace(MANIFEST_JS)
 
 
 def install_desktop(entries: list[dict]) -> None:
     local = os.environ.get("LOCALAPPDATA")
     if not local:
         return
+
     root = Path(local) / "Pokedex3DMax" / "offline-models"
     root.mkdir(parents=True, exist_ok=True)
     catalog = root / "model_catalog.tsv"
@@ -748,15 +771,38 @@ def install_desktop(entries: list[dict]) -> None:
             if len(cols) >= 4 and cols[0].isdigit():
                 existing[(int(cols[0]), cols[2])] = cols[:4]
 
-    for entry in entries:
-        if entry.get("ready") is False:
+    manifest_keys = {(int(entry["dex"]), str(entry["form"])) for entry in entries}
+
+    # Remove Switch entries that disappeared from the current manifest.
+    for key, cols in list(existing.items()):
+        rel = cols[3].replace("\\", "/") if len(cols) >= 4 else ""
+        if not rel.startswith("switch/") or key in manifest_keys:
             continue
-        src = ROOT / entry["url"]
+        stale = root / Path(rel)
+        if stale.is_file():
+            stale.unlink()
+        existing.pop(key, None)
+
+    for entry in entries:
+        key = (int(entry["dex"]), str(entry["form"]))
         rel = Path("switch") / f"{entry['dex']:04d}" / f"{entry['form']}.glb"
         dst = root / rel
+
+        if entry.get("ready") is False:
+            # A model that became staged must not leave an old, previously
+            # animated copy in the runtime catalog/cache.
+            if dst.is_file():
+                dst.unlink()
+            existing.pop(key, None)
+            continue
+
+        src = ROOT / entry["url"]
+        if not src.is_file():
+            raise RuntimeError(f"Ready manifest entry is missing its GLB: {src}")
+
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
-        existing[(entry["dex"], entry["form"])] = [
+        existing[key] = [
             str(entry["dex"]),
             f"#{entry['dex']:04d}",
             entry["form"],
@@ -765,7 +811,80 @@ def install_desktop(entries: list[dict]) -> None:
 
     rows = ["dex\tname\tform\tpath"]
     rows.extend("\t".join(cols) for _, cols in sorted(existing.items()))
-    catalog.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    catalog_temp = catalog.with_suffix(".tmp")
+    catalog_temp.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    catalog_temp.replace(catalog)
+
+
+def run_self_tests() -> None:
+    assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
+    assert infer_form_key(Path("pm0479_16_00_20012_battleidle02.tranm")) == "16"
+    assert infer_form_key(Path("pm0479_00_00.trmdl")) == "regular"
+
+    legacy_model = {
+        "dex": 479,
+        "form": "form-16",
+        "formKey": "16",
+        "game": "swsh",
+        "source": "pm0479_16.gfbmdl",
+        "extension": ".gfbmdl",
+    }
+    modern_wrong = {
+        "dex": 479,
+        "form": "form-16-00",
+        "formKey": "16",
+        "game": "za",
+        "source": "pm0479_16_00_idle.tranm",
+        "name": "pm0479_16_00_idle",
+        "extension": ".tranm",
+    }
+    legacy_right = {
+        "dex": 479,
+        "form": "form-16-00",
+        "formKey": "16",
+        "game": "swsh",
+        "source": "pm0479_16_00_idle.gfbanm",
+        "name": "pm0479_16_00_idle",
+        "extension": ".gfbanm",
+    }
+
+    jobs = [dict(legacy_model)]
+    attach_animations(jobs, [modern_wrong, legacy_right])
+    assert len(jobs[0]["animations"]) == 1
+    assert jobs[0]["animations"][0]["extension"] == ".gfbanm"
+
+    wrong_form_job = {
+        **legacy_model,
+        "form": "form-11",
+        "formKey": "11",
+    }
+    jobs = [wrong_form_job]
+    attach_animations(jobs, [legacy_right])
+    assert jobs[0]["animations"] == []
+
+    static_newer = {
+        "dex": 25,
+        "form": "regular",
+        "formKey": "regular",
+        "game": "za",
+        "source": "new.trmdl",
+        "extension": ".trmdl",
+        "animations": [],
+    }
+    animated_older = {
+        "dex": 25,
+        "form": "regular",
+        "formKey": "regular",
+        "game": "swsh",
+        "source": "old.gfbmdl",
+        "extension": ".gfbmdl",
+        "animations": [legacy_right],
+    }
+    chosen = dedupe_jobs([static_newer, animated_older])
+    assert len(chosen) == 1
+    assert chosen[0]["source"] == "old.gfbmdl"
+
+    print("Switch importer self-tests passed.")
 
 
 def main() -> int:
@@ -777,6 +896,7 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0, help="convert only the first N deduplicated models")
     parser.add_argument("--dex", type=int, action="append", default=[], help="only convert selected National Dex number; repeatable")
     parser.add_argument("--inventory-only", action="store_true", help="scan sources without running Blender")
+    parser.add_argument("--self-test", action="store_true", help="run importer matching/cache self-tests and exit")
     parser.add_argument(
         "--allow-static",
         action="store_true",
@@ -784,6 +904,10 @@ def main() -> int:
     )
     parser.add_argument("--no-desktop-install", action="store_true")
     args = parser.parse_args()
+
+    if args.self_test:
+        run_self_tests()
+        return 0
 
     if not args.inputs:
         args.inputs = discover_default_inputs()
