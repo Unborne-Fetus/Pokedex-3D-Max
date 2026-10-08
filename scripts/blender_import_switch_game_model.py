@@ -31,8 +31,14 @@ addon.register()
 
 jobs = json.loads(jobs_path.read_text(encoding="utf-8"))
 failures = []
+results = []
 MIN_ANIMATION_MATCHED_TRACKS = 3
 MIN_ANIMATION_MATCH_RATIO = 0.20
+
+
+class AnimationCompatibilityError(RuntimeError):
+    """Animation data parsed, but no candidate safely matches this model rig."""
+
 
 
 def clear_scene() -> None:
@@ -202,12 +208,14 @@ def import_animations(job: dict) -> int:
                 flush=True,
             )
             return 1
-        except Exception as exc:
-            errors.append(f"{source.name}: {type(exc).__name__}: {exc}")
+        except AnimationCompatibilityError:
+            raise
+        except Exception:
             remove_new_actions(before_actions)
+            raise
 
     bone_sample = ", ".join(bone.name for bone in list(armature.pose.bones)[:20])
-    raise RuntimeError(
+    raise AnimationCompatibilityError(
         "No compatible animation clip could be imported for "
         f"{Path(job['source']).name}. Tried {len(clips)} clip(s). "
         f"Armature has {len(armature.pose.bones)} bones"
@@ -295,9 +303,25 @@ for index, job in enumerate(jobs, start=1):
         clear_scene()
         import_model(source)
         wants_animation = bool(job.get("animations"))
-        imported_animations = import_animations(job)
+        imported_animations = 0
+        animation_rejection = None
 
-        if wants_animation and imported_animations <= 0:
+        if wants_animation:
+            try:
+                imported_animations = import_animations(job)
+            except AnimationCompatibilityError as exc:
+                animation_rejection = str(exc)
+                armature = active_armature()
+                if armature is not None:
+                    clear_animation_state(armature)
+                print(
+                    "Animation candidates rejected as rig-incompatible; "
+                    "exporting a verified static model and keeping it staged. "
+                    + animation_rejection,
+                    flush=True,
+                )
+
+        if wants_animation and animation_rejection is None and imported_animations <= 0:
             raise RuntimeError("Animation candidates were selected but none were imported")
 
         # Never overwrite a known-good GLB until the replacement has exported
@@ -307,14 +331,31 @@ for index, job in enumerate(jobs, start=1):
             raise RuntimeError("GLB exporter did not produce a valid-sized output file")
 
         embedded = glb_animation_count(temporary)
-        if wants_animation and embedded <= 0:
+        if wants_animation and animation_rejection is None and embedded <= 0:
             raise RuntimeError(
                 f"Imported {imported_animations} animation clip(s), but exported GLB contains no animations"
+            )
+        if animation_rejection is not None and embedded > 0:
+            raise RuntimeError(
+                "Rejected animation left animation data in the supposedly static GLB"
             )
 
         destination.parent.mkdir(parents=True, exist_ok=True)
         temporary.replace(destination)
-        if wants_animation:
+
+        result = {
+            "source": str(source),
+            "output": str(destination),
+            "animationRequested": wants_animation,
+            "animationEmbedded": embedded > 0,
+            "animationRejected": animation_rejection is not None,
+            "animationRejectionReason": animation_rejection,
+        }
+        results.append(result)
+
+        if animation_rejection is not None:
+            print("Verified static fallback; model is quarantined/staged.", flush=True)
+        elif wants_animation:
             print(f"Verified {embedded} embedded GLB animation(s).", flush=True)
         else:
             print("Verified static GLB; model remains staged until a compatible animation exists.", flush=True)
@@ -347,6 +388,10 @@ for index, job in enumerate(jobs, start=1):
                 temporary.unlink()
             except Exception:
                 pass
+
+results_path = jobs_path.with_name("switch-model-results.json")
+results_path.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
+print(f"Conversion results: {results_path}", flush=True)
 
 if failures:
     failure_path = jobs_path.with_name("switch-model-failures.json")
