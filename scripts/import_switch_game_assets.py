@@ -326,11 +326,14 @@ def scan_models(root: Path, game: str) -> list[dict]:
         dex = national_dex_for_model_id(model_id, game)
         if dex <= 0 or dex > 2000:
             continue
+        form = infer_form(path)
+        if form != "regular":
+            continue
         jobs.append(
             {
                 "dex": dex,
                 "modelId": model_id,
-                "form": infer_form(path),
+                "form": form,
                 "formKey": infer_form_key(path),
                 "game": game,
                 "source": str(path),
@@ -353,11 +356,14 @@ def scan_animations(root: Path, game: str) -> list[dict]:
         dex = national_dex_for_model_id(model_id, game)
         if dex <= 0 or dex > 2000:
             continue
+        form = infer_form(path)
+        if form != "regular":
+            continue
         animations.append(
             {
                 "dex": dex,
                 "modelId": model_id,
-                "form": infer_form(path),
+                "form": form,
                 "formKey": infer_form_key(path),
                 "game": game,
                 "source": str(path),
