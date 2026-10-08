@@ -516,6 +516,45 @@ function FindSwitchAssetArchives {
     return $Found.ToArray()
 }
 
+function DownloadMissingSwitchAnimationArchives([string[]]$ArchiveFiles) {
+    # A cached model ZIP does not imply that its animation pack was downloaded.
+    # Download only missing same-game PokeAnim packs, never the entire MEGA share.
+    $ModelGames = @($ArchiveFiles | ForEach-Object {
+        $Leaf = Split-Path $_ -Leaf
+        if ($Leaf -match '(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke(?!Anim)') {
+            $Matches[1].ToLowerInvariant()
+        }
+    } | Sort-Object -Unique)
+    $AnimationGames = @($ArchiveFiles | ForEach-Object {
+        $Leaf = Split-Path $_ -Leaf
+        if ($Leaf -match '(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*PokeAnim') {
+            $Matches[1].ToLowerInvariant()
+        }
+    } | Sort-Object -Unique)
+    $MissingGames = @($ModelGames | Where-Object { $_ -notin $AnimationGames })
+    if ($MissingGames.Count -eq 0) { return }
+
+    Stamp ("Looking for missing original animation packs for: " + ($MissingGames -join ', '))
+    $RemotePacks = @(GetMegaDesiredRemoteArchives)
+    $LocalNames = @($ArchiveFiles | ForEach-Object { (Split-Path $_ -Leaf).ToLowerInvariant() })
+    $Needed = @($RemotePacks | Where-Object {
+        $Leaf = Split-Path $_ -Leaf
+        if ($Leaf -notmatch '(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*PokeAnim') {
+            return $false
+        }
+        return $Matches[1].ToLowerInvariant() -in $MissingGames -and
+            $Leaf.ToLowerInvariant() -notin $LocalNames
+    })
+    if ($Needed.Count -eq 0) {
+        Stamp ("No matching PokeAnim archives found remotely for " + ($MissingGames -join ', ') + ". Static imports will remain staged.")
+        return
+    }
+    Stamp ("Downloading " + $Needed.Count + " missing, same-game original animation pack(s).")
+    foreach ($Remote in $Needed) {
+        DownloadMegaArchiveWithWatchdog $Remote
+    }
+}
+
 function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     Step "STEP 5/6 - Importing Switch-game Pokemon models"
     if ($SkipSwitchAssets) {
@@ -544,6 +583,13 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     }
     if ($ModelArchives.Count -eq 0) {
         throw "The selective MEGA download completed, but no Pokemon model archives were discovered."
+    }
+    try {
+        DownloadMissingSwitchAnimationArchives $AllArchives
+        $AllArchives = @(FindSwitchAssetArchives)
+    } catch {
+        Stamp ("Companion animation pack sync unavailable: " + $_.Exception.Message)
+        Stamp "Using existing same-game animation archives; models with missing idles remain staged."
     }
     $AnimArchives = @($AllArchives | Where-Object {
         (Split-Path $_ -Leaf) -match "(?i)(anim|animation|pokeanim)" -and
