@@ -86,7 +86,7 @@ private data class ModelBounds(
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Pokedex 3D Max v0.2.2",
+        title = "Pokedex 3D Max v0.2.3",
         state = rememberWindowState(width = 1280.dp, height = 820.dp),
     ) {
         MaterialTheme(colorScheme = darkColorScheme()) {
@@ -241,7 +241,7 @@ private fun PokemonViewport(model: DesktopModel, bytes: ByteArray) {
             target = bounds.center,
             distance = initialDistance,
             azimuth = 0f,
-            elevation = 15f,
+            elevation = 0f,
         )
 
         // Disable SceneView desktop gestures. Its current scroll implementation multiplies
@@ -578,9 +578,29 @@ private fun prettyFormName(raw: String): String {
 }
 
 
+private fun loadSpeciesNames(root: Path): Map<Int, String> {
+    val path = root.resolve("species_names.tsv")
+    if (!Files.isRegularFile(path)) return emptyMap()
+
+    return Files.readAllLines(path)
+        .drop(1)
+        .mapNotNull { line ->
+            val columns = line.split('\t')
+            if (columns.size < 2) return@mapNotNull null
+            val dex = columns[0].toIntOrNull() ?: return@mapNotNull null
+            val name = columns[1].trim()
+            if (name.isBlank() || name.startsWith("#")) return@mapNotNull null
+            dex to name
+        }
+        .toMap()
+}
+
+
 private fun loadManifest(root: Path): List<DesktopModel> {
     val manifest = root.resolve("model_catalog.tsv")
     if (!Files.isRegularFile(manifest)) return emptyList()
+
+    val speciesNames = loadSpeciesNames(root)
 
     return Files.readAllLines(manifest)
         .drop(1)
@@ -588,9 +608,14 @@ private fun loadManifest(root: Path): List<DesktopModel> {
             val columns = line.split('\t')
             if (columns.size < 4) return@mapNotNull null
             val dex = columns[0].toIntOrNull() ?: return@mapNotNull null
+            val rawName = columns[1].trim()
             DesktopModel(
                 dex = dex,
-                name = columns[1],
+                name = if (rawName.startsWith("#") || rawName.isBlank()) {
+                    speciesNames[dex] ?: rawName.ifBlank { "#%04d".format(dex) }
+                } else {
+                    rawName
+                },
                 form = columns[2],
                 path = root.resolve(columns[3]),
             )
