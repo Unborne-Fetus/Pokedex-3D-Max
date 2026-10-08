@@ -604,6 +604,13 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
         if unsafe in text:
             text = text.replace(unsafe, safe)
 
+        try:
+            compile(text, str(switch_source), "exec")
+        except SyntaxError as exc:
+            raise RuntimeError(
+                f"Patched TRMDL importer is not valid Python: {exc}"
+            ) from exc
+
         switch_source.write_text(text, encoding="utf-8")
 
     # The legacy GFBMDL importer (Let's Go / Sword & Shield) historically
@@ -962,6 +969,30 @@ def _pokedex3d_gfb_material_color(material):
                 "    print(weight_array)\n",
                 "    # Suppressed huge vertex-weight debug dump for batch imports.\n",
             )
+
+        required_gfbmdl_markers = (
+            "# POKEDEX3D_GFBMDL_TEXTURE_RESOLVER_V1",
+            "def CreateMaterial(material, model=None, model_dir=None):",
+            "def LoadModel(buf, filename, model_dir=None):",
+            "CreateMaterial(mon.Materials(i), mon, model_dir)",
+            "LoadModel(buf, f[1].name, os.path.dirname(fpath))",
+        )
+        missing_gfbmdl_markers = [
+            marker
+            for marker in required_gfbmdl_markers
+            if marker not in text
+        ]
+        if missing_gfbmdl_markers:
+            raise RuntimeError(
+                "GFBMDL texture patch validation failed; missing: "
+                + ", ".join(missing_gfbmdl_markers)
+            )
+        try:
+            compile(text, str(gfbmdl_source), "exec")
+        except SyntaxError as exc:
+            raise RuntimeError(
+                f"Patched GFBMDL importer is not valid Python: {exc}"
+            ) from exc
 
         gfbmdl_source.write_text(text, encoding="utf-8")
 
