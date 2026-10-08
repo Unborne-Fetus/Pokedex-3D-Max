@@ -25,6 +25,7 @@ BLENDER_DEPS = CACHE / "blender-python-deps"
 CONVERSION_CACHE = CACHE / "switch-conversion-cache.json"
 CONVERSION_PIPELINE_VERSION = 4
 PIPELINE_READY = CACHE / f"pipeline-v{CONVERSION_PIPELINE_VERSION}.ready.json"
+COVERAGE_REPORT = CACHE / "switch-animation-coverage.json"
 
 MODEL_EXTS = {".trmdl", ".gfbmdl"}
 ANIM_EXTS = {".tranm", ".gfbanm"}
@@ -343,6 +344,78 @@ def attach_animations(jobs: list[dict], animations: list[dict], max_clips: int =
 
         job["animations"] = selected
         job["animationMatch"] = "same-game-same-form-same-format" if selected else "none"
+
+
+def write_animation_coverage_report(jobs: list[dict], animations: list[dict]) -> None:
+    """Write a compact explanation of why models are animated or staged."""
+    animation_counts: dict[tuple[str, str], int] = {}
+    for anim in animations:
+        key = (str(anim.get("game", "unknown")), str(anim.get("extension", "")))
+        animation_counts[key] = animation_counts.get(key, 0) + 1
+
+    games = sorted({str(job.get("game", "unknown")) for job in jobs})
+    game_reports: dict[str, dict] = {}
+    for game in games:
+        game_jobs = [job for job in jobs if str(job.get("game")) == game]
+        animated_jobs = [job for job in game_jobs if job.get("animations")]
+        missing_jobs = [job for job in game_jobs if not job.get("animations")]
+        model_extensions: dict[str, int] = {}
+        for job in game_jobs:
+            ext = str(job.get("extension", ""))
+            model_extensions[ext] = model_extensions.get(ext, 0) + 1
+
+        available_animation_extensions = {
+            ext: count
+            for (anim_game, ext), count in sorted(animation_counts.items())
+            if anim_game == game
+        }
+        expected_ext = ANIMATION_EXT_FOR_GAME.get(game)
+
+        game_reports[game] = {
+            "selectedModels": len(game_jobs),
+            "modelsWithCompatibleAnimation": len(animated_jobs),
+            "modelsMissingCompatibleAnimation": len(missing_jobs),
+            "expectedAnimationExtension": expected_ext,
+            "modelExtensions": model_extensions,
+            "availableAnimationExtensions": available_animation_extensions,
+            "missingExamples": [
+                {
+                    "dex": int(job["dex"]),
+                    "form": job["form"],
+                    "formKey": job.get("formKey"),
+                    "source": Path(job["source"]).name,
+                }
+                for job in missing_jobs[:25]
+            ],
+        }
+
+    report = {
+        "pipelineVersion": CONVERSION_PIPELINE_VERSION,
+        "addonRevision": ADDON_REV,
+        "selectedModels": len(jobs),
+        "modelsWithCompatibleAnimation": sum(1 for job in jobs if job.get("animations")),
+        "modelsMissingCompatibleAnimation": sum(1 for job in jobs if not job.get("animations")),
+        "games": game_reports,
+    }
+    COVERAGE_REPORT.parent.mkdir(parents=True, exist_ok=True)
+    temp = COVERAGE_REPORT.with_suffix(".tmp")
+    temp.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temp.replace(COVERAGE_REPORT)
+
+    print("Animation coverage by source game:", flush=True)
+    for game, data in game_reports.items():
+        expected = data["expectedAnimationExtension"] or "unknown"
+        available = ", ".join(
+            f"{ext}={count}"
+            for ext, count in data["availableAnimationExtensions"].items()
+        ) or "none"
+        print(
+            f"  {game}: {data['modelsWithCompatibleAnimation']}/"
+            f"{data['selectedModels']} model(s) have compatible animations; "
+            f"expected {expected}; animation files available: {available}",
+            flush=True,
+        )
+    print(f"Coverage report: {COVERAGE_REPORT}", flush=True)
 
 
 def job_choice_score(job: dict) -> tuple[int, int, int, int]:
@@ -1358,6 +1431,7 @@ def main() -> int:
     if args.limit > 0:
         jobs = jobs[: args.limit]
 
+    write_animation_coverage_report(jobs, all_animations)
     models_with_anim = sum(1 for job in jobs if job.get("animations"))
     incompatible_pairs = sum(
         1
