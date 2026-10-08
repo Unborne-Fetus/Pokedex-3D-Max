@@ -8,6 +8,7 @@ import traceback
 from pathlib import Path
 
 import bpy
+from mathutils import Matrix
 
 argv = sys.argv[sys.argv.index("--") + 1 :]
 jobs_path = Path(argv[0]).resolve()
@@ -94,6 +95,14 @@ def clear_animation_state(armature) -> None:
     animation_data.action = None
     for track in list(animation_data.nla_tracks):
         animation_data.nla_tracks.remove(track)
+
+
+def reset_pose_to_rest(armature) -> None:
+    """Clear evaluated pose transforms before exporting a static fallback."""
+    for pose_bone in armature.pose.bones:
+        pose_bone.matrix_basis = Matrix.Identity(4)
+    bpy.context.scene.frame_set(bpy.context.scene.frame_start)
+    bpy.context.view_layer.update()
 
 
 def remove_new_actions(before_actions: set[int]) -> None:
@@ -314,6 +323,7 @@ for index, job in enumerate(jobs, start=1):
                 armature = active_armature()
                 if armature is not None:
                     clear_animation_state(armature)
+                    reset_pose_to_rest(armature)
                 print(
                     "Animation candidates rejected as rig-incompatible; "
                     "exporting a verified static model and keeping it staged. "
