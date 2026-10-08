@@ -994,6 +994,28 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
         except Exception:
             pass
 
+    submitted_sources = {
+        str(Path(item["source"]).resolve())
+        for item in payload
+    }
+    accounted_sources = set(outcomes) | failed_sources
+    unaccounted_sources = submitted_sources - accounted_sources
+    unknown_sources = accounted_sources - submitted_sources
+    if unaccounted_sources or unknown_sources:
+        details = []
+        if unaccounted_sources:
+            details.append(
+                "unaccounted=" + ", ".join(sorted(unaccounted_sources)[:10])
+            )
+        if unknown_sources:
+            details.append(
+                "unknown=" + ", ".join(sorted(unknown_sources)[:10])
+            )
+        raise RuntimeError(
+            "Blender conversion result protocol invariant failed: "
+            + "; ".join(details)
+        )
+
     # Persist verified successes even if another conversion in the batch failed,
     # so the next run retries only true conversion failures. Rig-incompatible
     # animation outcomes are cached as quarantined static models until either
