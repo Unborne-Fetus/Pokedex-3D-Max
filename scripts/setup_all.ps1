@@ -2,7 +2,8 @@ param(
     [switch]$SkipModels,
     [switch]$SkipSwitchAssets,
     [switch]$RefreshModels,
-    [switch]$SkipInstall
+    [switch]$SkipInstall,
+    [switch]$SwitchAssetsOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -608,8 +609,8 @@ function InstallModels([string]$PythonCommand) {
     return $Pack
 }
 
-function PreflightCode([string]$PythonCommand, [string]$GradleBat) {
-    Step "PRECHECK - Validating importer and desktop renderer"
+function PreflightSwitchImporter([string]$PythonCommand) {
+    Step "PRECHECK - Validating Switch importer"
 
     $Importer = Join-Path $RepoRoot "scripts\import_switch_game_assets.py"
     $BlenderHelper = Join-Path $RepoRoot "scripts\blender_import_switch_game_model.py"
@@ -632,6 +633,13 @@ function PreflightCode([string]$PythonCommand, [string]$GradleBat) {
         & python -u $Importer --self-test
     }
     if ($LASTEXITCODE -ne 0) { throw "Switch importer self-tests failed." }
+
+    Stamp "Switch importer preflight passed."
+}
+
+function PreflightCode([string]$PythonCommand, [string]$GradleBat) {
+    Step "PRECHECK - Validating importer and desktop renderer"
+    PreflightSwitchImporter $PythonCommand
 
     Stamp "Compiling native desktop renderer before expensive asset work..."
     Push-Location $RepoRoot
@@ -696,6 +704,21 @@ try {
     Stamp "One-click mode: tools, Switch model import, offline model pack, and Windows build are automatic."
     Stamp "Nothing is frozen if timestamps keep appearing or a download/build counter changes."
     Stamp ("Log file: " + $LogFile)
+
+    if ($SwitchAssetsOnly) {
+        Stamp "Switch-assets-only mode: skipping JDK, Gradle, fallback-pack, and Windows packaging."
+        $Python = EnsurePython
+        PreflightSwitchImporter $Python
+        $Blender = EnsureBlender
+        ImportSwitchGameAssets $Python $Blender
+
+        Write-Host ""
+        Write-Host "============================================================" -ForegroundColor Green
+        Stamp "SUCCESS - Switch model assets are synced and imported."
+        Write-Host "============================================================" -ForegroundColor Green
+        Write-Host ("Offline models: " + (Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"))
+        return
+    }
 
     BootstrapJdk
     $Gradle = BootstrapGradle
