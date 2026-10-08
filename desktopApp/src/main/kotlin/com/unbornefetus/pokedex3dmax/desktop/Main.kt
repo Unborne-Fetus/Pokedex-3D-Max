@@ -118,7 +118,6 @@ private fun launchDesktop() = application {
 private fun DesktopApp() {
     val packRoot = remember { findModelPack() }
     val models = remember(packRoot) { packRoot?.let(::loadManifest).orEmpty() }
-    var battleTab by remember { mutableStateOf(false) }
     var rotate by remember { mutableStateOf(false) }
     var breaks by remember { mutableStateOf(true) }
     var reset by remember { mutableStateOf(0) }
@@ -147,14 +146,6 @@ private fun DesktopApp() {
 
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { battleTab = false }) { Text("Pokédex") }
-                Button(onClick = { battleTab = true }) { Text("Battle Sim") }
-            }
-            if (battleTab) {
-                NativeBattleScreen(models)
-                return@Column
-            }
         if (packRoot == null) {
             MissingPackScreen()
             return@Column
@@ -269,85 +260,6 @@ private fun DesktopApp() {
                 }
             }
         }
-        }
-    }
-}
-
-@Composable
-private fun NativeBattleScreen(models: List<DesktopModel>) {
-    val engine = remember { runCatching { NativeBattle() } }
-    DisposableEffect(engine) { onDispose { engine.getOrNull()?.close() } }
-    var team by remember { mutableStateOf("charizard, pikachu, lucario") }
-    var difficulty by remember { mutableStateOf("normal") }
-    var snapshot by remember { mutableStateOf<JSONObject?>(null) }
-    var error by remember { mutableStateOf(engine.exceptionOrNull()?.message) }
-    fun update(action: () -> JSONObject) {
-        runCatching(action).onSuccess { snapshot = it; error = null }.onFailure { error = it.message }
-    }
-    Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("3D Battle Simulator", style = MaterialTheme.typography.headlineMedium)
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        val battle = engine.getOrNull() ?: return@Column
-        val current = snapshot
-        if (current == null) {
-            OutlinedTextField(team, { team = it }, label = { Text("Three Pokémon, separated by commas") }, modifier = Modifier.fillMaxWidth())
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                for (level in listOf("easy", "normal", "hard")) {
-                    Button(onClick = { difficulty = level }) { Text(if (difficulty == level) "✓ $level" else level) }
-                }
-                Button(onClick = { update { battle.start(team.split(',').map { it.trim() }, difficulty) } }) { Text("Start battle") }
-            }
-            return@Column
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(if (current.optString("phase") == "finished") {
-                if (current.optInt("winner") == 0) "Victory!" else "Defeat"
-            } else "Turn " + current.optInt("turn"))
-            Button(onClick = { snapshot = null }) { Text("New battle") }
-        }
-        val players = current.getJSONArray("players")
-        Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            for (side in 0..1) {
-                val player = players.getJSONObject(side)
-                val mon = player.getJSONArray("team").getJSONObject(player.getInt("active"))
-                Column(Modifier.weight(1f).fillMaxSize()) {
-                    Text(mon.getString("name") + " Lv." + mon.optInt("level"))
-                    Text("HP " + mon.optInt("hp") + " / " + mon.optInt("maxHP") + " · " + mon.optString("ability"))
-                    val dex = battle.nationalDex(mon.getInt("species"))
-                    val model = models.firstOrNull { it.dex == dex && semanticFormKey(it) == "regular" }
-                        ?: models.firstOrNull { it.dex == dex }
-                    if (model != null) key(model.stableKey) {
-                        val bytes by produceState<ByteArray?>(null, model.stableKey) {
-                            value = withContext(Dispatchers.IO) { runCatching { Files.readAllBytes(model.path) }.getOrNull() }
-                        }
-                        bytes?.let { PokemonViewport(model, it, false, false, 0) }
-                    } else Text("No installed model for this Pokémon")
-                }
-            }
-        }
-        val player = players.getJSONObject(0)
-        val mons = player.getJSONArray("team")
-        val active = mons.getJSONObject(player.getInt("active"))
-        val moves = active.getJSONArray("moves")
-        val running = current.optString("phase") == "battle"
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            for (i in 0 until moves.length()) {
-                val move = moves.getJSONObject(i)
-                Button(enabled = running && move.optInt("pp") > 0, onClick = { update { battle.move(i) } }) {
-                    Text(move.getString("name") + " · PP " + move.optInt("pp"))
-                }
-            }
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            for (i in 0 until mons.length()) {
-                val mon = mons.getJSONObject(i)
-                Button(enabled = running && i != player.getInt("active") && mon.optInt("hp") > 0,
-                    onClick = { update { battle.switch(i) } }) { Text("Switch: " + mon.getString("name")) }
-            }
-        }
-        val logs = current.getJSONArray("log")
-        LazyColumn(Modifier.height(150.dp)) {
-            items((maxOf(0, logs.length() - 12) until logs.length()).toList()) { i -> Text(logs.getString(i)) }
         }
     }
 }
@@ -791,15 +703,6 @@ private fun prettyFormName(raw: String, dex: Int? = null): String {
         .replace(Regex("-00$"), "")
     if (normalized.isBlank() || normalized == "regular") return "Regular"
 
-    // Verified against the imported Charizard Switch assets in this project.
-    if (dex == 6) {
-        when (normalized) {
-            "form-51", "51", "mega-x", "megax", "x" -> return "Mega X"
-            "form-52", "52", "mega-y", "megay", "y" -> return "Mega Y"
-            "gmax", "gigantamax" -> return "Gigantamax"
-            "xy" -> return "Mega X"
-        }
-    }
 
     return normalized
         .replace(Regex("^form-"), "Form ")
@@ -833,37 +736,6 @@ private fun loadSpeciesNames(root: Path): Map<Int, String> {
 }
 
 
-private fun semanticFormKey(model: DesktopModel): String {
-    val normalized = model.form
-        .trim()
-        .lowercase()
-        .replace(Regex("-00$"), "")
-
-    if (model.dex == 6) {
-        return when (normalized) {
-            "form-51", "51", "mega-x", "megax", "x", "xy" -> "mega-x"
-            "form-52", "52", "mega-y", "megay", "y" -> "mega-y"
-            "gmax", "gigantamax" -> "gmax"
-            "", "regular" -> "regular"
-            else -> normalized
-        }
-    }
-
-    return normalized.ifBlank { "regular" }
-}
-
-
-private fun preferModelSource(models: List<DesktopModel>): DesktopModel {
-    return models.minWithOrNull(
-        compareBy<DesktopModel> {
-            val normalized = it.path.toString().replace('\\', '/').lowercase()
-            if ("/switch/" in normalized) 0 else 1
-        }.thenBy {
-            if (it.form.equals("regular", ignoreCase = true)) 0 else 1
-        }.thenBy { it.path.toString().length },
-    ) ?: models.first()
-}
-
 
 private fun loadManifest(root: Path): List<DesktopModel> {
     val manifest = root.resolve("model_catalog.tsv")
@@ -877,8 +749,6 @@ private fun loadManifest(root: Path): List<DesktopModel> {
         val entry = metadata.getJSONObject(i)
         (entry.getInt("dex") to entry.getString("form")) to entry
     }
-    val policy = runCatching { JSONObject(Files.readString(root.resolve("model_source_policy.json"))) }.getOrDefault(JSONObject())
-    val switchOnly = policy.optBoolean("switchOnly", false)
     val absoluteRoot = root.toAbsolutePath().normalize()
 
     return Files.readAllLines(manifest)
@@ -893,7 +763,7 @@ private fun loadManifest(root: Path): List<DesktopModel> {
                 !path.toRealPath().startsWith(absoluteRoot.toRealPath())) return@mapNotNull null
             val entry = byKey[dex to columns[2]]
             val isSwitch = absoluteRoot.relativize(path).toString().replace('\\', '/').startsWith("switch/")
-            if (switchOnly && !isSwitch) return@mapNotNull null
+            if (!isSwitch) return@mapNotNull null
             if (isSwitch && entry?.optBoolean("ready", true) == false) return@mapNotNull null
             DesktopModel(
                 dex = dex,
@@ -909,25 +779,17 @@ private fun loadManifest(root: Path): List<DesktopModel> {
         }
         .filter {
             Files.isRegularFile(it.path) &&
-                !it.form.contains("shiny", ignoreCase = true) &&
-                !it.name.startsWith("Shiny ", ignoreCase = true)
+                it.form.equals("regular", ignoreCase = true)
         }
-        .distinctBy { it.stableKey }
-        .groupBy { it.dex to semanticFormKey(it) }
-        .values
-        .map(::preferModelSource)
-        .sortedWith(
-            compareBy<DesktopModel> { it.dex }
-                .thenBy { if (semanticFormKey(it) == "regular") 0 else 1 }
-                .thenBy { semanticFormKey(it) },
-        )
+        .distinctBy { it.dex }
+        .sortedBy { it.dex }
 }
 
-/** Headless checks exercise native catalog selection and the actual bundled engine. */
+/** Headless checks exercise the regular Switch-only desktop catalog. */
 private fun verifyDesktop() {
     val root = Files.createTempDirectory("pokedex-native-check")
     try {
-        for (path in listOf("old/regular.glb", "switch/0006/regular.glb", "old/xy.glb", "switch/0006/form-51-00.glb")) {
+        for (path in listOf("old/regular.glb", "switch/0006/regular.glb", "switch/0006/form-51-00.glb")) {
             val file = root.resolve(path)
             Files.createDirectories(file.parent)
             Files.write(file, byteArrayOf(1))
@@ -936,50 +798,20 @@ private fun verifyDesktop() {
             "dex\tname\tform\tpath\n" +
             "6\tCharizard\tregular\told/regular.glb\n" +
             "6\tCharizard\tregular\tswitch/0006/regular.glb\n" +
-            "6\tCharizard\txy\told/xy.glb\n" +
             "6\tCharizard\tform-51-00\tswitch/0006/form-51-00.glb\n" +
             "7\tOutside\tregular\t../outside.glb\n")
         val models = loadManifest(root)
-        check(models.size == 2)
-        check(models.all { it.path.startsWith(root.resolve("switch")) })
-        check(models.map(::semanticFormKey) == listOf("regular", "mega-x"))
+        check(models.size == 1)
+        check(models.single().dex == 6)
+        check(models.single().form.equals("regular", ignoreCase = true))
+        check(models.single().path == root.resolve("switch/0006/regular.glb"))
         check(chooseIdleAnimationIndex(listOf("attack", "defaultwait", "damage")) == 1)
         check(chooseIdleAnimationIndex(listOf("attack", "damage")) == null)
         Files.writeString(root.resolve("switch-model-metadata.json"),
             "[{\"dex\":6,\"form\":\"regular\",\"ready\":false}]")
-        check(loadManifest(root).first { it.form == "regular" }.path == root.resolve("old/regular.glb"))
-        Files.writeString(root.resolve("model_source_policy.json"), "{\"switchOnly\":true}")
-        check(loadManifest(root).all { it.path.startsWith(root.resolve("switch")) })
+        check(loadManifest(root).isEmpty())
     } finally {
         Files.walk(root).use { paths -> paths.sorted(Comparator.reverseOrder()).forEach { Files.deleteIfExists(it) } }
     }
-    NativeBattle().use { engine ->
-        check(engine.nationalDex(6) == 6)
-        check(runCatching { engine.start(listOf("charizard", "not-a-pokemon", "pikachu"), "normal") }.isFailure)
-        for (difficulty in listOf("easy", "normal", "hard")) {
-            var snap = engine.start(listOf("charizard", "pikachu", "lucario"), difficulty)
-            check(snap.getJSONArray("players").getJSONObject(0).getJSONArray("team").length() == 3)
-            snap = engine.switch(1)
-            check(snap.getJSONArray("log").toString().contains("Player switched to Pikachu!"))
-            var turns = 0
-            while (snap.optString("phase") == "battle" && turns++ < 500) {
-                val player = snap.getJSONArray("players").getJSONObject(0)
-                val mon = player.getJSONArray("team").getJSONObject(player.getInt("active"))
-                val moves = mon.getJSONArray("moves")
-                val indexes = (0 until moves.length()).filter { moves.getJSONObject(it).optInt("pp") > 0 }
-                val index = indexes.firstOrNull { moves.getJSONObject(it).optInt("power") > 0 } ?: indexes.firstOrNull() ?: 0
-                snap = engine.move(index)
-                for (side in 0..1) {
-                    val team = snap.getJSONArray("players").getJSONObject(side).getJSONArray("team")
-                    for (i in 0 until team.length()) {
-                        val m = team.getJSONObject(i)
-                        check(m.getInt("hp") in 0..m.getInt("maxHP"))
-                    }
-                }
-            }
-            check(snap.optString("phase") == "finished") { "Native battle did not finish: $difficulty" }
-            check(snap.optInt("winner") in 0..1)
-        }
-    }
-    println("Native desktop checks passed: Switch priority, form aliases, path containment, idle selection, bundled engine, teams, switching and complete battles (3 difficulties).")
+    println("Native desktop checks passed: regular Switch-only catalog, path containment and idle selection.")
 }
