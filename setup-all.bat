@@ -14,7 +14,7 @@ if /I "%~1"=="full" (
 ) else if /I "%~1"=="fast" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
-) else if exist "%~dp0web\models\switch-manifest.json" (
+) else if exist "%~dp0.cache\switch-game-assets\pipeline-v3.ready.json" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
 )
@@ -31,15 +31,15 @@ if "%MODE%"=="FULL" (
   echo   2. Reuses/installs Gradle
   echo   3. Reuses/installs Python + Pillow
   echo   4. Reuses/installs Blender
-  echo   5. Detects and imports Switch Pokemon model archives
-  echo   6. Reuses/downloads missing offline models
+  echo   5. Reuses/downloads missing offline fallback models
+  echo   6. Detects, validates, and imports Switch Pokemon models
   echo   7. Builds the Windows EXE
   echo.
   echo Existing downloads and conversions are reused whenever possible.
 ) else (
   echo FAST MODE:
   echo   Reuses your already-imported models and skips expensive asset work.
-  echo   This is now the default after the first successful model import.
+  echo   This is the default only after a fully validated v3 model import.
   echo   Run setup-all.bat full only when you intentionally want to refresh assets.
 )
 echo.
