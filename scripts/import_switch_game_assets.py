@@ -1641,35 +1641,45 @@ def parse_glb_doc(path: Path) -> dict:
 
 
 
-def glb_texture_count(path: Path) -> int:
-    """Count real base-color bindings, not merely images/mask textures.
-
-    White Switch models can still contain normal/mask images, so accepting any
-    texture reference lets broken custom-shader exports look "complete".
-    """
-    try:
-        doc = parse_glb_doc(path)
-    except Exception:
-        return 0
-
+def material_texture_coverage(doc: dict) -> tuple[int, int]:
+    """Return (materials with valid base-color textures, total materials)."""
     textures = doc.get("textures") or []
     materials = doc.get("materials") or []
-    if not textures or not materials:
-        return 0
+    textured = 0
+    total = 0
 
-    referenced: set[int] = set()
     for material in materials:
         if not isinstance(material, dict):
             continue
+        total += 1
         pbr = material.get("pbrMetallicRoughness") or {}
         slot = pbr.get("baseColorTexture")
         if not isinstance(slot, dict):
             continue
         index = slot.get("index")
         if isinstance(index, int) and 0 <= index < len(textures):
-            referenced.add(index)
+            textured += 1
 
-    return len(referenced)
+    return textured, total
+
+
+def glb_texture_count(path: Path) -> int:
+    """Count mesh materials with a valid base-color texture binding."""
+    try:
+        doc = parse_glb_doc(path)
+    except Exception:
+        return 0
+    return material_texture_coverage(doc)[0]
+
+
+def glb_textures_complete(path: Path) -> bool:
+    """Require every exported material to have a real base-color texture."""
+    try:
+        doc = parse_glb_doc(path)
+    except Exception:
+        return False
+    textured, total = material_texture_coverage(doc)
+    return total > 0 and textured == total
 
 
 def existing_glb_is_complete(path: Path, wants_animations: bool) -> bool:
@@ -1776,7 +1786,7 @@ def run_blender(
                 out,
                 wants_animations and not cached_rejected,
             )
-            and (os.environ.get("POKEDEX3D_ALLOW_BROKEN_TEXTURES") == "1" or glb_texture_count(out) > 0)
+            and glb_textures_complete(out)
         )
         fingerprint_matches = cached_fingerprint == fingerprint
 
@@ -1961,7 +1971,7 @@ def run_blender(
         out = WEB_ROOT / f"{job['dex']:04d}" / f"{job['form']}.glb"
         if out.is_file() and (
             not existing_glb_is_complete(out, False)
-            or (os.environ.get("POKEDEX3D_ALLOW_BROKEN_TEXTURES") != "1" and glb_texture_count(out) <= 0)
+            or not glb_textures_complete(out)
         ):
             out.unlink()
 
@@ -2528,6 +2538,24 @@ def run_self_tests() -> None:
     assert choose_idle(["pm0001_defaultwait01_loop"]) == "pm0001_defaultwait01_loop"
     assert choose_idle(["pm0001_attack01", "pm0001_damage01"]) is None
     assert choose_idle(["pm0001_generic_loop"]) is None
+
+    fully_textured = {
+        "textures": [{"source": 0}, {"source": 1}],
+        "materials": [
+            {"pbrMetallicRoughness": {"baseColorTexture": {"index": 0}}},
+            {"pbrMetallicRoughness": {"baseColorTexture": {"index": 1}}},
+        ],
+    }
+    partially_textured = {
+        "textures": [{"source": 0}],
+        "materials": [
+            {"pbrMetallicRoughness": {"baseColorTexture": {"index": 0}}},
+            {"pbrMetallicRoughness": {}},
+        ],
+    }
+    assert material_texture_coverage(fully_textured) == (2, 2)
+    assert material_texture_coverage(partially_textured) == (1, 2)
+
 
 
     wrong_form_job = {
