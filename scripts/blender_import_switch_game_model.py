@@ -519,7 +519,26 @@ for index, job in enumerate(jobs, start=1):
     source = Path(job["source"]).resolve()
     destination = Path(job["output"]).resolve()
     temporary = destination.with_name(destination.stem + ".partial.glb")
-    print(f"[{index}/{len(jobs)}] {source.name} -> {destination.name}", flush=True)
+
+    job_texture_roots = [
+        str(Path(path).resolve())
+        for path in (job.get("textureRoots") or [])
+        if Path(path).exists()
+    ]
+    if job_texture_roots:
+        os.environ["POKEDEX3D_TEXTURE_ROOTS"] = os.pathsep.join(job_texture_roots)
+    else:
+        os.environ.pop("POKEDEX3D_TEXTURE_ROOTS", None)
+
+    warning = job.get("textureRootWarning")
+    if warning:
+        print("Texture dependency warning: " + str(warning), flush=True)
+
+    print(
+        f"[{index}/{len(jobs)}] {source.name} -> {destination.name} "
+        f"(texture roots: {len(job_texture_roots)})",
+        flush=True,
+    )
 
     try:
         if temporary.exists():
