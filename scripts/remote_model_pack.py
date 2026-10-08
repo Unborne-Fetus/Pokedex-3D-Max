@@ -24,6 +24,7 @@ DEFAULT_MANIFEST_URL = (
 )
 CACHE_ROOT = ROOT / ".cache" / "remote-switch-model-pack"
 STATE_FILE = CACHE_ROOT / "installed-state.json"
+SPECIES_NAMES = ROOT / "data" / "species_names.tsv"
 USER_AGENT = "Pokedex3DMax-RemoteModelPack/1"
 
 
@@ -186,6 +187,20 @@ def build_pack(output: Path, base_url: str, shard_size: int) -> int:
     return 0
 
 
+def read_species_names(path: Path = SPECIES_NAMES) -> dict[int, str]:
+    names: dict[int, str] = {}
+    if not path.is_file():
+        return names
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines()[1:]:
+        cols = line.split("\t", 1)
+        if len(cols) != 2 or not cols[0].isdigit():
+            continue
+        name = cols[1].strip()
+        if name:
+            names[int(cols[0])] = name
+    return names
+
+
 def read_catalog(path: Path) -> dict[tuple[int, str], list[str]]:
     rows: dict[tuple[int, str], list[str]] = {}
     if not path.is_file():
@@ -308,6 +323,10 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
 
     catalog_path = target / "model_catalog.tsv"
     generic_catalog_path = target / "generic_model_catalog.tsv"
+    runtime_species_names = target / "species_names.tsv"
+    if SPECIES_NAMES.is_file():
+        shutil.copy2(SPECIES_NAMES, runtime_species_names)
+
     catalog = read_catalog(catalog_path)
     generic = read_catalog(generic_catalog_path)
 
@@ -319,7 +338,7 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
         for key, row in catalog.items()
         if len(row) >= 2 and row[1] and not row[1].startswith("#")
     }
-    names_by_dex: dict[int, str] = {}
+    names_by_dex: dict[int, str] = read_species_names()
     for source_rows in (catalog, generic):
         for (dex, _form), row in source_rows.items():
             if len(row) >= 2 and row[1] and not row[1].startswith("#"):
@@ -343,10 +362,11 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
         key = (dex, form)
         remote_keys.add(key)
         fallback = generic.get(key)
-        if fallback and len(fallback) >= 2 and fallback[1]:
+        name = names_by_dex.get(dex)
+        if not name and fallback and len(fallback) >= 2 and fallback[1]:
             name = fallback[1]
-        else:
-            name = preserved_names.get(key) or names_by_dex.get(dex) or f"#{dex:04d}"
+        if not name:
+            name = preserved_names.get(key) or f"#{dex:04d}"
         catalog[key] = [str(dex), name, form, str(entry["path"]).replace("\\", "/")]
 
     # If an old Switch row survived for a no-longer-published form, restore its
