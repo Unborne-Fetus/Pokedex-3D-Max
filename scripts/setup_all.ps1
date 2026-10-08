@@ -1,7 +1,5 @@
 param(
-    [switch]$SkipModels,
     [switch]$SkipSwitchAssets,
-    [switch]$RefreshModels,
     [switch]$SkipInstall,
     [switch]$SwitchAssetsOnly
 )
@@ -521,71 +519,6 @@ function FindSwitchAssetArchives {
     return $Found.ToArray()
 }
 
-function SyncSwitchWeb([string]$PythonCommand) {
-    Stamp "Syncing installed Switch models into the browser index..."
-    $WebSync = Join-Path $RepoRoot "scripts\sync_switch_web.py"
-    if ($PythonCommand -eq "py") { & py -3 $WebSync } else { & python $WebSync }
-    if ($LASTEXITCODE -ne 0) { throw "Browser Switch-model sync failed." }
-}
-
-function InstallRemoteSwitchModelPack([string]$PythonCommand) {
-    Step "STEP 6/7 - Checking validated online Switch model pack"
-    if ($SkipSwitchAssets) { return $true }
-    $LocalModels = @(FindSwitchAssetArchives | Where-Object {
-        (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
-    })
-    if ($LocalModels.Count -gt 0) {
-        Stamp "Downloaded Switch model archives found; keeping local conversions as the primary source."
-        return $false
-    }
-    $Script = Join-Path $RepoRoot "scripts\remote_model_pack.py"
-    if (-not (Test-Path $Script)) {
-        Stamp "Remote model-pack installer is missing; using local Switch archives."
-        return $false
-    }
-
-    $Target = Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"
-    EnsureDir $Target
-
-    Stamp "Trying the validated online GLB pack first."
-    Stamp "Downloaded original Switch archives are kept untouched as the backup source."
-    $env:PYTHONUNBUFFERED = "1"
-
-    $PreviousErrorActionPreference = $ErrorActionPreference
-    $ErrorActionPreference = "Continue"
-    try {
-        # Consume the native command's stdout with Out-Host. Without this,
-        # PowerShell includes every Python output line in the function return
-        # value alongside $false, making "$RemoteReady" truthy and skipping the
-        # local Blender fallback even when the remote pack is unavailable.
-        if ($PythonCommand -eq "py") {
-            & py -3 -u $Script install --target $Target 2>&1 | Out-Host
-        } else {
-            & python -u $Script install --target $Target 2>&1 | Out-Host
-        }
-        $RemoteExit = $LASTEXITCODE
-    } finally {
-        $ErrorActionPreference = $PreviousErrorActionPreference
-    }
-
-    if ($RemoteExit -eq 0) {
-        $script:RemoteSwitchPackSucceeded = $true
-        Stamp "Validated online Switch model pack is ready."
-        return $true
-    }
-
-    if ($RemoteExit -eq 3) {
-        Stamp "Online Switch model pack is unavailable or incomplete."
-        Stamp "Falling back to downloaded Switch archives + Blender."
-        return $false
-    }
-
-    Stamp ("Online Switch model pack installer exited with code " + $RemoteExit + ".")
-    Stamp "Falling back to downloaded Switch archives + Blender."
-    return $false
-}
-
-
 function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     Step "STEP 6/7 - Importing Switch-game Pokemon models"
     if ($SkipSwitchAssets) {
@@ -670,7 +603,6 @@ function RestoreOrImportSwitchExports([string]$PythonCommand) {
     $OriginalArchives = @(FindSwitchAssetArchives | Where-Object {
         (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
     })
-    # Also recover exports previously deleted by the texture gate. Existing
     # Only textured animated GLBs are reused; missing or textureless models reconvert.
     if ((-not $Recovered) -or ($OriginalArchives.Count -gt 0 -and (-not $SkipSwitchAssets))) {
         if ($SkipSwitchAssets) { throw "No original Switch exports remain. Run setup-all.bat full to restore the downloaded source archives." }
@@ -681,77 +613,6 @@ function RestoreOrImportSwitchExports([string]$PythonCommand) {
     if (-not $Recovered) {
         throw "No original animated Switch models could be restored. No older model pack was activated. Run setup-all.bat full with the original downloaded archives."
     }
-}
-
-function InstallModels([string]$PythonCommand) {
-    Step "STEP 5/7 - Preparing offline 3D model pack"
-    $Pack = Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"
-
-    if ($SkipModels) {
-        if (Test-Path $Pack) {
-            Stamp "Fast mode: skipping model sync and reusing the existing offline model folder."
-            return $Pack
-        }
-        Stamp "Fast mode: skipping the optional offline model download."
-        Stamp "The app can use its online/CDN model sources instead."
-        return $null
-    }
-
-    EnsureDir $Pack
-    $Info = Join-Path $Pack "pack_info.json"
-    $GenericCatalog = Join-Path $Pack "generic_model_catalog.tsv"
-    $SpeciesNames = Join-Path $Pack "species_names.tsv"
-
-    if ((-not $RefreshModels) -and (Test-Path $Info) -and (Test-Path $GenericCatalog) -and (Test-Path $SpeciesNames)) {
-        try {
-            $PackInfo = Get-Content $Info -Raw | ConvertFrom-Json
-            if (($PackInfo.modelCount -gt 0) -and ($PackInfo.failedCount -eq 0)) {
-                Stamp ("Offline model pack is already complete (" + $PackInfo.modelCount + " models).")
-                Stamp "Skipping network scan/download. Use -RefreshModels to force a refresh."
-                return $Pack
-            }
-        } catch {
-            Stamp "Existing pack_info.json could not be validated; continuing with model sync."
-        }
-    } elseif ((-not $RefreshModels) -and (Test-Path $Info)) {
-        Stamp "Existing model pack predates the current catalog/name metadata; rebuilding metadata once."
-    }
-
-    $Script = Join-Path $RepoRoot "scripts\download_models.py"
-    $Workers = [Math]::Min(24, [Math]::Max(8, [Environment]::ProcessorCount * 2))
-
-    Stamp ("Model folder: " + $Pack)
-    Stamp ("Using " + $Workers + " parallel model download workers.")
-    Stamp "Existing files are reused; only missing/changed files need network work."
-
-    $env:PYTHONUNBUFFERED = "1"
-    if ($PythonCommand -eq "py") {
-        & py -3 -u $Script --target $Pack --workers $Workers
-    } else {
-        & python -u $Script --target $Pack --workers $Workers
-    }
-
-    $ModelDownloadExit = $LASTEXITCODE
-    if ($ModelDownloadExit -notin @(0, 2)) {
-        throw ("Model-pack download failed with unexpected exit code " + $ModelDownloadExit + ".")
-    }
-    if (-not (Test-Path $Info)) {
-        if ($ModelDownloadExit -eq 2) {
-            Stamp "Generic fallback model sync was incomplete and produced no pack_info.json."
-            Stamp "Continuing without a complete generic fallback pack; the validated online Switch pack will be tried next."
-            return $Pack
-        }
-        throw "Model pack did not produce pack_info.json."
-    }
-
-    Stamp "Model pack summary:"
-    Get-Content $Info | Out-Host
-
-    if ($ModelDownloadExit -eq 2) {
-        Stamp "WARNING - some generic fallback models could not be downloaded."
-        Stamp "Setup will continue; online Switch GLBs and cached local archives remain available as higher-priority sources."
-    }
-    return $Pack
 }
 
 function PreflightSwitchImporter([string]$PythonCommand) {
