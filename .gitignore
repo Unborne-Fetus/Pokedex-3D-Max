@@ -26,5 +26,5 @@ web/models/switch/
 
 
 # Generated remote Switch model-pack release shards
-dist/model-pack-v6/
+dist/model-pack-v7/
 .cache/remote-switch-model-pack/
