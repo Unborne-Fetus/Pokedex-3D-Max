@@ -45,7 +45,14 @@ def import_model(source: Path) -> None:
     if suffix == ".trmdl":
         result = bpy.ops.import_scene.trmdl(filepath=str(source))
     elif suffix == ".gfbmdl":
-        result = getattr(bpy.ops, "import").gfmdl(filepath=str(source))
+        # The upstream GFBMDL add-on reads operator.directory/operator.files,
+        # not filepath, when its loader runs. Supplying only filepath leaves
+        # files empty and makes execute() return None, which Blender rejects.
+        result = getattr(bpy.ops, "import").gfmdl(
+            filepath=str(source),
+            directory=str(source.parent) + "/",
+            files=[{"name": source.name}],
+        )
     else:
         raise RuntimeError(f"Unsupported Switch model format: {suffix}")
     if "FINISHED" not in result:
