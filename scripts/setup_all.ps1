@@ -977,7 +977,7 @@ try {
     Write-Host "============================================================"
     Write-Host "        Pokedex 3D Max - Windows Setup"
     Write-Host "============================================================"
-    Stamp "One-click mode: tools, Switch model import, offline model pack, and Windows build are automatic."
+    Stamp "One-click mode: tools, strict Switch model import, and Windows build are automatic."
     Stamp "Nothing is frozen if timestamps keep appearing or a download/build counter changes."
     Stamp ("Log file: " + $LogFile)
 
@@ -988,7 +988,7 @@ try {
         RestoreOrImportSwitchExports $Python
         Write-Host ""
         Write-Host "============================================================" -ForegroundColor Green
-        Stamp "SUCCESS - original Switch exports restored. Textures left unfinished."
+        Stamp "SUCCESS - regular animated Switch exports restored with valid textures."
         Write-Host "============================================================" -ForegroundColor Green
         Write-Host ("Offline models: " + (Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"))
         return
