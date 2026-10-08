@@ -1252,7 +1252,10 @@ def _pokedex3d_gfb_material_color(material):
 
         required_gfbmdl_markers = (
             "# POKEDEX3D_GFBMDL_TEXTURE_RESOLVER_V1",
+            "def _pokedex3d_gfb_resolve_material_fallback(",
+            '"textureCandidates": texture_candidates',
             "def CreateMaterial(material, model=None, model_dir=None):",
+            "_pokedex3d_gfb_resolve_material_fallback(mat_name, model_dir or ".")",
             "def LoadModel(buf, filename, model_dir=None):",
             "CreateMaterial(mon.Materials(i), mon, model_dir)",
             "LoadModel(buf, f[1].name, os.path.dirname(fpath))",
