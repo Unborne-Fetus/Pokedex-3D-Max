@@ -62,10 +62,10 @@ jobs:
           from pathlib import Path
           importer = Path("scripts/import_switch_game_assets.py").read_text(encoding="utf-8")
           launcher = Path("setup-all.bat").read_text(encoding="utf-8")
-          assert "CONVERSION_PIPELINE_VERSION = 4" in importer
-          assert "pipeline-v4.ready.json" in launcher
+          assert "CONVERSION_PIPELINE_VERSION = 5" in importer
+          assert "pipeline-v5.ready.json" in launcher
           assert "-SwitchAssetsOnly" in launcher
-          print("Setup and importer both target pipeline v4.")
+          print("Setup and importer both target pipeline v5.")
           PY
 
       - name: Guard against incompatible animation fallback
