@@ -1077,6 +1077,12 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
         ready = bool(idle) or allow_static
         if ready:
             warnings = []
+        elif job.get("animationRejected"):
+            reason = str(job.get("animationRejectionReason") or "rig compatibility check failed")
+            warnings = [
+                "Animation candidates were rejected by the rig compatibility gate; "
+                "the verified static model is quarantined/staged. " + reason
+            ]
         elif actual_animated:
             warnings = [
                 "Model has animation data but no verified idle-like clip; kept staged to avoid starting in a non-idle pose."
@@ -1095,6 +1101,8 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
                 "sourceGame": job["game"],
                 "sourceFormat": job["extension"],
                 "animationMatch": job.get("animationMatch", "none"),
+                "animationRejected": bool(job.get("animationRejected")),
+                "animationRejectionReason": job.get("animationRejectionReason"),
                 "animations": animations,
                 "idleAnimation": idle,
                 "idleBreaks": [],
