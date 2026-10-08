@@ -343,11 +343,44 @@ def main() -> int:
     )
 
     manifest = target / "model_catalog.tsv"
+    generic_manifest = target / "generic_model_catalog.tsv"
 
-    # Switch imports are installed before this generic pack refresh in setup-all.
-    # Preserve those validated rows instead of silently erasing them. A Switch
-    # row replaces the generic row for the same dex/form; staged Switch models
-    # are absent from the catalog, so the generic fallback remains available.
+    # Keep an authoritative generic catalog separate from the runtime catalog.
+    # Validated Switch rows may override runtime entries, but this backup lets
+    # the Switch importer restore the generic fallback if an override later
+    # becomes staged or invalid.
+    all_generic_rows = [
+        (
+            int(entry["dex"]),
+            str(entry["form"]),
+            [
+                str(entry["dex"]),
+                str(entry["name"]),
+                str(entry["form"]),
+                str(entry["relative"]),
+                str(size),
+            ],
+        )
+        for entry, size in successes
+    ]
+    all_generic_rows.sort(
+        key=lambda item: (
+            item[0],
+            0 if item[1].lower() == "regular" else 1,
+            item[1],
+            item[2][3],
+        )
+    )
+
+    generic_temp = generic_manifest.with_suffix(".tmp")
+    with generic_temp.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write("dex\tname\tform\tpath\tbytes\n")
+        for _, _, cols in all_generic_rows:
+            handle.write("\t".join(cols) + "\n")
+    generic_temp.replace(generic_manifest)
+
+    # Preserve any already-installed, validated Switch rows when this script is
+    # run standalone after the Switch importer.
     preserved_switch: dict[tuple[int, str], list[str]] = {}
     if manifest.is_file():
         for line in manifest.read_text(encoding="utf-8", errors="replace").splitlines()[1:]:
@@ -370,23 +403,11 @@ def main() -> int:
             ]
 
     switch_keys = set(preserved_switch)
-    generic_rows = [
-        (
-            int(entry["dex"]),
-            str(entry["form"]),
-            [
-                str(entry["dex"]),
-                str(entry["name"]),
-                str(entry["form"]),
-                str(entry["relative"]),
-                str(size),
-            ],
-        )
-        for entry, size in successes
-        if (int(entry["dex"]), str(entry["form"])) not in switch_keys
+    runtime_generic_rows = [
+        row for row in all_generic_rows
+        if (row[0], row[1]) not in switch_keys
     ]
-
-    combined_rows = generic_rows + [
+    combined_rows = runtime_generic_rows + [
         (dex, form, cols)
         for (dex, form), cols in preserved_switch.items()
     ]
@@ -412,6 +433,7 @@ def main() -> int:
         "modelCount": len(successes),
         "switchModelCount": len(preserved_switch),
         "catalogModelCount": len(combined_rows),
+        "genericCatalog": generic_manifest.name,
         "failedCount": len(failures),
         "totalBytes": sum(size for _, size in successes)
         + sum(int(cols[4]) for cols in preserved_switch.values()),
