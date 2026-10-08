@@ -657,6 +657,82 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
         if "import re\n" not in text:
             text = text.replace("import sys\n", "import sys\nimport re\n", 1)
 
+        # Add the material-name heuristic to cached V1 add-ons without
+        # forcing a full third-party checkout refresh.
+        if (
+            "# POKEDEX3D_GFBMDL_TEXTURE_RESOLVER_V1" in text
+            and "def _pokedex3d_gfb_resolve_material_fallback(" not in text
+        ):
+            supplemental = r'''
+def _pokedex3d_gfb_resolve_material_fallback(material_name, model_dir):
+    """Best-effort albedo lookup for legacy dumps with inconsistent map names."""
+    material_key = re.sub(r"[^a-z0-9]+", "", _pokedex3d_gfb_decode(material_name).casefold())
+    pokemon_dir = os.path.dirname(os.path.abspath(model_dir or "."))
+    pokemon_key = re.sub(
+        r"[^a-z0-9]+",
+        "",
+        os.path.basename(pokemon_dir).casefold(),
+    )
+
+    positive = ("alb", "albedo", "basecolor", "basecolour", "diff", "diffuse", "col", "color", "colour")
+    negative = ("nrm", "normal", "mask", "msk", "rough", "rgh", "metal", "mtl", "spec", "ao", "occlusion", "emit", "emi", "lym", "height")
+
+    ranked = []
+    seen = set()
+    for root in _pokedex3d_gfb_image_roots(model_dir):
+        index = _pokedex3d_gfb_index_root(root)
+        for paths in index.values():
+            for path in paths:
+                path_key = os.path.abspath(path).casefold()
+                if path_key in seen:
+                    continue
+                seen.add(path_key)
+
+                basename = os.path.splitext(os.path.basename(path))[0].casefold()
+                normalized = re.sub(r"[^a-z0-9]+", "", basename)
+                if any(token in normalized for token in negative):
+                    continue
+
+                score = 0
+                if pokemon_key and pokemon_key in normalized:
+                    score += 120
+                if material_key and material_key in normalized:
+                    score += 100
+                if any(token in normalized for token in positive):
+                    score += 60
+
+                # Partial material-name overlap still helps with names such as
+                # BodyA00 vs BodyA_col, but require a meaningful prefix.
+                if material_key:
+                    common = os.path.commonprefix([material_key, normalized])
+                    score += min(len(common), 12) * 3
+
+                if score > 0:
+                    ranked.append((score, len(path), path.casefold(), path))
+
+    if not ranked:
+        return None
+
+    ranked.sort(key=lambda item: (-item[0], item[1], item[2]))
+    best = ranked[0]
+    # Avoid weak accidental matches when many generations share pm#### names.
+    if best[0] < 60:
+        return None
+
+    print(
+        "GFBMDL heuristic texture resolve:",
+        material_name,
+        "score=" + str(best[0]),
+        "->",
+        best[3],
+        flush=True,
+    )
+    return best[3]
+'''
+            target = "def _pokedex3d_gfb_material_color(material):\n"
+            if target in text:
+                text = text.replace(target, supplemental + "\n\n" + target, 1)
+
         # Migrate an already-patched cached add-on from the first resolver
         # draft. The original draft accidentally emitted a literal "\\1"
         # instead of the captured Pokémon prefix in the relaxed key.
@@ -664,6 +740,23 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
             '        r"\\\\1",\n        stem,',
             '        r"\\1",\n        stem,',
         )
+
+        old_resolution_tail = '''            selected = descriptor
+            break
+
+    if resolved:
+'''
+        new_resolution_tail = '''            selected = descriptor
+            break
+
+    if not resolved:
+        resolved = _pokedex3d_gfb_resolve_material_fallback(mat_name, model_dir or ".")
+
+    if resolved:
+'''
+        if old_resolution_tail in text:
+            text = text.replace(old_resolution_tail, new_resolution_tail, 1)
+
 
         marker = "# POKEDEX3D_GFBMDL_TEXTURE_RESOLVER_V1"
         if marker not in text:
@@ -845,6 +938,72 @@ def _pokedex3d_gfb_material_maps(material, model):
         key=lambda item: (-item["score"], item["order"]),
     )
 
+def _pokedex3d_gfb_resolve_material_fallback(material_name, model_dir):
+    """Best-effort albedo lookup for legacy dumps with inconsistent map names."""
+    material_key = re.sub(r"[^a-z0-9]+", "", _pokedex3d_gfb_decode(material_name).casefold())
+    pokemon_dir = os.path.dirname(os.path.abspath(model_dir or "."))
+    pokemon_key = re.sub(
+        r"[^a-z0-9]+",
+        "",
+        os.path.basename(pokemon_dir).casefold(),
+    )
+
+    positive = ("alb", "albedo", "basecolor", "basecolour", "diff", "diffuse", "col", "color", "colour")
+    negative = ("nrm", "normal", "mask", "msk", "rough", "rgh", "metal", "mtl", "spec", "ao", "occlusion", "emit", "emi", "lym", "height")
+
+    ranked = []
+    seen = set()
+    for root in _pokedex3d_gfb_image_roots(model_dir):
+        index = _pokedex3d_gfb_index_root(root)
+        for paths in index.values():
+            for path in paths:
+                path_key = os.path.abspath(path).casefold()
+                if path_key in seen:
+                    continue
+                seen.add(path_key)
+
+                basename = os.path.splitext(os.path.basename(path))[0].casefold()
+                normalized = re.sub(r"[^a-z0-9]+", "", basename)
+                if any(token in normalized for token in negative):
+                    continue
+
+                score = 0
+                if pokemon_key and pokemon_key in normalized:
+                    score += 120
+                if material_key and material_key in normalized:
+                    score += 100
+                if any(token in normalized for token in positive):
+                    score += 60
+
+                # Partial material-name overlap still helps with names such as
+                # BodyA00 vs BodyA_col, but require a meaningful prefix.
+                if material_key:
+                    common = os.path.commonprefix([material_key, normalized])
+                    score += min(len(common), 12) * 3
+
+                if score > 0:
+                    ranked.append((score, len(path), path.casefold(), path))
+
+    if not ranked:
+        return None
+
+    ranked.sort(key=lambda item: (-item[0], item[1], item[2]))
+    best = ranked[0]
+    # Avoid weak accidental matches when many generations share pm#### names.
+    if best[0] < 60:
+        return None
+
+    print(
+        "GFBMDL heuristic texture resolve:",
+        material_name,
+        "score=" + str(best[0]),
+        "->",
+        best[3],
+        flush=True,
+    )
+    return best[3]
+
+
 def _pokedex3d_gfb_material_color(material):
     preferred = ("basecolor", "base_color", "diffuse", "color")
     first = None
@@ -931,6 +1090,9 @@ def _pokedex3d_gfb_material_color(material):
             resolved = candidate
             selected = descriptor
             break
+
+    if not resolved:
+        resolved = _pokedex3d_gfb_resolve_material_fallback(mat_name, model_dir or ".")
 
     if resolved:
         image = bpy.data.images.load(resolved, check_existing=True)
