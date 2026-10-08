@@ -42,6 +42,7 @@ ANIMATION_EXT_FOR_GAME = {
 DEX_RE = re.compile(r"pm(\d{4})", re.I)
 FORM_RE = re.compile(r"pm\d{4}(?:_(\d{2}))?(?:_(\d{2}))?", re.I)
 SAFE_RE = re.compile(r"[^a-z0-9_-]+")
+IMAGE_EXTS = {".png", ".tga", ".jpg", ".jpeg", ".bmp", ".dds", ".webp"}
 
 SOURCE_PRIORITY = {
     "za": 600,
@@ -179,6 +180,36 @@ def detect_game(path: Path) -> str:
     if any(x in text for x in ("brilliant-diamond", "shining-pearl", "bdsp")):
         return "bdsp"
     return "unknown"
+
+
+def first_image_asset(root: Path) -> Path | None:
+    if not root.is_dir():
+        return None
+    try:
+        for path in root.rglob("*"):
+            if path.is_file() and path.suffix.lower() in IMAGE_EXTS:
+                return path
+    except OSError:
+        return None
+    return None
+
+
+def add_texture_root(
+    roots: list[Path],
+    roots_by_game: dict[str, list[Path]],
+    root: Path,
+    game: str,
+) -> bool:
+    resolved = root.resolve()
+    game_roots = roots_by_game.setdefault(game, [])
+    changed = False
+    if resolved not in roots:
+        roots.append(resolved)
+        changed = True
+    if resolved not in game_roots:
+        game_roots.append(resolved)
+        changed = True
+    return changed
 
 
 def archive_signature(source: Path) -> dict:
@@ -2602,14 +2633,26 @@ def main() -> int:
     for source in args.inputs:
         root, game = extract_input(source)
         if is_switch_texture_archive(source):
-            texture_roots.append(root)
-            texture_roots_by_game.setdefault(game, []).append(root)
-            print(f"{source.name}: texture dependency root ({game})")
+            add_texture_root(texture_roots, texture_roots_by_game, root, game)
+            image = first_image_asset(root)
+            detail = f"; sample={image.name}" if image is not None else "; no supported image files found"
+            print(f"{source.name}: texture dependency root ({game}){detail}")
             continue
 
         found = scan_models(root, game)
         anims = scan_animations(root, game)
-        print(f"{source.name}: {len(found)} model files, {len(anims)} animation files ({game})")
+        embedded_image = first_image_asset(root)
+        if embedded_image is not None:
+            add_texture_root(texture_roots, texture_roots_by_game, root, game)
+        texture_note = (
+            f", embedded texture images present (sample={embedded_image.name})"
+            if embedded_image is not None
+            else ""
+        )
+        print(
+            f"{source.name}: {len(found)} model files, {len(anims)} animation files "
+            f"({game}){texture_note}"
+        )
         all_jobs.extend(found)
         all_animations.extend(anims)
 
@@ -2626,13 +2669,24 @@ def main() -> int:
     # Texture names are reused across generations. Give each conversion only
     # the texture roots from its own game first so pm#### basename collisions
     # cannot silently bind a Sword/Shield model to an SV/ZA image.
+    textureless_legacy_jobs = 0
     for job in jobs:
         same_game_roots = texture_roots_by_game.get(job.get("game"), [])
         job["textureRoots"] = [str(path.resolve()) for path in same_game_roots]
-        if not same_game_roots and texture_roots:
+        if not same_game_roots:
             job["textureRootWarning"] = (
-                f"No texture archive was discovered for game={job.get('game')}"
+                f"No supported texture image source was discovered for game={job.get('game')}"
             )
+            if job.get("extension") == ".gfbmdl":
+                textureless_legacy_jobs += 1
+
+    if textureless_legacy_jobs:
+        print(
+            f"WARNING - {textureless_legacy_jobs} legacy GFBMDL job(s) have no "
+            "same-game PNG/DDS/TGA/JPG/WebP texture source. They will be "
+            "quarantined instead of wasting Blender conversion time.",
+            flush=True,
+        )
 
     write_animation_coverage_report(jobs, all_animations)
     models_with_anim = sum(1 for job in jobs if job.get("animations"))
@@ -2669,18 +2723,36 @@ def main() -> int:
     if not jobs:
         return 0
 
-    blender = find_blender(args.blender)
-    addon = ensure_addon()
-    blender_deps = ensure_blender_python_deps()
-    run_blender(
-        jobs,
-        blender,
-        addon,
-        blender_deps,
-        texture_roots=texture_roots,
-        refresh_changed=args.refresh_changed,
-        force=args.force,
-    )
+    impossible_texture_jobs = [
+        job
+        for job in jobs
+        if job.get("extension") == ".gfbmdl"
+        and not job.get("textureRoots")
+    ]
+    for job in impossible_texture_jobs:
+        job["conversionFailed"] = True
+        job["conversionFailureReason"] = (
+            "No supported same-game texture image source was discovered for "
+            "legacy GFBMDL conversion."
+        )
+
+    convertible_jobs = [
+        job for job in jobs if not job.get("conversionFailed")
+    ]
+
+    if convertible_jobs:
+        blender = find_blender(args.blender)
+        addon = ensure_addon()
+        blender_deps = ensure_blender_python_deps()
+        run_blender(
+            convertible_jobs,
+            blender,
+            addon,
+            blender_deps,
+            texture_roots=texture_roots,
+            refresh_changed=args.refresh_changed,
+            force=args.force,
+        )
     converted_entries = build_manifest(jobs, args.allow_static)
 
     partial_run = bool(args.dex) or args.limit > 0
