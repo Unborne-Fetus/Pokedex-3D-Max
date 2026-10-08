@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import struct
 import sys
 import traceback
 from pathlib import Path
@@ -81,27 +82,47 @@ def import_animations(job: dict) -> int:
         print("No armature found; animation clips skipped.", flush=True)
         return 0
 
+    if armature.animation_data is None:
+        armature.animation_data_create()
+
     imported = 0
     for clip in clips:
         source = Path(clip["source"]).resolve()
         if not source.is_file():
             continue
         try:
-            # Preserve every imported clip as its own NLA strip. Without
-            # nla_import the add-on replaces the armature's active Action on
-            # each import, and Blender's glTF exporter can emit a static GLB
-            # even though all clips reported successful imports.
-            result = bpy.ops.import_scene.gfbanm(
-                filepath=str(source),
-                nla_import=True,
-            )
-            if "FINISHED" in result:
-                imported += 1
-                action = armature.animation_data.action if armature.animation_data else None
-                if action and not action.name:
-                    action.name = clip.get("name") or source.stem
-            else:
+            # Do not rely on the add-on's optional NLA mode: different cached
+            # revisions expose different operator properties. Import normally,
+            # then preserve the resulting Action ourselves.
+            before = set(bpy.data.actions)
+            result = bpy.ops.import_scene.gfbanm(filepath=str(source))
+            if "FINISHED" not in result:
                 print(f"Animation importer returned {result} for {source.name}", flush=True)
+                continue
+
+            action = armature.animation_data.action if armature.animation_data else None
+            if action is None:
+                created = [candidate for candidate in bpy.data.actions if candidate not in before]
+                action = created[-1] if created else None
+            if action is None:
+                print(f"Animation import produced no Action for {source.name}", flush=True)
+                continue
+
+            action.name = clip.get("name") or source.stem
+            action.use_fake_user = True
+
+            track = armature.animation_data.nla_tracks.new()
+            track.name = action.name
+            start, end = action.frame_range
+            strip = track.strips.new(action.name, float(start), action)
+            strip.action_frame_start = float(start)
+            strip.action_frame_end = float(end)
+            strip.frame_start = float(start)
+            strip.frame_end = float(end)
+            armature.animation_data.action = None
+
+            imported += 1
+            print(f"Preserved animation in NLA: {action.name}", flush=True)
         except Exception:
             print(f"Animation import failed for {source.name}", flush=True)
             traceback.print_exc()
@@ -111,17 +132,49 @@ def import_animations(job: dict) -> int:
     return imported
 
 
+def glb_animation_count(path: Path) -> int:
+    data = path.read_bytes()
+    if len(data) < 20 or data[:4] != b"glTF":
+        return 0
+    _, version, total = struct.unpack_from("<III", data, 0)
+    if version != 2 or total > len(data):
+        return 0
+    offset = 12
+    while offset + 8 <= total:
+        length, chunk_type = struct.unpack_from("<II", data, offset)
+        offset += 8
+        chunk = data[offset : offset + length]
+        offset += length
+        if chunk_type == 0x4E4F534A:
+            doc = json.loads(chunk.rstrip(b" \t\r\n\x00").decode("utf-8"))
+            return len(doc.get("animations") or [])
+    return 0
+
+
 def export_glb(destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    bpy.ops.export_scene.gltf(
-        filepath=str(destination),
-        export_format="GLB",
-        export_animations=True,
-        export_skins=True,
-        export_morph=True,
-        export_materials="EXPORT",
-        export_yup=True,
-    )
+    kwargs = {
+        "filepath": str(destination),
+        "export_format": "GLB",
+        "export_animations": True,
+        "export_skins": True,
+        "export_morph": True,
+        "export_materials": "EXPORT",
+        "export_yup": True,
+    }
+
+    # Blender changed animation-export flags across versions. Enable whichever
+    # NLA-specific option this installed Blender actually supports.
+    try:
+        props = set(bpy.ops.export_scene.gltf.get_rna_type().properties.keys())
+    except Exception:
+        props = set()
+    if "export_animation_mode" in props:
+        kwargs["export_animation_mode"] = "NLA_TRACKS"
+    if "export_nla_strips" in props:
+        kwargs["export_nla_strips"] = True
+
+    bpy.ops.export_scene.gltf(**kwargs)
 
 
 for index, job in enumerate(jobs, start=1):
@@ -131,8 +184,15 @@ for index, job in enumerate(jobs, start=1):
     try:
         clear_scene()
         import_model(source)
-        import_animations(job)
+        imported_animations = import_animations(job)
         export_glb(destination)
+        if imported_animations:
+            embedded = glb_animation_count(destination)
+            if embedded <= 0:
+                raise RuntimeError(
+                    f"Imported {imported_animations} animation clip(s), but exported GLB contains no animations"
+                )
+            print(f"Verified {embedded} embedded GLB animation(s).", flush=True)
     except Exception as exc:
         failures.append({"source": str(source), "error": str(exc)})
         traceback.print_exc()
@@ -141,5 +201,4 @@ if failures:
     failure_path = jobs_path.with_name("switch-model-failures.json")
     failure_path.write_text(json.dumps(failures, indent=2) + "\n", encoding="utf-8")
     print(f"{len(failures)} conversions failed; details: {failure_path}")
-    if len(failures) == len(jobs):
-        raise SystemExit(2)
+    raise SystemExit(2)
