@@ -836,7 +836,7 @@ try {
     Stamp ("Log file: " + $LogFile)
 
     if ($SwitchAssetsOnly) {
-        Stamp "Switch-assets-only mode: skipping JDK, Gradle, fallback-pack, and Windows packaging."
+        Stamp "Switch-assets-only mode: skipping JDK, Gradle, and Windows packaging."
         $Python = EnsurePython
         PreflightSwitchImporter $Python
         RestoreOrImportSwitchExports $Python
@@ -852,8 +852,7 @@ try {
     $Gradle = BootstrapGradle
     $Python = EnsurePython
     PreflightCode $Python $Gradle
-    # Restore the user's original Switch models. Do not replace them with the
-    # online pack or download the old generic models during restoration.
+    # Restore/reconvert the user's original Switch models only.
     RestoreOrImportSwitchExports $Python
     $Pack = Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"
     BuildWindows $Gradle
