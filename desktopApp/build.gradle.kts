@@ -18,6 +18,11 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.material3)
     implementation("io.github.sceneview:sceneview-compose:4.52.0")
+    // sceneview-compose's desktop viewer currently renders glTF but does not
+    // advance skeletal animations. Use the same pinned Filament KMP backend
+    // directly for the animated desktop viewport.
+    implementation("io.github.erkko68.filament:filament-compose:0.6.0")
+    implementation("io.github.erkko68.filament:gltfio:0.6.0")
     implementation("org.json:json:20250517")
 }
 
