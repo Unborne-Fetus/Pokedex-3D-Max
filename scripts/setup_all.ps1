@@ -401,7 +401,9 @@ function GetMegaDesiredRemoteArchives {
         $IsArchive = $Leaf.EndsWith(".zip", [StringComparison]::OrdinalIgnoreCase) -or
             $Leaf.EndsWith(".7z", [StringComparison]::OrdinalIgnoreCase)
         $IsSwitchPokemonPack = $Leaf -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke"
-        $IsSwitchTexturePack = $Leaf -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP).*?(PokeTex|Texture|Textures)"
+        $HasGameToken = $Leaf -match "(?i)(^|[-_ .])(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)([-_ .]|$)"
+        $HasTextureToken = $Leaf -match "(?i)(PokeTex|Texture|Textures|TexPack|Tex)"
+        $IsSwitchTexturePack = $HasGameToken -and $HasTextureToken
         if ($IsArchive -and ($IsSwitchPokemonPack -or $IsSwitchTexturePack)) {
             if (-not $Selected.Contains($Path)) { $Selected.Add($Path) }
         }
@@ -504,11 +506,13 @@ function FindSwitchAssetArchives {
         if ($Plan.Recurse) { $Args["Recurse"] = $true }
 
         $Files = Get-ChildItem @Args | Where-Object {
-            ($_.Extension -in @(".zip", ".7z")) -and
-            (
-                ($_.BaseName -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke") -or
-                ($_.BaseName -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP).*?(PokeTex|Texture|Textures)")
-            )
+            if ($_.Extension -notin @(".zip", ".7z")) { return $false }
+
+            $Name = $_.BaseName
+            $PokemonPack = $Name -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke"
+            $HasGameToken = $Name -match "(?i)(^|[-_ .])(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)([-_ .]|$)"
+            $HasTextureToken = $Name -match "(?i)(PokeTex|Texture|Textures|TexPack|Tex)"
+            return $PokemonPack -or ($HasGameToken -and $HasTextureToken)
         }
         foreach ($File in $Files) {
             if (-not $Found.Contains($File.FullName)) { $Found.Add($File.FullName) }
