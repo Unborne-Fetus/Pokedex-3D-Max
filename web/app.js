@@ -263,7 +263,7 @@ async function enhanceCatalogInBackground() {
     if (!richer.length) throw new Error("Catalog contained no model entries");
 
     localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(payload));
-    models = richer;\n    window.POKEDEX3D_MODELS = models;
+    models = richer.filter(model => !isShiny(model));\n    window.POKEDEX3D_MODELS = models;
     statusEl.textContent =
       models.length.toLocaleString() + " 3D models available";
     refreshCurrentPokemonAfterCatalogUpdate();
