@@ -1,5 +1,6 @@
 @echo off
 setlocal EnableExtensions
+set "POKEDEX3D_ALLOW_BROKEN_TEXTURES=1"
 cd /d "%~dp0"
 
 title Pokedex 3D Max - Import Switch Models

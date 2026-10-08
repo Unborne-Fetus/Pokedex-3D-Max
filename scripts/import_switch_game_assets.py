@@ -1770,7 +1770,7 @@ def run_blender(
                 out,
                 wants_animations and not cached_rejected,
             )
-            and glb_texture_count(out) > 0
+            and (os.environ.get("POKEDEX3D_ALLOW_BROKEN_TEXTURES") == "1" or glb_texture_count(out) > 0)
         )
         fingerprint_matches = cached_fingerprint == fingerprint
 
@@ -1955,7 +1955,7 @@ def run_blender(
         out = WEB_ROOT / f"{job['dex']:04d}" / f"{job['form']}.glb"
         if out.is_file() and (
             not existing_glb_is_complete(out, False)
-            or glb_texture_count(out) <= 0
+            or (os.environ.get("POKEDEX3D_ALLOW_BROKEN_TEXTURES") != "1" and glb_texture_count(out) <= 0)
         ):
             out.unlink()
 
@@ -2617,7 +2617,12 @@ def main() -> int:
         action="store_true",
         help="reconvert every selected model even when a valid GLB already exists",
     )
+    parser.add_argument("--allow-broken-textures", action="store_true",
+                        default=os.environ.get("POKEDEX3D_ALLOW_BROKEN_TEXTURES") == "1",
+                        help="keep animated Switch exports with unfinished albedo textures")
     args = parser.parse_args()
+    if args.allow_broken_textures:
+        os.environ["POKEDEX3D_ALLOW_BROKEN_TEXTURES"] = "1"
 
     run_self_tests()
     if args.self_test:
@@ -2697,7 +2702,7 @@ def main() -> int:
             if job.get("extension") == ".gfbmdl":
                 textureless_legacy_jobs += 1
 
-    if textureless_legacy_jobs:
+    if textureless_legacy_jobs and not args.allow_broken_textures:
         print(
             f"WARNING - {textureless_legacy_jobs} legacy GFBMDL job(s) have no "
             "same-game PNG/DDS/TGA/JPG/WebP texture source. They will be "
@@ -2745,6 +2750,7 @@ def main() -> int:
         for job in jobs
         if job.get("extension") == ".gfbmdl"
         and not job.get("textureRoots")
+        and not args.allow_broken_textures
     ]
     for job in impossible_texture_jobs:
         job["conversionFailed"] = True

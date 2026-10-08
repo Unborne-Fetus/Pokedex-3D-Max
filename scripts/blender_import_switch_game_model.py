@@ -572,10 +572,19 @@ for index, job in enumerate(jobs, start=1):
         # The upstream importer uses a custom PokemonShader node group. Flatten
         # it to standard PBR nodes before GLB export or Filament/model-viewer
         # will receive an untextured/white material.
-        total_materials, textured_materials = prepare_materials_for_gltf()
-        if total_materials <= 0:
+        allow_broken_textures = os.environ.get("POKEDEX3D_ALLOW_BROKEN_TEXTURES") == "1"
+        try:
+            total_materials, textured_materials = prepare_materials_for_gltf()
+        except Exception as error:
+            if not allow_broken_textures:
+                raise
+            print(f"Keeping geometry and animations with unfinished textures: {error}", flush=True)
+            total_materials, textured_materials = 0, 0
+        if not any(obj.type == "MESH" for obj in bpy.context.scene.objects):
+            raise RuntimeError("Imported model contains no mesh geometry")
+        if total_materials <= 0 and not allow_broken_textures:
             raise RuntimeError("Imported model contains no mesh materials")
-        if textured_materials <= 0:
+        if textured_materials <= 0 and not allow_broken_textures:
             raise RuntimeError(
                 "Imported model has no usable albedo texture. "
                 "Check the companion texture archive and texture resolver output."
@@ -588,7 +597,7 @@ for index, job in enumerate(jobs, start=1):
             raise RuntimeError("GLB exporter did not produce a valid-sized output file")
 
         base_color_textures = glb_base_color_texture_count(temporary)
-        if base_color_textures <= 0:
+        if base_color_textures <= 0 and not allow_broken_textures:
             raise RuntimeError(
                 "Exported GLB contains no material baseColorTexture bindings"
             )
