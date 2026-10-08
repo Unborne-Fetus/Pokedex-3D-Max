@@ -176,7 +176,7 @@ private fun DesktopApp() {
                                     "#%04d  %s".format(model.dex, model.name),
                                     fontWeight = FontWeight.SemiBold,
                                 )
-                                Text(model.form, style = MaterialTheme.typography.bodySmall)
+                                Text(prettyFormName(model.form), style = MaterialTheme.typography.bodySmall)
                             }
                         }
                     }
@@ -210,20 +210,26 @@ private fun DesktopApp() {
 private fun PokemonViewport(model: DesktopModel, bytes: ByteArray) {
     key(model.path.toString()) {
         val bounds = remember(bytes) { readModelBounds(bytes) }
+        // Match the web index/model-viewer framing: center the real mesh bounds,
+        // use a 30-degree FOV, and fit the bounding sphere with a small margin.
         val initialDistance = remember(bounds) {
-            maxOf(bounds.radius * 3.0f, bounds.maxDimension * 2.2f, 0.75f)
+            val halfFovRadians = (30.0 * PI / 180.0 / 2.0)
+            maxOf(
+                (bounds.radius / sin(halfFovRadians).toFloat()) * 1.05f,
+                0.25f,
+            )
         }
-        val minDistance = remember(bounds) {
-            maxOf(bounds.radius * 0.45f, 0.05f)
+        val minDistance = remember(initialDistance) {
+            maxOf(initialDistance * 0.12f, 0.03f)
         }
-        val maxDistance = remember(bounds, initialDistance) {
-            maxOf(initialDistance * 10f, bounds.radius * 24f, 8f)
+        val maxDistance = remember(initialDistance) {
+            maxOf(initialDistance * 10f, 4f)
         }
         val camera = rememberUnsavedCameraState(
             target = bounds.center,
             distance = initialDistance,
             azimuth = 0f,
-            elevation = 8f,
+            elevation = 15f,
         )
 
         // Disable SceneView desktop gestures. Its current scroll implementation multiplies
@@ -298,7 +304,7 @@ private fun AnimatedFilamentViewer(
             orbitCamera.elevation,
         ),
         initialTarget = Position(target.x, target.y, target.z),
-        initialProjection = Projection.Perspective(fovDegrees = 45.0),
+        initialProjection = Projection.Perspective(fovDegrees = 30.0),
     )
     val skybox = rememberSkyboxState(
         initialSource = SkyboxSource.Color(LinearColor(0.08f, 0.10f, 0.14f)),
@@ -538,6 +544,27 @@ private fun findModelPack(): Path? {
     }
     return candidates.firstOrNull { Files.isRegularFile(it.resolve("model_catalog.tsv")) }
 }
+
+private fun prettyFormName(raw: String): String {
+    val normalized = raw
+        .trim()
+        .lowercase()
+        .replace(Regex("-00$"), "")
+    if (normalized.isBlank() || normalized == "regular") return "Regular"
+
+    return normalized
+        .replace(Regex("^form-"), "Form ")
+        .replace(Regex("^go-form-"), "GO Form ")
+        .replace('-', ' ')
+        .replace('_', ' ')
+        .split(Regex("\\s+"))
+        .filter { it.isNotBlank() }
+        .joinToString(" ") { token ->
+            if (token.all(Char::isDigit)) token
+            else token.replaceFirstChar { ch -> ch.uppercase() }
+        }
+}
+
 
 private fun loadManifest(root: Path): List<DesktopModel> {
     val manifest = root.resolve("model_catalog.tsv")
