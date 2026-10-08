@@ -636,7 +636,7 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     if (-not (Test-Path $Script)) { throw "Switch model importer script is missing." }
     $Args = @("-u", $Script)
     $Args += $Archives
-    $Args += @("--blender", $Blender, "--allow-broken-textures")
+    $Args += @("--blender", $Blender)
     $env:PYTHONUNBUFFERED = "1"
     Push-Location $RepoRoot
     try {
@@ -655,7 +655,7 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
 }
 
 function RestoreInstalledSwitchExports([string]$PythonCommand) {
-    Stamp "Restoring original Switch GLBs; unfinished textures are allowed."
+    Stamp "Restoring animated Switch GLBs with valid embedded textures."
     $Restore = Join-Path $RepoRoot "scripts\restore_switch_models.py"
     if ($PythonCommand -eq "py") { & py -3 -u $Restore | ForEach-Object { Write-Host $_ } }
     else { & python -u $Restore | ForEach-Object { Write-Host $_ } }
@@ -671,7 +671,7 @@ function RestoreOrImportSwitchExports([string]$PythonCommand) {
         (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
     })
     # Also recover exports previously deleted by the texture gate. Existing
-    # GLBs are reused, including untextured ones; only missing models convert.
+    # Only textured animated GLBs are reused; missing or textureless models reconvert.
     if ((-not $Recovered) -or ($OriginalArchives.Count -gt 0 -and (-not $SkipSwitchAssets))) {
         if ($SkipSwitchAssets) { throw "No original Switch exports remain. Run setup-all.bat full to restore the downloaded source archives." }
         $Blender = EnsureBlender
