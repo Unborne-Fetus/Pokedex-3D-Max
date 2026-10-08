@@ -168,6 +168,19 @@ def verify(local_root: Path, deep: bool = True) -> int:
     if marker.get("selectedModels") != len(manifest):
         issue("pipeline selection count differs from published manifest")
 
+    policy_path = local_root / "model_source_policy.json"
+    try:
+        policy = load_json(policy_path)
+        if not all(policy.get(key) is value for key, value in (
+            ("switchOnly", True), ("regularOnly", True),
+            ("allowBrokenTextures", False),
+        )):
+            issue("native model policy is not strict regular-only Switch")
+    except (OSError, ValueError, AttributeError) as error:
+        issue(f"native model source policy missing/invalid: {error}")
+    if "window.POKEDEX3D_MODEL_POLICY =" not in MANIFEST_JS.read_text(encoding="utf-8"):
+        issue("browser model policy missing from index manifest")
+
     catalog = local_root / "model_catalog.tsv"
     metadata_file = local_root / "switch-model-metadata.json"
     try:
@@ -203,7 +216,7 @@ def verify(local_root: Path, deep: bool = True) -> int:
             if not 1 <= dex <= 1025 or form != "regular":
                 issue(f"not a regular Switch Pokémon model: {key}")
                 continue
-            if entry.get("ready") is False or entry.get("valid") is False:
+            if entry.get("ready") is not True or entry.get("valid") is not True:
                 issue(f"{key}: model is staged/invalid")
             idle = entry.get("idleAnimation")
             if not isinstance(idle, str) or not idle:
