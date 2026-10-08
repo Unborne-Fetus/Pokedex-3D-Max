@@ -1,5 +1,7 @@
 param(
     [switch]$SkipModels,
+    [switch]$SkipSwitchAssets,
+    [switch]$RefreshModels,
     [switch]$SkipInstall
 )
 
