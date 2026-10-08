@@ -1,1 +1,0 @@
-window.POKEDEX3D_LOCAL_MODELS = [];
