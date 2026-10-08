@@ -93,6 +93,22 @@ def detect_game(path: Path) -> str:
     return "unknown"
 
 
+def archive_signature(source: Path) -> dict:
+    stat = source.stat()
+    return {
+        "path": str(source),
+        "size": stat.st_size,
+        "mtimeNs": stat.st_mtime_ns,
+    }
+
+
+def archive_cache_dir(source: Path) -> Path:
+    # Do not key extraction only by filename: two different archives can have
+    # the same leaf name in Downloads and the MEGA cache.
+    identity = hashlib.sha256(str(source).encode("utf-8")).hexdigest()[:12]
+    return CACHE / "extracted" / f"{slug(source.stem)}-{identity}"
+
+
 def extract_input(source: Path) -> tuple[Path, str]:
     source = source.expanduser().resolve()
     game = detect_game(source)
@@ -101,10 +117,18 @@ def extract_input(source: Path) -> tuple[Path, str]:
     if not source.is_file():
         raise FileNotFoundError(source)
 
-    dest = CACHE / slug(source.stem)
-    marker = dest / ".complete"
+    dest = archive_cache_dir(source)
+    marker = dest / ".complete.json"
+    expected_signature = archive_signature(source)
+
     if marker.is_file():
-        return dest, game
+        try:
+            cached_signature = json.loads(marker.read_text(encoding="utf-8"))
+        except Exception:
+            cached_signature = None
+        if cached_signature == expected_signature:
+            return dest, game
+        print(f"Archive changed; refreshing extracted cache for {source.name}.", flush=True)
 
     if dest.exists():
         shutil.rmtree(dest)
@@ -114,6 +138,13 @@ def extract_input(source: Path) -> tuple[Path, str]:
     if suffix == ".zip":
         print(f"Extracting {source.name} ...", flush=True)
         with zipfile.ZipFile(source) as zf:
+            root = dest.resolve()
+            for member in zf.infolist():
+                target = (dest / member.filename).resolve()
+                if target != root and root not in target.parents:
+                    raise RuntimeError(
+                        f"Unsafe archive path in {source.name}: {member.filename}"
+                    )
             zf.extractall(dest)
     elif suffix == ".7z":
         seven = shutil.which("7z") or shutil.which("7zz") or shutil.which("7za")
@@ -126,7 +157,10 @@ def extract_input(source: Path) -> tuple[Path, str]:
     else:
         raise RuntimeError(f"Unsupported input archive: {source.name}")
 
-    marker.write_text("ok\n", encoding="utf-8")
+    marker.write_text(
+        json.dumps(expected_signature, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     return dest, game
 
 
