@@ -2624,12 +2624,9 @@ def main() -> int:
         action="store_true",
         help="reconvert every selected model even when a valid GLB already exists",
     )
-    parser.add_argument("--allow-broken-textures", action="store_true",
-                        default=os.environ.get("POKEDEX3D_ALLOW_BROKEN_TEXTURES") == "1",
-                        help="keep Switch geometry/animation even when albedo bindings are unfinished")
+    parser.set_defaults(allow_broken_textures=False)
     args = parser.parse_args()
-    if args.allow_broken_textures:
-        os.environ["POKEDEX3D_ALLOW_BROKEN_TEXTURES"] = "1"
+    os.environ.pop("POKEDEX3D_ALLOW_BROKEN_TEXTURES", None)
 
     run_self_tests()
     if args.self_test:
