@@ -526,10 +526,12 @@ private fun MissingPackScreen() {
 private fun findModelPack(): Path? {
     val candidates = buildList {
         System.getenv("POKEDEX_3D_MAX_MODELS")?.takeIf { it.isNotBlank() }?.let { add(Paths.get(it)) }
-        add(Paths.get("offline-models").toAbsolutePath())
+        // setup/import-switch-models installs validated models here. Prefer it
+        // over a possibly stale ./offline-models folder in the launch cwd.
         System.getenv("LOCALAPPDATA")?.takeIf { it.isNotBlank() }?.let {
             add(Paths.get(it, "Pokedex3DMax", "offline-models"))
         }
+        add(Paths.get("offline-models").toAbsolutePath())
         System.getProperty("user.home")?.takeIf { it.isNotBlank() }?.let {
             add(Paths.get(it, "Pokedex3DMax", "offline-models"))
         }
