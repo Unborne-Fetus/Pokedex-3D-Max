@@ -15,6 +15,8 @@ const html = read('index.html');
 const app = read('web/app.js');
 const desktopBuild = read('desktopApp/build.gradle.kts');
 const setup = read('scripts/setup_all.ps1');
+const importer = read('scripts/import_switch_game_assets.py');
+const restore = read('scripts/restore_switch_models.py');
 
 for (const [,src] of html.matchAll(/<script[^>]+src="([^"?]+)(?:\?[^" ]*)?"/g)) {
   if (/^https?:/.test(src)) continue;
@@ -31,5 +33,12 @@ assert.ok(!/graalvm|brisk-engine|battle/i.test(desktopBuild), 'Desktop package m
 assert.ok(!fs.existsSync(path.join(root,'desktopApp/src/main/kotlin/com/unbornefetus/pokedex3dmax/desktop/NativeBattle.kt')), 'Native battle engine must be removed');
 assert.ok(!setup.includes('--allow-broken-textures'), 'Setup must reject broken texture exports');
 assert.ok(!/download_models\.py|generic fallback model/i.test(setup), 'Setup must not contain generic model fallback paths');
+assert.ok(/pipeline-v10\.ready\.json/.test(setup), 'Fast mode must require the strict v10 ready marker');
+assert.ok(/CONVERSION_PIPELINE_VERSION = 10/.test(importer), 'Importer must use pipeline v10');
+assert.ok(!/--allow-static/.test(importer), 'Static/T-pose activation must not be exposed');
+assert.ok(/if form != "regular":\s*\n\s*continue/.test(importer), 'Importer must filter to regular forms');
+assert.ok(/glb_textures_complete\(glb\)/.test(importer), 'Manifest generation must revalidate complete textures');
+assert.ok(/textured == total/.test(importer), 'Every GLB material must have base-color coverage');
+assert.ok(!/idle = clips\[0\]/.test(restore), 'Restore must not accept an arbitrary animation as idle');
 
 console.log('Baseline checks passed: regular Switch-only viewer, embedded animations, strict texture gate, no legacy fallback or battle engine.');
