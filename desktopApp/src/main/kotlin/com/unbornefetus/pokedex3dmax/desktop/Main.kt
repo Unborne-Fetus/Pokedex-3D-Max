@@ -1,0 +1,980 @@
+package com.unbornefetus.pokedex3dmax.desktop
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
+import dev.romainguy.kotlin.math.Float3
+import io.github.erkko68.filament.compose.FilamentSceneView
+import io.github.erkko68.filament.compose.rememberFilamentEngine
+import io.github.erkko68.filament.compose.scene.Direction
+import io.github.erkko68.filament.compose.scene.DirectionalLight
+import io.github.erkko68.filament.compose.scene.GltfInstance
+import io.github.erkko68.filament.compose.scene.LightIntensity
+import io.github.erkko68.filament.compose.scene.LinearColor
+import io.github.erkko68.filament.compose.scene.Position
+import io.github.erkko68.filament.compose.scene.Projection
+import io.github.erkko68.filament.compose.scene.SkyboxSource
+import io.github.erkko68.filament.compose.scene.rememberAnimationState
+import io.github.erkko68.filament.compose.scene.rememberCameraState
+import io.github.erkko68.filament.compose.scene.rememberGltfAsset
+import io.github.erkko68.filament.compose.scene.rememberSkyboxState
+import io.github.sceneview.compose.CameraState
+import io.github.sceneview.compose.rememberUnsavedCameraState
+import org.json.JSONObject
+import org.json.JSONArray
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.exp
+import kotlin.math.sin
+import kotlin.math.sqrt
+
+private data class DesktopModel(
+    val dex: Int,
+    val name: String,
+    val form: String,
+    val path: Path,
+    val idleAnimation: String? = null,
+    val idleBreaks: List<String> = emptyList(),
+) {
+    val stableKey: String
+        get() = "%04d|%s|%s".format(dex, form.lowercase(), path.toAbsolutePath().normalize())
+}
+
+private data class ModelBounds(
+    val center: Float3,
+    val radius: Float,
+    val maxDimension: Float,
+)
+
+fun main(args: Array<String>) {
+    if ("--self-test" in args) {
+        verifyDesktop()
+        return
+    }
+    launchDesktop()
+}
+
+private fun launchDesktop() = application {
+    Window(
+        onCloseRequest = ::exitApplication,
+        title = "Pokedex 3D Max v0.2.6",
+        state = rememberWindowState(width = 1280.dp, height = 820.dp),
+    ) {
+        MaterialTheme(colorScheme = darkColorScheme()) {
+            DesktopApp()
+        }
+    }
+}
+
+@Composable
+private fun DesktopApp() {
+    val packRoot = remember { findModelPack() }
+    val models = remember(packRoot) { packRoot?.let(::loadManifest).orEmpty() }
+    var battleTab by remember { mutableStateOf(false) }
+    var rotate by remember { mutableStateOf(false) }
+    var breaks by remember { mutableStateOf(true) }
+    var reset by remember { mutableStateOf(0) }
+    var query by remember { mutableStateOf("") }
+    var selectedKey by remember(models) {
+        mutableStateOf(models.firstOrNull()?.stableKey)
+    }
+
+    val selected = remember(models, selectedKey) {
+        selectedKey?.let { key -> models.firstOrNull { it.stableKey == key } }
+            ?: models.firstOrNull()
+    }
+
+    val filtered = remember(query, models) {
+        val q = query.trim().removePrefix("#")
+        if (q.isBlank()) {
+            models
+        } else {
+            models.filter {
+                it.name.contains(query, ignoreCase = true) ||
+                    it.form.contains(query, ignoreCase = true) ||
+                    it.dex.toString() == q
+            }
+        }
+    }
+
+    Surface(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize()) {
+            Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { battleTab = false }) { Text("Pokédex") }
+                Button(onClick = { battleTab = true }) { Text("Battle Sim") }
+            }
+            if (battleTab) {
+                NativeBattleScreen(models)
+                return@Column
+            }
+        if (packRoot == null) {
+            MissingPackScreen()
+            return@Column
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .width(360.dp)
+                    .fillMaxSize(),
+            ) {
+                Text(
+                    "Pokedex 3D Max",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    models.size.toString() + " models · " + models.count { it.path.toString().replace('\\', '/').contains("/switch/") } + " Switch",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    label = { Text("Search Pokémon, form, or #") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    items(
+                        items = filtered.distinctBy { it.dex },
+                        key = { it.dex.toString() + "|" + it.form + "|" + it.path.toString() },
+                    ) { model ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { selectedKey = model.stableKey },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (selected?.dex == model.dex) {
+                                    MaterialTheme.colorScheme.secondaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceContainer
+                                },
+                            ),
+                        ) {
+                            Column(Modifier.padding(12.dp)) {
+                                Text(
+                                    "#%04d  %s".format(model.dex, model.name),
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Text(prettyFormName(model.form, model.dex), style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                val current = selected
+                if (current == null) {
+                    Text("Choose a Pokémon")
+                } else {
+                    key(current.stableKey) {
+                        val bytes by produceState<ByteArray?>(null, current.stableKey) {
+                            value = withContext(Dispatchers.IO) { runCatching { Files.readAllBytes(current.path) }.getOrNull() }
+                        }
+
+                        Column(Modifier.fillMaxSize()) {
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text("#%04d %s".format(current.dex, current.name), style = MaterialTheme.typography.headlineMedium)
+                                Box {
+                                    var open by remember { mutableStateOf(false) }
+                                    Button(onClick = { open = true }) { Text(prettyFormName(current.form, current.dex)) }
+                                    DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                                        for (form in models.filter { it.dex == current.dex }) {
+                                            DropdownMenuItem(text = { Text(prettyFormName(form.form, form.dex)) },
+                                                onClick = { selectedKey = form.stableKey; open = false })
+                                        }
+                                    }
+                                }
+                            }
+                            Box(Modifier.weight(1f).fillMaxWidth()) {
+                                bytes?.let {
+                                    PokemonViewport(current, it, rotate, breaks, reset)
+                                } ?: Text("Loading " + current.name + "…")
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(onClick = { reset++ }) { Text("Reset camera") }
+                                Button(onClick = { rotate = !rotate }) { Text("Auto-rotate: " + if (rotate) "On" else "Off") }
+                                Button(onClick = { breaks = !breaks }) { Text("Idle breaks: " + if (breaks) "On" else "Off") }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        }
+    }
+}
+
+@Composable
+private fun NativeBattleScreen(models: List<DesktopModel>) {
+    val engine = remember { runCatching { NativeBattle() } }
+    DisposableEffect(engine) { onDispose { engine.getOrNull()?.close() } }
+    var team by remember { mutableStateOf("charizard, pikachu, lucario") }
+    var difficulty by remember { mutableStateOf("normal") }
+    var snapshot by remember { mutableStateOf<JSONObject?>(null) }
+    var error by remember { mutableStateOf(engine.exceptionOrNull()?.message) }
+    fun update(action: () -> JSONObject) {
+        runCatching(action).onSuccess { snapshot = it; error = null }.onFailure { error = it.message }
+    }
+    Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("3D Battle Simulator", style = MaterialTheme.typography.headlineMedium)
+        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+        val battle = engine.getOrNull() ?: return@Column
+        val current = snapshot
+        if (current == null) {
+            OutlinedTextField(team, { team = it }, label = { Text("Three Pokémon, separated by commas") }, modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                for (level in listOf("easy", "normal", "hard")) {
+                    Button(onClick = { difficulty = level }) { Text(if (difficulty == level) "✓ $level" else level) }
+                }
+                Button(onClick = { update { battle.start(team.split(',').map { it.trim() }, difficulty) } }) { Text("Start battle") }
+            }
+            return@Column
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(if (current.optString("phase") == "finished") {
+                if (current.optInt("winner") == 0) "Victory!" else "Defeat"
+            } else "Turn " + current.optInt("turn"))
+            Button(onClick = { snapshot = null }) { Text("New battle") }
+        }
+        val players = current.getJSONArray("players")
+        Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            for (side in 0..1) {
+                val player = players.getJSONObject(side)
+                val mon = player.getJSONArray("team").getJSONObject(player.getInt("active"))
+                Column(Modifier.weight(1f).fillMaxSize()) {
+                    Text(mon.getString("name") + " Lv." + mon.optInt("level"))
+                    Text("HP " + mon.optInt("hp") + " / " + mon.optInt("maxHP") + " · " + mon.optString("ability"))
+                    val dex = battle.nationalDex(mon.getInt("species"))
+                    val model = models.firstOrNull { it.dex == dex && semanticFormKey(it) == "regular" }
+                        ?: models.firstOrNull { it.dex == dex }
+                    if (model != null) key(model.stableKey) {
+                        val bytes by produceState<ByteArray?>(null, model.stableKey) {
+                            value = withContext(Dispatchers.IO) { runCatching { Files.readAllBytes(model.path) }.getOrNull() }
+                        }
+                        bytes?.let { PokemonViewport(model, it, false, false, 0) }
+                    } else Text("No installed model for this Pokémon")
+                }
+            }
+        }
+        val player = players.getJSONObject(0)
+        val mons = player.getJSONArray("team")
+        val active = mons.getJSONObject(player.getInt("active"))
+        val moves = active.getJSONArray("moves")
+        val running = current.optString("phase") == "battle"
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (i in 0 until moves.length()) {
+                val move = moves.getJSONObject(i)
+                Button(enabled = running && move.optInt("pp") > 0, onClick = { update { battle.move(i) } }) {
+                    Text(move.getString("name") + " · PP " + move.optInt("pp"))
+                }
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (i in 0 until mons.length()) {
+                val mon = mons.getJSONObject(i)
+                Button(enabled = running && i != player.getInt("active") && mon.optInt("hp") > 0,
+                    onClick = { update { battle.switch(i) } }) { Text("Switch: " + mon.getString("name")) }
+            }
+        }
+        val logs = current.getJSONArray("log")
+        LazyColumn(Modifier.height(150.dp)) {
+            items((maxOf(0, logs.length() - 12) until logs.length()).toList()) { i -> Text(logs.getString(i)) }
+        }
+    }
+}
+
+@Composable
+private fun PokemonViewport(model: DesktopModel, bytes: ByteArray, rotate: Boolean, breaks: Boolean, reset: Int) {
+    key(model.path.toString()) {
+        val bounds = remember(bytes) { readModelBounds(bytes) }
+        // Match the web index/model-viewer framing: center the real mesh bounds,
+        // use a 30-degree FOV, and fit the bounding sphere with a small margin.
+        val initialDistance = remember(bounds) {
+            val halfFovRadians = (30.0 * PI / 180.0 / 2.0)
+            maxOf(
+                (bounds.radius / sin(halfFovRadians).toFloat()) * 1.05f,
+                0.25f,
+            )
+        }
+        val minDistance = remember(initialDistance) {
+            maxOf(initialDistance * 0.12f, 0.03f)
+        }
+        val maxDistance = remember(initialDistance) {
+            maxOf(initialDistance * 10f, 4f)
+        }
+        val camera = rememberUnsavedCameraState(
+            target = bounds.center,
+            distance = initialDistance,
+            azimuth = 0f,
+            elevation = 0f,
+        )
+
+        LaunchedEffect(reset) {
+            camera.azimuth = 0f
+            camera.elevation = 0f
+            camera.target = bounds.center
+            camera.distance = initialDistance
+        }
+        LaunchedEffect(rotate) {
+            while (rotate) {
+                delay(16)
+                camera.azimuth += 0.24f
+            }
+        }
+
+        // Disable SceneView desktop gestures. Its current scroll implementation multiplies
+        // distance directly by the raw wheel delta and can jump to an invalid camera state.
+        camera.gesturesEnabled = false
+
+        val controls = Modifier
+            .pointerInput(camera, minDistance, maxDistance) {
+                detectDragGestures { _, drag ->
+                    camera.azimuth -= drag.x * 0.28f
+                    camera.elevation = (camera.elevation + drag.y * 0.28f).coerceIn(-89f, 89f)
+                }
+            }
+            .pointerInput(camera, minDistance, maxDistance) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val scrollY = event.changes.firstOrNull()?.scrollDelta?.y ?: 0f
+                        if (scrollY != 0f) {
+                            val exponent = (scrollY * 0.10f).coerceIn(-1.0f, 1.0f)
+                            val zoomFactor = exp(exponent.toDouble()).toFloat()
+                            camera.distance = (camera.distance * zoomFactor)
+                                .coerceIn(minDistance, maxDistance)
+                        }
+                    }
+                }
+            }
+
+        AnimatedFilamentViewer(
+            model = model,
+            bytes = bytes,
+            modifier = Modifier.fillMaxSize().then(controls),
+            orbitCamera = camera,
+            breaksEnabled = breaks,
+        )
+    }
+}
+
+@Composable
+private fun AnimatedFilamentViewer(
+    model: DesktopModel,
+    bytes: ByteArray,
+    modifier: Modifier,
+    orbitCamera: CameraState,
+    breaksEnabled: Boolean,
+) {
+    val engine = rememberFilamentEngine()
+    var loadError by remember { mutableStateOf<Throwable?>(null) }
+    val asset = rememberGltfAsset(
+        key = model.path.toString(),
+        engine = engine,
+        onError = { loadError = it },
+    ) { bytes }
+
+    val animationNames = remember(bytes) { readAnimationNames(bytes) }
+    val preferredAnimation = remember(animationNames) {
+        model.idleAnimation?.let { animationNames.indexOf(it).takeIf { i -> i >= 0 } }
+            ?: chooseIdleAnimationIndex(animationNames)
+    }
+    val animation = rememberAnimationState(
+        initialAnimationIndex = preferredAnimation,
+        initialCrossFadeDuration = 0f,
+        initialLoop = true,
+    )
+    LaunchedEffect(preferredAnimation, breaksEnabled) {
+        animation.animationIndex = preferredAnimation
+        animation.speed = 1f
+        animation.loop = true
+        val clips = model.idleBreaks.mapNotNull { name ->
+            animationNames.indexOf(name).takeIf { it >= 0 && it != preferredAnimation }
+        }
+        var next = 0
+        while (breaksEnabled && clips.isNotEmpty()) {
+            delay(12000)
+            val clip = clips[next++ % clips.size]
+            animation.animationIndex = clip
+            animation.loop = false
+            delay(readAnimationDuration(bytes, clip))
+            animation.animationIndex = preferredAnimation
+            animation.loop = true
+        }
+    }
+
+    val target = orbitCamera.target
+    val camera = rememberCameraState(
+        initialEye = orbitEye(
+            target,
+            orbitCamera.distance,
+            orbitCamera.azimuth,
+            orbitCamera.elevation,
+        ),
+        initialTarget = Position(target.x, target.y, target.z),
+        initialProjection = Projection.Perspective(fovDegrees = 30.0),
+    )
+    val skybox = rememberSkyboxState(
+        initialSource = SkyboxSource.Color(LinearColor(0.08f, 0.10f, 0.14f)),
+    )
+
+    SideEffect {
+        val currentTarget = orbitCamera.target
+        camera.target = Position(currentTarget.x, currentTarget.y, currentTarget.z)
+        camera.eye = orbitEye(
+            currentTarget,
+            orbitCamera.distance,
+            orbitCamera.azimuth,
+            orbitCamera.elevation,
+        )
+    }
+
+    FilamentSceneView(
+        modifier = modifier,
+        engine = engine,
+        cameraState = camera,
+        skyboxState = skybox,
+    ) {
+        DirectionalLight(
+            direction = Direction(0.35f, -1.0f, -0.55f),
+            intensity = LightIntensity.LuminousPower(180_000f),
+        )
+        GltfInstance(
+            asset = asset,
+            animationState = if (preferredAnimation != null) animation else null,
+            onCreate = {
+                // Filament KMP 0.6 exposes the instance bounds as a Box with
+                // center/halfExtent properties. Use those transformed bounds
+                // directly so the camera starts centered on the rendered model.
+                val box = instance.boundingBox
+                val center = box.center
+                val extent = box.halfExtent
+
+                if (
+                    center.size >= 3 &&
+                    extent.size >= 3 &&
+                    center.all { it.isFinite() } &&
+                    extent.all { it.isFinite() } &&
+                    extent.any { it > 0f }
+                ) {
+                    val fittedTarget = Float3(center[0], center[1], center[2])
+                    val radius = sqrt(
+                        extent[0] * extent[0] +
+                            extent[1] * extent[1] +
+                            extent[2] * extent[2],
+                    ).coerceAtLeast(0.05f)
+                    val halfFovRadians = (30.0 * PI / 180.0 / 2.0)
+                    val fittedDistance = maxOf(
+                        (radius / sin(halfFovRadians).toFloat()) * 1.05f,
+                        0.25f,
+                    )
+
+                    orbitCamera.target = fittedTarget
+                    orbitCamera.distance = fittedDistance
+                    orbitCamera.azimuth = 0f
+                    orbitCamera.elevation = 0f
+
+                    camera.target = Position(
+                        fittedTarget.x,
+                        fittedTarget.y,
+                        fittedTarget.z,
+                    )
+                    camera.eye = orbitEye(
+                        fittedTarget,
+                        fittedDistance,
+                        0f,
+                        0f,
+                    )
+                }
+            },
+        )
+    }
+
+    loadError?.let { error ->
+        Text("Could not load " + model.name + ": " + (error.message ?: "invalid model"))
+    }
+}
+
+
+private fun orbitEye(
+    center: Float3,
+    distance: Float,
+    azimuthDegrees: Float,
+    elevationDegrees: Float,
+): Position {
+    val azimuth = azimuthDegrees * (PI / 180.0)
+    val elevation = elevationDegrees * (PI / 180.0)
+    val horizontal = distance * cos(elevation).toFloat()
+    return Position(
+        center.x + horizontal * sin(azimuth).toFloat(),
+        center.y + distance * sin(elevation).toFloat(),
+        center.z + horizontal * cos(azimuth).toFloat(),
+    )
+}
+
+
+private fun readAnimationNames(bytes: ByteArray): List<String> = runCatching {
+    val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+    if (buffer.remaining() < 20 || buffer.int != 0x46546C67) return@runCatching emptyList()
+    val version = buffer.int
+    val totalLength = buffer.int
+    if (version != 2 || totalLength > bytes.size) return@runCatching emptyList()
+
+    while (buffer.position() + 8 <= totalLength) {
+        val chunkLength = buffer.int
+        val chunkType = buffer.int
+        if (chunkLength < 0 || buffer.position() + chunkLength > totalLength) break
+        val chunk = ByteArray(chunkLength)
+        buffer.get(chunk)
+        if (chunkType != 0x4E4F534A) continue
+
+        val json = JSONObject(
+            String(chunk, StandardCharsets.UTF_8)
+                .trimEnd { it == '\u0000' || it.isWhitespace() },
+        )
+        val animations = json.optJSONArray("animations") ?: return@runCatching emptyList()
+        return@runCatching List(animations.length()) { index ->
+            animations.optJSONObject(index)?.optString("name")
+                ?.takeIf { it.isNotBlank() }
+                ?: "animation_" + index
+        }
+    }
+    emptyList()
+}.getOrElse { emptyList() }
+
+
+private fun readAnimationDuration(bytes: ByteArray, index: Int): Long = runCatching {
+    val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+    buffer.position(12)
+    val length = buffer.int
+    require(buffer.int == 0x4E4F534A && length <= buffer.remaining())
+    val text = ByteArray(length).also { buffer.get(it) }
+    val doc = JSONObject(String(text, StandardCharsets.UTF_8).trimEnd { it == '\u0000' || it.isWhitespace() })
+    val samplers = doc.getJSONArray("animations").getJSONObject(index).getJSONArray("samplers")
+    val accessors = doc.getJSONArray("accessors")
+    var seconds = 0.0
+    for (i in 0 until samplers.length()) {
+        val accessor = accessors.getJSONObject(samplers.getJSONObject(i).getInt("input"))
+        seconds = maxOf(seconds, accessor.optJSONArray("max")?.optDouble(0, 0.0) ?: 0.0)
+    }
+    require(seconds.isFinite() && seconds > 0.0)
+    (seconds * 1000).toLong().coerceIn(100, 60000)
+}.getOrDefault(3000L)
+
+
+private fun chooseIdleAnimationIndex(names: List<String>): Int? {
+    if (names.isEmpty()) return null
+
+    val preferred = listOf(
+        Regex("default(?:idle|wait)", RegexOption.IGNORE_CASE),
+        Regex("battle(?:idle|wait)", RegexOption.IGNORE_CASE),
+        Regex("(^|[_-])idle([_-]|$)", RegexOption.IGNORE_CASE),
+        Regex("wait|stand|breath|rest", RegexOption.IGNORE_CASE),
+        Regex("loop", RegexOption.IGNORE_CASE),
+    )
+    val rejected = Regex(
+        "attack|damage|faint|death|down|hit|move|run|walk|jump|bind|t[-_ ]?pose",
+        RegexOption.IGNORE_CASE,
+    )
+
+    for (pattern in preferred) {
+        val index = names.indexOfFirst {
+            pattern.containsMatchIn(it) && !rejected.containsMatchIn(it)
+        }
+        if (index >= 0) return index
+    }
+
+    return names.indexOfFirst { !rejected.containsMatchIn(it) }
+        .takeIf { it >= 0 }
+}
+
+
+private fun readModelBounds(bytes: ByteArray): ModelBounds {
+    return runCatching {
+        val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+        if (buffer.remaining() < 20 || buffer.int != 0x46546C67) {
+            error("Not a GLB file")
+        }
+        val version = buffer.int
+        val totalLength = buffer.int
+        if (version != 2 || totalLength > bytes.size) {
+            error("Unsupported GLB")
+        }
+
+        var json: JSONObject? = null
+        while (buffer.position() + 8 <= totalLength) {
+            val chunkLength = buffer.int
+            val chunkType = buffer.int
+            if (chunkLength < 0 || buffer.position() + chunkLength > totalLength) break
+            val chunk = ByteArray(chunkLength)
+            buffer.get(chunk)
+            if (chunkType == 0x4E4F534A) {
+                val text = String(chunk, StandardCharsets.UTF_8)
+                    .trimEnd { it == '\u0000' || it.isWhitespace() }
+                json = JSONObject(text)
+                break
+            }
+        }
+
+        val doc = json ?: error("GLB JSON chunk not found")
+        val meshes = doc.optJSONArray("meshes") ?: error("No meshes")
+        val accessors = doc.optJSONArray("accessors") ?: error("No accessors")
+        val positionAccessors = linkedSetOf<Int>()
+
+        for (meshIndex in 0 until meshes.length()) {
+            val mesh = meshes.optJSONObject(meshIndex) ?: continue
+            val primitives = mesh.optJSONArray("primitives") ?: continue
+            for (primitiveIndex in 0 until primitives.length()) {
+                val primitive = primitives.optJSONObject(primitiveIndex) ?: continue
+                val attributes = primitive.optJSONObject("attributes") ?: continue
+                val accessorIndex = attributes.optInt("POSITION", -1)
+                if (accessorIndex >= 0) positionAccessors += accessorIndex
+            }
+        }
+
+        var minX = Float.POSITIVE_INFINITY
+        var minY = Float.POSITIVE_INFINITY
+        var minZ = Float.POSITIVE_INFINITY
+        var maxX = Float.NEGATIVE_INFINITY
+        var maxY = Float.NEGATIVE_INFINITY
+        var maxZ = Float.NEGATIVE_INFINITY
+
+        for (index in positionAccessors) {
+            val accessor = accessors.optJSONObject(index) ?: continue
+            val min = accessor.optJSONArray("min") ?: continue
+            val max = accessor.optJSONArray("max") ?: continue
+            if (min.length() < 3 || max.length() < 3) continue
+
+            minX = minOf(minX, min.optDouble(0).toFloat())
+            minY = minOf(minY, min.optDouble(1).toFloat())
+            minZ = minOf(minZ, min.optDouble(2).toFloat())
+            maxX = maxOf(maxX, max.optDouble(0).toFloat())
+            maxY = maxOf(maxY, max.optDouble(1).toFloat())
+            maxZ = maxOf(maxZ, max.optDouble(2).toFloat())
+        }
+
+        if (!minX.isFinite() || !maxX.isFinite()) error("No POSITION bounds")
+
+        val dx = (maxX - minX).coerceAtLeast(0.001f)
+        val dy = (maxY - minY).coerceAtLeast(0.001f)
+        val dz = (maxZ - minZ).coerceAtLeast(0.001f)
+        ModelBounds(
+            center = Float3(
+                (minX + maxX) * 0.5f,
+                (minY + maxY) * 0.5f,
+                (minZ + maxZ) * 0.5f,
+            ),
+            radius = (sqrt(dx * dx + dy * dy + dz * dz) * 0.5f).coerceAtLeast(0.05f),
+            maxDimension = maxOf(dx, dy, dz),
+        )
+    }.getOrElse {
+        ModelBounds(
+            center = Float3(0f, 0.5f, 0f),
+            radius = 0.75f,
+            maxDimension = 1.5f,
+        )
+    }
+}
+
+@Composable
+private fun MissingPackScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            "Offline model pack not found",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(Modifier.height(12.dp))
+        Text(
+            "Place the downloaded model pack in ./offline-models, " +
+                "%LOCALAPPDATA%\\Pokedex3DMax\\offline-models, or set " +
+                "POKEDEX_3D_MAX_MODELS to the pack folder.",
+        )
+    }
+}
+
+private fun findModelPack(): Path? {
+    val candidates = buildList {
+        System.getenv("POKEDEX_3D_MAX_MODELS")?.takeIf { it.isNotBlank() }?.let { add(Paths.get(it)) }
+        // setup/import-switch-models installs validated models here. Prefer it
+        // over a possibly stale ./offline-models folder in the launch cwd.
+        System.getenv("LOCALAPPDATA")?.takeIf { it.isNotBlank() }?.let {
+            add(Paths.get(it, "Pokedex3DMax", "offline-models"))
+        }
+        add(Paths.get("offline-models").toAbsolutePath())
+        System.getProperty("user.home")?.takeIf { it.isNotBlank() }?.let {
+            add(Paths.get(it, "Pokedex3DMax", "offline-models"))
+        }
+    }
+    return candidates.firstOrNull { Files.isRegularFile(it.resolve("model_catalog.tsv")) }
+}
+
+private fun prettyFormName(raw: String, dex: Int? = null): String {
+    val normalized = raw
+        .trim()
+        .lowercase()
+        .replace(Regex("-00$"), "")
+    if (normalized.isBlank() || normalized == "regular") return "Regular"
+
+    // Verified against the imported Charizard Switch assets in this project.
+    if (dex == 6) {
+        when (normalized) {
+            "form-51", "51", "mega-x", "megax", "x" -> return "Mega X"
+            "form-52", "52", "mega-y", "megay", "y" -> return "Mega Y"
+            "gmax", "gigantamax" -> return "Gigantamax"
+            "xy" -> return "Mega X"
+        }
+    }
+
+    return normalized
+        .replace(Regex("^form-"), "Form ")
+        .replace(Regex("^go-form-"), "GO Form ")
+        .replace('-', ' ')
+        .replace('_', ' ')
+        .split(Regex("\\s+"))
+        .filter { it.isNotBlank() }
+        .joinToString(" ") { token ->
+            if (token.all(Char::isDigit)) token
+            else token.replaceFirstChar { ch -> ch.uppercase() }
+        }
+}
+
+
+private fun loadSpeciesNames(root: Path): Map<Int, String> {
+    val path = root.resolve("species_names.tsv")
+    if (!Files.isRegularFile(path)) return emptyMap()
+
+    return Files.readAllLines(path)
+        .drop(1)
+        .mapNotNull { line ->
+            val columns = line.split('\t')
+            if (columns.size < 2) return@mapNotNull null
+            val dex = columns[0].toIntOrNull() ?: return@mapNotNull null
+            val name = columns[1].trim()
+            if (name.isBlank() || name.startsWith("#")) return@mapNotNull null
+            dex to name
+        }
+        .toMap()
+}
+
+
+private fun semanticFormKey(model: DesktopModel): String {
+    val normalized = model.form
+        .trim()
+        .lowercase()
+        .replace(Regex("-00$"), "")
+
+    if (model.dex == 6) {
+        return when (normalized) {
+            "form-51", "51", "mega-x", "megax", "x", "xy" -> "mega-x"
+            "form-52", "52", "mega-y", "megay", "y" -> "mega-y"
+            "gmax", "gigantamax" -> "gmax"
+            "", "regular" -> "regular"
+            else -> normalized
+        }
+    }
+
+    return normalized.ifBlank { "regular" }
+}
+
+
+private fun preferModelSource(models: List<DesktopModel>): DesktopModel {
+    return models.minWithOrNull(
+        compareBy<DesktopModel> {
+            val normalized = it.path.toString().replace('\\', '/').lowercase()
+            if ("/switch/" in normalized) 0 else 1
+        }.thenBy {
+            if (it.form.equals("regular", ignoreCase = true)) 0 else 1
+        }.thenBy { it.path.toString().length },
+    ) ?: models.first()
+}
+
+
+private fun loadManifest(root: Path): List<DesktopModel> {
+    val manifest = root.resolve("model_catalog.tsv")
+    if (!Files.isRegularFile(manifest)) return emptyList()
+
+    val speciesNames = loadSpeciesNames(root)
+    val metadata = runCatching {
+        JSONArray(Files.readString(root.resolve("switch-model-metadata.json")))
+    }.getOrDefault(JSONArray())
+    val byKey = (0 until metadata.length()).associate { i ->
+        val entry = metadata.getJSONObject(i)
+        (entry.getInt("dex") to entry.getString("form")) to entry
+    }
+    val absoluteRoot = root.toAbsolutePath().normalize()
+
+    return Files.readAllLines(manifest)
+        .drop(1)
+        .mapNotNull { line ->
+            val columns = line.split('\t')
+            if (columns.size < 4) return@mapNotNull null
+            val dex = columns[0].toIntOrNull() ?: return@mapNotNull null
+            val rawName = columns[1].trim()
+            val path = absoluteRoot.resolve(columns[3].replace('\\', '/')).normalize()
+            if (!path.startsWith(absoluteRoot) || !Files.isRegularFile(path) ||
+                !path.toRealPath().startsWith(absoluteRoot.toRealPath())) return@mapNotNull null
+            val entry = byKey[dex to columns[2]]
+            val isSwitch = absoluteRoot.relativize(path).toString().replace('\\', '/').startsWith("switch/")
+            if (isSwitch && entry?.optBoolean("ready", true) == false) return@mapNotNull null
+            DesktopModel(
+                dex = dex,
+                name = speciesNames[dex]
+                    ?: rawName.ifBlank { "#%04d".format(dex) },
+                form = columns[2],
+                path = path,
+                idleAnimation = if (isSwitch) entry?.optString("idleAnimation")?.takeIf { it.isNotBlank() } else null,
+                idleBreaks = if (isSwitch) entry?.optJSONArray("idleBreaks")?.let { clips ->
+                    List(clips.length()) { clips.getString(it) }
+                }.orEmpty() else emptyList(),
+            )
+        }
+        .filter {
+            Files.isRegularFile(it.path) &&
+                !it.form.contains("shiny", ignoreCase = true) &&
+                !it.name.startsWith("Shiny ", ignoreCase = true)
+        }
+        .distinctBy { it.stableKey }
+        .groupBy { it.dex to semanticFormKey(it) }
+        .values
+        .map(::preferModelSource)
+        .sortedWith(
+            compareBy<DesktopModel> { it.dex }
+                .thenBy { if (semanticFormKey(it) == "regular") 0 else 1 }
+                .thenBy { semanticFormKey(it) },
+        )
+}
+
+/** Headless checks exercise native catalog selection and the actual bundled engine. */
+private fun verifyDesktop() {
+    val root = Files.createTempDirectory("pokedex-native-check")
+    try {
+        for (path in listOf("old/regular.glb", "switch/0006/regular.glb", "old/xy.glb", "switch/0006/form-51-00.glb")) {
+            val file = root.resolve(path)
+            Files.createDirectories(file.parent)
+            Files.write(file, byteArrayOf(1))
+        }
+        Files.writeString(root.resolve("model_catalog.tsv"),
+            "dex\tname\tform\tpath\n" +
+            "6\tCharizard\tregular\told/regular.glb\n" +
+            "6\tCharizard\tregular\tswitch/0006/regular.glb\n" +
+            "6\tCharizard\txy\told/xy.glb\n" +
+            "6\tCharizard\tform-51-00\tswitch/0006/form-51-00.glb\n" +
+            "7\tOutside\tregular\t../outside.glb\n")
+        val models = loadManifest(root)
+        check(models.size == 2)
+        check(models.all { it.path.startsWith(root.resolve("switch")) })
+        check(models.map(::semanticFormKey) == listOf("regular", "mega-x"))
+        check(chooseIdleAnimationIndex(listOf("attack", "defaultwait", "damage")) == 1)
+        check(chooseIdleAnimationIndex(listOf("attack", "damage")) == null)
+        Files.writeString(root.resolve("switch-model-metadata.json"),
+            "[{\"dex\":6,\"form\":\"regular\",\"ready\":false}]")
+        check(loadManifest(root).first { it.form == "regular" }.path == root.resolve("old/regular.glb"))
+    } finally {
+        Files.walk(root).use { paths -> paths.sorted(Comparator.reverseOrder()).forEach { Files.deleteIfExists(it) } }
+    }
+    NativeBattle().use { engine ->
+        check(engine.nationalDex(6) == 6)
+        check(runCatching { engine.start(listOf("charizard", "not-a-pokemon", "pikachu"), "normal") }.isFailure)
+        for (difficulty in listOf("easy", "normal", "hard")) {
+            var snap = engine.start(listOf("charizard", "pikachu", "lucario"), difficulty)
+            check(snap.getJSONArray("players").getJSONObject(0).getJSONArray("team").length() == 3)
+            snap = engine.switch(1)
+            check(snap.getJSONArray("log").toString().contains("Player switched to Pikachu!"))
+            var turns = 0
+            while (snap.optString("phase") == "battle" && turns++ < 500) {
+                val player = snap.getJSONArray("players").getJSONObject(0)
+                val mon = player.getJSONArray("team").getJSONObject(player.getInt("active"))
+                val moves = mon.getJSONArray("moves")
+                val indexes = (0 until moves.length()).filter { moves.getJSONObject(it).optInt("pp") > 0 }
+                val index = indexes.firstOrNull { moves.getJSONObject(it).optInt("power") > 0 } ?: indexes.firstOrNull() ?: 0
+                snap = engine.move(index)
+                for (side in 0..1) {
+                    val team = snap.getJSONArray("players").getJSONObject(side).getJSONArray("team")
+                    for (i in 0 until team.length()) {
+                        val m = team.getJSONObject(i)
+                        check(m.getInt("hp") in 0..m.getInt("maxHP"))
+                    }
+                }
+            }
+            check(snap.optString("phase") == "finished") { "Native battle did not finish: $difficulty" }
+            check(snap.optInt("winner") in 0..1)
+        }
+    }
+    println("Native desktop checks passed: Switch priority, form aliases, path containment, idle selection, bundled engine, teams, switching and complete battles (3 difficulties).")
+}

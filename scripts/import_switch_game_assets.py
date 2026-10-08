@@ -2366,6 +2366,23 @@ def install_desktop(
     catalog_temp.write_text("\n".join(rows) + "\n", encoding="utf-8")
     catalog_temp.replace(catalog)
 
+    # Preserve the same animation metadata for the native viewer and index.
+    metadata_path = root / "switch-model-metadata.json"
+    previous_metadata = json.loads(metadata_path.read_text(encoding="utf-8")) if metadata_path.is_file() else []
+    active_keys = {key for key, cols in existing.items() if row_is_switch(cols)}
+    merged_metadata = {
+        (int(item["dex"]), str(item["form"])): item
+        for item in previous_metadata
+        if (int(item["dex"]), str(item["form"])) in active_keys
+    }
+    for entry in entries:
+        key = (int(entry["dex"]), str(entry["form"]))
+        if key in active_keys and entry.get("ready") is not False:
+            merged_metadata[key] = entry
+    metadata_temp = metadata_path.with_suffix(".tmp")
+    metadata_temp.write_text(json.dumps(list(merged_metadata.values()), indent=2) + "\n", encoding="utf-8")
+    metadata_temp.replace(metadata_path)
+
     installed = read_catalog_rows(catalog)
     missing_paths: list[str] = []
     for cols in installed.values():
@@ -2846,3 +2863,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

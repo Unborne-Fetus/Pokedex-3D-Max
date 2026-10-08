@@ -48,7 +48,7 @@ jobs:
 
       - name: Build Windows EXE and MSI
         shell: pwsh
-        run: gradle :desktopApp:packageExe :desktopApp:packageMsi
+        run: gradle :desktopApp:verifyDesktop :desktopApp:packageExe :desktopApp:packageMsi
 
       - name: Upload Windows installers
         uses: actions/upload-artifact@v4

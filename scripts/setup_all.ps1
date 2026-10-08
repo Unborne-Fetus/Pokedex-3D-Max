@@ -741,14 +741,14 @@ function PreflightCode([string]$PythonCommand, [string]$GradleBat) {
     Step "PRECHECK - Validating importer and desktop renderer"
     PreflightSwitchImporter $PythonCommand
 
-    Stamp "Validating shared web code and compiling desktop launcher before expensive asset work..."
+    Stamp "Validating browser code and compiling native desktop viewer before expensive asset work..."
     if (Get-Command node.exe -ErrorAction SilentlyContinue) {
         & node.exe (Join-Path $RepoRoot "scripts\check_shared_app.js")
         if ($LASTEXITCODE -ne 0) { throw "Shared app validation failed." }
     }
     Push-Location $RepoRoot
     try {
-        & $GradleBat --console=plain --no-daemon :desktopApp:classes
+        & $GradleBat --console=plain --no-daemon :desktopApp:verifyDesktop
         if ($LASTEXITCODE -ne 0) { throw "Desktop Kotlin preflight compile failed." }
     } finally {
         Pop-Location

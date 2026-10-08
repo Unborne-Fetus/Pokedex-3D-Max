@@ -17,19 +17,21 @@ const LOCAL_MODELS = [
   ...(Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
     ? window.POKEDEX3D_SWITCH_MODELS
     : []),
-  ...(window.POKEDEX3D_DESKTOP_MODELS || []).map(model => {
-    const metadata = (window.POKEDEX3D_SWITCH_MODELS || []).find(entry =>
-      Number(entry.dex) === Number(model.dex) && entry.form === model.form);
-    return {...metadata, ...model};
-  }),
 ].filter(model => model?.valid !== false && model?.ready !== false);
 
 function localModelKey(model) {
-  return String(model?.dex) + "|" + String(model?.form || "regular").toLowerCase();
+  let form = String(model?.form || "regular").trim().toLowerCase().replace(/-00$/, "");
+  if (Number(model?.dex) === 6) {
+    if (["form-51", "51", "mega-x", "megax", "x", "xy"].includes(form)) form = "mega-x";
+    if (["form-52", "52", "mega-y", "megay", "y"].includes(form)) form = "mega-y";
+    if (["gmax", "gigantamax"].includes(form)) form = "gmax";
+  }
+  return String(model?.dex) + "|" + (form || "regular");
 }
 
 function applyLocalModelOverrides(list) {
   if (!LOCAL_MODELS.length) return list;
+  list = [...new Map(list.map(model => [localModelKey(model), model])).values()];
 
   const overrides = new Map(
     LOCAL_MODELS.map(model => [localModelKey(model), model])
@@ -63,7 +65,7 @@ function applyLocalModelOverrides(list) {
   });
 
   const existing = new Set(merged.map(localModelKey));
-  for (const replacement of LOCAL_MODELS) {
+  for (const replacement of overrides.values()) {
     const key = localModelKey(replacement);
     if (!existing.has(key)) {
       const replacementAnimations = Array.isArray(replacement.animations)
@@ -428,6 +430,9 @@ function getModelCandidates(model) {
   const original = String(model?.url || "");
 
   if (model?.local || original.startsWith("web/models/")) {
+    // A selected Switch model stays selected on failure so import problems
+    // cannot silently replace the newer asset with an old CDN model.
+    if (model?.source === "Switch game assets" || original.includes("/switch/")) return [original];
     const fallback = String(model?.fallbackUrl || REGULAR_MODEL(model?.dex));
     return [...new Set([original, fallback].filter(Boolean))];
   }
@@ -1775,10 +1780,3 @@ customElements.whenDefined("model-viewer").then(() => {
   selectModel(0);
   enhanceCatalogInBackground();
 });
-
-
-if (new URLSearchParams(location.search).has("desktop")) {
-  document.querySelector(".badge").textContent = "WINDOWS";
-  const heartbeat = () => fetch("/heartbeat", {cache:"no-store"}).catch(() => {});
-  heartbeat(); setInterval(heartbeat, 10000);
-}

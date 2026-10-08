@@ -14,28 +14,29 @@ kotlin {
     }
 }
 
-// Package the same files used by index.html. Downloaded packs remain external.
-tasks.processResources {
-    from(rootProject.projectDir) {
-        include("index.html", "web/**")
-        exclude("web/models/**", "web/brisk-engine/source/**")
-        into("shared-web")
-    }
-    from(rootProject.file("web/models")) {
-        include("*.js", "*.json")
-        into("shared-web/web/models")
-    }
+dependencies {
+    implementation(compose.desktop.currentOs)
+    implementation(compose.material3)
+    implementation("io.github.sceneview:sceneview-compose:4.52.0")
+    // sceneview-compose's desktop viewer currently renders glTF but does not
+    // advance skeletal animations. Use the same pinned Filament KMP backend
+    // directly for the animated desktop viewport.
+    implementation("io.github.erkko68.filament:filament-compose:0.6.0")
+    implementation("org.json:json:20250517")
+    implementation("org.graalvm.polyglot:polyglot:24.2.2")
+    runtimeOnly("org.graalvm.polyglot:js:24.2.2")
 }
 
 compose.desktop {
     application {
-        mainClass = "com.unbornefetus.pokedex3dmax.desktop.SharedApp"
+        mainClass = "com.unbornefetus.pokedex3dmax.desktop.MainKt"
+        jvmArgs += "--enable-native-access=ALL-UNNAMED"
 
         nativeDistributions {
-            modules("jdk.httpserver", "java.desktop")
+            modules("jdk.unsupported", "java.management", "java.logging")
             targetFormats(TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Pokedex 3D Max"
-            packageVersion = "0.2.5"
+            packageVersion = "0.2.6"
 
             windows {
                 menuGroup = "Pokedex 3D Max"
@@ -44,4 +45,27 @@ compose.desktop {
             }
         }
     }
+}
+
+
+// Only battle logic/data are shared. The native EXE never packages index.html.
+tasks.processResources {
+    // Remove resources left by the previous browser-launcher build.
+    doFirst { delete(destinationDir.resolve("shared-web")) }
+    from(rootProject.file("web/brisk-engine")) {
+        include("browser-engine.js", "data.js")
+        into("battle")
+    }
+}
+
+tasks.register<JavaExec>("verifyDesktop") {
+    dependsOn(tasks.classes)
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.unbornefetus.pokedex3dmax.desktop.MainKt")
+    args("--self-test")
+}
+
+// Incremental builds may retain the deleted Java launcher class until clean.
+tasks.jar {
+    exclude("shared-web/**", "**/SharedApp.class")
 }

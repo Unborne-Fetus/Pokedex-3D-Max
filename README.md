@@ -15,13 +15,14 @@ A modern, unofficial 3D Pokédex for Android and Windows.
 - Automatic preference for an installed offline model pack
 
 ### Windows and browser index
-- The Windows EXE opens the same bundled index in an Edge or Chrome app window.
-- Shared search, forms, model fallback, animation playback, idle breaks, camera reset and auto-rotate.
-- Shared local battle simulator using the adapted Brisk engine and bundled species/move data.
-- Downloaded Windows model packs are served locally, with online fallback for missing models.
+- The Windows EXE has its own native Compose/Filament viewer and reads installed GLBs directly.
+- The browser index is a separate viewer. It uses the same installed Switch assets after setup or `launch-index.bat` syncs them.
+- Both prefer Switch models for matching species/forms; older models fill gaps where no Switch replacement is installed.
+- Search, forms, skeletal idle animation, camera controls, idle breaks and auto-rotate are available in both viewers.
+- Both include the adapted Brisk battle simulator. Windows executes the engine directly inside the native app.
 - Windows MSI/EXE installers plus a portable app in `dist/Pokedex-3D-Max-Portable`.
 
-Building requires JDK 22. The packaged app includes Java; Edge or Chrome must be installed. The viewer and its Draco decoder are bundled. Online catalog updates and remote models still require internet. The optional Three.js rig fallback also uses online dependencies.
+Building requires JDK 22. The packaged native app includes Java and does not require Chrome, Edge, an HTTP server, or index.html. Browser assets and its Draco decoder are bundled; remote fallback models require internet.
 
 After pulling updates, run in PowerShell:
 
