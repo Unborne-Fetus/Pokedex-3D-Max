@@ -44,6 +44,31 @@ SOURCE_PRIORITY = {
 }
 
 
+def is_switch_pokemon_asset_archive(path: Path) -> bool:
+    """Return True only for Pokémon model/animation packs used by this importer."""
+    if path.suffix.lower() not in {".zip", ".7z"}:
+        return False
+    if detect_game(path) == "unknown":
+        return False
+
+    stem = path.stem.lower().replace("_", "-")
+    if "poke" not in stem:
+        return False
+
+    excluded = (
+        "trainer",
+        "battlemap",
+        "battle-map",
+        "map",
+        "sharedtex",
+        "shared-tex",
+        "poketex",
+        "texture",
+        "demo",
+    )
+    return not any(token in stem for token in excluded)
+
+
 def discover_default_inputs() -> list[Path]:
     """Find Switch archives without recursively walking the toolchain cache."""
     plans = [
@@ -61,11 +86,9 @@ def discover_default_inputs() -> list[Path]:
             continue
         iterator = root.rglob("*") if recursive else root.iterdir()
         for path in iterator:
-            if not path.is_file() or path.suffix.lower() not in {".zip", ".7z"}:
+            if not path.is_file():
                 continue
-            if detect_game(path) == "unknown":
-                continue
-            if re.search(r"(poketex|texture)", path.stem, re.I):
+            if not is_switch_pokemon_asset_archive(path):
                 continue
             resolved = path.resolve()
             if resolved in seen:
@@ -1001,6 +1024,32 @@ def install_desktop(
 
 
 def run_self_tests() -> None:
+    accepted_archives = [
+        "LA-Poke.zip",
+        "LA-PokeAnim.zip",
+        "LGPE-PokeAnim.zip",
+        "SV-Poke.zip",
+        "SV-PokeDLC2.zip",
+        "SwSh-PokeGen4-5.zip",
+        "SwSh-PokeGen8.zip",
+        "ZA-Poke.zip",
+        "ZA-PokeAnim.zip",
+        "ZA-PokeAnimDLC.zip",
+        "ZA-PokeDLC.zip",
+    ]
+    rejected_archives = [
+        "LGPE-BattleMaps.7z",
+        "LGPE-Trainers.7z",
+        "SwSh-TrainersDLC2.7z",
+        "ZA-Demo.zip",
+        "ZA-TrainersAnimDLC.zip",
+        "ZA-TrainersNPC.zip",
+        "ZA-TrainersPlayerDLC.zip",
+        "ZA-TrainersSharedTexDLC.zip",
+    ]
+    assert all(is_switch_pokemon_asset_archive(Path(name)) for name in accepted_archives)
+    assert all(not is_switch_pokemon_asset_archive(Path(name)) for name in rejected_archives)
+
     assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
     assert infer_form_key(Path("pm0479_16_00_20012_battleidle02.tranm")) == "16"
     assert infer_form_key(Path("pm0479_00_00.trmdl")) == "regular"
