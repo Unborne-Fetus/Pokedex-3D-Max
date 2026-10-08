@@ -1440,6 +1440,8 @@ def run_self_tests() -> None:
 
     assert choose_idle(["pm0001_defaultwait01_loop"]) == "pm0001_defaultwait01_loop"
     assert choose_idle(["pm0001_attack01", "pm0001_damage01"]) is None
+    assert choose_idle(["pm0001_generic_loop"]) is None
+
 
     wrong_form_job = {
         **legacy_model,
