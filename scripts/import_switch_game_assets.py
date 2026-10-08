@@ -741,6 +741,31 @@ def _pokedex3d_gfb_resolve_material_fallback(material_name, model_dir):
             '        r"\\1",\n        stem,',
         )
 
+        old_reference_loop = '''    for descriptor in descriptors:
+        reference = descriptor["texture"] or descriptor["sampler"]
+        candidate = _pokedex3d_gfb_resolve_texture(reference, model_dir or ".")
+        if candidate:
+            resolved = candidate
+            selected = descriptor
+            break
+'''
+        new_reference_loop = '''    for descriptor in descriptors:
+        references = list(descriptor.get("textureCandidates") or [])
+        if descriptor.get("sampler"):
+            references.append(descriptor["sampler"])
+        for reference in references:
+            candidate = _pokedex3d_gfb_resolve_texture(reference, model_dir or ".")
+            if candidate:
+                resolved = candidate
+                selected = descriptor
+                selected["resolvedReference"] = reference
+                break
+        if resolved:
+            break
+'''
+        if old_reference_loop in text:
+            text = text.replace(old_reference_loop, new_reference_loop, 1)
+
         old_resolution_tail = '''            selected = descriptor
             break
 
@@ -900,11 +925,17 @@ def _pokedex3d_gfb_material_maps(material, model):
 
         sampler = _pokedex3d_gfb_decode(mapping.Sampler()).strip()
         index = int(mapping.Index())
-        texture_name = ""
-        if 0 <= index < model.TextureNamesLength():
-            texture_name = _pokedex3d_gfb_decode(model.TextureNames(index)).strip()
+        texture_candidates = []
+        for candidate_index in (index, index - 1, index + 1):
+            if 0 <= candidate_index < model.TextureNamesLength():
+                candidate_name = _pokedex3d_gfb_decode(
+                    model.TextureNames(candidate_index)
+                ).strip()
+                if candidate_name and candidate_name not in texture_candidates:
+                    texture_candidates.append(candidate_name)
+        texture_name = texture_candidates[0] if texture_candidates else ""
 
-        combined = (sampler + " " + texture_name).casefold()
+        combined = (sampler + " " + " ".join(texture_candidates)).casefold()
         score = 0
         preferred = (
             "basecolor", "base_color", "albedo", "diffuse", "diff",
@@ -929,6 +960,7 @@ def _pokedex3d_gfb_material_maps(material, model):
                 "sampler": sampler,
                 "index": index,
                 "texture": texture_name,
+                "textureCandidates": texture_candidates,
                 "score": score,
             }
         )
@@ -1084,11 +1116,17 @@ def _pokedex3d_gfb_material_color(material):
     selected = None
     descriptors = _pokedex3d_gfb_material_maps(material, model) if model is not None else []
     for descriptor in descriptors:
-        reference = descriptor["texture"] or descriptor["sampler"]
-        candidate = _pokedex3d_gfb_resolve_texture(reference, model_dir or ".")
-        if candidate:
-            resolved = candidate
-            selected = descriptor
+        references = list(descriptor.get("textureCandidates") or [])
+        if descriptor.get("sampler"):
+            references.append(descriptor["sampler"])
+        for reference in references:
+            candidate = _pokedex3d_gfb_resolve_texture(reference, model_dir or ".")
+            if candidate:
+                resolved = candidate
+                selected = descriptor
+                selected["resolvedReference"] = reference
+                break
+        if resolved:
             break
 
     if not resolved:
@@ -1107,6 +1145,7 @@ def _pokedex3d_gfb_material_color(material):
             mat_name,
             "sampler=" + (selected["sampler"] if selected else ""),
             "texture=" + (selected["texture"] if selected else ""),
+            "resolved=" + (selected.get("resolvedReference", "") if selected else ""),
             "->",
             resolved,
             flush=True,
