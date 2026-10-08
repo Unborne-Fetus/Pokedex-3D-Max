@@ -1551,15 +1551,17 @@ def run_blender(
         )
 
     failed_sources: set[str] = set()
+    failure_details: dict[str, dict] = {}
     failure_report_available = False
     if failure_path.is_file():
         try:
             failures = json.loads(failure_path.read_text(encoding="utf-8"))
-            failed_sources = {
-                str(Path(item["source"]).resolve())
+            failure_details = {
+                str(Path(item["source"]).resolve()): item
                 for item in failures
                 if isinstance(item, dict) and item.get("source")
             }
+            failed_sources = set(failure_details)
             failure_report_available = True
         except Exception:
             pass
@@ -1586,6 +1588,27 @@ def run_blender(
             + "; ".join(details)
         )
 
+    for job in jobs:
+        source = str(Path(job["source"]).resolve())
+        if source not in failed_sources:
+            job.pop("conversionFailed", None)
+            job.pop("conversionFailureReason", None)
+            continue
+        detail = failure_details.get(source) or {}
+        job["conversionFailed"] = True
+        job["conversionFailureReason"] = (
+            detail.get("error")
+            or detail.get("message")
+            or detail.get("reason")
+            or "Blender conversion failed"
+        )
+        out = WEB_ROOT / f"{job['dex']:04d}" / f"{job['form']}.glb"
+        if out.is_file() and (
+            not existing_glb_is_complete(out, False)
+            or glb_texture_count(out) <= 0
+        ):
+            out.unlink()
+
     # Persist verified successes even if another conversion in the batch failed,
     # so the next run retries only true conversion failures. Rig-incompatible
     # animation outcomes are cached as quarantined static models until either
@@ -1609,10 +1632,17 @@ def run_blender(
         save_conversion_cache(cache)
 
     if result.returncode:
-        count = len(failed_sources) if failure_report_available else "unknown number of"
-        raise RuntimeError(
-            f"Blender conversion failed with code {result.returncode}; {count} job(s) failed"
+        if not failure_report_available:
+            raise RuntimeError(
+                f"Blender conversion failed with code {result.returncode}; "
+                "no structured failure report was produced"
+            )
+        print(
+            f"WARNING - {len(failed_sources)} Switch model conversion(s) failed. "
+            "Those overrides are quarantined and their generic fallbacks remain available.",
+            flush=True,
         )
+        print(f"Failure report: {failure_path}", flush=True)
 
 
 def choose_idle(names: list[str]) -> str | None:
@@ -1637,6 +1667,8 @@ def choose_idle(names: list[str]) -> str | None:
 def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
     entries: list[dict] = []
     for job in jobs:
+        if job.get("conversionFailed"):
+            continue
         glb = WEB_ROOT / f"{job['dex']:04d}" / f"{job['form']}.glb"
         if not glb.is_file() or glb.stat().st_size <= 1024:
             raise RuntimeError(f"Missing or undersized converted GLB: {glb}")
@@ -2251,6 +2283,7 @@ def main() -> int:
             replace_dexes=selected_dexes if partial_run else None,
         )
 
+    failed_conversions = sum(1 for job in jobs if job.get("conversionFailed"))
     ready = sum(1 for entry in converted_entries if entry.get("ready") is not False)
     staged = len(converted_entries) - ready
     quarantined = sum(
@@ -2272,7 +2305,8 @@ def main() -> int:
         f"{ready} active, {staged} staged "
         f"({missing_compatible_animation} missing compatible animation, "
         f"{animated_without_idle} animated but without a verified idle, "
-        f"{quarantined} quarantined for rig incompatibility)"
+        f"{quarantined} quarantined for rig incompatibility, "
+        f"{failed_conversions} conversion failures using fallback models)"
     )
     print(f"Manifest: {MANIFEST_JSON}")
     if staged and not args.allow_static:
@@ -2289,6 +2323,8 @@ def main() -> int:
             "missingCompatibleAnimationModels": missing_compatible_animation,
             "animatedWithoutVerifiedIdleModels": animated_without_idle,
             "quarantinedAnimationModels": quarantined,
+            "failedConversionModels": failed_conversions,
+            "failureReport": str(CACHE / "switch-model-failures.json"),
             "coverageReport": str(COVERAGE_REPORT),
         }
         ready_temp = PIPELINE_READY.with_suffix(".tmp")
