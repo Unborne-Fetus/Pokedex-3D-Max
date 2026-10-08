@@ -53,12 +53,6 @@ def restore(target: Path, repo: Path = ROOT) -> int:
                 clips = [a.get('name') or f'animation_{i}' for i, a in enumerate(doc.get('animations', []))
                          if isinstance(a, dict) and a.get('channels') and a.get('samplers')]
                 idle = entry.get('idleAnimation') if entry.get('idleAnimation') in clips else choose_idle(clips)
-                # Some of the original Switch packs use clip names that our idle-name
-                # heuristic does not recognize. If the GLB is genuinely animated,
-                # keep it and use the first embedded clip as its default idle rather
-                # than discarding the whole model pack.
-                if not idle and clips:
-                    idle = clips[0]
                 if not idle:
                     continue
                 if not glb_textures_complete(path):
