@@ -234,6 +234,148 @@ def import_animations(job: dict) -> int:
     )
 
 
+def _linked_base_color_image(material):
+    if material is None or not material.use_nodes or material.node_tree is None:
+        return None
+
+    # The upstream importer wires the real albedo image into the custom
+    # PokemonShader Group socket named "Albedo". Prefer that exact semantic
+    # link instead of guessing from filenames.
+    for node in material.node_tree.nodes:
+        if node.type != "TEX_IMAGE" or node.image is None:
+            continue
+        for output in node.outputs:
+            for link in output.links:
+                socket_name = str(getattr(link.to_socket, "name", "") or "").casefold()
+                if socket_name in {"albedo", "base color", "basecolor"}:
+                    return node.image
+
+    # Conservative fallback for importer variants that lost the semantic link
+    # but still loaded image nodes. Avoid obvious non-color maps.
+    candidates = []
+    rejected_tokens = (
+        "normal", "nrm", "rough", "rgh", "metal", "mtl", "mask", "msk",
+        "ao", "occlusion", "lym", "emission", "emi", "spec", "height",
+    )
+    for node in material.node_tree.nodes:
+        if node.type != "TEX_IMAGE" or node.image is None:
+            continue
+        name = (str(node.image.name) + " " + str(getattr(node.image, "filepath", ""))).casefold()
+        if any(token in name for token in rejected_tokens):
+            continue
+        candidates.append(node.image)
+    return candidates[0] if candidates else None
+
+
+def prepare_materials_for_gltf() -> tuple[int, int]:
+    """Flatten custom PokemonShader materials into glTF-compatible PBR nodes.
+
+    Blender's glTF exporter does not serialize the upstream custom shader group
+    as a baseColorTexture. Keeping the same material datablock preserves mesh
+    assignments while replacing only the shader graph.
+    """
+    total = 0
+    textured = 0
+
+    for material in bpy.data.materials:
+        if material is None:
+            continue
+        users = [
+            obj
+            for obj in bpy.context.scene.objects
+            if obj.type == "MESH"
+            and any(slot.material == material for slot in obj.material_slots)
+        ]
+        if not users:
+            continue
+
+        total += 1
+        image = _linked_base_color_image(material)
+        if image is None:
+            print(f"GLTF material flatten: no albedo image for {material.name}", flush=True)
+            continue
+
+        material.use_nodes = True
+        nodes = material.node_tree.nodes
+        links = material.node_tree.links
+        nodes.clear()
+
+        output = nodes.new("ShaderNodeOutputMaterial")
+        principled = nodes.new("ShaderNodeBsdfPrincipled")
+        tex = nodes.new("ShaderNodeTexImage")
+        tex.image = image
+        tex.interpolation = "Linear"
+
+        base_socket = principled.inputs.get("Base Color")
+        alpha_socket = principled.inputs.get("Alpha")
+        if base_socket is None:
+            raise RuntimeError(
+                f"Principled BSDF Base Color socket missing for {material.name}"
+            )
+
+        links.new(tex.outputs["Color"], base_socket)
+        if alpha_socket is not None and "Alpha" in tex.outputs:
+            links.new(tex.outputs["Alpha"], alpha_socket)
+
+        links.new(principled.outputs["BSDF"], output.inputs["Surface"])
+
+        roughness = principled.inputs.get("Roughness")
+        if roughness is not None:
+            roughness.default_value = 0.65
+        metallic = principled.inputs.get("Metallic")
+        if metallic is not None:
+            metallic.default_value = 0.0
+
+        material["pokedex3d_gltf_basecolor"] = image.name
+        textured += 1
+        print(
+            f"GLTF material flatten: {material.name} -> {image.name}",
+            flush=True,
+        )
+
+    print(
+        f"GLTF material flatten summary: {textured}/{total} mesh material(s) "
+        "have standard base-color textures.",
+        flush=True,
+    )
+    return total, textured
+
+
+def glb_base_color_texture_count(path: Path) -> int:
+    data = path.read_bytes()
+    if len(data) < 20 or data[:4] != b"glTF":
+        return 0
+    _, version, total = struct.unpack_from("<III", data, 0)
+    if version != 2 or total > len(data):
+        return 0
+
+    offset = 12
+    while offset + 8 <= total:
+        length, chunk_type = struct.unpack_from("<II", data, offset)
+        offset += 8
+        chunk = data[offset : offset + length]
+        offset += length
+        if chunk_type != 0x4E4F534A:
+            continue
+
+        doc = json.loads(chunk.rstrip(b" \t\r\n\x00").decode("utf-8"))
+        textures = doc.get("textures") or []
+        count = 0
+        for material in doc.get("materials") or []:
+            if not isinstance(material, dict):
+                continue
+            pbr = material.get("pbrMetallicRoughness") or {}
+            slot = pbr.get("baseColorTexture")
+            if not isinstance(slot, dict):
+                continue
+            index = slot.get("index")
+            if isinstance(index, int) and 0 <= index < len(textures):
+                count += 1
+        return count
+
+    return 0
+
+
 def glb_animation_count(path: Path) -> int:
     data = path.read_bytes()
     if len(data) < 20 or data[:4] != b"glTF":
@@ -334,11 +476,29 @@ for index, job in enumerate(jobs, start=1):
         if wants_animation and animation_rejection is None and imported_animations <= 0:
             raise RuntimeError("Animation candidates were selected but none were imported")
 
+        # The upstream importer uses a custom PokemonShader node group. Flatten
+        # it to standard PBR nodes before GLB export or Filament/model-viewer
+        # will receive an untextured/white material.
+        total_materials, textured_materials = prepare_materials_for_gltf()
+        if total_materials <= 0:
+            raise RuntimeError("Imported model contains no mesh materials")
+        if textured_materials <= 0:
+            raise RuntimeError(
+                "Imported model has no usable albedo texture. "
+                "Check the companion texture archive and texture resolver output."
+            )
+
         # Never overwrite a known-good GLB until the replacement has exported
         # and passed validation.
         export_glb(temporary)
         if not temporary.is_file() or temporary.stat().st_size <= 1024:
             raise RuntimeError("GLB exporter did not produce a valid-sized output file")
+
+        base_color_textures = glb_base_color_texture_count(temporary)
+        if base_color_textures <= 0:
+            raise RuntimeError(
+                "Exported GLB contains no material baseColorTexture bindings"
+            )
 
         embedded = glb_animation_count(temporary)
         if wants_animation and animation_rejection is None and embedded <= 0:
@@ -360,6 +520,7 @@ for index, job in enumerate(jobs, start=1):
             "animationEmbedded": embedded > 0,
             "animationRejected": animation_rejection is not None,
             "animationRejectionReason": animation_rejection,
+            "baseColorTextures": base_color_textures,
         }
         results.append(result)
 
