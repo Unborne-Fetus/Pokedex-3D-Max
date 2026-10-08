@@ -35,15 +35,16 @@ if "%MODE%"=="FULL" (
   echo   3. Reuses/installs Python + Pillow
   echo   4. Reuses/installs Blender
   echo   5. Reuses/downloads missing offline fallback models
-  echo   6. Detects, validates, and imports Switch Pokemon models
+  echo   6. Uses the validated online Switch GLB pack first
+  echo      ^(falls back to cached archives + Blender automatically^)
   echo   7. Builds the Windows EXE
   echo.
   echo Existing downloads and conversions are reused whenever possible.
 ) else if "%MODE%"=="SWITCH" (
   echo SWITCH ASSET MODE:
-  echo   Syncs missing Switch Pokemon model/animation archives.
+  echo   Tries the validated online Switch GLB pack first.
+  echo   Falls back to cached model/animation archives + Blender if needed.
   echo   Runs importer syntax checks and self-tests.
-  echo   Imports only stale/missing models with the v5 validation pipeline.
   echo   Skips JDK, Gradle, generic model download, EXE build, and installer.
 ) else (
   echo FAST MODE:
