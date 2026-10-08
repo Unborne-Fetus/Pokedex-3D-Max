@@ -2344,27 +2344,35 @@ def main() -> int:
         print("Staged models are intentionally not selected by the app until animations are attached.")
 
     if full_runtime_refresh:
-        ready_payload = {
-            "pipelineVersion": CONVERSION_PIPELINE_VERSION,
-            "addonRevision": ADDON_REV,
-            "manifest": str(MANIFEST_JSON),
-            "selectedModels": len(converted_entries),
-            "activeModels": ready,
-            "stagedModels": staged,
-            "missingCompatibleAnimationModels": missing_compatible_animation,
-            "animatedWithoutVerifiedIdleModels": animated_without_idle,
-            "quarantinedAnimationModels": quarantined,
-            "failedConversionModels": failed_conversions,
-            "failureReport": str(CACHE / "switch-model-failures.json"),
-            "coverageReport": str(COVERAGE_REPORT),
-        }
-        ready_temp = PIPELINE_READY.with_suffix(".tmp")
-        ready_temp.write_text(
-            json.dumps(ready_payload, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-        ready_temp.replace(PIPELINE_READY)
-        print(f"Validated pipeline marker: {PIPELINE_READY}")
+        if failed_conversions:
+            PIPELINE_READY.unlink(missing_ok=True)
+            print(
+                "Pipeline ready marker was not written because "
+                f"{failed_conversions} conversion(s) still need retry.",
+                flush=True,
+            )
+        else:
+            ready_payload = {
+                "pipelineVersion": CONVERSION_PIPELINE_VERSION,
+                "addonRevision": ADDON_REV,
+                "manifest": str(MANIFEST_JSON),
+                "selectedModels": len(converted_entries),
+                "activeModels": ready,
+                "stagedModels": staged,
+                "missingCompatibleAnimationModels": missing_compatible_animation,
+                "animatedWithoutVerifiedIdleModels": animated_without_idle,
+                "quarantinedAnimationModels": quarantined,
+                "failedConversionModels": 0,
+                "failureReport": str(CACHE / "switch-model-failures.json"),
+                "coverageReport": str(COVERAGE_REPORT),
+            }
+            ready_temp = PIPELINE_READY.with_suffix(".tmp")
+            ready_temp.write_text(
+                json.dumps(ready_payload, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            ready_temp.replace(PIPELINE_READY)
+            print(f"Validated pipeline marker: {PIPELINE_READY}")
 
     return 0
 
