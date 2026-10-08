@@ -969,6 +969,36 @@ def install_desktop(
     catalog_temp.write_text("\n".join(rows) + "\n", encoding="utf-8")
     catalog_temp.replace(catalog)
 
+    installed = read_catalog_rows(catalog)
+    missing_paths: list[str] = []
+    for cols in installed.values():
+        if len(cols) < 4:
+            continue
+        path = root / Path(cols[3])
+        if not path.is_file():
+            missing_paths.append(str(path))
+    if missing_paths:
+        preview = "\n  ".join(missing_paths[:10])
+        raise RuntimeError(
+            "Desktop model catalog contains missing files:\n  " + preview
+        )
+
+    for entry in entries:
+        key = (int(entry["dex"]), str(entry["form"]))
+        row = installed.get(key)
+        switch_expected = entry.get("ready") is not False
+        switch_actual = bool(
+            row
+            and len(row) >= 4
+            and row[3].replace("\\", "/").startswith("switch/")
+        )
+        if switch_expected != switch_actual:
+            raise RuntimeError(
+                "Desktop catalog invariant failed for "
+                f"#{entry['dex']:04d} {entry['form']}: "
+                f"expected_switch={switch_expected}, actual_switch={switch_actual}"
+            )
+
 
 def run_self_tests() -> None:
     assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
