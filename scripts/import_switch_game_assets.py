@@ -1627,10 +1627,26 @@ def main() -> int:
 
     ready = sum(1 for entry in converted_entries if entry.get("ready") is not False)
     staged = len(converted_entries) - ready
+    quarantined = sum(
+        1
+        for entry in converted_entries
+        if entry.get("ready") is False and entry.get("animationRejected")
+    )
+    animated_without_idle = sum(
+        1
+        for entry in converted_entries
+        if entry.get("ready") is False
+        and not entry.get("animationRejected")
+        and bool(entry.get("animations"))
+    )
+    missing_compatible_animation = staged - quarantined - animated_without_idle
     verb = "Updated" if partial_run else "Imported"
     print(
         f"{verb} {len(converted_entries)} selected models: "
-        f"{ready} active, {staged} staged awaiting animations"
+        f"{ready} active, {staged} staged "
+        f"({missing_compatible_animation} missing compatible animation, "
+        f"{animated_without_idle} animated but without a verified idle, "
+        f"{quarantined} quarantined for rig incompatibility)"
     )
     print(f"Manifest: {MANIFEST_JSON}")
     if staged and not args.allow_static:
@@ -1644,6 +1660,10 @@ def main() -> int:
             "selectedModels": len(converted_entries),
             "activeModels": ready,
             "stagedModels": staged,
+            "missingCompatibleAnimationModels": missing_compatible_animation,
+            "animatedWithoutVerifiedIdleModels": animated_without_idle,
+            "quarantinedAnimationModels": quarantined,
+            "coverageReport": str(COVERAGE_REPORT),
         }
         ready_temp = PIPELINE_READY.with_suffix(".tmp")
         ready_temp.write_text(
