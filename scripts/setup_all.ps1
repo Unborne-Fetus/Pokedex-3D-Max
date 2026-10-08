@@ -382,9 +382,11 @@ function GetMegaDesiredRemoteArchives {
         $Path = ([string]$Line).Trim()
         if (-not $Path -or $Path.StartsWith("[err:")) { continue }
         $Leaf = Split-Path $Path -Leaf
-        if ($Leaf -match "(?i)(poke|pokemon)" -and
-            $Leaf -match "(?i)(anim|pokeanim|model|poke|pokemon|dlc)" -and
-            ($Leaf.EndsWith(".zip", [StringComparison]::OrdinalIgnoreCase) -or $Leaf.EndsWith(".7z", [StringComparison]::OrdinalIgnoreCase))) {
+        $IsArchive = $Leaf.EndsWith(".zip", [StringComparison]::OrdinalIgnoreCase) -or
+            $Leaf.EndsWith(".7z", [StringComparison]::OrdinalIgnoreCase)
+        $IsSwitchPokemonPack = $Leaf -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke"
+        $IsTextureOnly = $Leaf -match "(?i)(PokeTex|Texture)"
+        if ($IsArchive -and $IsSwitchPokemonPack -and -not $IsTextureOnly) {
             if (-not $Selected.Contains($Path)) { $Selected.Add($Path) }
         }
     }
@@ -498,11 +500,18 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     }
     $AllArchives = @(FindSwitchAssetArchives)
     $ModelArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
-    if ($ModelArchives.Count -eq 0) {
-        Stamp "No local Switch-game model archives were found."
+
+    # Full setup should fill in missing Switch-era archives, not stop merely
+    # because one old model ZIP happens to be present. The downloader reuses
+    # completed files by leaf name. If the remote source is temporarily
+    # unavailable, an existing local model set can still be validated/imported.
+    try {
         DownloadMegaSwitchAssets
         $AllArchives = @(FindSwitchAssetArchives)
         $ModelArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
+    } catch {
+        if ($ModelArchives.Count -eq 0) { throw }
+        Stamp ("MEGA sync unavailable; continuing with validated local archives: " + $_.Exception.Message)
     }
     if ($ModelArchives.Count -eq 0) {
         throw "The selective MEGA download completed, but no Pokemon model archives were discovered."
@@ -579,7 +588,9 @@ function InstallModels([string]$PythonCommand) {
         & python -u $Script --target $Pack --workers $Workers
     }
 
-    if ($LASTEXITCODE -notin @(0,2)) { throw "Model-pack download failed." }
+    if ($LASTEXITCODE -ne 0) {
+        throw ("Model-pack download incomplete; downloader exited with code " + $LASTEXITCODE + ". Rerun setup to retry only missing files.")
+    }
     if (-not (Test-Path $Info)) { throw "Model pack did not produce pack_info.json." }
 
     Stamp "Model pack summary:"
