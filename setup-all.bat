@@ -17,7 +17,7 @@ if /I "%~1"=="full" (
 ) else if /I "%~1"=="fast" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
-) else if exist "%~dp0.cache\switch-game-assets\pipeline-v4.ready.json" (
+) else if exist "%~dp0.cache\switch-game-assets\pipeline-v5.ready.json" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
 )
@@ -43,12 +43,12 @@ if "%MODE%"=="FULL" (
   echo SWITCH ASSET MODE:
   echo   Syncs missing Switch Pokemon model/animation archives.
   echo   Runs importer syntax checks and self-tests.
-  echo   Imports only stale/missing models with the v4 validation pipeline.
+  echo   Imports only stale/missing models with the v5 validation pipeline.
   echo   Skips JDK, Gradle, generic model download, EXE build, and installer.
 ) else (
   echo FAST MODE:
   echo   Reuses your already-imported models and skips expensive asset work.
-  echo   This is the default only after a fully validated v4 model import.
+  echo   This is the default only after a fully validated v5 model import.
   echo   Run setup-all.bat switch to refresh Switch assets without rebuilding the app.
   echo   Run setup-all.bat full when you intentionally want the complete build pipeline.
 )
