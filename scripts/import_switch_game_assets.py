@@ -257,9 +257,34 @@ def dedupe_jobs(jobs: list[dict]) -> list[dict]:
     return sorted(chosen.values(), key=lambda item: (item["dex"], item["form"]))
 
 
+def patch_addon_for_batch_imports() -> None:
+    """Apply small compatibility fixes to the cached third-party importer.
+
+    Keep these local and idempotent so setup-all/manual imports behave the same
+    even when the upstream checkout is freshly cloned.
+    """
+    source = ADDON_DIR / "PokemonSwitch.py"
+    if not source.is_file():
+        return
+
+    text = source.read_text(encoding="utf-8")
+
+    noisy = "    print(weight_array)\n"
+    if noisy in text:
+        text = text.replace(noisy, "    # Suppressed huge vertex-weight debug dump for batch imports.\n")
+
+    unsafe = '                    if mat["mat_uvindexlayermask"] != -1:\n                        material.node_tree.links.new(uv_node.outputs["UV"], lym_image_texture.inputs["Vector"])\n'
+    safe = '                    if mat["mat_uvindexlayermask"] != -1 and lym_image_texture is not None:\n                        material.node_tree.links.new(uv_node.outputs["UV"], lym_image_texture.inputs["Vector"])\n'
+    if unsafe in text:
+        text = text.replace(unsafe, safe)
+
+    source.write_text(text, encoding="utf-8")
+
+
 def ensure_addon() -> Path:
     init_py = ADDON_DIR / "__init__.py"
     if init_py.is_file():
+        patch_addon_for_batch_imports()
         return ADDON_DIR
     TOOLS.mkdir(parents=True, exist_ok=True)
     if ADDON_DIR.exists():
@@ -271,6 +296,7 @@ def ensure_addon() -> Path:
     subprocess.run([git, "clone", "--depth", "1", ADDON_REPO, str(ADDON_DIR)], check=True)
     if not init_py.is_file():
         raise RuntimeError("Model importer checkout was incomplete")
+    patch_addon_for_batch_imports()
     return ADDON_DIR
 
 
