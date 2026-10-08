@@ -2224,10 +2224,12 @@ def main() -> int:
     all_jobs: list[dict] = []
     all_animations: list[dict] = []
     texture_roots: list[Path] = []
+    texture_roots_by_game: dict[str, list[Path]] = {}
     for source in args.inputs:
         root, game = extract_input(source)
         if is_switch_texture_archive(source):
             texture_roots.append(root)
+            texture_roots_by_game.setdefault(game, []).append(root)
             print(f"{source.name}: texture dependency root ({game})")
             continue
 
@@ -2246,6 +2248,17 @@ def main() -> int:
         jobs = [job for job in jobs if job["dex"] in wanted]
     if args.limit > 0:
         jobs = jobs[: args.limit]
+
+    # Texture names are reused across generations. Give each conversion only
+    # the texture roots from its own game first so pm#### basename collisions
+    # cannot silently bind a Sword/Shield model to an SV/ZA image.
+    for job in jobs:
+        same_game_roots = texture_roots_by_game.get(job.get("game"), [])
+        job["textureRoots"] = [str(path.resolve()) for path in same_game_roots]
+        if not same_game_roots and texture_roots:
+            job["textureRootWarning"] = (
+                f"No texture archive was discovered for game={job.get('game')}"
+            )
 
     write_animation_coverage_report(jobs, all_animations)
     models_with_anim = sum(1 for job in jobs if job.get("animations"))
