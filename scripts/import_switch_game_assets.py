@@ -476,16 +476,30 @@ def patch_addon_for_batch_imports() -> None:
         # Nintendo material references are not always spelled/cased exactly
         # like the extracted image files. Resolve texture files conservatively
         # by exact path first, then normalized basename across nearby folders.
-        texture_marker = "# POKEDEX3D_TEXTURE_RESOLVER_V1"
+        texture_marker = "# POKEDEX3D_TEXTURE_RESOLVER_V2"
         if texture_marker not in text:
             helper = r'''
-# POKEDEX3D_TEXTURE_RESOLVER_V1
+# POKEDEX3D_TEXTURE_RESOLVER_V2
 _POKEDEX3D_TEXTURE_INDEX = {}
 
-def _pokedex3d_texture_key(value):
+def _pokedex3d_texture_keys(value):
     name = os.path.basename(str(value or "").replace("\\\\", "/"))
-    stem = os.path.splitext(name)[0]
-    return re.sub(r"[^a-z0-9]+", "", stem.casefold())
+    stem = os.path.splitext(name)[0].casefold()
+    exact = re.sub(r"[^a-z0-9]+", "", stem)
+
+    # Some packs add/drop one or more "_00" form segments while keeping
+    # the actual texture basename unchanged.
+    relaxed_stem = re.sub(
+        r"^(pm[0-9]{4})(?:[_-]00)+(?=[_-])",
+        r"\1",
+        stem,
+    )
+    relaxed = re.sub(r"[^a-z0-9]+", "", relaxed_stem)
+
+    keys = [exact]
+    if relaxed and relaxed != exact:
+        keys.append(relaxed)
+    return keys
 
 def _pokedex3d_texture_path(filep, reference, textureextension):
     reference = str(reference or "")
@@ -502,8 +516,8 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
         if os.path.isfile(candidate):
             return candidate
 
-    key = _pokedex3d_texture_key(reference)
-    if not key:
+    keys = _pokedex3d_texture_keys(reference)
+    if not keys or not keys[0]:
         return candidates[0]
 
     search_root = os.path.abspath(filep)
@@ -520,7 +534,7 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
             extra = extra.strip()
             if extra:
                 roots.append(os.path.abspath(extra))
-        image_exts = {".png", ".tga", ".jpg", ".jpeg", ".bmp", ".dds"}
+        image_exts = {".png", ".tga", ".jpg", ".jpeg", ".bmp", ".dds", ".webp"}
         visited = set()
         for root in roots:
             root = os.path.abspath(root)
@@ -530,16 +544,21 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
             for current, dirs, files in os.walk(root):
                 # Avoid crawling giant unrelated extraction siblings.
                 rel_depth = os.path.relpath(current, root).count(os.sep)
-                if rel_depth >= 4:
+                if rel_depth >= 8:
                     dirs[:] = []
                 for filename in files:
                     if os.path.splitext(filename)[1].lower() not in image_exts:
                         continue
                     path = os.path.join(current, filename)
-                    index.setdefault(_pokedex3d_texture_key(filename), []).append(path)
+                    for texture_key in _pokedex3d_texture_keys(filename):
+                        index.setdefault(texture_key, []).append(path)
         _POKEDEX3D_TEXTURE_INDEX[cache_key] = index
 
-    matches = index.get(key) or []
+    matches = []
+    for key in keys:
+        matches = index.get(key) or []
+        if matches:
+            break
     if matches:
         # Prefer the closest path to the model directory, then shortest name.
         matches = sorted(
