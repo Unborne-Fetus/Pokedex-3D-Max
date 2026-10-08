@@ -107,7 +107,10 @@ def discover_default_inputs() -> list[Path]:
         for path in iterator:
             if not path.is_file():
                 continue
-            if not is_switch_pokemon_asset_archive(path):
+            if not (
+                is_switch_pokemon_asset_archive(path)
+                or is_switch_texture_archive(path)
+            ):
                 continue
             resolved = path.resolve()
             if resolved in seen:
