@@ -33,7 +33,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Pokedex 3D Max"
-            packageVersion = "0.2.3"
+            packageVersion = "0.2.4"
 
             windows {
                 menuGroup = "Pokedex 3D Max"
