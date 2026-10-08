@@ -613,6 +613,14 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
         if "import re\n" not in text:
             text = text.replace("import sys\n", "import sys\nimport re\n", 1)
 
+        # Migrate an already-patched cached add-on from the first resolver
+        # draft. The original draft accidentally emitted a literal "\\1"
+        # instead of the captured Pokémon prefix in the relaxed key.
+        text = text.replace(
+            '        r"\\\\1",\n        stem,',
+            '        r"\\1",\n        stem,',
+        )
+
         marker = "# POKEDEX3D_GFBMDL_TEXTURE_RESOLVER_V1"
         if marker not in text:
             helper = r'''
