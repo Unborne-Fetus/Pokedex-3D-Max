@@ -1,1 +1,0 @@
-window.POKEDEX3D_PRO_MODELS = [];
