@@ -213,6 +213,7 @@ def main() -> int:
     parser.add_argument("--name", required=True)
     parser.add_argument("--form", default="regular")
     parser.add_argument("--blender", default=None)
+    parser.add_argument("--force", action="store_true", help="overwrite an already imported valid GLB")
     parser.add_argument("--idle", default=None, help="verified base idle animation name")
     parser.add_argument(
         "--idle-break",
@@ -232,7 +233,17 @@ def main() -> int:
     destination = target_dir / f"{form}.glb"
 
     suffix = source.suffix.lower()
-    if suffix == ".glb":
+    reuse_existing = False
+    if destination.is_file() and not args.force:
+        try:
+            parse_glb(destination)
+            reuse_existing = True
+        except Exception:
+            reuse_existing = False
+
+    if reuse_existing:
+        print(f"Already imported; reusing {destination.relative_to(ROOT)}")
+    elif suffix == ".glb":
         shutil.copy2(source, destination)
     else:
         blender = find_blender(args.blender)
