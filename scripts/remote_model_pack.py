@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SWITCH_ROOT = ROOT / "web" / "models" / "switch"
 SWITCH_MANIFEST = ROOT / "web" / "models" / "switch-manifest.json"
-DEFAULT_RELEASE_TAG = "model-pack-v7"
+DEFAULT_RELEASE_TAG = "model-pack-v8"
 DEFAULT_MANIFEST_URL = (
     "https://github.com/Unborne-Fetus/Pokedex-3D-Max/releases/download/"
     + DEFAULT_RELEASE_TAG
@@ -168,7 +168,7 @@ def build_pack(output: Path, base_url: str, shard_size: int) -> int:
     manifest = {
         "format": 1,
         "pack": "Pokedex 3D Max Switch Models",
-        "pipelineVersion": 7,
+        "pipelineVersion": 8,
         "releaseTag": DEFAULT_RELEASE_TAG,
         "models": len(normalized_entries),
         "shardSize": shard_size,
