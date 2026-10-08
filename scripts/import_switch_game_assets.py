@@ -25,7 +25,7 @@ ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blende
 ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
 BLENDER_DEPS = CACHE / "blender-python-deps"
 CONVERSION_CACHE = CACHE / "switch-conversion-cache.json"
-CONVERSION_PIPELINE_VERSION = 9
+CONVERSION_PIPELINE_VERSION = 10
 PIPELINE_READY = CACHE / f"pipeline-v{CONVERSION_PIPELINE_VERSION}.ready.json"
 COVERAGE_REPORT = CACHE / "switch-animation-coverage.json"
 
@@ -2862,11 +2862,12 @@ def main() -> int:
         print("Staged models are intentionally not selected by the app until animations are attached.")
 
     if full_runtime_refresh:
-        if failed_conversions:
+        if failed_conversions or staged:
             PIPELINE_READY.unlink(missing_ok=True)
             print(
-                "Pipeline ready marker was not written because "
-                f"{failed_conversions} conversion(s) still need retry.",
+                "Pipeline ready marker was not written because the strict "
+                f"baseline is incomplete: {failed_conversions} failed, "
+                f"{staged} staged.",
                 flush=True,
             )
         else:
@@ -2892,6 +2893,8 @@ def main() -> int:
             ready_temp.replace(PIPELINE_READY)
             print(f"Validated pipeline marker: {PIPELINE_READY}")
 
+    if full_runtime_refresh and (failed_conversions or staged):
+        return 2
     return 0
 
 
