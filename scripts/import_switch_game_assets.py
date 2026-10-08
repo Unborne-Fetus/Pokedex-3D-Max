@@ -84,8 +84,12 @@ def is_switch_texture_archive(path: Path) -> bool:
     stem = path.stem.lower().replace("_", "-")
     return (
         detect_game(path) != "unknown"
-        and "poke" in stem
-        and ("poketex" in stem or "texture" in stem)
+        and (
+            "poketex" in stem
+            or "poke-texture" in stem
+            or "texture" in stem
+            or "textures" in stem
+        )
     )
 
 
@@ -1963,6 +1967,7 @@ def run_self_tests() -> None:
     assert all(not is_switch_pokemon_asset_archive(Path(name)) for name in rejected_archives)
     assert is_switch_texture_archive(Path("SV-PokeTex.zip"))
     assert is_switch_texture_archive(Path("ZA-PokeTexture.zip"))
+    assert is_switch_texture_archive(Path("SwSh-Textures.zip"))
     assert not is_switch_texture_archive(Path("SV-Poke.zip"))
 
     assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
