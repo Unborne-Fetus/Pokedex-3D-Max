@@ -587,6 +587,43 @@ function InstallModels([string]$PythonCommand) {
     return $Pack
 }
 
+function PreflightCode([string]$PythonCommand, [string]$GradleBat) {
+    Step "PRECHECK - Validating importer and desktop renderer"
+
+    $Importer = Join-Path $RepoRoot "scripts\import_switch_game_assets.py"
+    $BlenderHelper = Join-Path $RepoRoot "scripts\blender_import_switch_game_model.py"
+    if (-not (Test-Path $Importer) -or -not (Test-Path $BlenderHelper)) {
+        throw "Importer preflight files are missing."
+    }
+
+    Stamp "Compiling Python importer scripts..."
+    if ($PythonCommand -eq "py") {
+        & py -3 -m py_compile $Importer $BlenderHelper
+    } else {
+        & python -m py_compile $Importer $BlenderHelper
+    }
+    if ($LASTEXITCODE -ne 0) { throw "Python importer syntax preflight failed." }
+
+    Stamp "Running Switch importer matching/cache self-tests..."
+    if ($PythonCommand -eq "py") {
+        & py -3 -u $Importer --self-test
+    } else {
+        & python -u $Importer --self-test
+    }
+    if ($LASTEXITCODE -ne 0) { throw "Switch importer self-tests failed." }
+
+    Stamp "Compiling native desktop renderer before expensive asset work..."
+    Push-Location $RepoRoot
+    try {
+        & $GradleBat --console=plain --no-daemon :desktopApp:compileKotlin
+        if ($LASTEXITCODE -ne 0) { throw "Desktop Kotlin preflight compile failed." }
+    } finally {
+        Pop-Location
+    }
+
+    Stamp "Code preflight passed."
+}
+
 function BuildWindows([string]$GradleBat) {
     Step "STEP 7/7 - Building Windows EXE"
     Push-Location $RepoRoot
@@ -642,6 +679,7 @@ try {
     BootstrapJdk
     $Gradle = BootstrapGradle
     $Python = EnsurePython
+    PreflightCode $Python $Gradle
     $Blender = EnsureBlender
     # Build the generic fallback pack first, then let validated Switch models
     # override it. This keeps names/fallbacks deterministic and prevents a later
