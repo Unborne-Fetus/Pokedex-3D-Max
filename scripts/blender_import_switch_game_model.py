@@ -102,15 +102,18 @@ def import_animations(job: dict) -> int:
             return 0
 
         action = armature.animation_data.action if armature.animation_data else None
-        if action is not None:
-            action.name = clip.get("name") or source.stem
-            action.use_fake_user = True
-            print(f"Using active animation: {action.name}", flush=True)
-        else:
-            print(
-                f"Animation importer finished for {source.name}; exporting scene animation directly.",
-                flush=True,
+        if action is None:
+            raise RuntimeError(
+                f"Animation importer finished for {source.name}, but left no active Action"
             )
+
+        action.name = clip.get("name") or source.stem
+        action.use_fake_user = True
+        print(
+            f"Using active animation: {action.name} "
+            f"({len(action.fcurves)} F-curves, frames {tuple(action.frame_range)})",
+            flush=True,
+        )
         return 1
     except Exception:
         print(f"Animation import failed for {source.name}", flush=True)
