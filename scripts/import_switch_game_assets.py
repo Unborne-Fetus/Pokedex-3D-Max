@@ -294,7 +294,6 @@ def animation_score(item: dict) -> tuple[int, int, str]:
         ("battle_wait", 875),
         ("breath", 850),
         ("rest", 800),
-        ("loop", 500),
     )
     bad = ("attack", "damage", "faint", "death", "down", "hit", "move", "run", "walk", "jump")
     for token, value in preferred:
@@ -329,6 +328,13 @@ def attach_animations(jobs: list[dict], animations: list[dict], max_clips: int =
             expected_ext,
         )
         candidates = by_key.get(key, []) if expected_ext else []
+        # Only consider clips whose names explicitly indicate a calm idle-like
+        # animation. Generic "loop" clips are not safe enough to activate.
+        candidates = [
+            anim
+            for anim in candidates
+            if animation_score(anim)[0] >= 800
+        ]
         candidates = sorted(candidates, key=animation_score, reverse=True)
 
         selected: list[dict] = []
@@ -1051,7 +1057,6 @@ def choose_idle(names: list[str]) -> str | None:
         r"battle(?:idle|wait)",
         r"(^|[_-])idle([0-9]*|[_-].*)?$",
         r"wait|stand|breath|rest",
-        r"loop",
     )
     rejected = re.compile(
         r"attack|damage|faint|death|down|hit|move|run|walk|jump",
