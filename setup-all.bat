@@ -37,7 +37,8 @@ if "%MODE%"=="FULL" (
   echo   5. Reuses/downloads missing offline fallback models
   echo   6. Uses the validated online Switch GLB pack first
   echo      ^(falls back to cached archives + Blender automatically^)
-  echo   7. Builds the Windows EXE
+  echo   7. Builds Windows MSI/EXE installers
+  echo      and automatically installs or updates the existing app
   echo.
   echo Existing downloads and conversions are reused whenever possible.
 ) else if "%MODE%"=="SWITCH" (
@@ -80,8 +81,11 @@ if "%EXITCODE%"=="0" (
     echo Switch assets were synced and imported into:
     echo   %LOCALAPPDATA%\Pokedex3DMax\offline-models
   ) else (
-    echo Final installer:
+    echo Windows installers:
+    echo   %~dp0dist\Pokedex-3D-Max-Windows.msi
     echo   %~dp0dist\Pokedex-3D-Max-Windows.exe
+    echo.
+    echo Setup automatically installs or updates Pokedex 3D Max unless skipped.
   )
 ) else (
   echo Setup failed with error code %EXITCODE%.
