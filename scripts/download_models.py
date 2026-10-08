@@ -88,6 +88,11 @@ def clean_field(value: str) -> str:
     return value.replace("\t", " ").replace("\r", " ").replace("\n", " ").strip()
 
 
+def is_shiny_model(name: str, form_name: str, model_url: str = "") -> bool:
+    values = (name, form_name, model_url)
+    return any("shiny" in str(value or "").casefold() for value in values)
+
+
 def _align4(data: bytearray) -> None:
     while len(data) % 4:
         data.append(0)
@@ -283,6 +288,8 @@ def main() -> int:
 
             name = clean_field(str(form.get("name") or f"#{dex:04d}"))
             form_name = clean_field(str(form.get("formName") or "regular"))
+            if is_shiny_model(name, form_name, url):
+                continue
             relative = local_relative_path(url, dex, form_name, index).as_posix()
             key = (dex, form_name, relative)
             if key in seen:
@@ -375,6 +382,11 @@ def main() -> int:
             rel = cols[3].replace("\\", "/")
             if not (target / Path(rel)).is_file():
                 continue
+            if is_shiny_model(cols[1], cols[2], cols[3]):
+                stale = target / Path(rel)
+                if stale.is_file():
+                    stale.unlink()
+                continue
             key = (int(cols[0]), cols[2])
             generic_by_key[key] = (key[0], key[1], cols[:5])
 
@@ -407,6 +419,11 @@ def main() -> int:
             if len(cols) < 4 or not cols[0].isdigit():
                 continue
             rel = cols[3].replace("\\", "/")
+            if is_shiny_model(cols[1], cols[2], rel):
+                stale = target / Path(rel)
+                if stale.is_file():
+                    stale.unlink()
+                continue
             if not rel.startswith("switch/"):
                 continue
             path = target / Path(rel)
