@@ -24,6 +24,7 @@ ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
 BLENDER_DEPS = CACHE / "blender-python-deps"
 CONVERSION_CACHE = CACHE / "switch-conversion-cache.json"
 CONVERSION_PIPELINE_VERSION = 3
+PIPELINE_READY = CACHE / f"pipeline-v{CONVERSION_PIPELINE_VERSION}.ready.json"
 
 MODEL_EXTS = {".trmdl", ".gfbmdl"}
 ANIM_EXTS = {".tranm", ".gfbanm"}
@@ -1091,6 +1092,10 @@ def main() -> int:
     if args.self_test:
         return 0
 
+    full_runtime_refresh = not args.dex and args.limit <= 0 and not args.no_desktop_install
+    if full_runtime_refresh and PIPELINE_READY.is_file():
+        PIPELINE_READY.unlink()
+
     if not args.inputs:
         args.inputs = discover_default_inputs()
         if not args.inputs:
@@ -1186,6 +1191,24 @@ def main() -> int:
     print(f"Manifest: {MANIFEST_JSON}")
     if staged and not args.allow_static:
         print("Staged models are intentionally not selected by the app until animations are attached.")
+
+    if full_runtime_refresh:
+        ready_payload = {
+            "pipelineVersion": CONVERSION_PIPELINE_VERSION,
+            "addonRevision": ADDON_REV,
+            "manifest": str(MANIFEST_JSON),
+            "selectedModels": len(converted_entries),
+            "activeModels": ready,
+            "stagedModels": staged,
+        }
+        ready_temp = PIPELINE_READY.with_suffix(".tmp")
+        ready_temp.write_text(
+            json.dumps(ready_payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        ready_temp.replace(PIPELINE_READY)
+        print(f"Validated pipeline marker: {PIPELINE_READY}")
+
     return 0
 
 
