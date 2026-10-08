@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -21,9 +22,12 @@ ADDON_DIR = TOOLS / "pokemon_switch_model_importer"
 ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blender.git"
 ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
 BLENDER_DEPS = CACHE / "blender-python-deps"
+CONVERSION_CACHE = CACHE / "switch-conversion-cache.json"
+CONVERSION_PIPELINE_VERSION = 3
 
 MODEL_EXTS = {".trmdl", ".gfbmdl"}
 ANIM_EXTS = {".tranm", ".gfbanm"}
+ANIMATION_EXT_FOR_MODEL = {".trmdl": ".tranm", ".gfbmdl": ".gfbanm"}
 DEX_RE = re.compile(r"pm(\d{4})", re.I)
 FORM_RE = re.compile(r"pm\d{4}(?:_(\d{2}))?(?:_(\d{2}))?", re.I)
 SAFE_RE = re.compile(r"[^a-z0-9_-]+")
@@ -126,17 +130,33 @@ def extract_input(source: Path) -> tuple[Path, str]:
     return dest, game
 
 
-def infer_form(path: Path) -> str:
+def infer_form_parts(path: Path) -> list[str]:
     candidates = [path.stem] + [p.name for p in path.parents][:5]
     for value in candidates:
         match = FORM_RE.search(value)
-        if not match:
-            continue
-        parts = [part for part in match.groups() if part is not None]
-        if not parts or all(part == "00" for part in parts):
-            return "regular"
-        return "form-" + "-".join(parts)
-    return "regular"
+        if match:
+            return [part for part in match.groups() if part is not None]
+    return []
+
+
+def infer_form(path: Path) -> str:
+    parts = infer_form_parts(path)
+    if not parts or all(part == "00" for part in parts):
+        return "regular"
+    return "form-" + "-".join(parts)
+
+
+def infer_form_key(path: Path) -> str:
+    """Canonical identity used for compatibility matching only.
+
+    Some packs write a trailing _00 on animation names but omit it on the
+    matching model. Trim only trailing zero components; never substitute a
+    different non-zero form.
+    """
+    parts = infer_form_parts(path)
+    while parts and parts[-1] == "00":
+        parts.pop()
+    return "-".join(parts) if parts else "regular"
 
 
 def scan_models(root: Path, game: str) -> list[dict]:
@@ -156,6 +176,7 @@ def scan_models(root: Path, game: str) -> list[dict]:
             {
                 "dex": dex,
                 "form": infer_form(path),
+                "formKey": infer_form_key(path),
                 "game": game,
                 "source": str(path),
                 "extension": path.suffix.lower(),
@@ -180,6 +201,7 @@ def scan_animations(root: Path, game: str) -> list[dict]:
             {
                 "dex": dex,
                 "form": infer_form(path),
+                "formKey": infer_form_key(path),
                 "game": game,
                 "source": str(path),
                 "name": path.stem,
@@ -213,47 +235,61 @@ def animation_score(item: dict) -> tuple[int, int, str]:
 
 
 def attach_animations(jobs: list[dict], animations: list[dict], max_clips: int = 6) -> None:
-    by_exact: dict[tuple[int, str], list[dict]] = {}
-    by_dex: dict[int, list[dict]] = {}
+    """Attach only animations that are compatible with the model's rig family."""
+    by_key: dict[tuple[int, str, str, str], list[dict]] = {}
     for anim in animations:
-        by_exact.setdefault((anim["dex"], anim["form"]), []).append(anim)
-        by_dex.setdefault(anim["dex"], []).append(anim)
+        key = (
+            anim["dex"],
+            anim.get("formKey", anim["form"]),
+            anim["game"],
+            anim["extension"],
+        )
+        by_key.setdefault(key, []).append(anim)
 
     for job in jobs:
-        exact = by_exact.get((job["dex"], job["form"]), [])
-        candidates = exact or by_dex.get(job["dex"], [])
+        expected_ext = ANIMATION_EXT_FOR_MODEL.get(job["extension"])
+        key = (
+            job["dex"],
+            job.get("formKey", job["form"]),
+            job["game"],
+            expected_ext,
+        )
+        candidates = by_key.get(key, []) if expected_ext else []
         candidates = sorted(candidates, key=animation_score, reverse=True)
 
-        # Keep a small useful set: one best idle-like clip plus a few distinct
-        # alternatives. This avoids exploding GLB size while getting models out
-        # of bind pose immediately.
         selected: list[dict] = []
-        seen_names: set[str] = set()
+        seen_sources: set[str] = set()
         for anim in candidates:
-            name = anim["name"].lower()
-            if name in seen_names:
+            source = str(Path(anim["source"]).resolve())
+            if source in seen_sources:
                 continue
             selected.append(anim)
-            seen_names.add(name)
+            seen_sources.add(source)
             if len(selected) >= max_clips:
                 break
 
         job["animations"] = selected
+        job["animationMatch"] = "same-game-same-form-same-format" if selected else "none"
+
+
+def job_choice_score(job: dict) -> tuple[int, int, int, int]:
+    animations = job.get("animations") or []
+    best_animation = animation_score(animations[0])[0] if animations else -100000
+    return (
+        1 if animations else 0,
+        SOURCE_PRIORITY.get(job["game"], 0),
+        best_animation,
+        -len(job["source"]),
+    )
 
 
 def dedupe_jobs(jobs: list[dict]) -> list[dict]:
+    """Prefer a compatible animated duplicate over a newer static duplicate."""
     chosen: dict[tuple[int, str], dict] = {}
     for job in jobs:
         key = (job["dex"], job["form"])
         current = chosen.get(key)
-        if current is None:
-            chosen[key] = job
-            continue
-        incoming = SOURCE_PRIORITY.get(job["game"], 0)
-        existing = SOURCE_PRIORITY.get(current["game"], 0)
-        if incoming > existing:
-            chosen[key] = job
-        elif incoming == existing and len(job["source"]) < len(current["source"]):
+        if current is None or job_choice_score(job) > job_choice_score(current):
             chosen[key] = job
     return sorted(chosen.values(), key=lambda item: (item["dex"], item["form"]))
 
@@ -487,48 +523,108 @@ def parse_glb_doc(path: Path) -> dict:
 
 
 def existing_glb_is_complete(path: Path, wants_animations: bool) -> bool:
-    """Return True when a previously exported GLB already satisfies this job.
-
-    The old importer reconverted every model that had animation candidates on
-    every setup run. That made incremental setup nearly as expensive as the
-    initial import. Validate the existing GLB once and reuse it when it already
-    contains animations.
-    """
     if not path.is_file() or path.stat().st_size <= 1024:
         return False
-    if not wants_animations:
-        return True
     try:
         doc = parse_glb_doc(path)
     except Exception:
         return False
-    return bool(doc.get("animations"))
+    if wants_animations and not doc.get("animations"):
+        return False
+    return True
+
+
+def source_signature(path_value: str) -> dict:
+    path = Path(path_value).resolve()
+    stat = path.stat()
+    return {
+        "path": str(path),
+        "size": stat.st_size,
+        "mtimeNs": stat.st_mtime_ns,
+    }
+
+
+def job_fingerprint(job: dict) -> str:
+    payload = {
+        "pipeline": CONVERSION_PIPELINE_VERSION,
+        "addonRevision": ADDON_REV,
+        "dex": job["dex"],
+        "form": job["form"],
+        "formKey": job.get("formKey"),
+        "game": job["game"],
+        "extension": job["extension"],
+        "model": source_signature(job["source"]),
+        "animations": [
+            {
+                "name": anim.get("name"),
+                "game": anim.get("game"),
+                "extension": anim.get("extension"),
+                "source": source_signature(anim["source"]),
+            }
+            for anim in (job.get("animations") or [])
+        ],
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def load_conversion_cache() -> dict[str, str]:
+    if not CONVERSION_CACHE.is_file():
+        return {}
+    try:
+        data = json.loads(CONVERSION_CACHE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def save_conversion_cache(cache: dict[str, str]) -> None:
+    CONVERSION_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    temp = CONVERSION_CACHE.with_suffix(".tmp")
+    temp.write_text(json.dumps(cache, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temp.replace(CONVERSION_CACHE)
+
+
+def output_cache_key(job: dict) -> str:
+    return f"{job['dex']:04d}/{job['form']}.glb"
 
 
 def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path) -> None:
     WEB_ROOT.mkdir(parents=True, exist_ok=True)
-    payload = []
+    cache = load_conversion_cache()
+    payload: list[dict] = []
     reused = 0
+
     for job in jobs:
         out = WEB_ROOT / f"{job['dex']:04d}" / f"{job['form']}.glb"
         wants_animations = bool(job.get("animations"))
-        if existing_glb_is_complete(out, wants_animations):
+        fingerprint = job_fingerprint(job)
+        cache_key = output_cache_key(job)
+
+        if cache.get(cache_key) == fingerprint and existing_glb_is_complete(out, wants_animations):
             reused += 1
             continue
 
-        # Existing static GLBs are reconverted only when animation candidates
-        # are available and the current GLB does not already contain animation.
         out.parent.mkdir(parents=True, exist_ok=True)
-        payload.append({**job, "output": str(out)})
+        payload.append({
+            **job,
+            "output": str(out),
+            "fingerprint": fingerprint,
+            "cacheKey": cache_key,
+        })
 
     if reused:
-        print(f"Reusing {reused} already-complete Switch model(s).", flush=True)
+        print(f"Reusing {reused} fingerprint-matched Switch model(s).", flush=True)
 
     if not payload:
-        print("All selected models are already converted.")
+        print("All selected models are already converted with the current pipeline.")
         return
 
     jobs_file = CACHE / "switch-model-jobs.json"
+    failure_path = jobs_file.with_name("switch-model-failures.json")
+    if failure_path.exists():
+        failure_path.unlink()
+
     jobs_file.parent.mkdir(parents=True, exist_ok=True)
     jobs_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     helper = ROOT / "scripts" / "blender_import_switch_game_model.py"
@@ -543,10 +639,40 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
         addon.name,
         str(blender_deps),
     ]
-    print(f"Converting {len(payload)} missing/incomplete Switch models in one Blender session ...", flush=True)
+    print(f"Converting {len(payload)} stale/missing Switch models in one Blender session ...", flush=True)
     result = subprocess.run(cmd, cwd=ROOT)
+
+    failed_sources: set[str] = set()
+    failure_report_available = False
+    if failure_path.is_file():
+        try:
+            failures = json.loads(failure_path.read_text(encoding="utf-8"))
+            failed_sources = {
+                str(Path(item["source"]).resolve())
+                for item in failures
+                if isinstance(item, dict) and item.get("source")
+            }
+            failure_report_available = True
+        except Exception:
+            pass
+
+    # Persist verified successes even if another conversion in the batch failed,
+    # so the next run retries only the failed jobs.
+    if result.returncode == 0 or failure_report_available:
+        for item in payload:
+            source = str(Path(item["source"]).resolve())
+            if source in failed_sources:
+                continue
+            out = Path(item["output"])
+            if existing_glb_is_complete(out, bool(item.get("animations"))):
+                cache[item["cacheKey"]] = item["fingerprint"]
+        save_conversion_cache(cache)
+
     if result.returncode:
-        raise RuntimeError(f"Blender conversion failed with code {result.returncode}")
+        count = len(failed_sources) if failure_report_available else "unknown number of"
+        raise RuntimeError(
+            f"Blender conversion failed with code {result.returncode}; {count} job(s) failed"
+        )
 
 
 def choose_idle(names: list[str]) -> str | None:
@@ -679,8 +805,10 @@ def main() -> int:
         all_jobs.extend(found)
         all_animations.extend(anims)
 
+    # Evaluate compatibility before deduplication so a model with a genuine
+    # matching animation can beat a newer duplicate that would be static.
+    attach_animations(all_jobs, all_animations)
     jobs = dedupe_jobs(all_jobs)
-    attach_animations(jobs, all_animations)
     if args.dex:
         wanted = set(args.dex)
         jobs = [job for job in jobs if job["dex"] in wanted]
@@ -688,7 +816,20 @@ def main() -> int:
         jobs = jobs[: args.limit]
 
     models_with_anim = sum(1 for job in jobs if job.get("animations"))
-    print(f"Selected {len(jobs)} unique Pokémon/form model jobs; {models_with_anim} have matching animation candidates")
+    incompatible_pairs = sum(
+        1
+        for job in jobs
+        for anim in (job.get("animations") or [])
+        if ANIMATION_EXT_FOR_MODEL.get(job["extension"]) != anim.get("extension")
+        or job["game"] != anim.get("game")
+        or job.get("formKey") != anim.get("formKey")
+    )
+    if incompatible_pairs:
+        raise RuntimeError(f"Internal compatibility error: {incompatible_pairs} invalid model/animation pair(s)")
+    print(
+        f"Selected {len(jobs)} unique Pokémon/form model jobs; "
+        f"{models_with_anim} have compatible same-game/form animations"
+    )
     if args.inventory_only:
         inventory = CACHE / "switch-model-inventory.json"
         inventory.parent.mkdir(parents=True, exist_ok=True)
