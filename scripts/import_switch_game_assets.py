@@ -29,6 +29,13 @@ PIPELINE_READY = CACHE / f"pipeline-v{CONVERSION_PIPELINE_VERSION}.ready.json"
 MODEL_EXTS = {".trmdl", ".gfbmdl"}
 ANIM_EXTS = {".tranm", ".gfbanm"}
 ANIMATION_EXT_FOR_MODEL = {".trmdl": ".tranm", ".gfbmdl": ".gfbanm"}
+ANIMATION_EXT_FOR_GAME = {
+    "lgpe": ".gfbanm",
+    "swsh": ".gfbanm",
+    "la": ".tranm",
+    "sv": ".tranm",
+    "za": ".tranm",
+}
 DEX_RE = re.compile(r"pm(\d{4})", re.I)
 FORM_RE = re.compile(r"pm\d{4}(?:_(\d{2}))?(?:_(\d{2}))?", re.I)
 SAFE_RE = re.compile(r"[^a-z0-9_-]+")
@@ -310,7 +317,10 @@ def attach_animations(jobs: list[dict], animations: list[dict], max_clips: int =
         by_key.setdefault(key, []).append(anim)
 
     for job in jobs:
-        expected_ext = ANIMATION_EXT_FOR_MODEL.get(job["extension"])
+        expected_ext = ANIMATION_EXT_FOR_GAME.get(
+            job["game"],
+            ANIMATION_EXT_FOR_MODEL.get(job["extension"]),
+        )
         key = (
             job["dex"],
             job.get("formKey", job["form"]),
@@ -1345,7 +1355,10 @@ def main() -> int:
         1
         for job in jobs
         for anim in (job.get("animations") or [])
-        if ANIMATION_EXT_FOR_MODEL.get(job["extension"]) != anim.get("extension")
+        if ANIMATION_EXT_FOR_GAME.get(
+            job["game"],
+            ANIMATION_EXT_FOR_MODEL.get(job["extension"]),
+        ) != anim.get("extension")
         or job["game"] != anim.get("game")
         or job.get("formKey") != anim.get("formKey")
     )
