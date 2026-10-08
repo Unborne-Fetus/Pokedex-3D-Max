@@ -21,6 +21,16 @@ JOBS_JSON = ROOT / ".cache" / "pokeminers-jobs.json"
 RIG_RE = re.compile(r"^pm(?P<dex>\d{4})_(?P<form>\d{2})_Rig$")
 
 
+def valid_glb(path: Path) -> bool:
+    if not path.is_file() or path.stat().st_size <= 1024:
+        return False
+    try:
+        with path.open("rb") as handle:
+            return handle.read(4) == b"glTF"
+    except OSError:
+        return False
+
+
 def run(cmd: list[str], cwd: Path | None = None) -> None:
     print("+", " ".join(cmd), flush=True)
     result = subprocess.run(cmd, cwd=cwd or ROOT)
@@ -172,13 +182,14 @@ def main() -> int:
         print("No PokeMiners Pokemon rigs matched the requested range.")
         return 0
 
-    if not args.force:
-        pending = [job for job in jobs if not Path(job["output"]).is_file()]
-    else:
-        pending = jobs
+    pending = jobs if args.force else [
+        job for job in jobs if not valid_glb(Path(job["output"]))
+    ]
+    reused = len(jobs) - len(pending)
 
     print(f"Found {len(jobs)} rig/form folders.")
-    print(f"Need to convert {len(pending)} models.")
+    print(f"Already imported and reusable: {reused}")
+    print(f"Need to convert: {len(pending)}")
     print(f"Output: {OUTPUT_ROOT}")
 
     OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
