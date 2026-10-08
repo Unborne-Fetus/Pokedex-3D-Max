@@ -86,7 +86,7 @@ private data class ModelBounds(
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Pokedex 3D Max v0.2.3",
+        title = "Pokedex 3D Max v0.2.4",
         state = rememberWindowState(width = 1280.dp, height = 820.dp),
     ) {
         MaterialTheme(colorScheme = darkColorScheme()) {
@@ -186,7 +186,7 @@ private fun DesktopApp() {
                                     "#%04d  %s".format(model.dex, model.name),
                                     fontWeight = FontWeight.SemiBold,
                                 )
-                                Text(prettyFormName(model.form), style = MaterialTheme.typography.bodySmall)
+                                Text(prettyFormName(model.form, model.dex), style = MaterialTheme.typography.bodySmall)
                             }
                         }
                     }
@@ -346,6 +346,53 @@ private fun AnimatedFilamentViewer(
         GltfInstance(
             asset = asset,
             animationState = if (preferredAnimation != null) animation else null,
+            onCreate = {
+                // Use Filament's transformed instance bounds rather than raw
+                // POSITION accessor bounds. Imported Switch models often carry
+                // a root rotation/translation, so raw bounds can put the camera
+                // under or beside the rendered Pokémon even when elevation=0.
+                instance.recomputeBoundingBoxes()
+                val box = instance.boundingBox
+                if (!box.isEmpty()) {
+                    val center = box.center()
+                    val extent = box.extent()
+                    if (
+                        center.size >= 3 &&
+                        extent.size >= 3 &&
+                        center.all { it.isFinite() } &&
+                        extent.all { it.isFinite() }
+                    ) {
+                        val fittedTarget = Float3(center[0], center[1], center[2])
+                        val radius = sqrt(
+                            extent[0] * extent[0] +
+                                extent[1] * extent[1] +
+                                extent[2] * extent[2],
+                        ).coerceAtLeast(0.05f)
+                        val halfFovRadians = (30.0 * PI / 180.0 / 2.0)
+                        val fittedDistance = maxOf(
+                            (radius / sin(halfFovRadians).toFloat()) * 1.05f,
+                            0.25f,
+                        )
+
+                        orbitCamera.target = fittedTarget
+                        orbitCamera.distance = fittedDistance
+                        orbitCamera.azimuth = 0f
+                        orbitCamera.elevation = 0f
+
+                        camera.target = Position(
+                            fittedTarget.x,
+                            fittedTarget.y,
+                            fittedTarget.z,
+                        )
+                        camera.eye = orbitEye(
+                            fittedTarget,
+                            fittedDistance,
+                            0f,
+                            0f,
+                        )
+                    }
+                }
+            },
         )
     }
 
@@ -557,12 +604,22 @@ private fun findModelPack(): Path? {
     return candidates.firstOrNull { Files.isRegularFile(it.resolve("model_catalog.tsv")) }
 }
 
-private fun prettyFormName(raw: String): String {
+private fun prettyFormName(raw: String, dex: Int? = null): String {
     val normalized = raw
         .trim()
         .lowercase()
         .replace(Regex("-00$"), "")
     if (normalized.isBlank() || normalized == "regular") return "Regular"
+
+    // Verified against the imported Charizard Switch assets in this project.
+    if (dex == 6) {
+        when (normalized) {
+            "form-51", "51", "mega-x", "megax", "x" -> return "Mega X"
+            "form-52", "52", "mega-y", "megay", "y" -> return "Mega Y"
+            "gmax", "gigantamax" -> return "Gigantamax"
+            "xy" -> return "Mega X"
+        }
+    }
 
     return normalized
         .replace(Regex("^form-"), "Form ")
@@ -611,11 +668,8 @@ private fun loadManifest(root: Path): List<DesktopModel> {
             val rawName = columns[1].trim()
             DesktopModel(
                 dex = dex,
-                name = if (rawName.startsWith("#") || rawName.isBlank()) {
-                    speciesNames[dex] ?: rawName.ifBlank { "#%04d".format(dex) }
-                } else {
-                    rawName
-                },
+                name = speciesNames[dex]
+                    ?: rawName.ifBlank { "#%04d".format(dex) },
                 form = columns[2],
                 path = root.resolve(columns[3]),
             )
