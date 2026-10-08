@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -37,10 +38,21 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dev.romainguy.kotlin.math.Float3
-import io.github.sceneview.compose.EnvironmentSource
-import io.github.sceneview.compose.Lighting
-import io.github.sceneview.compose.ModelSource
-import io.github.sceneview.compose.SceneViewer
+import io.github.erkko68.filament.compose.FilamentSceneView
+import io.github.erkko68.filament.compose.rememberFilamentEngine
+import io.github.erkko68.filament.compose.scene.Direction
+import io.github.erkko68.filament.compose.scene.DirectionalLight
+import io.github.erkko68.filament.compose.scene.GltfInstance
+import io.github.erkko68.filament.compose.scene.LightIntensity
+import io.github.erkko68.filament.compose.scene.LinearColor
+import io.github.erkko68.filament.compose.scene.Position
+import io.github.erkko68.filament.compose.scene.Projection
+import io.github.erkko68.filament.compose.scene.SkyboxSource
+import io.github.erkko68.filament.compose.scene.rememberAnimationState
+import io.github.erkko68.filament.compose.scene.rememberCameraState
+import io.github.erkko68.filament.compose.scene.rememberGltfAsset
+import io.github.erkko68.filament.compose.scene.rememberSkyboxState
+import io.github.sceneview.compose.CameraState
 import io.github.sceneview.compose.rememberUnsavedCameraState
 import org.json.JSONObject
 import java.nio.ByteBuffer
@@ -49,7 +61,10 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.exp
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 private data class DesktopModel(
@@ -237,23 +252,166 @@ private fun PokemonViewport(model: DesktopModel, bytes: ByteArray) {
                 }
             }
 
-        SceneViewer(
-            model = ModelSource.Bytes(bytes),
+        AnimatedFilamentViewer(
+            model = model,
+            bytes = bytes,
             modifier = Modifier.fillMaxSize().then(controls),
-            camera = camera,
-            lighting = Lighting(
-                direction = Float3(0.35f, -1.0f, -0.55f),
-                intensity = 180_000f,
-                ambientIntensity = 1f,
-                castShadows = false,
-            ),
-            environment = EnvironmentSource.Default,
-            onError = { error ->
-                System.err.println("3D load failed for " + model.name + ": " + error.message)
-            },
+            orbitCamera = camera,
         )
     }
 }
+
+@Composable
+private fun AnimatedFilamentViewer(
+    model: DesktopModel,
+    bytes: ByteArray,
+    modifier: Modifier,
+    orbitCamera: CameraState,
+) {
+    val engine = rememberFilamentEngine()
+    var loadError by remember { mutableStateOf<Throwable?>(null) }
+    val asset = rememberGltfAsset(
+        key = model.path.toString(),
+        engine = engine,
+        onError = { loadError = it },
+    ) { bytes }
+
+    val animationNames = remember(bytes) { readAnimationNames(bytes) }
+    val preferredAnimation = remember(animationNames) {
+        chooseIdleAnimationIndex(animationNames)
+    }
+    val animation = rememberAnimationState(
+        initialAnimationIndex = preferredAnimation,
+        initialCrossFadeDuration = 0f,
+        initialLoop = true,
+    )
+    animation.animationIndex = preferredAnimation
+    animation.speed = 1f
+    animation.loop = true
+
+    val target = orbitCamera.target
+    val camera = rememberCameraState(
+        initialEye = orbitEye(
+            target,
+            orbitCamera.distance,
+            orbitCamera.azimuth,
+            orbitCamera.elevation,
+        ),
+        initialTarget = Position(target.x, target.y, target.z),
+        initialProjection = Projection.Perspective(fovDegrees = 45.0),
+    )
+    val skybox = rememberSkyboxState(
+        initialSource = SkyboxSource.Color(LinearColor(0.08f, 0.10f, 0.14f)),
+    )
+
+    SideEffect {
+        val currentTarget = orbitCamera.target
+        camera.target = Position(currentTarget.x, currentTarget.y, currentTarget.z)
+        camera.eye = orbitEye(
+            currentTarget,
+            orbitCamera.distance,
+            orbitCamera.azimuth,
+            orbitCamera.elevation,
+        )
+    }
+
+    FilamentSceneView(
+        modifier = modifier,
+        engine = engine,
+        cameraState = camera,
+        skyboxState = skybox,
+    ) {
+        DirectionalLight(
+            direction = Direction(0.35f, -1.0f, -0.55f),
+            intensity = LightIntensity.LuminousPower(180_000f),
+        )
+        GltfInstance(
+            asset = asset,
+            animationState = if (preferredAnimation != null) animation else null,
+        )
+    }
+
+    loadError?.let { error ->
+        System.err.println(
+            "3D load failed for " + model.name + ": " + (error.message ?: error.toString()),
+        )
+    }
+}
+
+
+private fun orbitEye(
+    center: Float3,
+    distance: Float,
+    azimuthDegrees: Float,
+    elevationDegrees: Float,
+): Position {
+    val azimuth = azimuthDegrees * (PI / 180.0)
+    val elevation = elevationDegrees * (PI / 180.0)
+    val horizontal = distance * cos(elevation).toFloat()
+    return Position(
+        center.x + horizontal * sin(azimuth).toFloat(),
+        center.y + distance * sin(elevation).toFloat(),
+        center.z + horizontal * cos(azimuth).toFloat(),
+    )
+}
+
+
+private fun readAnimationNames(bytes: ByteArray): List<String> = runCatching {
+    val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+    if (buffer.remaining() < 20 || buffer.int != 0x46546C67) return@runCatching emptyList()
+    val version = buffer.int
+    val totalLength = buffer.int
+    if (version != 2 || totalLength > bytes.size) return@runCatching emptyList()
+
+    while (buffer.position() + 8 <= totalLength) {
+        val chunkLength = buffer.int
+        val chunkType = buffer.int
+        if (chunkLength < 0 || buffer.position() + chunkLength > totalLength) break
+        val chunk = ByteArray(chunkLength)
+        buffer.get(chunk)
+        if (chunkType != 0x4E4F534A) continue
+
+        val json = JSONObject(
+            String(chunk, StandardCharsets.UTF_8)
+                .trimEnd { it == '\u0000' || it.isWhitespace() },
+        )
+        val animations = json.optJSONArray("animations") ?: return@runCatching emptyList()
+        return@runCatching List(animations.length()) { index ->
+            animations.optJSONObject(index)?.optString("name")
+                ?.takeIf { it.isNotBlank() }
+                ?: "animation_" + index
+        }
+    }
+    emptyList()
+}.getOrElse { emptyList() }
+
+
+private fun chooseIdleAnimationIndex(names: List<String>): Int? {
+    if (names.isEmpty()) return null
+
+    val preferred = listOf(
+        Regex("default(?:idle|wait)", RegexOption.IGNORE_CASE),
+        Regex("battle(?:idle|wait)", RegexOption.IGNORE_CASE),
+        Regex("(^|[_-])idle([_-]|$)", RegexOption.IGNORE_CASE),
+        Regex("wait|stand|breath|rest", RegexOption.IGNORE_CASE),
+        Regex("loop", RegexOption.IGNORE_CASE),
+    )
+    val rejected = Regex(
+        "attack|damage|faint|death|down|hit|move|run|walk|jump",
+        RegexOption.IGNORE_CASE,
+    )
+
+    for (pattern in preferred) {
+        val index = names.indexOfFirst {
+            pattern.containsMatchIn(it) && !rejected.containsMatchIn(it)
+        }
+        if (index >= 0) return index
+    }
+
+    return names.indexOfFirst { !rejected.containsMatchIn(it) }
+        .takeIf { it >= 0 }
+}
+
 
 private fun readModelBounds(bytes: ByteArray): ModelBounds {
     return runCatching {
