@@ -16,10 +16,10 @@ if /I "%~1"=="full" (
   set "SETUP_ARGS=-SwitchAssetsOnly -SkipInstall"
 ) else if /I "%~1"=="fast" (
   set "MODE=FAST"
-  set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
+  set "SETUP_ARGS=-SkipSwitchAssets"
 ) else if exist "%~dp0.cache\switch-game-assets\pipeline-v9.ready.json" (
   set "MODE=FAST"
-  set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
+  set "SETUP_ARGS=-SkipSwitchAssets"
 )
 
 echo ============================================================
@@ -35,7 +35,7 @@ if "%MODE%"=="FULL" (
   echo   3. Reuses/installs Python + Pillow
   echo   4. Reuses/installs Blender
   echo   5. Restores existing original Switch GLBs
-  echo   6. Allows unfinished textures; originals stay active
+  echo   6. Requires valid textures before models become active
   echo      ^(converts cached original archives only if exports are missing^)
   echo   7. Builds Windows MSI/EXE installers
   echo      and automatically installs or updates the existing app
@@ -43,13 +43,13 @@ if "%MODE%"=="FULL" (
   echo Existing downloads and conversions are reused whenever possible.
 ) else if "%MODE%"=="SWITCH" (
   echo SWITCH ASSET MODE:
-  echo   Restores existing original Switch exports, including broken textures.
+  echo   Restores regular original Switch exports only when textures and animations are valid.
   echo   Converts cached original archives only when exported models are missing.
   echo   Runs importer syntax checks and self-tests.
-  echo   Skips JDK, Gradle, generic model download, EXE build, and installer.
+  echo   Skips JDK, Gradle, EXE build, and installer.
 ) else (
   echo FAST MODE:
-  echo   Reuses your already-imported models and skips expensive asset work.
+  echo   Revalidates your already-imported regular Switch models and skips reconversion.
   echo   This is the default only after a fully validated v9 model import.
   echo   Run setup-all.bat switch to refresh Switch assets without rebuilding the app.
   echo   Run setup-all.bat full when you intentionally want the complete build pipeline.
