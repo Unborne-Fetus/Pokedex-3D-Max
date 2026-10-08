@@ -2031,7 +2031,7 @@ def choose_idle(names: list[str]) -> str | None:
     return None
 
 
-def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
+def build_manifest(jobs: list[dict]) -> list[dict]:
     entries: list[dict] = []
     for job in jobs:
         if job.get("conversionFailed"):
@@ -2044,6 +2044,11 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
             doc = parse_glb_doc(glb)
         except Exception as exc:
             raise RuntimeError(f"Damaged GLB {glb}: {exc}") from exc
+
+        if not glb_textures_complete(glb):
+            raise RuntimeError(
+                f"Incomplete base-color texture coverage in converted GLB: {glb}"
+            )
 
         animations = [
             {"name": animation.get("name") or f"animation_{index}"}
@@ -2064,7 +2069,7 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
 
         names = [a["name"] for a in animations]
         idle = choose_idle(names)
-        ready = bool(idle) or allow_static
+        ready = bool(idle)
         if ready:
             warnings = []
         elif job.get("animationRejected"):
@@ -2632,11 +2637,6 @@ def main() -> int:
     parser.add_argument("--dex", type=int, action="append", default=[], help="only convert selected National Dex number; repeatable")
     parser.add_argument("--inventory-only", action="store_true", help="scan sources without running Blender")
     parser.add_argument("--self-test", action="store_true", help="run importer matching/cache self-tests and exit")
-    parser.add_argument(
-        "--allow-static",
-        action="store_true",
-        help="activate models with no animation clips (normally staged but disabled to prevent T-poses)",
-    )
     parser.add_argument("--no-desktop-install", action="store_true")
     parser.add_argument(
         "--refresh-changed",
@@ -2661,7 +2661,6 @@ def main() -> int:
         and args.limit <= 0
         and not args.no_desktop_install
         and not args.inventory_only
-        and not args.allow_static
     )
     if full_runtime_refresh and PIPELINE_READY.is_file():
         PIPELINE_READY.unlink()
@@ -2804,7 +2803,7 @@ def main() -> int:
             refresh_changed=args.refresh_changed,
             force=args.force,
         )
-    converted_entries = build_manifest(jobs, args.allow_static)
+    converted_entries = build_manifest(jobs)
 
     partial_run = bool(args.dex) or args.limit > 0
     selected_dexes = set(args.dex) if args.dex else None
@@ -2858,7 +2857,7 @@ def main() -> int:
         f"{failed_conversions} conversion failures left unavailable)"
     )
     print(f"Manifest: {MANIFEST_JSON}")
-    if staged and not args.allow_static:
+    if staged:
         print("Staged models are intentionally not selected by the app until animations are attached.")
 
     if full_runtime_refresh:
