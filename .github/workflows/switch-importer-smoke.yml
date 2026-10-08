@@ -6,12 +6,18 @@ on:
     paths:
       - "scripts/import_switch_game_assets.py"
       - "scripts/blender_import_switch_game_model.py"
+      - "scripts/setup_all.ps1"
+      - "setup-all.bat"
+      - "import-switch-models.bat"
       - ".github/workflows/switch-importer-smoke.yml"
   pull_request:
     branches: [main]
     paths:
       - "scripts/import_switch_game_assets.py"
       - "scripts/blender_import_switch_game_model.py"
+      - "scripts/setup_all.ps1"
+      - "setup-all.bat"
+      - "import-switch-models.bat"
       - ".github/workflows/switch-importer-smoke.yml"
   workflow_dispatch:
 
@@ -34,6 +40,33 @@ jobs:
 
       - name: Run Switch importer self-tests
         run: python scripts/import_switch_game_assets.py --self-test
+
+      - name: Parse PowerShell setup
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path "scripts/setup_all.ps1"),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }
+
+      - name: Guard setup/importer pipeline version
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          importer = Path("scripts/import_switch_game_assets.py").read_text(encoding="utf-8")
+          launcher = Path("setup-all.bat").read_text(encoding="utf-8")
+          assert "CONVERSION_PIPELINE_VERSION = 4" in importer
+          assert "pipeline-v4.ready.json" in launcher
+          assert "-SwitchAssetsOnly" in launcher
+          print("Setup and importer both target pipeline v4.")
+          PY
 
       - name: Guard against incompatible animation fallback
         run: |
