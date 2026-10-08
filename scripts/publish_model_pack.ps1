@@ -1,6 +1,6 @@
 param(
     [string]$Repository = $(if ($env:POKEDEX3D_MODEL_PACK_REPO) { $env:POKEDEX3D_MODEL_PACK_REPO } else { "Unborne-Fetus/Pokedex-3D-Max" }),
-    [string]$Tag = $(if ($env:POKEDEX3D_MODEL_PACK_TAG) { $env:POKEDEX3D_MODEL_PACK_TAG } else { "model-pack-v5" })
+    [string]$Tag = $(if ($env:POKEDEX3D_MODEL_PACK_TAG) { $env:POKEDEX3D_MODEL_PACK_TAG } else { "model-pack-v7" })
 )
 
 $ErrorActionPreference = "Stop"
