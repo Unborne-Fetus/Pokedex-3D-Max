@@ -1378,6 +1378,13 @@ def install_desktop(
 
     existing = read_catalog_rows(catalog)
     generic = read_catalog_rows(generic_catalog)
+    known_names_by_dex: dict[int, str] = {}
+    for source_rows in (existing, generic):
+        for (dex, _form), cols in source_rows.items():
+            if len(cols) >= 2:
+                candidate = cols[1].strip()
+                if candidate and not candidate.startswith("#"):
+                    known_names_by_dex.setdefault(dex, candidate)
     manifest_keys = {(int(entry["dex"]), str(entry["form"])) for entry in entries}
 
     def row_is_switch(cols: list[str] | None) -> bool:
@@ -1448,7 +1455,7 @@ def install_desktop(
         display_name = (
             previous_name
             if previous_name and not previous_name.startswith("#")
-            else f"#{entry['dex']:04d}"
+            else known_names_by_dex.get(int(entry["dex"]), f"#{entry['dex']:04d}")
         )
         existing[key] = [
             str(entry["dex"]),
