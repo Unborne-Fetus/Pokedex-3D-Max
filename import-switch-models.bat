@@ -11,7 +11,7 @@ echo.
 if "%~1"=="" (
   echo No archive paths were supplied.
   echo Syncing missing Switch model/animation packs, validating the importer,
-  echo and importing only stale or missing models.
+  echo and importing only models that are missing, invalid, or newly animatable.
   echo.
   powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_all.ps1" -SwitchAssetsOnly -SkipInstall
 ) else (
