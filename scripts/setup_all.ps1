@@ -21,6 +21,7 @@ $MegaFolderLink = "https://mega.nz/folder/elJhVC5D#NU-yzmXuTlsIIzXAMLKVaA"
 $MegaAssetCache = Join-Path $RepoRoot ".cache\mega-switch-assets"
 $MegaNoProgressTimeoutSeconds = 300
 $MegaDownloadRetries = 3
+$script:SwitchAssetSyncSucceeded = $null
 
 function Stamp([string]$Text) {
     $Now = Get-Date -Format "HH:mm:ss"
@@ -516,8 +517,10 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     # because one old model ZIP happens to be present. The downloader reuses
     # completed files by leaf name. If the remote source is temporarily
     # unavailable, an existing local model set can still be validated/imported.
+    $script:SwitchAssetSyncSucceeded = $false
     try {
         DownloadMegaSwitchAssets
+        $script:SwitchAssetSyncSucceeded = $true
         $AllArchives = @(FindSwitchAssetArchives)
         $ModelArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
     } catch {
@@ -714,7 +717,12 @@ try {
 
         Write-Host ""
         Write-Host "============================================================" -ForegroundColor Green
-        Stamp "SUCCESS - Switch model assets are synced and imported."
+        if ($script:SwitchAssetSyncSucceeded) {
+            Stamp "SUCCESS - Switch model assets were synced and imported."
+        } else {
+            Stamp "SUCCESS WITH LOCAL ASSETS - remote Switch asset sync was unavailable."
+            Stamp "The importer completed using the validated archives already on disk."
+        }
         Write-Host "============================================================" -ForegroundColor Green
         Write-Host ("Offline models: " + (Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"))
         return
