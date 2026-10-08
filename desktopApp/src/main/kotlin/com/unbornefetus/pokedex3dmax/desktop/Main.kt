@@ -83,7 +83,7 @@ private data class ModelBounds(
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Pokedex 3D Max v0.2.0",
+        title = "Pokedex 3D Max v0.2.1",
         state = rememberWindowState(width = 1280.dp, height = 820.dp),
     ) {
         MaterialTheme(colorScheme = darkColorScheme()) {
@@ -583,5 +583,9 @@ private fun loadManifest(root: Path): List<DesktopModel> {
                 path = root.resolve(columns[3]),
             )
         }
-        .filter { Files.isRegularFile(it.path) }
+        .filter {
+            Files.isRegularFile(it.path) &&
+                !it.form.contains("shiny", ignoreCase = true) &&
+                !it.name.startsWith("Shiny ", ignoreCase = true)
+        }
 }
