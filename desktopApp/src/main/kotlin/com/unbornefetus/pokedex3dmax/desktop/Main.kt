@@ -653,6 +653,38 @@ private fun loadSpeciesNames(root: Path): Map<Int, String> {
 }
 
 
+private fun semanticFormKey(model: DesktopModel): String {
+    val normalized = model.form
+        .trim()
+        .lowercase()
+        .replace(Regex("-00$"), "")
+
+    if (model.dex == 6) {
+        return when (normalized) {
+            "form-51", "51", "mega-x", "megax", "x", "xy" -> "mega-x"
+            "form-52", "52", "mega-y", "megay", "y" -> "mega-y"
+            "gmax", "gigantamax" -> "gmax"
+            "", "regular" -> "regular"
+            else -> normalized
+        }
+    }
+
+    return normalized.ifBlank { "regular" }
+}
+
+
+private fun preferModelSource(models: List<DesktopModel>): DesktopModel {
+    return models.minWithOrNull(
+        compareBy<DesktopModel> {
+            val normalized = it.path.toString().replace('\\', '/').lowercase()
+            if ("/switch/" in normalized) 0 else 1
+        }.thenBy {
+            if (it.form.equals("regular", ignoreCase = true)) 0 else 1
+        }.thenBy { it.path.toString().length },
+    ) ?: models.first()
+}
+
+
 private fun loadManifest(root: Path): List<DesktopModel> {
     val manifest = root.resolve("model_catalog.tsv")
     if (!Files.isRegularFile(manifest)) return emptyList()
@@ -680,9 +712,12 @@ private fun loadManifest(root: Path): List<DesktopModel> {
                 !it.name.startsWith("Shiny ", ignoreCase = true)
         }
         .distinctBy { it.stableKey }
+        .groupBy { it.dex to semanticFormKey(it) }
+        .values
+        .map(::preferModelSource)
         .sortedWith(
             compareBy<DesktopModel> { it.dex }
-                .thenBy { if (it.form.equals("regular", ignoreCase = true)) 0 else 1 }
-                .thenBy { it.form.lowercase() },
+                .thenBy { if (semanticFormKey(it) == "regular") 0 else 1 }
+                .thenBy { semanticFormKey(it) },
         )
 }
