@@ -587,9 +587,10 @@ for index, job in enumerate(jobs, start=1):
             raise RuntimeError("Imported model contains no mesh geometry")
         if total_materials <= 0 and not allow_broken_textures:
             raise RuntimeError("Imported model contains no mesh materials")
-        if textured_materials <= 0 and not allow_broken_textures:
+        if textured_materials != total_materials and not allow_broken_textures:
             raise RuntimeError(
-                "Imported model has no usable albedo texture. "
+                f"Imported model has incomplete albedo coverage: "
+                f"{textured_materials}/{total_materials} mesh materials textured. "
                 "Check the companion texture archive and texture resolver output."
             )
 
@@ -600,9 +601,10 @@ for index, job in enumerate(jobs, start=1):
             raise RuntimeError("GLB exporter did not produce a valid-sized output file")
 
         base_color_textures = glb_base_color_texture_count(temporary)
-        if base_color_textures <= 0 and not allow_broken_textures:
+        if base_color_textures != total_materials and not allow_broken_textures:
             raise RuntimeError(
-                "Exported GLB contains no material baseColorTexture bindings"
+                f"Exported GLB has incomplete baseColorTexture coverage: "
+                f"{base_color_textures}/{total_materials} mesh materials"
             )
 
         embedded = glb_animation_count(temporary)
