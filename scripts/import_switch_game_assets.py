@@ -601,15 +601,355 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
 
         switch_source.write_text(text, encoding="utf-8")
 
-    # The older GFBMDL importer has its own enormous per-vertex debug print.
+    # The legacy GFBMDL importer (Let's Go / Sword & Shield) historically
+    # creates a blank image node and never assigns the model's texture table.
+    # Patch it to resolve the exact TextureMap -> Model.TextureNames reference
+    # and tag the selected albedo for the GLB material flattener.
     gfbmdl_source = ADDON_DIR / "gfbmdl_import.py"
     if gfbmdl_source.is_file():
         text = gfbmdl_source.read_text(encoding="utf-8")
+
+        if "import re\n" not in text:
+            text = text.replace("import sys\n", "import sys\nimport re\n", 1)
+
+        marker = "# POKEDEX3D_GFBMDL_TEXTURE_RESOLVER_V1"
+        if marker not in text:
+            helper = r'''
+# POKEDEX3D_GFBMDL_TEXTURE_RESOLVER_V1
+_POKEDEX3D_GFB_TEXTURE_INDEX = {}
+
+def _pokedex3d_gfb_decode(value):
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return str(value)
+
+def _pokedex3d_gfb_texture_keys(value):
+    raw = _pokedex3d_gfb_decode(value).replace("\\\\", "/")
+    name = os.path.basename(raw)
+    stem = os.path.splitext(name)[0].casefold()
+    exact = re.sub(r"[^a-z0-9]+", "", stem)
+
+    relaxed_stem = re.sub(
+        r"^(pm[0-9]{4})(?:[_-]00)+(?=[_-])",
+        r"\\1",
+        stem,
+    )
+    relaxed = re.sub(r"[^a-z0-9]+", "", relaxed_stem)
+
+    keys = [exact]
+    if relaxed and relaxed != exact:
+        keys.append(relaxed)
+    return [key for key in keys if key]
+
+def _pokedex3d_gfb_image_roots(model_dir):
+    roots = []
+    model_dir = os.path.abspath(model_dir or ".")
+    pokemon_dir = os.path.dirname(model_dir)
+
+    for candidate in (
+        model_dir,
+        pokemon_dir,
+        os.path.join(pokemon_dir, "tex"),
+        os.path.join(pokemon_dir, "texture"),
+        os.path.join(pokemon_dir, "textures"),
+    ):
+        candidate = os.path.abspath(candidate)
+        if os.path.isdir(candidate) and candidate not in roots:
+            roots.append(candidate)
+
+    extra = os.environ.get("POKEDEX3D_TEXTURE_ROOTS", "")
+    for candidate in extra.split(os.pathsep):
+        candidate = candidate.strip()
+        if not candidate:
+            continue
+        candidate = os.path.abspath(candidate)
+        if os.path.isdir(candidate) and candidate not in roots:
+            roots.append(candidate)
+
+    return roots
+
+def _pokedex3d_gfb_index_root(root):
+    cache_key = os.path.abspath(root).casefold()
+    cached = _POKEDEX3D_GFB_TEXTURE_INDEX.get(cache_key)
+    if cached is not None:
+        return cached
+
+    index = {}
+    image_exts = {".png", ".tga", ".jpg", ".jpeg", ".bmp", ".dds", ".webp"}
+    count = 0
+    for current, dirs, files in os.walk(root):
+        rel_depth = os.path.relpath(current, root).count(os.sep)
+        if rel_depth >= 10:
+            dirs[:] = []
+        for filename in files:
+            if os.path.splitext(filename)[1].lower() not in image_exts:
+                continue
+            path = os.path.join(current, filename)
+            for key in _pokedex3d_gfb_texture_keys(filename):
+                index.setdefault(key, []).append(path)
+            count += 1
+
+    _POKEDEX3D_GFB_TEXTURE_INDEX[cache_key] = index
+    print(
+        "GFBMDL texture index:",
+        root,
+        f"({count} image file(s), {len(index)} key(s))",
+        flush=True,
+    )
+    return index
+
+def _pokedex3d_gfb_resolve_texture(reference, model_dir):
+    reference = _pokedex3d_gfb_decode(reference).strip()
+    if not reference:
+        return None
+
+    normalized = reference.replace("\\\\", "/")
+    basename = os.path.basename(normalized)
+    stem, ext = os.path.splitext(basename)
+    image_exts = (".png", ".tga", ".jpg", ".jpeg", ".bmp", ".dds", ".webp")
+    candidate_names = [basename]
+    if ext.lower() not in image_exts:
+        candidate_names = [stem + image_ext for image_ext in image_exts]
+
+    for root in _pokedex3d_gfb_image_roots(model_dir):
+        direct_dirs = (
+            root,
+            os.path.join(root, "tex"),
+            os.path.join(root, "texture"),
+            os.path.join(root, "textures"),
+        )
+        for directory in direct_dirs:
+            for name in candidate_names:
+                candidate = os.path.normpath(os.path.join(directory, name))
+                if os.path.isfile(candidate):
+                    return candidate
+
+    keys = _pokedex3d_gfb_texture_keys(reference)
+    for root in _pokedex3d_gfb_image_roots(model_dir):
+        index = _pokedex3d_gfb_index_root(root)
+        for key in keys:
+            matches = index.get(key) or []
+            if not matches:
+                continue
+            matches = sorted(
+                matches,
+                key=lambda path: (
+                    len(os.path.relpath(path, root).split(os.sep)),
+                    len(path),
+                    path.casefold(),
+                ),
+            )
+            return matches[0]
+
+    return None
+
+def _pokedex3d_gfb_material_maps(material, model):
+    descriptors = []
+    for i in range(material.TextureMapsLength()):
+        mapping = material.TextureMaps(i)
+        if mapping is None:
+            continue
+
+        sampler = _pokedex3d_gfb_decode(mapping.Sampler()).strip()
+        index = int(mapping.Index())
+        texture_name = ""
+        if 0 <= index < model.TextureNamesLength():
+            texture_name = _pokedex3d_gfb_decode(model.TextureNames(index)).strip()
+
+        combined = (sampler + " " + texture_name).casefold()
+        score = 0
+        preferred = (
+            "basecolor", "base_color", "albedo", "diffuse", "diff",
+            "color", "colour", "col0", "_col", "body",
+        )
+        rejected = (
+            "normal", "nrm", "bump", "rough", "rgh", "metal", "mtl",
+            "spec", "mask", "msk", "opacity", "alpha", "ambient",
+            "occlusion", "ao", "emission", "emissive", "emi", "lym",
+            "height", "shadow", "detail", "cube", "environment",
+        )
+        if any(token in combined for token in preferred):
+            score += 100
+        if any(token in combined for token in rejected):
+            score -= 200
+        # Base-color maps are normally among the earliest material texture maps.
+        score += max(0, 20 - i)
+
+        descriptors.append(
+            {
+                "order": i,
+                "sampler": sampler,
+                "index": index,
+                "texture": texture_name,
+                "score": score,
+            }
+        )
+
+    return sorted(
+        descriptors,
+        key=lambda item: (-item["score"], item["order"]),
+    )
+
+def _pokedex3d_gfb_material_color(material):
+    preferred = ("basecolor", "base_color", "diffuse", "color")
+    first = None
+    for i in range(material.ColorsLength()):
+        entry = material.Colors(i)
+        if entry is None or entry.Color() is None:
+            continue
+        color = entry.Color()
+        rgba = (
+            max(0.0, min(1.0, float(color.R()))),
+            max(0.0, min(1.0, float(color.G()))),
+            max(0.0, min(1.0, float(color.B()))),
+            1.0,
+        )
+        name = _pokedex3d_gfb_decode(entry.Name()).casefold()
+        if first is None:
+            first = rgba
+        if any(token in name for token in preferred):
+            return rgba
+    return first
+
+'''
+            target = "def CreateMaterial(material):\n"
+            if target not in text:
+                raise RuntimeError(
+                    "Pinned GFBMDL importer layout changed; texture patch cannot be applied"
+                )
+            text = text.replace(target, helper + target, 1)
+
+        old_material = '''def CreateMaterial(material):
+    mat = bpy.data.materials.new(name=material.Name().decode("utf-8"))
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    shdr = nodes.get('Principled BSDF')
+    out = nodes.get('Material Output')
+    img = nodes.new('ShaderNodeTexImage')
+    att = nodes.new('ShaderNodeAttribute')
+    mix = nodes.new('ShaderNodeMixRGB')
+    img.location = (-450, 350)
+    att.location = (-450, 165)
+    mix.location = (-160, 160)
+    att.attribute_name = "Colors"
+    links.new(att.outputs[0], mix.inputs[1]) # vert cols -> mix
+    links.new(img.outputs[0], mix.inputs[2]) # img cols -> mix
+    links.new(mix.outputs[0], shdr.inputs[0]) # mix -> shader
+    return mat
+'''
+        new_material = '''def CreateMaterial(material, model=None, model_dir=None):
+    mat_name = _pokedex3d_gfb_decode(material.Name()) or "Material"
+    mat = bpy.data.materials.new(name=mat_name)
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    shdr = nodes.get('Principled BSDF')
+    if shdr is None:
+        shdr = nodes.new('ShaderNodeBsdfPrincipled')
+    out = nodes.get('Material Output')
+    if out is None:
+        out = nodes.new('ShaderNodeOutputMaterial')
+        links.new(shdr.outputs['BSDF'], out.inputs['Surface'])
+
+    img = nodes.new('ShaderNodeTexImage')
+    img.name = "POKEDEX3D_ALBEDO"
+    img.label = "Pokedex3D Albedo"
+    img.location = (-450, 350)
+
+    att = nodes.new('ShaderNodeAttribute')
+    mix = nodes.new('ShaderNodeMixRGB')
+    img.location = (-450, 350)
+    att.location = (-450, 165)
+    mix.location = (-160, 160)
+    att.attribute_name = "Colors"
+    mix.blend_type = 'MULTIPLY'
+    mix.inputs[0].default_value = 1.0
+
+    resolved = None
+    selected = None
+    descriptors = _pokedex3d_gfb_material_maps(material, model) if model is not None else []
+    for descriptor in descriptors:
+        reference = descriptor["texture"] or descriptor["sampler"]
+        candidate = _pokedex3d_gfb_resolve_texture(reference, model_dir or ".")
+        if candidate:
+            resolved = candidate
+            selected = descriptor
+            break
+
+    if resolved:
+        image = bpy.data.images.load(resolved, check_existing=True)
+        img.image = image
+        image.alpha_mode = 'CHANNEL_PACKED'
+        mat["pokedex3d_basecolor_image"] = image.name
+        mat["pokedex3d_basecolor_path"] = resolved
+        mat["pokedex3d_gfb_sampler"] = selected["sampler"] if selected else ""
+        mat["pokedex3d_gfb_texture_index"] = selected["index"] if selected else -1
+        print(
+            "GFBMDL texture resolve:",
+            mat_name,
+            "sampler=" + (selected["sampler"] if selected else ""),
+            "texture=" + (selected["texture"] if selected else ""),
+            "->",
+            resolved,
+            flush=True,
+        )
+    else:
+        fallback = _pokedex3d_gfb_material_color(material)
+        if fallback is not None:
+            shdr.inputs['Base Color'].default_value = fallback
+            mat["pokedex3d_basecolor_factor"] = list(fallback)
+        printable = [
+            f'{item["order"]}:{item["sampler"]}->{item["texture"]}'
+            for item in descriptors
+        ]
+        print(
+            "GFBMDL texture missing:",
+            mat_name,
+            "maps=[" + ", ".join(printable) + "]",
+            "fallback=" + (str(fallback) if fallback is not None else "none"),
+            flush=True,
+        )
+
+    links.new(att.outputs[0], mix.inputs[1])
+    links.new(img.outputs[0], mix.inputs[2])
+    links.new(mix.outputs[0], shdr.inputs['Base Color'])
+    return mat
+'''
+        if old_material in text:
+            text = text.replace(old_material, new_material, 1)
+        elif "def CreateMaterial(material, model=None, model_dir=None):" not in text:
+            raise RuntimeError(
+                "Pinned GFBMDL importer material function changed; texture patch cannot be applied"
+            )
+
+        if "def LoadModel(buf, filename):" in text:
+            text = text.replace(
+                "def LoadModel(buf, filename):",
+                "def LoadModel(buf, filename, model_dir=None):",
+                1,
+            )
+        if "mats.append(CreateMaterial(mon.Materials(i)))" in text:
+            text = text.replace(
+                "mats.append(CreateMaterial(mon.Materials(i)))",
+                "mats.append(CreateMaterial(mon.Materials(i), mon, model_dir))",
+                1,
+            )
+        if "LoadModel(buf, f[1].name)" in text:
+            text = text.replace(
+                "LoadModel(buf, f[1].name)",
+                "LoadModel(buf, f[1].name, os.path.dirname(fpath))",
+                1,
+            )
+
         if "    print(weight_array)\n" in text:
             text = text.replace(
                 "    print(weight_array)\n",
                 "    # Suppressed huge vertex-weight debug dump for batch imports.\n",
             )
+
         gfbmdl_source.write_text(text, encoding="utf-8")
 
     # GFBMDL-era rigs use compact CamelCase bone names (LArm, RHand,
