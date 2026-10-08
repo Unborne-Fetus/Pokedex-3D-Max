@@ -10,15 +10,17 @@ echo ============================================================
 echo.
 if "%~1"=="" (
   echo No archive paths were supplied.
-  echo Auto-detecting assets downloaded by setup-all...
+  echo Syncing missing Switch model/animation packs, validating the importer,
+  echo and importing only stale or missing models.
   echo.
-)
-
-where py >nul 2>nul
-if %errorlevel%==0 (
-  py -3 -u scripts\import_switch_game_assets.py %*
+  powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_all.ps1" -SwitchAssetsOnly -SkipInstall
 ) else (
-  python -u scripts\import_switch_game_assets.py %*
+  where py >nul 2>nul
+  if %errorlevel%==0 (
+    py -3 -u scripts\import_switch_game_assets.py %*
+  ) else (
+    python -u scripts\import_switch_game_assets.py %*
+  )
 )
 
 set "EXITCODE=%ERRORLEVEL%"
