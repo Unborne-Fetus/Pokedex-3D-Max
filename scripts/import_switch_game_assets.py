@@ -263,22 +263,31 @@ def patch_addon_for_batch_imports() -> None:
     Keep these local and idempotent so setup-all/manual imports behave the same
     even when the upstream checkout is freshly cloned.
     """
-    source = ADDON_DIR / "PokemonSwitch.py"
-    if not source.is_file():
-        return
+    switch_source = ADDON_DIR / "PokemonSwitch.py"
+    if switch_source.is_file():
+        text = switch_source.read_text(encoding="utf-8")
 
-    text = source.read_text(encoding="utf-8")
+        noisy = "    print(weight_array)\n"
+        if noisy in text:
+            text = text.replace(noisy, "    # Suppressed huge vertex-weight debug dump for batch imports.\n")
 
-    noisy = "    print(weight_array)\n"
-    if noisy in text:
-        text = text.replace(noisy, "    # Suppressed huge vertex-weight debug dump for batch imports.\n")
+        unsafe = '                    if mat["mat_uvindexlayermask"] != -1:\n                        material.node_tree.links.new(uv_node.outputs["UV"], lym_image_texture.inputs["Vector"])\n'
+        safe = '                    if mat["mat_uvindexlayermask"] != -1 and lym_image_texture is not None:\n                        material.node_tree.links.new(uv_node.outputs["UV"], lym_image_texture.inputs["Vector"])\n'
+        if unsafe in text:
+            text = text.replace(unsafe, safe)
 
-    unsafe = '                    if mat["mat_uvindexlayermask"] != -1:\n                        material.node_tree.links.new(uv_node.outputs["UV"], lym_image_texture.inputs["Vector"])\n'
-    safe = '                    if mat["mat_uvindexlayermask"] != -1 and lym_image_texture is not None:\n                        material.node_tree.links.new(uv_node.outputs["UV"], lym_image_texture.inputs["Vector"])\n'
-    if unsafe in text:
-        text = text.replace(unsafe, safe)
+        switch_source.write_text(text, encoding="utf-8")
 
-    source.write_text(text, encoding="utf-8")
+    # The older GFBMDL importer has its own enormous per-vertex debug print.
+    gfbmdl_source = ADDON_DIR / "gfbmdl_import.py"
+    if gfbmdl_source.is_file():
+        text = gfbmdl_source.read_text(encoding="utf-8")
+        if "    print(weight_array)\n" in text:
+            text = text.replace(
+                "    print(weight_array)\n",
+                "    # Suppressed huge vertex-weight debug dump for batch imports.\n",
+            )
+        gfbmdl_source.write_text(text, encoding="utf-8")
 
 
 def ensure_addon() -> Path:
