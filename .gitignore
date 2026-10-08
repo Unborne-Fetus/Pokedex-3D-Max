@@ -23,3 +23,8 @@ web/models/pokeminers-manifest.js
 web/models/switch/
 .cache/switch-game-assets/
 .tools/pokemon_switch_model_importer/
+
+
+# Generated remote Switch model-pack release shards
+dist/model-pack-v5/
+.cache/remote-switch-model-pack/
