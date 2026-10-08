@@ -23,7 +23,7 @@ ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blende
 ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
 BLENDER_DEPS = CACHE / "blender-python-deps"
 CONVERSION_CACHE = CACHE / "switch-conversion-cache.json"
-CONVERSION_PIPELINE_VERSION = 3
+CONVERSION_PIPELINE_VERSION = 4
 PIPELINE_READY = CACHE / f"pipeline-v{CONVERSION_PIPELINE_VERSION}.ready.json"
 
 MODEL_EXTS = {".trmdl", ".gfbmdl"}
@@ -391,6 +391,130 @@ def patch_addon_for_batch_imports() -> None:
                 "    # Suppressed huge vertex-weight debug dump for batch imports.\n",
             )
         gfbmdl_source.write_text(text, encoding="utf-8")
+
+    # GFBMDL-era rigs use compact CamelCase bone names (LArm, RHand,
+    # Spine1...), while their animation tracks may use normalized snake_case
+    # names (left_arm, right_hand, spine_01...). Upstream requires an exact
+    # string match and therefore creates no Action even though the animation
+    # parsed successfully. Add a conservative normalized-name resolver: it
+    # only matches names that become identical after expanding a leading L/R,
+    # removing separators and normalizing zero-padded numeric components.
+    gfbanm_source = ADDON_DIR / "gfbanm_importer.py"
+    if gfbanm_source.is_file():
+        text = gfbanm_source.read_text(encoding="utf-8")
+
+        if "import re\n" not in text:
+            text = text.replace("import math\n", "import math\nimport re\n", 1)
+
+        helper_marker = "# POKEDEX3D_NORMALIZED_BONE_MATCH_V1"
+        if helper_marker not in text:
+            insertion = r'''
+# POKEDEX3D_NORMALIZED_BONE_MATCH_V1
+def _pokedex3d_normalize_bone_name(name: str) -> str:
+    """Normalize equivalent old/new Pokémon rig bone naming conventions."""
+    value = str(name or "").strip()
+    value = re.sub(r"^L(?=[A-Z])", "Left", value)
+    value = re.sub(r"^R(?=[A-Z])", "Right", value)
+    parts = re.findall(r"[A-Za-z]+|[0-9]+", value)
+    normalized = []
+    for part in parts:
+        if part.isdigit():
+            normalized.append(str(int(part)))
+        else:
+            normalized.append(part.casefold())
+    return "".join(normalized)
+
+
+def _pokedex3d_pose_bone_lookup(armature_obj):
+    lookup = {}
+    ambiguous = set()
+    for pose_bone in armature_obj.pose.bones:
+        key = _pokedex3d_normalize_bone_name(pose_bone.name)
+        if not key:
+            continue
+        if key in lookup and lookup[key] != pose_bone:
+            ambiguous.add(key)
+        else:
+            lookup[key] = pose_bone
+    for key in ambiguous:
+        lookup.pop(key, None)
+    return lookup
+
+
+'''
+            target = "def apply_animation_to_tracks(\n"
+            if target not in text:
+                raise RuntimeError("Pinned gfbanm importer layout changed; normalized bone patch cannot be applied")
+            text = text.replace(target, insertion + target, 1)
+
+        old = '''    action = None
+    context.window_manager.progress_begin(0, len(tracks))
+    for i, track in enumerate(tracks):
+        if track is None or track.name is None or track.name == "":
+            context.window_manager.progress_update(i + 1)
+            continue
+        print(f"Creating keyframes for {track.name} track.")
+        if track.name not in context.object.pose.bones.keys():
+            context.window_manager.progress_update(i + 1)
+            continue
+        pose_bone = context.object.pose.bones[track.name]
+'''
+        new = '''    action = None
+    named_track_count = 0
+    matched_track_count = 0
+    unmatched_track_names = []
+    normalized_bones = _pokedex3d_pose_bone_lookup(context.object)
+    context.window_manager.progress_begin(0, len(tracks))
+    for i, track in enumerate(tracks):
+        if track is None or track.name is None or track.name == "":
+            context.window_manager.progress_update(i + 1)
+            continue
+        named_track_count += 1
+        print(f"Creating keyframes for {track.name} track.")
+        pose_bone = context.object.pose.bones.get(track.name)
+        if pose_bone is None:
+            pose_bone = normalized_bones.get(_pokedex3d_normalize_bone_name(track.name))
+        if pose_bone is None:
+            unmatched_track_names.append(track.name)
+            context.window_manager.progress_update(i + 1)
+            continue
+        matched_track_count += 1
+'''
+        if old in text:
+            text = text.replace(old, new, 1)
+        elif "normalized_bones = _pokedex3d_pose_bone_lookup(context.object)" not in text:
+            raise RuntimeError("Pinned gfbanm importer track loop changed; normalized bone patch cannot be applied")
+
+        stats_anchor = '''    context.window_manager.progress_end()
+    context.view_layer.update()
+
+    # If requested, push the newly-created action into NLA as a new track/strip.
+'''
+        stats_replacement = '''    context.window_manager.progress_end()
+    context.view_layer.update()
+
+    match_ratio = (matched_track_count / named_track_count) if named_track_count else 0.0
+    print(
+        f"Animation bone match: {matched_track_count}/{named_track_count} "
+        f"({match_ratio:.1%})"
+    )
+    if unmatched_track_names:
+        preview = ", ".join(unmatched_track_names[:12])
+        suffix = " ..." if len(unmatched_track_names) > 12 else ""
+        print(f"Unmatched animation tracks: {preview}{suffix}")
+    if action is not None:
+        action["pokedex3d_matched_tracks"] = matched_track_count
+        action["pokedex3d_named_tracks"] = named_track_count
+        action["pokedex3d_match_ratio"] = match_ratio
+
+    # If requested, push the newly-created action into NLA as a new track/strip.
+'''
+        if stats_anchor in text:
+            text = text.replace(stats_anchor, stats_replacement, 1)
+        elif 'action["pokedex3d_matched_tracks"]' not in text:
+            raise RuntimeError("Pinned gfbanm importer stats anchor changed; normalized bone patch cannot be applied")
+
+        gfbanm_source.write_text(text, encoding="utf-8")
 
 
 
