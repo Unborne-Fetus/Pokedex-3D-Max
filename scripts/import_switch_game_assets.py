@@ -2146,6 +2146,28 @@ def choose_idle(names: list[str]) -> str | None:
     return None
 
 
+def choose_exported_idle(names: list[str], job: dict) -> str | None:
+    """Map a verified imported Switch idle to Blender's exported action name.
+
+    Blender may rename a source 'defaultidle01' action to an NLA/armature
+    label in the GLB. Only use an otherwise unnamed exported clip if it is
+    the sole real clip and came from a same-game/form idle candidate that
+    passed the existing rig compatibility check. Never designate arbitrary
+    attack, generic loop, or cross-game actions as idle.
+    """
+    explicit = choose_idle(names)
+    if explicit:
+        return explicit
+    if len(names) != 1 or job.get("animationRejected"):
+        return None
+    if job.get("animationMatch") != "same-game-same-form-same-format":
+        return None
+    sources = job.get("animations") or []
+    if not any(choose_idle([str(item.get("name", ""))]) for item in sources):
+        return None
+    return names[0]
+
+
 def build_manifest(jobs: list[dict]) -> list[dict]:
     entries: list[dict] = []
     for job in jobs:
@@ -2183,7 +2205,7 @@ def build_manifest(jobs: list[dict]) -> list[dict]:
             )
 
         names = [a["name"] for a in animations]
-        idle = choose_idle(names)
+        idle = choose_exported_idle(names, job)
         ready = bool(idle)
         if ready:
             warnings = []
@@ -2654,6 +2676,36 @@ def run_self_tests() -> None:
     assert choose_idle(["pm0001_defaultwait01_loop"]) == "pm0001_defaultwait01_loop"
     assert choose_idle(["pm0001_attack01", "pm0001_damage01"]) is None
     assert choose_idle(["pm0001_generic_loop"]) is None
+    assert choose_exported_idle(
+        ["ArmatureAction"],
+        {
+            "animationMatch": "same-game-same-form-same-format",
+            "animations": [{"name": "pm1104_00_00_00010_defaultidle01"}],
+        },
+    ) == "ArmatureAction"
+    assert choose_exported_idle(
+        ["ArmatureAction"],
+        {
+            "animationMatch": "same-game-same-form-same-format",
+            "animations": [{"name": "pm1104_attack01"}],
+        },
+    ) is None
+    assert choose_exported_idle(
+        ["ArmatureAction", "OtherAction"],
+        {
+            "animationMatch": "same-game-same-form-same-format",
+            "animations": [{"name": "pm1104_defaultidle01"}],
+        },
+    ) is None
+    assert choose_exported_idle(
+        ["ArmatureAction"],
+        {
+            "animationMatch": "none",
+            "animations": [{"name": "pm1104_defaultidle01"}],
+        },
+    ) is None
+    assert choose_exported_idle([], {"animations": [{"name": "pm1104_defaultidle01"}]}) is None
+
 
     fully_textured = {
         "textures": [{"source": 0}, {"source": 1}],
