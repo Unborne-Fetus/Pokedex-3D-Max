@@ -19,6 +19,16 @@ JOBS_JSON = ROOT / ".cache" / "pokedex3dpro-jobs.json"
 DEX_RE = re.compile(r"(?:^|[^0-9])#?0*(?P<dex>[1-9][0-9]{0,3})(?:[^0-9]|$)")
 
 
+def valid_glb(path: Path) -> bool:
+    if not path.is_file() or path.stat().st_size <= 1024:
+        return False
+    try:
+        with path.open("rb") as handle:
+            return handle.read(4) == b"glTF"
+    except OSError:
+        return False
+
+
 def run(cmd: list[str]) -> None:
     print("+", " ".join(cmd), flush=True)
     result = subprocess.run(cmd, cwd=ROOT)
@@ -139,11 +149,13 @@ def main() -> int:
         )
 
     pending = jobs if args.force else [
-        job for job in jobs if not Path(job["output"]).is_file()
+        job for job in jobs if not valid_glb(Path(job["output"]))
     ]
+    reused = len(jobs) - len(pending)
 
     print(f"Discovered {len(jobs)} official animated package(s).")
-    print(f"Need to convert {len(pending)} package(s).")
+    print(f"Already imported and reusable: {reused}")
+    print(f"Need to convert: {len(pending)} package(s).")
 
     OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
     JOBS_JSON.parent.mkdir(parents=True, exist_ok=True)
