@@ -806,10 +806,12 @@ function InstallOrUpdateWindows([hashtable]$Installers) {
             "/i",
             ('"' + $Msi + '"'),
             "/passive",
-            "/norestart",
-            "REINSTALL=ALL",
-            "REINSTALLMODE=amus"
+            "/norestart"
         )
+        if ($Installed -and $Installed.DisplayVersion -eq "0.2.1") {
+            Stamp "Same package version detected; running an in-place repair/update."
+            $Arguments += @("REINSTALL=ALL", "REINSTALLMODE=amus")
+        }
         Stamp ("Launching Windows Installer: " + $Msi)
         $Process = Start-Process -FilePath "msiexec.exe" -ArgumentList $Arguments -Wait -PassThru
         if ($Process.ExitCode -notin @(0, 1641, 3010)) {
