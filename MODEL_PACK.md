@@ -29,7 +29,7 @@ The publisher:
 - divides the GLBs into 100-Dex ZIP shards;
 - computes SHA-256 hashes for every shard and model;
 - writes `model-pack-manifest.json`;
-- creates or updates the GitHub Release tagged `model-pack-v5`;
+- creates or updates the GitHub Release tagged `model-pack-v6`;
 - uploads the manifest and shards with `gh release upload --clobber`.
 
 The default release repository is:
