@@ -7,7 +7,14 @@ title Pokedex 3D Max - One-Click Setup
 set "SETUP_ARGS="
 set "MODE=FULL"
 
-if /I "%~1"=="fast" (
+rem Normal reruns should be fast once imported assets already exist.
+rem Use "setup-all.bat full" to force the complete asset/setup pipeline.
+if /I "%~1"=="full" (
+  set "MODE=FULL"
+) else if /I "%~1"=="fast" (
+  set "MODE=FAST"
+  set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
+) else if exist "%~dp0web\models\switch-manifest.json" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
 )
@@ -31,8 +38,9 @@ if "%MODE%"=="FULL" (
   echo Existing downloads and conversions are reused whenever possible.
 ) else (
   echo FAST MODE:
-  echo   Skips Switch archive importing and the offline model sync.
-  echo   Use this only when you just want to rebuild the app.
+  echo   Reuses your already-imported models and skips expensive asset work.
+  echo   This is now the default after the first successful model import.
+  echo   Run setup-all.bat full only when you intentionally want to refresh assets.
 )
 echo.
 echo Live progress is saved to setup-all.log.
