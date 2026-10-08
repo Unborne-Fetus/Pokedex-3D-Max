@@ -13,6 +13,7 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 $ToolsDir = Join-Path $RepoRoot ".tools"
 $DistDir = Join-Path $RepoRoot "dist"
 $LogFile = Join-Path $RepoRoot "setup-all.log"
+$script:TranscriptStarted = $false
 $GradleVersion = "9.6.0"
 $JdkMajor = "22"
 $BlenderPortableVersion = "4.5.14"
@@ -747,8 +748,34 @@ function InstallExe([string]$Exe) {
 EnsureDir $ToolsDir
 EnsureDir $DistDir
 
+function StartSetupTranscript {
+    $Candidates = New-Object System.Collections.Generic.List[string]
+    [void]$Candidates.Add($LogFile)
+
+    $Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $FallbackLog = Join-Path $RepoRoot ("setup-all-" + $Timestamp + ".log")
+    [void]$Candidates.Add($FallbackLog)
+
+    foreach ($Candidate in $Candidates) {
+        try {
+            Start-Transcript -Path $Candidate -Force -ErrorAction Stop | Out-Null
+            $script:TranscriptStarted = $true
+            $script:LogFile = $Candidate
+            return
+        } catch {
+            Write-Host ("Logging warning: could not start transcript at " + $Candidate)
+            Write-Host ("  " + $_.Exception.Message)
+        }
+    }
+
+    $script:TranscriptStarted = $false
+    Write-Host "Logging warning: PowerShell transcription is unavailable."
+    Write-Host "Setup will continue without transcript logging."
+}
+
+StartSetupTranscript
+
 try {
-    Start-Transcript -Path $LogFile -Force | Out-Null
     Write-Host "============================================================"
     Write-Host "        Pokedex 3D Max - Windows Setup"
     Write-Host "============================================================"
@@ -814,5 +841,7 @@ try {
     Write-Host ("Full log: " + $LogFile)
     exit 1
 } finally {
-    try { Stop-Transcript | Out-Null } catch {}
+    if ($script:TranscriptStarted) {
+        try { Stop-Transcript | Out-Null } catch {}
+    }
 }
