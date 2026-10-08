@@ -19,7 +19,7 @@ def restore(target: Path, repo: Path = ROOT) -> int:
     target = target.resolve()
     roots = [target / 'switch', repo / 'web/models/switch',
              repo / '.cache/switch-game-assets/original-glbs']
-    # Keep source/game/animation metadata, but texture rejection is not decisive.
+    # Keep source/game/animation metadata for otherwise valid textured exports.
     metadata = {}
     for path in [target / 'switch-model-metadata.json', repo / 'web/models/switch-manifest.json']:
         if path.is_file():
@@ -68,7 +68,7 @@ def restore(target: Path, repo: Path = ROOT) -> int:
                 print(f'Skipping damaged Switch GLB {path}: {error}')
                 continue
             # Prefer the first valid textured regular Switch export.
-            score = (-rank,)
+            score = (rank,)
             key = (dex, form)
             if key not in found or score < found[key][0]:
                 entry.update(dex=dex, name=names.get(dex, entry.get('name', f'#{dex:04d}')), form=form,
