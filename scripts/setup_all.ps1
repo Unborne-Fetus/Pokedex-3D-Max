@@ -24,6 +24,7 @@ $MegaNoProgressTimeoutSeconds = 300
 $MegaDownloadRetries = 3
 $script:SwitchAssetSyncSucceeded = $null
 $script:RemoteSwitchPackSucceeded = $false
+$script:SwitchImportCompleted = $false
 
 function GetTargetPackageVersion {
     $BuildFile = Join-Path $RepoRoot "desktopApp\build.gradle.kts"
@@ -530,10 +531,14 @@ function InstallRemoteSwitchModelPack([string]$PythonCommand) {
     $PreviousErrorActionPreference = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
+        # Consume the native command's stdout with Out-Host. Without this,
+        # PowerShell includes every Python output line in the function return
+        # value alongside $false, making "$RemoteReady" truthy and skipping the
+        # local Blender fallback even when the remote pack is unavailable.
         if ($PythonCommand -eq "py") {
-            & py -3 -u $Script install --target $Target
+            & py -3 -u $Script install --target $Target 2>&1 | Out-Host
         } else {
-            & python -u $Script install --target $Target
+            & python -u $Script install --target $Target 2>&1 | Out-Host
         }
         $RemoteExit = $LASTEXITCODE
     } finally {
@@ -620,6 +625,7 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         Pop-Location
     }
     if ($ImportExit -ne 0) { throw "Switch-game model import failed with exit code $ImportExit." }
+    $script:SwitchImportCompleted = $true
     Stamp "Switch-game model import finished."
 }
 
@@ -911,11 +917,13 @@ try {
         Write-Host "============================================================" -ForegroundColor Green
         if ($script:RemoteSwitchPackSucceeded) {
             Stamp "SUCCESS - validated online Switch model pack installed."
-        } elseif ($script:SwitchAssetSyncSucceeded) {
+        } elseif ($script:SwitchImportCompleted -and $script:SwitchAssetSyncSucceeded) {
             Stamp "SUCCESS - local backup archives were synced and imported."
-        } else {
+        } elseif ($script:SwitchImportCompleted) {
             Stamp "SUCCESS WITH LOCAL BACKUP - remote sources were unavailable."
             Stamp "The importer completed using the downloaded archives already on disk."
+        } else {
+            throw "Switch asset mode finished without installing the remote pack or running the local importer."
         }
         Write-Host "============================================================" -ForegroundColor Green
         Write-Host ("Offline models: " + (Join-Path $env:LOCALAPPDATA "Pokedex3DMax\offline-models"))
