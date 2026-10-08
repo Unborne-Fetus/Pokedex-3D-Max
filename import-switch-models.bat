@@ -16,7 +16,7 @@ if "%~1"=="" (
   powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_all.ps1" -SwitchAssetsOnly -SkipInstall
 ) else (
   where py >nul 2>nul
-  if %errorlevel%==0 (
+  if not errorlevel 1 (
     py -3 -u scripts\import_switch_game_assets.py %*
   ) else (
     python -u scripts\import_switch_game_assets.py %*
