@@ -93,6 +93,31 @@ def is_shiny_model(name: str, form_name: str, model_url: str = "") -> bool:
     return any("shiny" in str(value or "").casefold() for value in values)
 
 
+def canonical_species_name(pokemon_entry: dict, dex: int) -> str:
+    candidates = [
+        pokemon_entry.get("name"),
+        pokemon_entry.get("pokemonName"),
+        pokemon_entry.get("species"),
+    ]
+    forms = pokemon_entry.get("forms") or []
+    regular = next(
+        (
+            form
+            for form in forms
+            if str(form.get("formName") or "regular").casefold() == "regular"
+        ),
+        None,
+    )
+    if isinstance(regular, dict):
+        candidates.append(regular.get("name"))
+
+    for value in candidates:
+        name = clean_field(str(value or ""))
+        if name and not name.startswith("#") and "shiny" not in name.casefold():
+            return name
+    return f"#{dex:04d}"
+
+
 def _align4(data: bytearray) -> None:
     while len(data) % 4:
         data.append(0)
@@ -305,6 +330,22 @@ def main() -> int:
                     "relative": relative,
                 }
             )
+
+    species_names = {
+        int(pokemon_entry["id"]): canonical_species_name(
+            pokemon_entry,
+            int(pokemon_entry["id"]),
+        )
+        for pokemon_entry in pokemon
+        if "id" in pokemon_entry
+    }
+    species_names_path = target / "species_names.tsv"
+    species_temp = species_names_path.with_suffix(".tmp")
+    with species_temp.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write("dex\tname\n")
+        for dex, name in sorted(species_names.items()):
+            handle.write(f"{dex}\t{clean_field(name)}\n")
+    species_temp.replace(species_names_path)
 
     entries.sort(key=lambda e: (e["dex"], 0 if e["form"].lower() == "regular" else 1, e["form"]))
     if args.limit > 0:
