@@ -2855,7 +2855,7 @@ def main() -> int:
         f"({missing_compatible_animation} missing compatible animation, "
         f"{animated_without_idle} animated but without a verified idle, "
         f"{quarantined} quarantined for rig incompatibility, "
-        f"{failed_conversions} conversion failures using fallback models)"
+        f"{failed_conversions} conversion failures left unavailable)"
     )
     print(f"Manifest: {MANIFEST_JSON}")
     if staged and not args.allow_static:
