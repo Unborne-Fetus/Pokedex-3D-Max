@@ -419,7 +419,9 @@ def scan_models(root: Path, game: str) -> list[dict]:
             continue
         model_id = int(match.group(1))
         dex = national_dex_for_model_id(model_id, game)
-        if dex <= 0 or dex > 2000:
+        # Model IDs beyond the known National Dex are not Pokédex numbers.
+        # Do not publish them under fictitious species IDs without a game-ID map.
+        if dex <= 0 or dex > 1025:
             continue
         form = infer_form(path)
         if form != "regular":
@@ -449,7 +451,9 @@ def scan_animations(root: Path, game: str) -> list[dict]:
             continue
         model_id = int(match.group(1))
         dex = national_dex_for_model_id(model_id, game)
-        if dex <= 0 or dex > 2000:
+        # Model IDs beyond the known National Dex are not Pokédex numbers.
+        # Do not publish them under fictitious species IDs without a game-ID map.
+        if dex <= 0 or dex > 1025:
             continue
         form = infer_form(path)
         if form != "regular":
