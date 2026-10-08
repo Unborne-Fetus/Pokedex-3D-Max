@@ -634,7 +634,7 @@ def _pokedex3d_gfb_texture_keys(value):
 
     relaxed_stem = re.sub(
         r"^(pm[0-9]{4})(?:[_-]00)+(?=[_-])",
-        r"\\1",
+        r"\1",
         stem,
     )
     relaxed = re.sub(r"[^a-z0-9]+", "", relaxed_stem)
