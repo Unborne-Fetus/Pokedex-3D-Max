@@ -45,20 +45,22 @@ SOURCE_PRIORITY = {
 
 
 def discover_default_inputs() -> list[Path]:
-    """Find archives downloaded by setup-all when none are supplied explicitly."""
-    roots = [
-        ROOT,
-        ROOT / "switch-assets",
-        Path.home() / "Downloads",
-        Path.home() / "Desktop",
-        ROOT / ".cache" / "mega-switch-assets",
+    """Find Switch archives without recursively walking the toolchain cache."""
+    plans = [
+        (ROOT, False),
+        (ROOT / "switch-assets", True),
+        (Path.home() / "Downloads", True),
+        (Path.home() / "Desktop", True),
+        (ROOT / ".cache" / "mega-switch-assets", True),
     ]
     found: list[Path] = []
     seen: set[Path] = set()
-    for root in roots:
+
+    for root, recursive in plans:
         if not root.exists():
             continue
-        for path in root.rglob("*"):
+        iterator = root.rglob("*") if recursive else root.iterdir()
+        for path in iterator:
             if not path.is_file() or path.suffix.lower() not in {".zip", ".7z"}:
                 continue
             if detect_game(path) == "unknown":
@@ -70,7 +72,8 @@ def discover_default_inputs() -> list[Path]:
                 continue
             seen.add(resolved)
             found.append(resolved)
-    return sorted(found, key=lambda p: p.name.lower())
+
+    return sorted(found, key=lambda p: (detect_game(p), p.name.lower(), str(p).lower()))
 
 
 def slug(value: str) -> str:
