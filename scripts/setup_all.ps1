@@ -590,6 +590,19 @@ function RestoreInstalledSwitchExports([string]$PythonCommand) {
     throw "Switch export restoration failed with exit code $RestoreExit."
 }
 
+function VerifySwitchBaseline([string]$PythonCommand) {
+    Stamp "Auditing original Switch GLBs, embedded textures, idle animations, and index/native parity."
+    $Verifier = Join-Path $RepoRoot "scripts\verify_switch_baseline.py"
+    if (-not (Test-Path $Verifier)) {
+        throw "Missing strict Switch baseline verification script."
+    }
+    if ($PythonCommand -eq "py") { & py -3 -u $Verifier } else { & python -u $Verifier }
+    if ($LASTEXITCODE -ne 0) {
+        throw "Strict Switch baseline verification failed (exit $LASTEXITCODE)."
+    }
+    Stamp "Switch baseline end-to-end audit passed."
+}
+
 function RestoreOrImportSwitchExports([string]$PythonCommand) {
     $Recovered = RestoreInstalledSwitchExports $PythonCommand
 
@@ -601,6 +614,7 @@ function RestoreOrImportSwitchExports([string]$PythonCommand) {
         if (-not $Recovered) {
             throw "No validated regular Switch exports remain. Run setup-all.bat switch or setup-all.bat full."
         }
+        VerifySwitchBaseline $PythonCommand
         return
     }
 
@@ -612,6 +626,7 @@ function RestoreOrImportSwitchExports([string]$PythonCommand) {
     if (-not $Recovered) {
         throw "No validated regular animated Switch models survived the strict v11 import."
     }
+    VerifySwitchBaseline $PythonCommand
 }
 
 function PreflightSwitchImporter([string]$PythonCommand) {
