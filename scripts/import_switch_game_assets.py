@@ -2005,7 +2005,7 @@ def run_blender(
             )
         print(
             f"WARNING - {len(failed_sources)} Switch model conversion(s) failed. "
-            "Those overrides are quarantined and their generic fallbacks remain available.",
+            "Those models remain unavailable; no alternate model source is substituted.",
             flush=True,
         )
         print(f"Failure report: {failure_path}", flush=True)
@@ -2255,16 +2255,14 @@ def install_desktop(
     root = Path(local) / "Pokedex3DMax" / "offline-models"
     root.mkdir(parents=True, exist_ok=True)
     catalog = root / "model_catalog.tsv"
-    generic_catalog = root / "generic_model_catalog.tsv"
     runtime_species_names = root / "species_names.tsv"
 
     if SPECIES_NAMES.is_file():
         shutil.copy2(SPECIES_NAMES, runtime_species_names)
 
     existing = read_catalog_rows(catalog)
-    generic = read_catalog_rows(generic_catalog)
     known_names_by_dex: dict[int, str] = read_species_names()
-    for source_rows in (existing, generic):
+    for source_rows in (existing,):
         for (dex, _form), cols in source_rows.items():
             if len(cols) >= 2:
                 candidate = cols[1].strip()
@@ -2277,19 +2275,23 @@ def install_desktop(
             return False
         return cols[3].replace("\\", "/").startswith("switch/")
 
-    def restore_generic(key: tuple[int, str]) -> None:
-        fallback = generic.get(key)
-        if fallback and len(fallback) >= 4 and (root / Path(fallback[3])).is_file():
-            existing[key] = fallback
-        else:
-            existing.pop(key, None)
+    def remove_catalog_row(key: tuple[int, str]) -> None:
+        existing.pop(key, None)
 
     def remove_switch_row(key: tuple[int, str], cols: list[str]) -> None:
         rel = cols[3].replace("\\", "/")
         stale = root / Path(rel)
         if stale.is_file():
             stale.unlink()
-        restore_generic(key)
+        remove_catalog_row(key)
+
+    # The baseline catalog is Switch-only. Old generic/CDN rows are metadata
+    # debris from previous builds and are never retained as runtime choices.
+    existing = {
+        key: cols
+        for key, cols in existing.items()
+        if row_is_switch(cols)
+    }
 
     # A full import is authoritative for every Switch row. A targeted --dex run
     # is authoritative only for those dex numbers. This prevents old spellings
@@ -2342,10 +2344,7 @@ def install_desktop(
         if entry.get("ready") is False:
             if dst.is_file():
                 dst.unlink()
-            # Never delete a working generic fallback. Only replace an old
-            # Switch override with the generic row when one exists.
-            if row_is_switch(existing.get(key)):
-                restore_generic(key)
+            remove_catalog_row(key)
             continue
 
         src = ROOT / entry["url"]
@@ -2355,12 +2354,9 @@ def install_desktop(
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
 
-        generic_row = generic.get(key)
         previous = existing.get(key)
         previous_name = ""
-        if generic_row and len(generic_row) >= 2:
-            previous_name = generic_row[1].strip()
-        elif previous and len(previous) >= 2:
+        if previous and len(previous) >= 2:
             previous_name = previous[1].strip()
 
         display_name = known_names_by_dex.get(int(entry["dex"]))
