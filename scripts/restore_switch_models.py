@@ -1,4 +1,4 @@
-"""Reactivate existing Switch GLBs, accepting their unfinished textures."""
+"""Reactivate regular animated Switch GLBs only when their textures are valid."""
 from __future__ import annotations
 import argparse
 import json
@@ -37,7 +37,7 @@ def restore(target: Path, repo: Path = ROOT) -> int:
         if not root.is_dir():
             continue
         for path in sorted(root.rglob('*.glb')):
-            if not path.parent.name.isdigit() or 'shiny' in path.stem.lower():
+            if not path.parent.name.isdigit() or path.stem.lower() != 'regular':
                 continue
             dex, form = int(path.parent.name), path.stem
             if not 1 <= dex <= 1025:
@@ -62,11 +62,13 @@ def restore(target: Path, repo: Path = ROOT) -> int:
                 if not idle:
                     continue
                 missing_texture = glb_texture_count(path) == 0
+                if missing_texture:
+                    continue
             except (OSError, ValueError, KeyError, TypeError) as error:
                 print(f'Skipping damaged Switch GLB {path}: {error}')
                 continue
-            # Restore unfinished local exports ahead of replacement pack files.
-            score = (0 if missing_texture else 1, -rank)
+            # Prefer the first valid textured regular Switch export.
+            score = (-rank,)
             key = (dex, form)
             if key not in found or score < found[key][0]:
                 entry.update(dex=dex, name=names.get(dex, entry.get('name', f'#{dex:04d}')), form=form,
@@ -98,10 +100,10 @@ def restore(target: Path, repo: Path = ROOT) -> int:
     atomic_text(target / 'model_catalog.tsv', 'dex\tname\tform\tpath\n' + ''.join(
         f"{e['dex']}\t{e['name']}\t{e['form']}\t{e['path']}\n" for e in entries))
     atomic_text(target / 'switch-model-metadata.json', json.dumps(entries, indent=2) + '\n')
-    policy = {'switchOnly': True, 'allowBrokenTextures': True}
+    policy = {'switchOnly': True, 'regularOnly': True, 'allowBrokenTextures': False}
     atomic_text(target / 'model_source_policy.json', json.dumps(policy) + '\n')
     sync_pack(target, repo)
-    print(f"Restored {len(entries)} Switch models; {sum(e['textureIssues'] for e in entries)} lack albedo bindings. Textures left unchanged.")
+    print(f"Restored {len(entries)} regular animated Switch models with embedded textures.")
     return len(entries)
 
 
