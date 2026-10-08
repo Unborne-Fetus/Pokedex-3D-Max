@@ -850,9 +850,16 @@ def install_desktop(entries: list[dict], prune_missing: bool = False) -> None:
 
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
+        previous = existing.get(key)
+        previous_name = previous[1].strip() if previous and len(previous) >= 2 else ""
+        display_name = (
+            previous_name
+            if previous_name and not previous_name.startswith("#")
+            else f"#{entry['dex']:04d}"
+        )
         existing[key] = [
             str(entry["dex"]),
-            f"#{entry['dex']:04d}",
+            display_name,
             entry["form"],
             rel.as_posix(),
         ]
