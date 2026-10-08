@@ -23,7 +23,7 @@ ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blende
 ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
 BLENDER_DEPS = CACHE / "blender-python-deps"
 CONVERSION_CACHE = CACHE / "switch-conversion-cache.json"
-CONVERSION_PIPELINE_VERSION = 5
+CONVERSION_PIPELINE_VERSION = 6
 PIPELINE_READY = CACHE / f"pipeline-v{CONVERSION_PIPELINE_VERSION}.ready.json"
 COVERAGE_REPORT = CACHE / "switch-animation-coverage.json"
 
