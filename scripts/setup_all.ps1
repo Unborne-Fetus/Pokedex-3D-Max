@@ -20,9 +20,6 @@ $MegaFolderLink = "https://mega.nz/folder/elJhVC5D#NU-yzmXuTlsIIzXAMLKVaA"
 $MegaAssetCache = Join-Path $RepoRoot ".cache\mega-switch-assets"
 $MegaNoProgressTimeoutSeconds = 300
 $MegaDownloadRetries = 3
-$script:SwitchAssetSyncSucceeded = $null
-$script:RemoteSwitchPackSucceeded = $false
-$script:SwitchImportCompleted = $false
 
 function GetTargetPackageVersion {
     $BuildFile = Join-Path $RepoRoot "desktopApp\build.gradle.kts"
@@ -67,7 +64,7 @@ function ExpandFresh([string]$Zip, [string]$Destination) {
 }
 
 function BootstrapJdk {
-    Step "STEP 1/7 - Checking JDK 22"
+    Step "STEP 1/6 - Checking JDK 22"
     $Root = Join-Path $ToolsDir ("jdk-" + $JdkMajor)
     $Marker = Join-Path $Root ".ready"
 
@@ -92,7 +89,7 @@ function BootstrapJdk {
 }
 
 function BootstrapGradle {
-    Step "STEP 2/7 - Checking Gradle"
+    Step "STEP 2/6 - Checking Gradle"
     $Root = Join-Path $ToolsDir ("gradle-" + $GradleVersion)
     $GradleBat = Join-Path $Root "bin\gradle.bat"
 
@@ -118,7 +115,7 @@ function BootstrapGradle {
 }
 
 function EnsurePython {
-    Step "STEP 3/7 - Checking Python"
+    Step "STEP 3/6 - Checking Python"
     $Command = $null
     if (Get-Command python -ErrorAction SilentlyContinue) {
         $Version = (& python --version 2>&1)
@@ -209,7 +206,7 @@ function EnsurePython {
 }
 
 function EnsureBlender {
-    Step "STEP 4/7 - Checking Blender"
+    Step "STEP 4/6 - Checking Blender"
 
     $Blender = $null
     if (Get-Command blender -ErrorAction SilentlyContinue) {
@@ -520,7 +517,7 @@ function FindSwitchAssetArchives {
 }
 
 function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
-    Step "STEP 6/7 - Importing Switch-game Pokemon models"
+    Step "STEP 5/6 - Importing Switch-game Pokemon models"
     if ($SkipSwitchAssets) {
         Stamp "Skipping Switch-game asset import because -SkipSwitchAssets was supplied."
         return
@@ -535,10 +532,8 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
 
     # Restore the source archives already downloaded for these models.
     # Only download original archives if none are present locally.
-    $script:SwitchAssetSyncSucceeded = $false
     try {
         if ($ModelArchives.Count -eq 0) { DownloadMegaSwitchAssets }
-        $script:SwitchAssetSyncSucceeded = $true
         $AllArchives = @(FindSwitchAssetArchives)
         $ModelArchives = @($AllArchives | Where-Object {
             (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
@@ -583,7 +578,6 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         # The caller requires a nonempty restored catalog before building.
         return
     }
-    $script:SwitchImportCompleted = $true
     Stamp "Switch-game model import finished."
 }
 
@@ -620,16 +614,15 @@ function PreflightSwitchImporter([string]$PythonCommand) {
 
     $Importer = Join-Path $RepoRoot "scripts\import_switch_game_assets.py"
     $BlenderHelper = Join-Path $RepoRoot "scripts\blender_import_switch_game_model.py"
-    $RemotePack = Join-Path $RepoRoot "scripts\remote_model_pack.py"
-    if (-not (Test-Path $Importer) -or -not (Test-Path $BlenderHelper) -or -not (Test-Path $RemotePack)) {
+    if (-not (Test-Path $Importer) -or -not (Test-Path $BlenderHelper)) {
         throw "Importer preflight files are missing."
     }
 
     Stamp "Compiling Python importer scripts..."
     if ($PythonCommand -eq "py") {
-        & py -3 -m py_compile $Importer $BlenderHelper $RemotePack
+        & py -3 -m py_compile $Importer $BlenderHelper
     } else {
-        & python -m py_compile $Importer $BlenderHelper $RemotePack
+        & python -m py_compile $Importer $BlenderHelper
     }
     if ($LASTEXITCODE -ne 0) { throw "Python importer syntax preflight failed." }
 
@@ -665,7 +658,7 @@ function PreflightCode([string]$PythonCommand, [string]$GradleBat) {
 }
 
 function BuildWindows([string]$GradleBat) {
-    Step "STEP 7/7 - Building Windows installers"
+    Step "STEP 6/6 - Building Windows installers"
     Push-Location $RepoRoot
     try {
         Stamp "Starting Gradle desktop build. Gradle output will remain visible."
