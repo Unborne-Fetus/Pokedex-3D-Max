@@ -1,0 +1,54 @@
+name: Switch Importer Smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/import_switch_game_assets.py"
+      - "scripts/blender_import_switch_game_model.py"
+      - ".github/workflows/switch-importer-smoke.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/import_switch_game_assets.py"
+      - "scripts/blender_import_switch_game_model.py"
+      - ".github/workflows/switch-importer-smoke.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile importer scripts
+        run: |
+          python -m py_compile             scripts/import_switch_game_assets.py             scripts/blender_import_switch_game_model.py
+
+      - name: Run Switch importer self-tests
+        run: python scripts/import_switch_game_assets.py --self-test
+
+      - name: Guard against incompatible animation fallback
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          text = Path("scripts/import_switch_game_assets.py").read_text(encoding="utf-8")
+          forbidden = [
+              'by_dex.get(job["dex"]',
+              'exact or by_dex',
+          ]
+          found = [item for item in forbidden if item in text]
+          if found:
+              raise SystemExit(
+                  "Unsafe cross-form animation fallback reintroduced: " + ", ".join(found)
+              )
+          print("No unsafe by-Dex animation fallback found.")
+          PY
