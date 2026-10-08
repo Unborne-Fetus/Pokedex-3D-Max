@@ -347,50 +347,48 @@ private fun AnimatedFilamentViewer(
             asset = asset,
             animationState = if (preferredAnimation != null) animation else null,
             onCreate = {
-                // Use Filament's transformed instance bounds rather than raw
-                // POSITION accessor bounds. Imported Switch models often carry
-                // a root rotation/translation, so raw bounds can put the camera
-                // under or beside the rendered Pokémon even when elevation=0.
-                instance.recomputeBoundingBoxes()
+                // Filament KMP 0.6 exposes the instance bounds as a Box with
+                // center/halfExtent properties. Use those transformed bounds
+                // directly so the camera starts centered on the rendered model.
                 val box = instance.boundingBox
-                if (!box.isEmpty()) {
-                    val center = box.center()
-                    val extent = box.extent()
-                    if (
-                        center.size >= 3 &&
-                        extent.size >= 3 &&
-                        center.all { it.isFinite() } &&
-                        extent.all { it.isFinite() }
-                    ) {
-                        val fittedTarget = Float3(center[0], center[1], center[2])
-                        val radius = sqrt(
-                            extent[0] * extent[0] +
-                                extent[1] * extent[1] +
-                                extent[2] * extent[2],
-                        ).coerceAtLeast(0.05f)
-                        val halfFovRadians = (30.0 * PI / 180.0 / 2.0)
-                        val fittedDistance = maxOf(
-                            (radius / sin(halfFovRadians).toFloat()) * 1.05f,
-                            0.25f,
-                        )
+                val center = box.center
+                val extent = box.halfExtent
 
-                        orbitCamera.target = fittedTarget
-                        orbitCamera.distance = fittedDistance
-                        orbitCamera.azimuth = 0f
-                        orbitCamera.elevation = 0f
+                if (
+                    center.size >= 3 &&
+                    extent.size >= 3 &&
+                    center.all { it.isFinite() } &&
+                    extent.all { it.isFinite() } &&
+                    extent.any { it > 0f }
+                ) {
+                    val fittedTarget = Float3(center[0], center[1], center[2])
+                    val radius = sqrt(
+                        extent[0] * extent[0] +
+                            extent[1] * extent[1] +
+                            extent[2] * extent[2],
+                    ).coerceAtLeast(0.05f)
+                    val halfFovRadians = (30.0 * PI / 180.0 / 2.0)
+                    val fittedDistance = maxOf(
+                        (radius / sin(halfFovRadians).toFloat()) * 1.05f,
+                        0.25f,
+                    )
 
-                        camera.target = Position(
-                            fittedTarget.x,
-                            fittedTarget.y,
-                            fittedTarget.z,
-                        )
-                        camera.eye = orbitEye(
-                            fittedTarget,
-                            fittedDistance,
-                            0f,
-                            0f,
-                        )
-                    }
+                    orbitCamera.target = fittedTarget
+                    orbitCamera.distance = fittedDistance
+                    orbitCamera.azimuth = 0f
+                    orbitCamera.elevation = 0f
+
+                    camera.target = Position(
+                        fittedTarget.x,
+                        fittedTarget.y,
+                        fittedTarget.z,
+                    )
+                    camera.eye = orbitEye(
+                        fittedTarget,
+                        fittedDistance,
+                        0f,
+                        0f,
+                    )
                 }
             },
         )
