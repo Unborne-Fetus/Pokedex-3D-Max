@@ -266,10 +266,42 @@ def verify(local_root: Path, deep: bool = True) -> int:
 
 
 def self_test() -> None:
-    assert CONVERSION_PIPELINE_VERSION > 0
-    assert isinstance(javascript_manifest, type(self_test))
-    assert material_texture_coverage({"materials": [], "textures": []}) == (0, 0)
-    print("Switch baseline verifier self-test passed.")
+    """Exercise the verifier with a synthetic skinned, textured animated GLB."""
+    import tempfile
+
+    sample = {
+        "scenes": [{"nodes": [0]}],
+        "meshes": [{}],
+        "nodes": [{}],
+        "skins": [{"joints": [0]}],
+        "materials": [{"pbrMetallicRoughness": {"baseColorTexture": {"index": 0}}}],
+        "textures": [{"source": 0}],
+        "images": [{"bufferView": 0, "mimeType": "image/png"}],
+        "bufferViews": [{"byteLength": 4}],
+        "animations": [{
+            "name": "defaultidle01",
+            "channels": [{"sampler": 0, "target": {"node": 0, "path": "rotation"}}],
+            "samplers": [{"input": 0, "output": 0}],
+        }],
+    }
+    content = json.dumps(sample).encode("utf-8")
+    content += b" " * (-len(content) % 4)
+    binary = b"\x00\x00\x00\x00"
+    length = 12 + 8 + len(content) + 8 + len(binary)
+    glb = (
+        struct.pack("<4sII", b"glTF", 2, length)
+        + struct.pack("<II", len(content), 0x4E4F534A)
+        + content
+        + struct.pack("<II", len(binary), 0x004E4942)
+        + binary
+    )
+    with tempfile.TemporaryDirectory() as folder:
+        path = Path(folder) / "sample.glb"
+        path.write_bytes(glb)
+        assert glb_json(path) == sample
+        assert inspect_glb(path, "defaultidle01") == []
+        assert "idle" in " ".join(inspect_glb(path, "wrong_idle"))
+    print("Switch baseline verifier synthetic GLB tests passed.")
 
 
 if __name__ == "__main__":
