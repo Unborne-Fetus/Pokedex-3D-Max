@@ -548,8 +548,9 @@ function InstallModels([string]$PythonCommand) {
 
     EnsureDir $Pack
     $Info = Join-Path $Pack "pack_info.json"
+    $GenericCatalog = Join-Path $Pack "generic_model_catalog.tsv"
 
-    if ((-not $RefreshModels) -and (Test-Path $Info)) {
+    if ((-not $RefreshModels) -and (Test-Path $Info) -and (Test-Path $GenericCatalog)) {
         try {
             $PackInfo = Get-Content $Info -Raw | ConvertFrom-Json
             if (($PackInfo.modelCount -gt 0) -and ($PackInfo.failedCount -eq 0)) {
@@ -560,6 +561,8 @@ function InstallModels([string]$PythonCommand) {
         } catch {
             Stamp "Existing pack_info.json could not be validated; continuing with model sync."
         }
+    } elseif ((-not $RefreshModels) -and (Test-Path $Info)) {
+        Stamp "Existing model pack predates the fallback catalog; rebuilding its catalog once."
     }
 
     $Script = Join-Path $RepoRoot "scripts\download_models.py"
