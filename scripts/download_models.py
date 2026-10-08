@@ -35,6 +35,8 @@ except ImportError:
 API_URL = "https://pokemon-3d-api.onrender.com/v1/pokemon"
 ASSET_REPO = "https://github.com/Pokemon-3D-api/assets"
 ASSET_LICENSE_URL = "https://raw.githubusercontent.com/Pokemon-3D-api/assets/main/LICENSE"
+ROOT = Path(__file__).resolve().parents[1]
+STATIC_SPECIES_NAMES = ROOT / "data" / "species_names.tsv"
 USER_AGENT = "Pokedex-3D-Max/0.1 offline-model-pack-builder"
 
 
@@ -331,21 +333,24 @@ def main() -> int:
                 }
             )
 
-    species_names = {
-        int(pokemon_entry["id"]): canonical_species_name(
-            pokemon_entry,
-            int(pokemon_entry["id"]),
-        )
-        for pokemon_entry in pokemon
-        if "id" in pokemon_entry
-    }
     species_names_path = target / "species_names.tsv"
-    species_temp = species_names_path.with_suffix(".tmp")
-    with species_temp.open("w", encoding="utf-8", newline="\n") as handle:
-        handle.write("dex\tname\n")
-        for dex, name in sorted(species_names.items()):
-            handle.write(f"{dex}\t{clean_field(name)}\n")
-    species_temp.replace(species_names_path)
+    if STATIC_SPECIES_NAMES.is_file():
+        shutil.copy2(STATIC_SPECIES_NAMES, species_names_path)
+    else:
+        species_names = {
+            int(pokemon_entry["id"]): canonical_species_name(
+                pokemon_entry,
+                int(pokemon_entry["id"]),
+            )
+            for pokemon_entry in pokemon
+            if "id" in pokemon_entry
+        }
+        species_temp = species_names_path.with_suffix(".tmp")
+        with species_temp.open("w", encoding="utf-8", newline="\n") as handle:
+            handle.write("dex\tname\n")
+            for dex, name in sorted(species_names.items()):
+                handle.write(f"{dex}\t{clean_field(name)}\n")
+        species_temp.replace(species_names_path)
 
     entries.sort(key=lambda e: (e["dex"], 0 if e["form"].lower() == "regular" else 1, e["form"]))
     if args.limit > 0:
