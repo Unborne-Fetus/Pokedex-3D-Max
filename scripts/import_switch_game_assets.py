@@ -18,6 +18,7 @@ TOOLS = ROOT / ".tools"
 WEB_ROOT = ROOT / "web" / "models" / "switch"
 MANIFEST_JSON = ROOT / "web" / "models" / "switch-manifest.json"
 MANIFEST_JS = ROOT / "web" / "models" / "switch-manifest.js"
+SPECIES_NAMES = ROOT / "data" / "species_names.tsv"
 ADDON_DIR = TOOLS / "pokemon_switch_model_importer"
 ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blender.git"
 ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
@@ -1756,6 +1757,20 @@ def merge_partial_manifest(
     ]
 
 
+def read_species_names(path: Path = SPECIES_NAMES) -> dict[int, str]:
+    names: dict[int, str] = {}
+    if not path.is_file():
+        return names
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines()[1:]:
+        cols = line.split("\t", 1)
+        if len(cols) != 2 or not cols[0].isdigit():
+            continue
+        name = cols[1].strip()
+        if name:
+            names[int(cols[0])] = name
+    return names
+
+
 def read_catalog_rows(path: Path) -> dict[tuple[int, str], list[str]]:
     rows: dict[tuple[int, str], list[str]] = {}
     if not path.is_file():
@@ -1780,10 +1795,14 @@ def install_desktop(
     root.mkdir(parents=True, exist_ok=True)
     catalog = root / "model_catalog.tsv"
     generic_catalog = root / "generic_model_catalog.tsv"
+    runtime_species_names = root / "species_names.tsv"
+
+    if SPECIES_NAMES.is_file():
+        shutil.copy2(SPECIES_NAMES, runtime_species_names)
 
     existing = read_catalog_rows(catalog)
     generic = read_catalog_rows(generic_catalog)
-    known_names_by_dex: dict[int, str] = {}
+    known_names_by_dex: dict[int, str] = read_species_names()
     for source_rows in (existing, generic):
         for (dex, _form), cols in source_rows.items():
             if len(cols) >= 2:
@@ -1857,11 +1876,13 @@ def install_desktop(
         elif previous and len(previous) >= 2:
             previous_name = previous[1].strip()
 
-        display_name = (
-            previous_name
-            if previous_name and not previous_name.startswith("#")
-            else known_names_by_dex.get(int(entry["dex"]), f"#{entry['dex']:04d}")
-        )
+        display_name = known_names_by_dex.get(int(entry["dex"]))
+        if not display_name:
+            display_name = (
+                previous_name
+                if previous_name and not previous_name.startswith("#")
+                else f"#{entry['dex']:04d}"
+            )
         existing[key] = [
             str(entry["dex"]),
             display_name,
