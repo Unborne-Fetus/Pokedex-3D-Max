@@ -17,7 +17,7 @@ if /I "%~1"=="full" (
 ) else if /I "%~1"=="fast" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
-) else if exist "%~dp0.cache\switch-game-assets\pipeline-v8.ready.json" (
+) else if exist "%~dp0.cache\switch-game-assets\pipeline-v9.ready.json" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipModels -SkipSwitchAssets"
 )
@@ -35,8 +35,8 @@ if "%MODE%"=="FULL" (
   echo   3. Reuses/installs Python + Pillow
   echo   4. Reuses/installs Blender
   echo   5. Reuses/downloads missing offline fallback models
-  echo   6. Uses the validated online Switch GLB pack first
-  echo      ^(falls back to cached archives + Blender automatically^)
+  echo   6. Uses downloaded Switch archives first
+  echo      ^(uses the online pack when local archives are absent^)
   echo   7. Builds Windows MSI/EXE installers
   echo      and automatically installs or updates the existing app
   echo.
@@ -97,3 +97,4 @@ echo ============================================================
 echo.
 pause
 exit /b %EXITCODE%
+

@@ -521,8 +521,23 @@ function FindSwitchAssetArchives {
     return $Found.ToArray()
 }
 
+function SyncSwitchWeb([string]$PythonCommand) {
+    Stamp "Syncing installed Switch models into the browser index..."
+    $WebSync = Join-Path $RepoRoot "scripts\sync_switch_web.py"
+    if ($PythonCommand -eq "py") { & py -3 $WebSync } else { & python $WebSync }
+    if ($LASTEXITCODE -ne 0) { throw "Browser Switch-model sync failed." }
+}
+
 function InstallRemoteSwitchModelPack([string]$PythonCommand) {
     Step "STEP 6/7 - Checking validated online Switch model pack"
+    if ($SkipSwitchAssets) { return $true }
+    $LocalModels = @(FindSwitchAssetArchives | Where-Object {
+        (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
+    })
+    if ($LocalModels.Count -gt 0) {
+        Stamp "Downloaded Switch model archives found; keeping local conversions as the primary source."
+        return $false
+    }
     $Script = Join-Path $RepoRoot "scripts\remote_model_pack.py"
     if (-not (Test-Path $Script)) {
         Stamp "Remote model-pack installer is missing; using local Switch archives."
@@ -623,7 +638,7 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     if (-not (Test-Path $Script)) { throw "Switch model importer script is missing." }
     $Args = @("-u", $Script)
     $Args += $Archives
-    $Args += @("--blender", $Blender)
+    $Args += @("--blender", $Blender, "--allow-broken-textures")
     $env:PYTHONUNBUFFERED = "1"
     Push-Location $RepoRoot
     try {
@@ -945,6 +960,8 @@ try {
             ImportSwitchGameAssets $Python $Blender
         }
 
+        SyncSwitchWeb $Python
+
         Write-Host ""
         Write-Host "============================================================" -ForegroundColor Green
         if ($script:RemoteSwitchPackSucceeded) {
@@ -975,10 +992,7 @@ try {
         $Blender = EnsureBlender
         ImportSwitchGameAssets $Python $Blender
     }
-    Stamp "Syncing installed Switch models into the browser index..."
-    $WebSync = Join-Path $RepoRoot "scripts\sync_switch_web.py"
-    if ($Python -eq "py") { & py -3 $WebSync } else { & python $WebSync }
-    if ($LASTEXITCODE -ne 0) { throw "Browser Switch-model sync failed." }
+    SyncSwitchWeb $Python
     BuildWindows $Gradle
     $Installers = CollectInstallers
 
@@ -1004,3 +1018,4 @@ try {
         try { Stop-Transcript | Out-Null } catch {}
     }
 }
+

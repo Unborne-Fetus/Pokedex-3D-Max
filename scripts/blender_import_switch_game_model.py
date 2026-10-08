@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
+import re
 import struct
 import sys
 import traceback
@@ -274,8 +276,9 @@ def _linked_base_color_image(material):
     for node in material.node_tree.nodes:
         if node.type != "TEX_IMAGE" or node.image is None:
             continue
-        name = (str(node.image.name) + " " + str(getattr(node.image, "filepath", ""))).casefold()
-        if any(token in name for token in rejected_tokens):
+        name = (str(node.image.name) + " " + os.path.basename(str(getattr(node.image, "filepath", "")))).casefold()
+        tokens = re.split(r"[^a-z0-9]+", name)
+        if any(token in tokens for token in rejected_tokens):
             continue
         candidates.append(node.image)
     return candidates[0] if candidates else None
@@ -671,3 +674,4 @@ if failures:
     failure_path.write_text(json.dumps(failures, indent=2) + "\n", encoding="utf-8")
     print(f"{len(failures)} conversions failed; details: {failure_path}")
     raise SystemExit(2)
+
