@@ -305,6 +305,20 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
     catalog = read_catalog(catalog_path)
     generic = read_catalog(generic_catalog_path)
 
+    # Preserve meaningful names before generic rows or remote overlays mutate
+    # the catalog. Older Switch installs may already know the species name even
+    # when a generic fallback row is missing for a particular form.
+    preserved_names: dict[tuple[int, str], str] = {
+        key: row[1]
+        for key, row in catalog.items()
+        if len(row) >= 2 and row[1] and not row[1].startswith("#")
+    }
+    names_by_dex: dict[int, str] = {}
+    for source_rows in (catalog, generic):
+        for (dex, _form), row in source_rows.items():
+            if len(row) >= 2 and row[1] and not row[1].startswith("#"):
+                names_by_dex.setdefault(dex, row[1])
+
     # Restore generic rows first, then overlay every remote Switch model.
     if generic:
         for key, row in generic.items():
@@ -323,7 +337,10 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
         key = (dex, form)
         remote_keys.add(key)
         fallback = generic.get(key)
-        name = fallback[1] if fallback and len(fallback) >= 2 else f"#{dex:04d}"
+        if fallback and len(fallback) >= 2 and fallback[1]:
+            name = fallback[1]
+        else:
+            name = preserved_names.get(key) or names_by_dex.get(dex) or f"#{dex:04d}"
         catalog[key] = [str(dex), name, form, str(entry["path"]).replace("\\", "/")]
 
     # If an old Switch row survived for a no-longer-published form, restore its
