@@ -61,7 +61,9 @@ def discover_default_inputs() -> list[Path]:
         for path in root.rglob("*"):
             if not path.is_file() or path.suffix.lower() not in {".zip", ".7z"}:
                 continue
-            if not re.search(r"(poke|pokemon)", path.stem, re.I):
+            if detect_game(path) == "unknown":
+                continue
+            if re.search(r"(poketex|texture)", path.stem, re.I):
                 continue
             resolved = path.resolve()
             if resolved in seen:
