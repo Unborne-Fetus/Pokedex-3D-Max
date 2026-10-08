@@ -31,6 +31,8 @@ addon.register()
 
 jobs = json.loads(jobs_path.read_text(encoding="utf-8"))
 failures = []
+MIN_ANIMATION_MATCHED_TRACKS = 3
+MIN_ANIMATION_MATCH_RATIO = 0.20
 
 
 def clear_scene() -> None:
@@ -165,6 +167,25 @@ def import_animations(job: dict) -> int:
                 remove_new_actions(before_actions)
                 continue
 
+            matched_tracks = int(action.get("pokedex3d_matched_tracks", 0) or 0)
+            named_tracks = int(action.get("pokedex3d_named_tracks", 0) or 0)
+            match_ratio = (
+                float(action.get("pokedex3d_match_ratio", 0.0) or 0.0)
+                if named_tracks
+                else 0.0
+            )
+            if (
+                matched_tracks < MIN_ANIMATION_MATCHED_TRACKS
+                or match_ratio < MIN_ANIMATION_MATCH_RATIO
+            ):
+                errors.append(
+                    f"{source.name}: rig compatibility too low "
+                    f"({matched_tracks}/{named_tracks} tracks, {match_ratio:.1%})"
+                )
+                clear_animation_state(armature)
+                remove_new_actions(before_actions)
+                continue
+
             animation_data = armature.animation_data
             for track in list(animation_data.nla_tracks):
                 animation_data.nla_tracks.remove(track)
@@ -175,7 +196,9 @@ def import_animations(job: dict) -> int:
 
             frame_range = tuple(float(value) for value in action.frame_range)
             print(
-                f"Using active animation: {action.name}; frames {frame_range}",
+                f"Using active animation: {action.name}; "
+                f"rig match {matched_tracks}/{named_tracks} ({match_ratio:.1%}); "
+                f"frames {frame_range}",
                 flush=True,
             )
             return 1
