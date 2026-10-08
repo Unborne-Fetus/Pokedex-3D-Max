@@ -755,7 +755,53 @@ def write_manifest(entries: list[dict]) -> None:
     js_temp.replace(MANIFEST_JS)
 
 
-def install_desktop(entries: list[dict]) -> None:
+def load_existing_manifest() -> list[dict]:
+    if not MANIFEST_JSON.is_file():
+        return []
+    try:
+        data = json.loads(MANIFEST_JSON.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    return data if isinstance(data, list) else []
+
+
+def merge_partial_manifest(
+    converted_entries: list[dict],
+    selected_dexes: set[int] | None,
+    selected_keys: set[tuple[int, str]] | None,
+) -> list[dict]:
+    """Merge a targeted import into the existing global Switch manifest."""
+    existing = load_existing_manifest()
+
+    if selected_dexes:
+        kept = [
+            entry
+            for entry in existing
+            if int(entry.get("dex", -1)) not in selected_dexes
+        ]
+    else:
+        replace_keys = selected_keys or {
+            (int(entry["dex"]), str(entry["form"]))
+            for entry in converted_entries
+        }
+        kept = [
+            entry
+            for entry in existing
+            if (int(entry.get("dex", -1)), str(entry.get("form", ""))) not in replace_keys
+        ]
+
+    merged: dict[tuple[int, str], dict] = {}
+    for entry in kept + converted_entries:
+        key = (int(entry["dex"]), str(entry["form"]))
+        merged[key] = entry
+
+    return [
+        merged[key]
+        for key in sorted(merged, key=lambda item: (item[0], item[1]))
+    ]
+
+
+def install_desktop(entries: list[dict], prune_missing: bool = False) -> None:
     local = os.environ.get("LOCALAPPDATA")
     if not local:
         return
@@ -773,15 +819,17 @@ def install_desktop(entries: list[dict]) -> None:
 
     manifest_keys = {(int(entry["dex"]), str(entry["form"])) for entry in entries}
 
-    # Remove Switch entries that disappeared from the current manifest.
-    for key, cols in list(existing.items()):
-        rel = cols[3].replace("\\", "/") if len(cols) >= 4 else ""
-        if not rel.startswith("switch/") or key in manifest_keys:
-            continue
-        stale = root / Path(rel)
-        if stale.is_file():
-            stale.unlink()
-        existing.pop(key, None)
+    # Only a full import is authoritative enough to prune unrelated Switch
+    # entries. Targeted --dex/--limit runs update their own keys only.
+    if prune_missing:
+        for key, cols in list(existing.items()):
+            rel = cols[3].replace("\\", "/") if len(cols) >= 4 else ""
+            if not rel.startswith("switch/") or key in manifest_keys:
+                continue
+            stale = root / Path(rel)
+            if stale.is_file():
+                stale.unlink()
+            existing.pop(key, None)
 
     for entry in entries:
         key = (int(entry["dex"]), str(entry["form"]))
@@ -884,6 +932,23 @@ def run_self_tests() -> None:
     assert len(chosen) == 1
     assert chosen[0]["source"] == "old.gfbmdl"
 
+    # Partial-import replacement must be scoped: one selected Dex may not
+    # imply any other Dex should be removed.
+    old_entries = [
+        {"dex": 25, "form": "regular"},
+        {"dex": 479, "form": "form-11"},
+        {"dex": 483, "form": "regular"},
+    ]
+    selected_dexes = {479}
+    kept = [
+        entry for entry in old_entries
+        if int(entry["dex"]) not in selected_dexes
+    ]
+    assert {(entry["dex"], entry["form"]) for entry in kept} == {
+        (25, "regular"),
+        (483, "regular"),
+    }
+
     print("Switch importer self-tests passed.")
 
 
@@ -905,8 +970,8 @@ def main() -> int:
     parser.add_argument("--no-desktop-install", action="store_true")
     args = parser.parse_args()
 
+    run_self_tests()
     if args.self_test:
-        run_self_tests()
         return 0
 
     if not args.inputs:
@@ -968,14 +1033,38 @@ def main() -> int:
     addon = ensure_addon()
     blender_deps = ensure_blender_python_deps()
     run_blender(jobs, blender, addon, blender_deps)
-    entries = build_manifest(jobs, args.allow_static)
+    converted_entries = build_manifest(jobs, args.allow_static)
+
+    partial_run = bool(args.dex) or args.limit > 0
+    selected_dexes = set(args.dex) if args.dex else None
+    selected_keys = {(int(job["dex"]), str(job["form"])) for job in jobs}
+
+    if partial_run:
+        entries = merge_partial_manifest(
+            converted_entries,
+            selected_dexes=selected_dexes,
+            selected_keys=selected_keys,
+        )
+    else:
+        entries = converted_entries
+
     write_manifest(entries)
     if not args.no_desktop_install:
-        install_desktop(entries)
+        # On targeted runs, touch only converted entries. On a full run, the
+        # generated manifest is authoritative and stale Switch cache entries
+        # can be safely pruned.
+        install_desktop(
+            converted_entries if partial_run else entries,
+            prune_missing=not partial_run,
+        )
 
-    ready = sum(1 for entry in entries if entry.get("ready") is not False)
-    staged = len(entries) - ready
-    print(f"Imported {len(entries)} models: {ready} active, {staged} staged awaiting animations")
+    ready = sum(1 for entry in converted_entries if entry.get("ready") is not False)
+    staged = len(converted_entries) - ready
+    verb = "Updated" if partial_run else "Imported"
+    print(
+        f"{verb} {len(converted_entries)} selected models: "
+        f"{ready} active, {staged} staged awaiting animations"
+    )
     print(f"Manifest: {MANIFEST_JSON}")
     if staged and not args.allow_static:
         print("Staged models are intentionally not selected by the app until animations are attached.")
