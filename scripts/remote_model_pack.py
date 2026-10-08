@@ -27,6 +27,10 @@ STATE_FILE = CACHE_ROOT / "installed-state.json"
 USER_AGENT = "Pokedex3DMax-RemoteModelPack/1"
 
 
+def is_shiny_entry(entry: dict) -> bool:
+    return "shiny" in str(entry.get("form", "")).casefold() or str(entry.get("name", "")).casefold().startswith("shiny ")
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -99,7 +103,7 @@ def shard_name(dex: int, shard_size: int) -> str:
 
 
 def build_pack(output: Path, base_url: str, shard_size: int) -> int:
-    entries = load_switch_entries()
+    entries = [entry for entry in load_switch_entries() if not is_shiny_entry(entry)]
     if not entries:
         raise RuntimeError("No ready Switch model entries exist to publish")
 
@@ -215,6 +219,8 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
 
     entries = manifest.get("entries")
     shards = manifest.get("shards")
+    if isinstance(entries, list):
+        entries = [entry for entry in entries if isinstance(entry, dict) and not is_shiny_entry(entry)]
     if not isinstance(entries, list) or not isinstance(shards, list) or not entries:
         print("Remote Switch model pack manifest is incomplete.")
         return 3
