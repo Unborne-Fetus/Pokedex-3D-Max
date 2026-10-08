@@ -389,8 +389,7 @@ function GetMegaDesiredRemoteArchives {
         $IsArchive = $Leaf.EndsWith(".zip", [StringComparison]::OrdinalIgnoreCase) -or
             $Leaf.EndsWith(".7z", [StringComparison]::OrdinalIgnoreCase)
         $IsSwitchPokemonPack = $Leaf -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke"
-        $IsTextureOnly = $Leaf -match "(?i)(PokeTex|Texture)"
-        if ($IsArchive -and $IsSwitchPokemonPack -and -not $IsTextureOnly) {
+        if ($IsArchive -and $IsSwitchPokemonPack) {
             if (-not $Selected.Contains($Path)) { $Selected.Add($Path) }
         }
     }
@@ -399,7 +398,7 @@ function GetMegaDesiredRemoteArchives {
         throw "MEGA metadata scan succeeded, but no Pokemon model/animation archives matched."
     }
 
-    Stamp ("Selected " + $Selected.Count + " Pokemon model/animation archive(s) instead of the whole folder.")
+    Stamp ("Selected " + $Selected.Count + " Pokemon model/animation/texture archive(s) instead of the whole folder.")
     foreach ($Path in $Selected) { Stamp ("  " + $Path) }
     return $Selected.ToArray()
 }
@@ -467,7 +466,7 @@ function DownloadMegaSwitchAssets {
     foreach ($RemotePath in $RemoteArchives) {
         DownloadMegaArchiveWithWatchdog $RemotePath
     }
-    Stamp "Selective MEGA model/animation download finished."
+    Stamp "Selective MEGA model/animation/texture download finished."
 }
 
 function FindSwitchAssetArchives {
@@ -493,8 +492,7 @@ function FindSwitchAssetArchives {
 
         $Files = Get-ChildItem @Args | Where-Object {
             ($_.Extension -in @(".zip", ".7z")) -and
-            ($_.BaseName -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke") -and
-            ($_.BaseName -notmatch "(?i)(PokeTex|Texture)")
+            ($_.BaseName -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke")
         }
         foreach ($File in $Files) {
             if (-not $Found.Contains($File.FullName)) { $Found.Add($File.FullName) }
@@ -559,7 +557,9 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         throw "Blender is unavailable, so Switch-game models cannot be converted."
     }
     $AllArchives = @(FindSwitchAssetArchives)
-    $ModelArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
+    $ModelArchives = @($AllArchives | Where-Object {
+        (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
+    })
 
     # Full setup should fill in missing Switch-era archives, not stop merely
     # because one old model ZIP happens to be present. The downloader reuses
@@ -570,7 +570,9 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         DownloadMegaSwitchAssets
         $script:SwitchAssetSyncSucceeded = $true
         $AllArchives = @(FindSwitchAssetArchives)
-        $ModelArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim)" })
+        $ModelArchives = @($AllArchives | Where-Object {
+            (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
+        })
     } catch {
         if ($ModelArchives.Count -eq 0) { throw }
         Stamp ("MEGA sync unavailable; continuing with validated local archives: " + $_.Exception.Message)
@@ -578,10 +580,17 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     if ($ModelArchives.Count -eq 0) {
         throw "The selective MEGA download completed, but no Pokemon model archives were discovered."
     }
-    $AnimArchives = @($AllArchives | Where-Object { (Split-Path $_ -Leaf) -match "(?i)(anim|animation|pokeanim)" })
-    Stamp ("Found " + $ModelArchives.Count + " Switch model archive(s) and " + $AnimArchives.Count + " animation archive(s).")
+    $AnimArchives = @($AllArchives | Where-Object {
+        (Split-Path $_ -Leaf) -match "(?i)(anim|animation|pokeanim)" -and
+        (Split-Path $_ -Leaf) -notmatch "(?i)(poketex|texture)"
+    })
+    $TextureArchives = @($AllArchives | Where-Object {
+        (Split-Path $_ -Leaf) -match "(?i)(poketex|texture)"
+    })
+    Stamp ("Found " + $ModelArchives.Count + " Switch model archive(s), " + $AnimArchives.Count + " animation archive(s), and " + $TextureArchives.Count + " texture archive(s).")
     foreach ($Archive in $ModelArchives) { Stamp ("  model: " + (Split-Path -Leaf $Archive)) }
     foreach ($Archive in $AnimArchives) { Stamp ("  anim:  " + (Split-Path -Leaf $Archive)) }
+    foreach ($Archive in $TextureArchives) { Stamp ("  tex:   " + (Split-Path -Leaf $Archive)) }
     $Archives = $AllArchives
     if ($Archives | Where-Object { $_.ToLowerInvariant().EndsWith(".7z") }) {
         [void](EnsureSevenZip)
