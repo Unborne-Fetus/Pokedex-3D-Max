@@ -38,6 +38,33 @@ SOURCE_PRIORITY = {
 }
 
 
+def discover_default_inputs() -> list[Path]:
+    """Find archives downloaded by setup-all when none are supplied explicitly."""
+    roots = [
+        ROOT,
+        ROOT / "switch-assets",
+        Path.home() / "Downloads",
+        Path.home() / "Desktop",
+        ROOT / ".cache" / "mega-switch-assets",
+    ]
+    found: list[Path] = []
+    seen: set[Path] = set()
+    for root in roots:
+        if not root.exists():
+            continue
+        for path in root.rglob("*"):
+            if not path.is_file() or path.suffix.lower() not in {".zip", ".7z"}:
+                continue
+            if not re.search(r"(poke|pokemon)", path.stem, re.I):
+                continue
+            resolved = path.resolve()
+            if resolved in seen:
+                continue
+            seen.add(resolved)
+            found.append(resolved)
+    return sorted(found, key=lambda p: p.name.lower())
+
+
 def slug(value: str) -> str:
     value = SAFE_RE.sub("-", value.strip().lower()).strip("-")
     return value or "regular"
@@ -513,7 +540,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Import Pokémon Switch game model assets into Pokedex 3D Max"
     )
-    parser.add_argument("inputs", nargs="+", type=Path, help="ZIP/7z archives or extracted folders")
+    parser.add_argument("inputs", nargs="*", type=Path, help="ZIP/7z archives or extracted folders")
     parser.add_argument("--blender", help="path to blender executable")
     parser.add_argument("--limit", type=int, default=0, help="convert only the first N deduplicated models")
     parser.add_argument("--dex", type=int, action="append", default=[], help="only convert selected National Dex number; repeatable")
@@ -525,6 +552,16 @@ def main() -> int:
     )
     parser.add_argument("--no-desktop-install", action="store_true")
     args = parser.parse_args()
+
+    if not args.inputs:
+        args.inputs = discover_default_inputs()
+        if not args.inputs:
+            print("No Switch Pokemon model archives were found.", file=sys.stderr)
+            print("Run setup-all.bat full first, or drag archive files onto import-switch-models.bat.", file=sys.stderr)
+            return 2
+        print(f"Auto-discovered {len(args.inputs)} Switch archive(s).", flush=True)
+        for source in args.inputs:
+            print(f"  {source.name}", flush=True)
 
     all_jobs: list[dict] = []
     all_animations: list[dict] = []
