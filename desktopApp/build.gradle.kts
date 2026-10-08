@@ -23,8 +23,6 @@ dependencies {
     // directly for the animated desktop viewport.
     implementation("io.github.erkko68.filament:filament-compose:0.6.0")
     implementation("org.json:json:20250517")
-    implementation("org.graalvm.polyglot:polyglot:24.2.2")
-    runtimeOnly("org.graalvm.polyglot:js:24.2.2")
 }
 
 compose.desktop {
@@ -47,16 +45,6 @@ compose.desktop {
     }
 }
 
-
-// Only battle logic/data are shared. The native EXE never packages index.html.
-tasks.processResources {
-    // Remove resources left by the previous browser-launcher build.
-    doFirst { delete(destinationDir.resolve("shared-web")) }
-    from(rootProject.file("web/brisk-engine")) {
-        include("browser-engine.js", "data.js")
-        into("battle")
-    }
-}
 
 tasks.register<JavaExec>("verifyDesktop") {
     dependsOn(tasks.classes)
