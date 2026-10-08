@@ -236,7 +236,7 @@ def ensure_bntx_decoder() -> str:
 
 
 def decode_bntx_textures(root: Path) -> int:
-    """Decode original BNTX companions to PNG; preserve all source files."""
+    """Decode BNTX companions, keeping essential albedo errors strict."""
     textures = list(root.rglob("*.bntx"))
     pending = [p for p in textures if not p.with_suffix(".png").is_file()
                or p.with_suffix(".png").stat().st_size == 0]
@@ -244,20 +244,35 @@ def decode_bntx_textures(root: Path) -> int:
         return 0
     decoder = ensure_bntx_decoder()
     completed = 0
+    optional_failures = []
+    essential_failures = []
     for source in pending:
         output = source.with_suffix(".png")
         result = subprocess.run(
             [decoder, str(source), str(output)],
-            capture_output=True, text=True,
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
         )
         if result.returncode or not output.is_file() or output.stat().st_size == 0:
             output.unlink(missing_ok=True)
-            raise RuntimeError(
-                f"BNTX decode failed for {source.name}: {(result.stderr or result.stdout)[-400:]}"
-            )
+            detail = f"{source.name}: {(result.stderr or result.stdout)[-250:]}"
+            if source.stem.lower().endswith(("_alb", "_albedo", "_basecolor")):
+                essential_failures.append(detail)
+            else:
+                optional_failures.append(detail)
+            continue
         completed += 1
         if completed % 250 == 0:
             print(f"Decoded {completed}/{len(pending)} BNTX textures in {root.name}...", flush=True)
+    if optional_failures:
+        print(
+            f"WARNING: {len(optional_failures)} non-albedo BNTX textures could not be decoded "
+            f"in {root.name}; first: {optional_failures[0]}", flush=True,
+        )
+    if essential_failures:
+        raise RuntimeError(
+            f"{len(essential_failures)} essential albedo BNTX textures failed to decode "
+            f"in {root.name}. First: {essential_failures[0]}"
+        )
     if completed:
         print(f"Decoded {completed} BNTX textures to PNG in {root.name}.", flush=True)
     return completed
