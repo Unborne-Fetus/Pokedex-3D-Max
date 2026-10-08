@@ -841,7 +841,7 @@ def job_fingerprint(job: dict) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def load_conversion_cache() -> dict[str, str]:
+def load_conversion_cache() -> dict[str, object]:
     if not CONVERSION_CACHE.is_file():
         return {}
     try:
@@ -851,7 +851,7 @@ def load_conversion_cache() -> dict[str, str]:
     return data if isinstance(data, dict) else {}
 
 
-def save_conversion_cache(cache: dict[str, str]) -> None:
+def save_conversion_cache(cache: dict[str, object]) -> None:
     CONVERSION_CACHE.parent.mkdir(parents=True, exist_ok=True)
     temp = CONVERSION_CACHE.with_suffix(".tmp")
     temp.write_text(json.dumps(cache, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -874,7 +874,29 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
         fingerprint = job_fingerprint(job)
         cache_key = output_cache_key(job)
 
-        if cache.get(cache_key) == fingerprint and existing_glb_is_complete(out, wants_animations):
+        cached = cache.get(cache_key)
+        cached_fingerprint = None
+        cached_rejected = False
+        cached_rejection_reason = None
+        if isinstance(cached, str):
+            cached_fingerprint = cached
+        elif isinstance(cached, dict):
+            cached_fingerprint = cached.get("fingerprint")
+            cached_rejected = bool(cached.get("animationRejected"))
+            cached_rejection_reason = cached.get("animationRejectionReason")
+
+        if (
+            cached_fingerprint == fingerprint
+            and existing_glb_is_complete(
+                out,
+                wants_animations and not cached_rejected,
+            )
+        ):
+            if cached_rejected:
+                job["animationCandidates"] = list(job.get("animations") or [])
+                job["animations"] = []
+                job["animationRejected"] = True
+                job["animationRejectionReason"] = cached_rejection_reason
             reused += 1
             continue
 
@@ -895,8 +917,10 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
 
     jobs_file = CACHE / "switch-model-jobs.json"
     failure_path = jobs_file.with_name("switch-model-failures.json")
-    if failure_path.exists():
-        failure_path.unlink()
+    results_path = jobs_file.with_name("switch-model-results.json")
+    for stale_report in (failure_path, results_path):
+        if stale_report.exists():
+            stale_report.unlink()
 
     jobs_file.parent.mkdir(parents=True, exist_ok=True)
     jobs_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -915,6 +939,47 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
     print(f"Converting {len(payload)} stale/missing Switch models in one Blender session ...", flush=True)
     result = subprocess.run(cmd, cwd=ROOT)
 
+    outcomes: dict[str, dict] = {}
+    if results_path.is_file():
+        try:
+            raw_results = json.loads(results_path.read_text(encoding="utf-8"))
+            outcomes = {
+                str(Path(item["source"]).resolve()): item
+                for item in raw_results
+                if isinstance(item, dict) and item.get("source")
+            }
+        except Exception as exc:
+            raise RuntimeError(f"Could not read Blender conversion results: {exc}") from exc
+
+    jobs_by_source = {
+        str(Path(job["source"]).resolve()): job
+        for job in jobs
+    }
+    payload_by_source = {
+        str(Path(item["source"]).resolve()): item
+        for item in payload
+    }
+    rejected_count = 0
+    for source, outcome in outcomes.items():
+        if not outcome.get("animationRejected"):
+            continue
+        rejected_count += 1
+        reason = outcome.get("animationRejectionReason")
+        for target in (jobs_by_source.get(source), payload_by_source.get(source)):
+            if target is None:
+                continue
+            target["animationCandidates"] = list(target.get("animations") or [])
+            target["animations"] = []
+            target["animationRejected"] = True
+            target["animationRejectionReason"] = reason
+
+    if rejected_count:
+        print(
+            f"Quarantined {rejected_count} model(s) whose animation candidates "
+            "did not safely match their rigs.",
+            flush=True,
+        )
+
     failed_sources: set[str] = set()
     failure_report_available = False
     if failure_path.is_file():
@@ -930,15 +995,25 @@ def run_blender(jobs: list[dict], blender: str, addon: Path, blender_deps: Path)
             pass
 
     # Persist verified successes even if another conversion in the batch failed,
-    # so the next run retries only the failed jobs.
+    # so the next run retries only true conversion failures. Rig-incompatible
+    # animation outcomes are cached as quarantined static models until either
+    # the assets or pipeline version changes.
     if result.returncode == 0 or failure_report_available:
         for item in payload:
             source = str(Path(item["source"]).resolve())
             if source in failed_sources:
                 continue
+            outcome = outcomes.get(source)
+            if outcome is None:
+                continue
             out = Path(item["output"])
-            if existing_glb_is_complete(out, bool(item.get("animations"))):
-                cache[item["cacheKey"]] = item["fingerprint"]
+            rejected = bool(outcome.get("animationRejected"))
+            if existing_glb_is_complete(out, bool(item.get("animations")) and not rejected):
+                cache[item["cacheKey"]] = {
+                    "fingerprint": item["fingerprint"],
+                    "animationRejected": rejected,
+                    "animationRejectionReason": outcome.get("animationRejectionReason"),
+                }
         save_conversion_cache(cache)
 
     if result.returncode:
