@@ -344,12 +344,10 @@ def main() -> int:
 
     manifest = target / "model_catalog.tsv"
     generic_manifest = target / "generic_model_catalog.tsv"
+    partial_run = args.limit > 0
 
-    # Keep an authoritative generic catalog separate from the runtime catalog.
-    # Validated Switch rows may override runtime entries, but this backup lets
-    # the Switch importer restore the generic fallback if an override later
-    # becomes staged or invalid.
-    all_generic_rows = [
+    # Build the rows produced by this invocation.
+    downloaded_generic_rows = [
         (
             int(entry["dex"]),
             str(entry["form"]),
@@ -363,6 +361,27 @@ def main() -> int:
         )
         for entry, size in successes
     ]
+
+    # A --limit smoke run is not authoritative. Merge it into any existing
+    # generic catalog instead of truncating the full pack to the first N rows.
+    generic_by_key: dict[tuple[int, str], tuple[int, str, list[str]]] = {}
+    if partial_run and generic_manifest.is_file():
+        for line in generic_manifest.read_text(
+            encoding="utf-8", errors="replace"
+        ).splitlines()[1:]:
+            cols = line.split("\t")
+            if len(cols) < 5 or not cols[0].isdigit():
+                continue
+            rel = cols[3].replace("\\", "/")
+            if not (target / Path(rel)).is_file():
+                continue
+            key = (int(cols[0]), cols[2])
+            generic_by_key[key] = (key[0], key[1], cols[:5])
+
+    for row in downloaded_generic_rows:
+        generic_by_key[(row[0], row[1])] = row
+
+    all_generic_rows = list(generic_by_key.values())
     all_generic_rows.sort(
         key=lambda item: (
             item[0],
@@ -430,18 +449,24 @@ def main() -> int:
     metadata = {
         "source": ASSET_REPO,
         "catalog": API_URL,
-        "modelCount": len(successes),
+        "modelCount": len(all_generic_rows),
         "switchModelCount": len(preserved_switch),
         "catalogModelCount": len(combined_rows),
         "genericCatalog": generic_manifest.name,
         "failedCount": len(failures),
-        "totalBytes": sum(size for _, size in successes)
+        "partial": partial_run,
+        "totalBytes": sum(int(row[2][4]) for row in all_generic_rows)
         + sum(int(cols[4]) for cols in preserved_switch.values()),
     }
-    (target / "pack_info.json").write_text(
+    info_name = "pack_info.partial.json" if partial_run else "pack_info.json"
+    (target / info_name).write_text(
         json.dumps(metadata, indent=2) + "\n",
         encoding="utf-8",
     )
+    if not partial_run:
+        stale_partial = target / "pack_info.partial.json"
+        if stale_partial.is_file():
+            stale_partial.unlink()
 
     attribution = (
         "Pokedex 3D Max offline model pack\n"
