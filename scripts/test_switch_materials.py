@@ -39,6 +39,14 @@ class MaterialTests(unittest.TestCase):
     def test_missing_material_has_no_image(self):
         self.assertIsNone(self.select(None))
 
+    def test_switch_importer_patch_skips_empty_texture_references(self):
+        source = Path(__file__).with_name("import_switch_game_assets.py").read_text()
+        self.assertIn("__pokedex3d_missing_texture__", source)
+        self.assertNotIn(
+            'if not reference:\\n        return os.path.join(filep, reference)',
+            source,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
