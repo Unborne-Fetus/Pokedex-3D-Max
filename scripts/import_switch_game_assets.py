@@ -19,6 +19,7 @@ WEB_ROOT = ROOT / "web" / "models" / "switch"
 MANIFEST_JSON = ROOT / "web" / "models" / "switch-manifest.json"
 MANIFEST_JS = ROOT / "web" / "models" / "switch-manifest.js"
 SPECIES_NAMES = ROOT / "data" / "species_names.tsv"
+SWSH_MODEL_DEX = ROOT / "data" / "swsh_model_dex.tsv"
 ADDON_DIR = TOOLS / "pokemon_switch_model_importer"
 ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blender.git"
 ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
@@ -51,6 +52,33 @@ SOURCE_PRIORITY = {
     "bdsp": 100,
     "unknown": 0,
 }
+
+
+def read_swsh_model_dex(path: Path = SWSH_MODEL_DEX) -> dict[int, int]:
+    mapping: dict[int, int] = {}
+    if not path.is_file():
+        return mapping
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines()[1:]:
+        cols = line.split("\t")
+        if len(cols) < 2:
+            continue
+        try:
+            model_id = int(cols[0])
+            dex = int(cols[1])
+        except ValueError:
+            continue
+        if model_id > 0 and dex > 0:
+            mapping[model_id] = dex
+    return mapping
+
+
+SWSH_MODEL_DEX_MAP = read_swsh_model_dex()
+
+
+def national_dex_for_model_id(model_id: int, game: str) -> int:
+    if game == "swsh":
+        return SWSH_MODEL_DEX_MAP.get(model_id, model_id)
+    return model_id
 
 
 def is_switch_pokemon_asset_archive(path: Path) -> bool:
@@ -259,12 +287,14 @@ def scan_models(root: Path, game: str) -> list[dict]:
         match = DEX_RE.search(str(path))
         if not match:
             continue
-        dex = int(match.group(1))
+        model_id = int(match.group(1))
+        dex = national_dex_for_model_id(model_id, game)
         if dex <= 0 or dex > 2000:
             continue
         jobs.append(
             {
                 "dex": dex,
+                "modelId": model_id,
                 "form": infer_form(path),
                 "formKey": infer_form_key(path),
                 "game": game,
@@ -284,12 +314,14 @@ def scan_animations(root: Path, game: str) -> list[dict]:
         match = DEX_RE.search(str(path))
         if not match:
             continue
-        dex = int(match.group(1))
+        model_id = int(match.group(1))
+        dex = national_dex_for_model_id(model_id, game)
         if dex <= 0 or dex > 2000:
             continue
         animations.append(
             {
                 "dex": dex,
+                "modelId": model_id,
                 "form": infer_form(path),
                 "formKey": infer_form_key(path),
                 "game": game,
@@ -406,6 +438,7 @@ def write_animation_coverage_report(jobs: list[dict], animations: list[dict]) ->
             "missingExamples": [
                 {
                     "dex": int(job["dex"]),
+                    "modelId": int(job.get("modelId", job["dex"])),
                     "form": job["form"],
                     "formKey": job.get("formKey"),
                     "source": Path(job["source"]).name,
@@ -1748,6 +1781,7 @@ def build_manifest(jobs: list[dict], allow_static: bool) -> list[dict]:
         entries.append(
             {
                 "dex": job["dex"],
+                "modelId": job.get("modelId", job["dex"]),
                 "form": job["form"],
                 "formKey": job.get("formKey"),
                 "url": f"web/models/switch/{job['dex']:04d}/{job['form']}.glb",
@@ -2036,6 +2070,14 @@ def run_self_tests() -> None:
     assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
     assert infer_form_key(Path("pm0479_16_00_20012_battleidle02.tranm")) == "16"
     assert infer_form_key(Path("pm0479_00_00.trmdl")) == "regular"
+
+    assert national_dex_for_model_id(917, "swsh") == 845
+    assert national_dex_for_model_id(920, "swsh") == 823
+    assert national_dex_for_model_id(950, "swsh") == 812
+    assert national_dex_for_model_id(940, "swsh") == 890
+    assert national_dex_for_model_id(983, "swsh") == 892
+    assert national_dex_for_model_id(6, "swsh") == 6
+    assert national_dex_for_model_id(917, "sv") == 917
 
     legacy_model = {
         "dex": 479,
