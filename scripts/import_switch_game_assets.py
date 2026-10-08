@@ -77,6 +77,17 @@ def is_switch_pokemon_asset_archive(path: Path) -> bool:
     return not any(token in stem for token in excluded)
 
 
+def is_switch_texture_archive(path: Path) -> bool:
+    if path.suffix.lower() not in {".zip", ".7z"}:
+        return False
+    stem = path.stem.lower().replace("_", "-")
+    return (
+        detect_game(path) != "unknown"
+        and "poke" in stem
+        and ("poketex" in stem or "texture" in stem)
+    )
+
+
 def discover_default_inputs() -> list[Path]:
     """Find Switch archives without recursively walking the toolchain cache."""
     plans = [
@@ -501,6 +512,11 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
         parent = os.path.dirname(search_root)
         if parent and parent != search_root:
             roots.append(parent)
+        extra_roots = os.environ.get("POKEDEX3D_TEXTURE_ROOTS", "")
+        for extra in extra_roots.split(os.pathsep):
+            extra = extra.strip()
+            if extra:
+                roots.append(os.path.abspath(extra))
         image_exts = {".png", ".tga", ".jpg", ".jpeg", ".bmp", ".dds"}
         visited = set()
         for root in roots:
@@ -900,9 +916,32 @@ def glb_texture_count(path: Path) -> int:
         doc = parse_glb_doc(path)
     except Exception:
         return 0
-    images = doc.get("images") or []
+
     textures = doc.get("textures") or []
-    return min(len(images), len(textures))
+    materials = doc.get("materials") or []
+    if not textures or not materials:
+        return 0
+
+    referenced: set[int] = set()
+    for material in materials:
+        if not isinstance(material, dict):
+            continue
+        pbr = material.get("pbrMetallicRoughness") or {}
+        slots = [
+            pbr.get("baseColorTexture"),
+            pbr.get("metallicRoughnessTexture"),
+            material.get("normalTexture"),
+            material.get("occlusionTexture"),
+            material.get("emissiveTexture"),
+        ]
+        for slot in slots:
+            if not isinstance(slot, dict):
+                continue
+            index = slot.get("index")
+            if isinstance(index, int) and 0 <= index < len(textures):
+                referenced.add(index)
+
+    return len(referenced)
 
 
 def existing_glb_is_complete(path: Path, wants_animations: bool) -> bool:
@@ -977,6 +1016,7 @@ def run_blender(
     blender: str,
     addon: Path,
     blender_deps: Path,
+    texture_roots: list[Path] | None = None,
     refresh_changed: bool = False,
     force: bool = False,
 ) -> None:
@@ -1089,7 +1129,12 @@ def run_blender(
         f"Converting {len(payload)} {reason} Switch model(s) in one Blender session ...",
         flush=True,
     )
-    result = subprocess.run(cmd, cwd=ROOT)
+    blender_env = os.environ.copy()
+    if texture_roots:
+        blender_env["POKEDEX3D_TEXTURE_ROOTS"] = os.pathsep.join(
+            str(path.resolve()) for path in texture_roots if path.exists()
+        )
+    result = subprocess.run(cmd, cwd=ROOT, env=blender_env)
 
     outcomes: dict[str, dict] = {}
     if results_path.is_file():
@@ -1527,6 +1572,9 @@ def run_self_tests() -> None:
     ]
     assert all(is_switch_pokemon_asset_archive(Path(name)) for name in accepted_archives)
     assert all(not is_switch_pokemon_asset_archive(Path(name)) for name in rejected_archives)
+    assert is_switch_texture_archive(Path("SV-PokeTex.zip"))
+    assert is_switch_texture_archive(Path("ZA-PokeTexture.zip"))
+    assert not is_switch_texture_archive(Path("SV-Poke.zip"))
 
     assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
     assert infer_form_key(Path("pm0479_16_00_20012_battleidle02.tranm")) == "16"
@@ -1718,8 +1766,14 @@ def main() -> int:
 
     all_jobs: list[dict] = []
     all_animations: list[dict] = []
+    texture_roots: list[Path] = []
     for source in args.inputs:
         root, game = extract_input(source)
+        if is_switch_texture_archive(source):
+            texture_roots.append(root)
+            print(f"{source.name}: texture dependency root ({game})")
+            continue
+
         found = scan_models(root, game)
         anims = scan_animations(root, game)
         print(f"{source.name}: {len(found)} model files, {len(anims)} animation files ({game})")
@@ -1773,6 +1827,7 @@ def main() -> int:
         blender,
         addon,
         blender_deps,
+        texture_roots=texture_roots,
         refresh_changed=args.refresh_changed,
         force=args.force,
     )
