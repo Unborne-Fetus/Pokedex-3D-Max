@@ -741,10 +741,14 @@ function PreflightCode([string]$PythonCommand, [string]$GradleBat) {
     Step "PRECHECK - Validating importer and desktop renderer"
     PreflightSwitchImporter $PythonCommand
 
-    Stamp "Compiling native desktop renderer before expensive asset work..."
+    Stamp "Validating shared web code and compiling desktop launcher before expensive asset work..."
+    if (Get-Command node.exe -ErrorAction SilentlyContinue) {
+        & node.exe (Join-Path $RepoRoot "scripts\check_shared_app.js")
+        if ($LASTEXITCODE -ne 0) { throw "Shared app validation failed." }
+    }
     Push-Location $RepoRoot
     try {
-        & $GradleBat --console=plain --no-daemon :desktopApp:compileKotlin
+        & $GradleBat --console=plain --no-daemon :desktopApp:classes
         if ($LASTEXITCODE -ne 0) { throw "Desktop Kotlin preflight compile failed." }
     } finally {
         Pop-Location
@@ -797,6 +801,14 @@ function CollectInstallers {
         $Result["Exe"] = $Exe
     }
 
+    $Image = Join-Path $RepoRoot "desktopApp\build\compose\binaries\main\app\Pokedex 3D Max"
+    if (Test-Path $Image) {
+        $Portable = Join-Path $DistDir "Pokedex-3D-Max-Portable"
+        EnsureDir $Portable
+        Copy-Item (Join-Path $Image "*") $Portable -Recurse -Force
+        $Result["Portable"] = Join-Path $Portable "Pokedex 3D Max.exe"
+        Stamp ("Portable app (no installer required): " + $Result["Portable"])
+    }
     return $Result
 }
 
@@ -837,11 +849,14 @@ function InstallOrUpdateWindows([hashtable]$Installers) {
 
     if ($Installers.ContainsKey("Msi") -and (Test-Path $Installers["Msi"])) {
         $Msi = $Installers["Msi"]
+        $InstallerLog = Join-Path $DistDir "windows-install.log"
         $Arguments = @(
             "/i",
             ('"' + $Msi + '"'),
             "/passive",
-            "/norestart"
+            "/norestart",
+            "/L*v",
+            ('"' + $InstallerLog + '"')
         )
         if ($Installed -and $script:TargetPackageVersion -and $Installed.DisplayVersion -eq $script:TargetPackageVersion) {
             Stamp "Same package version detected; running an in-place repair/update."
@@ -849,8 +864,17 @@ function InstallOrUpdateWindows([hashtable]$Installers) {
         }
         Stamp ("Launching Windows Installer: " + $Msi)
         $Process = Start-Process -FilePath "msiexec.exe" -ArgumentList $Arguments -Wait -PassThru
+        if ($Process.ExitCode -eq 1602) {
+            Stamp "Windows cancelled installation (1602). The new build is ready, but the installed app was not updated."
+            Stamp ("Installer details: " + $InstallerLog)
+            if ($Installers.ContainsKey("Portable")) {
+                Stamp ("Run the updated app without installing: " + $Installers["Portable"])
+                return
+            }
+            throw "Installation was cancelled. Rerun the MSI in dist to finish installing. Log: $InstallerLog"
+        }
         if ($Process.ExitCode -notin @(0, 1641, 3010)) {
-            throw "Pokedex 3D Max MSI install/update failed with exit code $($Process.ExitCode)."
+            throw "Pokedex 3D Max MSI install/update failed with exit code $($Process.ExitCode). Details: $InstallerLog"
         }
         if ($Process.ExitCode -eq 3010) {
             Stamp "Install/update succeeded; Windows reports that a restart may be required."

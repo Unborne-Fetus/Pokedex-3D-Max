@@ -14,15 +14,26 @@ A modern, unofficial 3D Pokédex for Android and Windows.
 - Online model catalog fallback
 - Automatic preference for an installed offline model pack
 
-### Windows
-- Compose Desktop
-- SceneView Compose + Filament desktop renderer
-- Native Windows `.exe` and `.msi` builds
-- Offline model-pack support
-- Search by Pokémon, form, or National Dex number
-- Mouse orbit / zoom through the SceneView desktop viewer
+### Windows and browser index
+- The Windows EXE opens the same bundled index in an Edge or Chrome app window.
+- Shared search, forms, model fallback, animation playback, idle breaks, camera reset and auto-rotate.
+- Shared local battle simulator using the adapted Brisk engine and bundled species/move data.
+- Downloaded Windows model packs are served locally, with online fallback for missing models.
+- Windows MSI/EXE installers plus a portable app in `dist/Pokedex-3D-Max-Portable`.
 
-The Windows renderer requires JDK 22 at build time. The packaged Windows app includes its runtime, so end users do not need to install Java separately.
+Building requires JDK 22. The packaged app includes Java; Edge or Chrome must be installed. The viewer and its Draco decoder are bundled. Online catalog updates and remote models still require internet. The optional Three.js rig fallback also uses online dependencies.
+
+After pulling updates, run in PowerShell:
+
+```powershell
+cd "C:\ROM Hacks\Pokedex-3D-Max"
+git pull
+.\setup-all.bat full
+```
+
+If Windows cancels installation with code 1602, setup retains the new portable app and writes `dist/windows-install.log`. Run `dist/Pokedex-3D-Max-Portable/Pokedex 3D Max.exe` to use the new build without installing. A cancelled install does not update the existing shortcut.
+
+Open `index.html` directly or serve the repository with `python -m http.server 8000`. Battle data is embedded so battles also work when opening the index directly.
 
 ## 3D model library
 
@@ -72,8 +83,8 @@ That workflow is configured to run when the model-pack script/workflow itself ch
 The Windows app looks in this order:
 
 1. Folder specified by `POKEDEX_3D_MAX_MODELS`
-2. `./offline-models`
-3. `%LOCALAPPDATA%\Pokedex3DMax\offline-models`
+2. `%LOCALAPPDATA%\Pokedex3DMax\offline-models`
+3. `./offline-models`
 4. `%USERPROFILE%\Pokedex3DMax\offline-models`
 
 ### Android model-pack locations
@@ -185,3 +196,4 @@ python scripts\import_pokeminers.py --limit 10
 
 Nonzero Pokemon GO form codes are preserved as `go-form-XX` until they are
 mapped to human-readable form names.
+

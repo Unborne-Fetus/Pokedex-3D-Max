@@ -17,6 +17,11 @@ const LOCAL_MODELS = [
   ...(Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
     ? window.POKEDEX3D_SWITCH_MODELS
     : []),
+  ...(window.POKEDEX3D_DESKTOP_MODELS || []).map(model => {
+    const metadata = (window.POKEDEX3D_SWITCH_MODELS || []).find(entry =>
+      Number(entry.dex) === Number(model.dex) && entry.form === model.form);
+    return {...metadata, ...model};
+  }),
 ].filter(model => model?.valid !== false && model?.ready !== false);
 
 function localModelKey(model) {
@@ -108,7 +113,8 @@ const resetCameraBtn = document.querySelector("#resetCamera");
 const toggleRotateBtn = document.querySelector("#toggleRotate");
 const toggleIdleBreaksBtn = document.querySelector("#toggleIdleBreaks");
 
-let models = makeInstantRegularCatalog();\nwindow.POKEDEX3D_MODELS = models;
+let models = makeInstantRegularCatalog();
+window.POKEDEX3D_MODELS = models;
 let filtered = models;
 let selectedIndex = 0;
 let autoRotate = false;
@@ -145,7 +151,7 @@ function makeInstantRegularCatalog() {
     const dex = i + 1;
     return {
       dex,
-      name: "#" + String(dex).padStart(4, "0"),
+      name: window.POKEDEX3D_NAMES?.[dex] || "#" + String(dex).padStart(4, "0"),
       form: "regular",
       url: REGULAR_MODEL(dex),
     };
@@ -233,18 +239,20 @@ function catalogToModels(payload) {
 }
 
 async function enhanceCatalogInBackground() {
-  const cached = localStorage.getItem(CATALOG_CACHE_KEY);
+  let cached = null;
+  try { cached = localStorage.getItem(CATALOG_CACHE_KEY); } catch {}
   if (cached) {
     try {
       const cachedModels = catalogToModels(JSON.parse(cached));
       if (cachedModels.length) {
-        models = cachedModels;\n        window.POKEDEX3D_MODELS = models;
+        models = cachedModels;
+        window.POKEDEX3D_MODELS = models;
         statusEl.textContent =
           models.length.toLocaleString() + " 3D models · cached catalog";
         refreshCurrentPokemonAfterCatalogUpdate();
       }
     } catch {
-      localStorage.removeItem(CATALOG_CACHE_KEY);
+      try { localStorage.removeItem(CATALOG_CACHE_KEY); } catch {}
     }
   }
 
@@ -262,8 +270,9 @@ async function enhanceCatalogInBackground() {
     const richer = catalogToModels(payload);
     if (!richer.length) throw new Error("Catalog contained no model entries");
 
-    localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(payload));
-    models = richer.filter(model => !isShiny(model));\n    window.POKEDEX3D_MODELS = models;
+    try { localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(payload)); } catch {}
+    models = richer.filter(model => !isShiny(model));
+    window.POKEDEX3D_MODELS = models;
     statusEl.textContent =
       models.length.toLocaleString() + " 3D models available";
     refreshCurrentPokemonAfterCatalogUpdate();
@@ -419,7 +428,7 @@ function getModelCandidates(model) {
   const original = String(model?.url || "");
 
   if (model?.local || original.startsWith("web/models/")) {
-    const fallback = String(model?.fallbackUrl || "");
+    const fallback = String(model?.fallbackUrl || REGULAR_MODEL(model?.dex));
     return [...new Set([original, fallback].filter(Boolean))];
   }
 
@@ -648,7 +657,7 @@ function resetViewerCamera() {
     viewer.cameraTarget = "auto auto auto";
   }
 
-  viewer.cameraOrbit = "auto auto auto";
+  viewer.cameraOrbit = "0deg 75deg auto";
   viewer.fieldOfView = (Number(currentModel?.fieldOfView) || 30) + "deg";
   viewer.jumpCameraToGoal?.();
 }
@@ -1679,9 +1688,10 @@ viewer.addEventListener("load", async () => {
   // regular forms, prefer the public rigged PokeMiners FBX and animate its
   // skeleton directly in-browser. This avoids shipping hundreds of generated
   // GLBs just to give static Pokemon a natural idle.
-  if (availableAnimations.length === 0) {
+  if (!chooseSafeIdle(availableAnimations) && !availableAnimations.includes(currentModel?.idleAnimation)) {
+    const request = modelLoadRequest;
     const rigged = await showRiggedGlbFallback(currentModel);
-    if (rigged) return;
+    if (request !== modelLoadRequest || rigged) return;
 
     if (activeCandidateIndex + 1 < activeModelCandidates.length) {
       console.warn(
@@ -1753,6 +1763,9 @@ renderList();
 customElements.whenDefined("model-viewer").then(() => {
   const ModelViewerElement = customElements.get("model-viewer");
   if (ModelViewerElement) {
+    if (location.protocol !== "file:") {
+      ModelViewerElement.dracoDecoderLocation = new URL("web/vendor/draco/", location.href).href;
+    }
     ModelViewerElement.minimumRenderScale = 1;
     ModelViewerElement.modelCacheSize = 8;
   }
@@ -1760,3 +1773,10 @@ customElements.whenDefined("model-viewer").then(() => {
   selectModel(0);
   enhanceCatalogInBackground();
 });
+
+
+if (new URLSearchParams(location.search).has("desktop")) {
+  document.querySelector(".badge").textContent = "WINDOWS";
+  const heartbeat = () => fetch("/heartbeat", {cache:"no-store"}).catch(() => {});
+  heartbeat(); setInterval(heartbeat, 10000);
+}

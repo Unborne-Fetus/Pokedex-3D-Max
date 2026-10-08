@@ -24,9 +24,10 @@ const MODEL_CDN="https://cdn.jsdelivr.net/gh/Pokemon-3D-api/assets@main/models/o
 function pretty(v){return String(v||"").replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());}
 function modelForSpecies(species){
   const list=Array.isArray(window.POKEDEX3D_MODELS)?window.POKEDEX3D_MODELS:[];
-  const exact=list.find(m=>Number(m.dex)===Number(species)&&String(m.form||"").toLowerCase()==="regular")
-    ||list.find(m=>Number(m.dex)===Number(species)&&!String(m.form||"").toLowerCase().includes("shiny"));
-  return exact?.url||(MODEL_CDN+Number(species)+".glb");
+  const dex=window.BRISK_BATTLE_DATA?.species?.[species]?.nationalDex||species;
+  const exact=list.find(m=>Number(m.dex)===Number(dex)&&String(m.form||"").toLowerCase()==="regular")
+    ||list.find(m=>Number(m.dex)===Number(dex)&&!String(m.form||"").toLowerCase().includes("shiny"));
+  return exact?.url||(MODEL_CDN+Number(dex)+".glb");
 }
 function engine(){
   if(!window.BriskBattleEngine)throw new Error("Brisk battle engine did not load.");
@@ -34,7 +35,7 @@ function engine(){
 }
 async function ensureEngine(){
   if(engineReady)return engineReady;
-  engineReady=engine().loadData("web/brisk-engine/brisk-dex-data.json");
+  engineReady=engine().loadData("web/brisk-engine/brisk-dex-data.json").catch(err=>{engineReady=null;throw err;});
   await engineReady;
   return true;
 }
@@ -52,6 +53,12 @@ function setViewer(viewer,mon,back){
   if(viewer.getAttribute("src")!==url)viewer.setAttribute("src",url);
   viewer.setAttribute("alt","3D model of "+mon.name);
   viewer.cameraOrbit=back?"180deg 75deg auto":"0deg 75deg auto";
+}
+for(const viewer of [els.playerViewer,els.foeViewer]){
+  viewer.addEventListener("load",()=>{
+    const idle=(viewer.availableAnimations||[]).find(name=>/idle|wait|stand|breath|fight[_ -]?a/i.test(name));
+    if(idle){viewer.animationName=idle;viewer.play();}
+  });
 }
 function appendLogs(){
   const logs=snap?.log||[];

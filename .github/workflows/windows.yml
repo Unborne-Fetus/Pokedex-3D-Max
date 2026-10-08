@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - "desktopApp/**"
+      - "index.html"
+      - "web/**"
+      - "scripts/check_shared_app.js"
       - "build.gradle.kts"
       - "settings.gradle.kts"
       - ".github/workflows/windows.yml"
@@ -12,6 +15,9 @@ on:
     branches: [main]
     paths:
       - "desktopApp/**"
+      - "index.html"
+      - "web/**"
+      - "scripts/check_shared_app.js"
       - "build.gradle.kts"
       - "settings.gradle.kts"
   workflow_dispatch:
@@ -35,6 +41,9 @@ jobs:
         with:
           gradle-version: "9.6.0"
 
+      - name: Check shared app
+        run: node scripts/check_shared_app.js
+
       - name: Build Windows EXE and MSI
         shell: pwsh
         run: gradle :desktopApp:packageExe :desktopApp:packageMsi
@@ -46,3 +55,5 @@ jobs:
           path: |
             desktopApp/build/compose/binaries/main/exe/**
             desktopApp/build/compose/binaries/main/msi/**
+            desktopApp/build/compose/binaries/main/app/**
+

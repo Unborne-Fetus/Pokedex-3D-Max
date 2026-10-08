@@ -1935,13 +1935,19 @@ function browserSnapshot(room){
   };
 }
 async function loadBriskData(url){
-  const response=await fetch(url,{cache:"force-cache"});
+  if(global.BRISK_BATTLE_DATA){
+    BRISK_DATA=global.BRISK_BATTLE_DATA;
+  }else{
+  const response=await fetch(url,{cache:"no-cache"});
   if(!response.ok)throw new Error("Brisk battle data HTTP "+response.status);
   BRISK_DATA=await response.json();
+  }
+  if(!Object.keys(BRISK_DATA.species||{}).length||!Object.keys(BRISK_DATA.moveDetails||{}).length)throw new Error("Battle data is missing species or moves.");
   return true;
 }
 function createLocalBotBattle(teamValues,difficulty){
-  const ids=(teamValues||[]).map(browserSpeciesId).filter(Boolean).slice(0,6);
+  const ids=(teamValues||[]).map(browserSpeciesId).slice(0,6);
+  if(ids.some(id=>!id))throw new Error("Unknown Pokémon in team. Check each name or number.");
   if(!ids.length)throw new Error("No valid Pokémon were selected.");
   const playerTeam=ids.map(browserPlayerMon).filter(Boolean);
   const diff=botDifficultyKey(difficulty);
@@ -1982,3 +1988,4 @@ global.BriskBattleEngine={
   version:"advanced-v18-browser"
 };
 })(window);
+

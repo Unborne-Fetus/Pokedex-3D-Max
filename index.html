@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin />
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
   <link rel="stylesheet" href="web/styles.css?v=4" />
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"></script>
+  <script defer src="web/vendor/model-viewer.min.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -143,10 +143,14 @@
   </script>
   <script src="web/models/pokeminers-manifest.js?v=1" onerror="this.remove()"></script>
   <script src="web/models/pokedex3dpro-manifest.js?v=1" onerror="this.remove()"></script>
+  <script src="web/species-names.js"></script>
+  <script src="web/desktop-models.js" onerror="this.remove()"></script>
+  <script src="web/brisk-engine/data.js"></script>
   <script src="web/models/manifest.js?v=1"></script>
   <script src="web/models/switch-manifest.js?v=1" onerror="this.remove()"></script>
-  <script defer src="web/app.js?v=24"></script>
-  <script defer src="web/brisk-engine/browser-engine.js?v=1"></script>\n  <script defer src="web/battle-sim.js?v=2"></script>
+  <script defer src="web/app.js?v=25"></script>
+  <script defer src="web/brisk-engine/browser-engine.js?v=1"></script>
+  <script defer src="web/battle-sim.js?v=3"></script>
   <script>
     (function(){
       var dex=document.getElementById("dexView"), battle=document.getElementById("battleView");
@@ -162,3 +166,4 @@
   </script>
 </body>
 </html>
+
