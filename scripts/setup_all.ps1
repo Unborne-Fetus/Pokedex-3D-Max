@@ -467,18 +467,27 @@ function DownloadMegaSwitchAssets {
 }
 
 function FindSwitchAssetArchives {
-    $Roots = @(
-        $RepoRoot,
-        (Join-Path $RepoRoot "switch-assets"),
-        (Join-Path $env:USERPROFILE "Downloads"),
-        (Join-Path $env:USERPROFILE "Desktop"),
-        $MegaAssetCache
-    ) | Select-Object -Unique
+    $Plans = @(
+        @{ Root = $RepoRoot; Recurse = $false },
+        @{ Root = (Join-Path $RepoRoot "switch-assets"); Recurse = $true },
+        @{ Root = (Join-Path $env:USERPROFILE "Downloads"); Recurse = $true },
+        @{ Root = (Join-Path $env:USERPROFILE "Desktop"); Recurse = $true },
+        @{ Root = $MegaAssetCache; Recurse = $true }
+    )
 
     $Found = New-Object System.Collections.Generic.List[string]
-    foreach ($Root in $Roots) {
+    foreach ($Plan in $Plans) {
+        $Root = $Plan.Root
         if (-not $Root -or -not (Test-Path $Root)) { continue }
-        $Files = Get-ChildItem $Root -File -Recurse -ErrorAction SilentlyContinue | Where-Object {
+
+        $Args = @{
+            Path = $Root
+            File = $true
+            ErrorAction = "SilentlyContinue"
+        }
+        if ($Plan.Recurse) { $Args["Recurse"] = $true }
+
+        $Files = Get-ChildItem @Args | Where-Object {
             ($_.Extension -in @(".zip", ".7z")) -and
             ($_.BaseName -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke") -and
             ($_.BaseName -notmatch "(?i)(PokeTex|Texture)")
