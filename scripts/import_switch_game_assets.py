@@ -915,6 +915,11 @@ def parse_glb_doc(path: Path) -> dict:
 
 
 def glb_texture_count(path: Path) -> int:
+    """Count real base-color bindings, not merely images/mask textures.
+
+    White Switch models can still contain normal/mask images, so accepting any
+    texture reference lets broken custom-shader exports look "complete".
+    """
     try:
         doc = parse_glb_doc(path)
     except Exception:
@@ -930,19 +935,12 @@ def glb_texture_count(path: Path) -> int:
         if not isinstance(material, dict):
             continue
         pbr = material.get("pbrMetallicRoughness") or {}
-        slots = [
-            pbr.get("baseColorTexture"),
-            pbr.get("metallicRoughnessTexture"),
-            material.get("normalTexture"),
-            material.get("occlusionTexture"),
-            material.get("emissiveTexture"),
-        ]
-        for slot in slots:
-            if not isinstance(slot, dict):
-                continue
-            index = slot.get("index")
-            if isinstance(index, int) and 0 <= index < len(textures):
-                referenced.add(index)
+        slot = pbr.get("baseColorTexture")
+        if not isinstance(slot, dict):
+            continue
+        index = slot.get("index")
+        if isinstance(index, int) and 0 <= index < len(textures):
+            referenced.add(index)
 
     return len(referenced)
 
