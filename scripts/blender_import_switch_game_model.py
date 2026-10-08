@@ -209,7 +209,13 @@ def glb_animation_count(path: Path) -> int:
         offset += length
         if chunk_type == 0x4E4F534A:
             doc = json.loads(chunk.rstrip(b" \t\r\n\x00").decode("utf-8"))
-            return len(doc.get("animations") or [])
+            return sum(
+                1
+                for animation in (doc.get("animations") or [])
+                if isinstance(animation, dict)
+                and bool(animation.get("channels"))
+                and bool(animation.get("samplers"))
+            )
     return 0
 
 
