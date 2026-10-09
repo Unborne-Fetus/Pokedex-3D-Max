@@ -110,57 +110,39 @@ new textures. It does not build, install, or require the native Windows EXE.
 
 The browser viewer reads only `web/models/switch-manifest.js`. It has no CDN, PokeMiners, generic-model, or battle-engine fallback path.
 
-## No billing, no Actions, no commands
+## Public GitHub-only website — no billing, no commands
 
-The custom GitHub Actions workflows were removed: the project no longer
-requires a GitHub billing setup to generate a model catalog or to prepare
-the browser version.
+Public model repository: [Pokedex-3D-Models-Animations](https://github.com/Unborne-Fetus/Pokedex-3D-Models-Animations).
 
-**Generate a manifest:** double-click `index.html`, click **Open Switch
-model folder**, select your converted models, then click **Export model catalog**.
-The downloaded `switch-manifest.json` can be uploaded to the private
-`Pokedex-3D-Models-Animations` repository through GitHub's website under
-**Add file → Upload files**. The catalog includes only structurally accepted
-regular Switch files. Visual texture/alpha appearance still needs inspection.
+The public model repository now contains a complete standalone `index.html`,
+`web/` viewer, `.nojekyll` marker, and **756** uploaded regular Switch GLBs
+under `0001/regular.glb`-style paths (about 664 MB total). The separate main
+Pokédex development repository can remain private.
 
-**Publish only the code as a free public website:** use a static host with a
-free, no-card drag-and-drop tier (for example Netlify Drop). In File Explorer,
-copy `index.html` and the entire `web` folder into a separate new folder,
-then drag that folder onto the host's upload area. Visitors can open the
-published viewer and pick their *own* model folder; no Python, launcher, or
-installer is required. Do **not** include `.cache`, `offline-models`, or any
-Nintendo asset archives in the website folder.
+**One-time GitHub Pages setup:** In the public model repository's GitHub
+website open **Settings → Pages → Deploy from a branch → main → / (root) →
+Save**. Once GitHub deploys, the expected website address is
+`https://unborne-fetus.github.io/Pokedex-3D-Models-Animations/`.
+No GitHub Actions workflow, Node build, EXE, PowerShell, or payment method
+is needed. GitHub Pages on public Free repositories is subject to size and
+bandwidth limits.
 
-The model repository remains private. A public static website cannot
-automatically serve those models while they are private. Separately hosting
-model assets requires suitable distribution permission and public HTTPS/CORS
-access; never embed private GitHub tokens in the web app.
+The page reads `uploaded-model-inventory.json` and the numbered GLBs from
+the same GitHub Pages origin, without private tokens or cross-origin
+requests. Selecting a Pokémon downloads its GLB once and checks for
+embedded base-color textures and a recognizable idle animation before
+the 3D viewer renders it. This structural check **cannot** guarantee
+the original game shaders display with correct colors or transparency.
 
-## Standalone website (no launcher)
+The public site also retains **Open Switch model folder** and **Export model
+catalog** options for local GLBs. These work in a standalone browser, without
+uploading the selected files. **Repair textures** remains a separate local
+Blender conversion feature and cannot run on a static web host.
 
-The GitHub Pages index now works as a purely static browser application. Open
-`index.html` directly or visit the deployed site. No Windows EXE, Python,
-PowerShell, or `launch-index.bat` is needed to **view** converted models.
-
-- Choose **Open Switch model folder**. Select the `offline-models` folder
-  created by the successful original Switch import (or `web/models` if it contains
-  the `switch` subfolder).
-- The browser validates the GLB mesh, base-color texture coverage, and animated
-  idle locally, then loads the selected regular-form models. All selected files
-  remain on the visitor's computer; nothing is uploaded to the website.
-- Selecting the folder again replaces the browser's current model list.
-
-**Public visitors without local model files:** the GitHub Pages deployment
-currently publishes only the browser software, not Nintendo's game models.
-The tracked `web/models/switch-manifest.js` is deliberately empty and
-`web/models/switch/` is gitignored. An operator must separately host or
-publish assets they are authorized to distribute before an anonymous visitor
-can browse the models without choosing files. Do not assume the 903 local
-exports are present on GitHub Pages or redistribute source game files.
-
-The **Repair textures** button is restricted to the local Python server
-started by `launch-index.bat`. A static web page cannot execute Blender
-on a visitor's computer; repair/baking is a separate development task.
+Original imported sources and the 903-model local baseline aren't
+automatically published: only the 756 files actually uploaded to the public
+model repository are currently available. For public distribution of
+copyrighted Pokémon game assets, confirm redistribution rights.
 
 ## Windows model location
 
