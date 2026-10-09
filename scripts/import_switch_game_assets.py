@@ -824,7 +824,10 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
         new_switch_material = '''                material.name = mat["mat_name"]
                 # POKEDEX3D_SWITCH_ALPHA_SEMANTICS_V1
                 material["pokedex3d_source_alpha_type"] = str(mat.get("mat_alpha_setting", "") or "")
-                material["pokedex3d_source_alpha_test"] = bool(mat.get("mat_enablealpha", False))
+                material["pokedex3d_source_alpha_test"] = (
+                    str(mat.get("mat_enablealpha", False)).strip().casefold()
+                    in ("true", "1", "yes", "on")
+                )
                 materials.append(material)'''
         if old_switch_material in text:
             text = text.replace(old_switch_material, new_switch_material, 1)
