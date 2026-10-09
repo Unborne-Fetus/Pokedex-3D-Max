@@ -349,16 +349,41 @@ function EnsureMegaCmd {
     return $MegaGet
 }
 
-function InvokeMegaScriptable([string]$ToolPath, [string[]]$Arguments) {
-    if ($ToolPath.ToLowerInvariant().EndsWith(".bat")) {
-        $Quoted = @()
-        foreach ($Arg in $Arguments) { $Quoted += ('"' + ($Arg -replace '"', '""') + '"') }
-        $CmdLine = '/d /s /c ""' + $ToolPath + '" ' + ($Quoted -join " ") + '"'
-        $Output = & cmd.exe $CmdLine 2>&1
-        return @{ ExitCode = $LASTEXITCODE; Output = @($Output) }
+function InvokeMegaScriptable([string]$ToolPath, [string[]]$Arguments, [int]$TimeoutSeconds = 90) {
+    # MEGAcmd's resident server can block its Windows command wrappers forever.
+    # File redirection prevents stdout/stderr pipe deadlock during large finds.
+    $TempDir = Join-Path $env:TEMP "Pokedex3DMax-Mega"
+    EnsureDir $TempDir
+    $Identity = [guid]::NewGuid().ToString("N")
+    $StdOut = Join-Path $TempDir ($Identity + ".out")
+    $StdErr = Join-Path $TempDir ($Identity + ".err")
+    $Proc = $null
+    try {
+        if ($ToolPath.ToLowerInvariant().EndsWith(".bat")) {
+            $Quoted = @()
+            foreach ($Arg in $Arguments) {
+                $Quoted += ('"' + ($Arg -replace '"', '""') + '"')
+            }
+            $CmdLine = '/d /s /c ""' + $ToolPath + '" ' + ($Quoted -join " ") + '"'
+            $Proc = Start-Process -FilePath "cmd.exe" -ArgumentList $CmdLine -PassThru -NoNewWindow -RedirectStandardOutput $StdOut -RedirectStandardError $StdErr
+        } else {
+            $Proc = Start-Process -FilePath $ToolPath -ArgumentList $Arguments -PassThru -NoNewWindow -RedirectStandardOutput $StdOut -RedirectStandardError $StdErr
+        }
+        $Completed = $Proc.WaitForExit($TimeoutSeconds * 1000)
+        if (-not $Completed) {
+            Stamp ("MEGAcmd metadata command timed out after " + $TimeoutSeconds + " seconds. Ending its stalled process tree.")
+            & taskkill.exe /PID $Proc.Id /T /F 2>&1 | Out-Null
+            throw "MEGAcmd $([IO.Path]::GetFileName($ToolPath)) timed out. The public folder might be unavailable."
+        }
+        $Proc.Refresh()
+        $Lines = @()
+        if (Test-Path $StdOut) { $Lines += @(Get-Content -LiteralPath $StdOut -Encoding UTF8) }
+        if (Test-Path $StdErr) { $Lines += @(Get-Content -LiteralPath $StdErr -Encoding UTF8) }
+        return @{ ExitCode = $Proc.ExitCode; Output = $Lines }
+    } finally {
+        if ($Proc) { $Proc.Dispose() }
+        Remove-Item -LiteralPath $StdOut, $StdErr -Force -ErrorAction SilentlyContinue
     }
-    $Output = & $ToolPath @Arguments 2>&1
-    return @{ ExitCode = $LASTEXITCODE; Output = @($Output) }
 }
 
 function GetDirectoryBytes([string]$Path) {
@@ -375,17 +400,22 @@ function GetMegaDesiredRemoteArchives {
     if (-not $MegaLogin -or -not $MegaFind) { throw "MEGAcmd login/find commands could not be located." }
 
     Stamp "Opening the shared MEGA folder in read-only mode..."
-    $Login = InvokeMegaScriptable $MegaLogin @($MegaFolderLink, "--resume")
+    # Retry only after a completed error, never after a timeout.
+    $Login = InvokeMegaScriptable $MegaLogin @($MegaFolderLink, "--resume") 90
     if ($Login.ExitCode -ne 0) {
-        $Login = InvokeMegaScriptable $MegaLogin @($MegaFolderLink)
+        Stamp "Cached MEGA session unavailable; trying a fresh read-only login."
+        $Login = InvokeMegaScriptable $MegaLogin @($MegaFolderLink) 90
     }
     if ($Login.ExitCode -ne 0) {
         throw ("Could not open the shared MEGA folder: " + (($Login.Output | Select-Object -Last 5) -join " "))
     }
 
     Stamp "Scanning MEGA metadata only; the full 14 GB folder will NOT be downloaded."
-    $Found = InvokeMegaScriptable $MegaFind @("/", "--type=f", "--pattern=*.zip")
-    $Found7z = InvokeMegaScriptable $MegaFind @("/", "--type=f", "--pattern=*.7z")
+    $Found = InvokeMegaScriptable $MegaFind @("/", "--type=f", "--pattern=*.zip") 90
+    $Found7z = InvokeMegaScriptable $MegaFind @("/", "--type=f", "--pattern=*.7z") 90
+    if ($Found.ExitCode -ne 0 -or $Found7z.ExitCode -ne 0) {
+        throw "MEGA metadata listing failed. Check the public folder link or MEGAcmd service."
+    }
     $Lines = @($Found.Output) + @($Found7z.Output)
 
     $Selected = New-Object System.Collections.Generic.List[string]
