@@ -33,8 +33,8 @@ assert.ok(!/graalvm|brisk-engine|battle/i.test(desktopBuild), 'Desktop package m
 assert.ok(!fs.existsSync(path.join(root,'desktopApp/src/main/kotlin/com/unbornefetus/pokedex3dmax/desktop/NativeBattle.kt')), 'Native battle engine must be removed');
 assert.ok(!setup.includes('--allow-broken-textures'), 'Setup must reject broken texture exports');
 assert.ok(!/download_models\.py|generic fallback model/i.test(setup), 'Setup must not contain generic model fallback paths');
-assert.ok(/pipeline-v10\.ready\.json/.test(setup), 'Fast mode must require the strict v10 ready marker');
-assert.ok(/CONVERSION_PIPELINE_VERSION = 10/.test(importer), 'Importer must use pipeline v10');
+assert.ok(/pipeline-v11\.ready\.json/.test(setup), 'Fast mode must require the strict v11 ready marker');
+assert.ok(/CONVERSION_PIPELINE_VERSION = 11/.test(importer), 'Importer must use pipeline v11');
 assert.ok(!/--allow-static/.test(importer), 'Static/T-pose activation must not be exposed');
 assert.ok(/if form != "regular":\s*\n\s*continue/.test(importer), 'Importer must filter to regular forms');
 assert.ok(/glb_textures_complete\(glb\)/.test(importer), 'Manifest generation must revalidate complete textures');
