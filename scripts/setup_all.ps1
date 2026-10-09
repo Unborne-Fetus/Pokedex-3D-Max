@@ -777,10 +777,26 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     $Args += $Archives
     $Args += @("--blender", $Blender, "--refresh-changed")
     if ($BakeSwitchMaterials) {
+        # A single-model shader-bake smoke test must pass before attempting
+        # an expensive full texture rebuild. Partial runs do not remove the
+        # prior successful ready marker or overwrite unrelated GLBs.
+        $ProbeArgs = @("-u", $Script) + $Archives +
+            @("--blender", $Blender, "--bake-switch-shaders", "--force", "--limit", "1")
+        Stamp "Testing original Nintendo shader baking on one model before the batch..."
+        Push-Location $RepoRoot
+        try {
+            if ($PythonCommand -eq "py") { & py -3 @ProbeArgs } else { & python @ProbeArgs }
+            $ProbeExit = $LASTEXITCODE
+        } finally {
+            Pop-Location
+        }
+        if ($ProbeExit -ne 0) {
+            throw "Switch shader-bake smoke test failed (exit $ProbeExit); existing verified model pack was preserved."
+        }
         # Force reconversion because the v11 GLBs contain flattened base maps:
         # model UVs, masks and palette-layer colors must be baked from original
         # archives. Completed replacements are validated before overwrite.
-        Stamp "Rebuilding original Switch color shaders; unchanged older GLBs will not be deleted."
+        Stamp "Shader-bake smoke test passed. Rebuilding original layered Switch colors."
         $Args += @("--bake-switch-shaders", "--force")
     }
     $env:PYTHONUNBUFFERED = "1"
