@@ -57,7 +57,7 @@ function doc(idle = 'idle', withTextures = true) {
     file('offline-models/switch/0002/regular.glb', doc('action_00')),
     Object.assign(new Blob([JSON.stringify([
       { dex: 2, form: 'regular', idleAnimation: 'action_00', idleBreaks: [] },
-    ])]), { webkitRelativePath: 'offline-models/switch-model-metadata.json' }),
+    ])]), { webkitRelativePath: 'offline-models/switch-manifest.json' }),
   ]);
   assert.equal(annotated.models.length, 1);
   assert.equal(annotated.models[0].idleAnimation, 'action_00');
