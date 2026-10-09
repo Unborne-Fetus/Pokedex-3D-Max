@@ -62,6 +62,69 @@
     return results.sort((a, b) => a.dex - b.dex);
   }
 
+  // Blender often exports a legitimate Switch idle as just "Animation".
+  // A generic name is accepted ONLY for a sole skeletal clip that actually
+  // moves multiple skinned joints over time. A collection of static keyframes
+  // must not be mistaken for an animated model.
+  function hasMovingSkinnedJoints(doc, data, jsonLength, clip) {
+    const joints = new Set((Array.isArray(doc.skins) ? doc.skins : [])
+      .flatMap(skin => Array.isArray(skin.joints) ? skin.joints : []));
+    const accessors = Array.isArray(doc.accessors) ? doc.accessors : [];
+    const buffers = Array.isArray(doc.bufferViews) ? doc.bufferViews : [];
+    if (joints.size < 3 || !Array.isArray(clip.channels) ||
+        !Array.isArray(clip.samplers)) return false;
+    const chunkStart = 20 + jsonLength;
+    const view = new DataView(data);
+    if (chunkStart + 8 > data.byteLength ||
+        view.getUint32(chunkStart + 4, true) !== 0x004e4942) return false;
+    const binLength = view.getUint32(chunkStart, true);
+    const binStart = chunkStart + 8;
+    if (binStart + binLength > data.byteLength) return false;
+    const movingJoints = new Set();
+    let maxDuration = 0;
+
+    for (const channel of clip.channels) {
+      const target = channel?.target;
+      if (!target || !joints.has(target.node) ||
+          !["rotation", "translation", "scale"].includes(target.path)) continue;
+      const sampler = clip.samplers[channel.sampler];
+      const input = accessors[sampler?.input];
+      const output = accessors[sampler?.output];
+      const range = input?.max?.[0] - input?.min?.[0];
+      if (Number.isFinite(range)) maxDuration = Math.max(maxDuration, range);
+      const dimensions = { VEC3: 3, VEC4: 4 }[output?.type];
+      if (!dimensions || output.componentType !== 5126 ||
+          !Number.isInteger(output.count) || output.count < 2 ||
+          output.count > 15000) continue;
+      const buffer = buffers[output.bufferView];
+      if (!buffer || buffer.buffer !== 0) continue;
+      const stride = buffer.byteStride || dimensions * 4;
+      const offset = (buffer.byteOffset || 0) + (output.byteOffset || 0);
+      const last = offset + stride * (output.count - 1) + dimensions * 4;
+      if (stride < dimensions * 4 || offset < 0 ||
+          last > (buffer.byteOffset || 0) + buffer.byteLength ||
+          last > binLength) continue;
+      const start = binStart + offset;
+      let moves = false;
+      for (let key = 1; key < output.count && !moves; key++) {
+        for (let component = 0; component < dimensions; component++) {
+          const initial = view.getFloat32(start + component * 4, true);
+          const later = view.getFloat32(start + key * stride + component * 4, true);
+          if (Number.isFinite(initial) && Number.isFinite(later) &&
+              Math.abs(later - initial) > 0.00001) {
+            moves = true;
+            break;
+          }
+        }
+      }
+      if (moves) {
+        movingJoints.add(target.node);
+        if (movingJoints.size >= 3 && maxDuration >= 0.25) return true;
+      }
+    }
+    return movingJoints.size >= 3 && maxDuration >= 0.25;
+  }
+
   function inspect(data) {
     if (!(data instanceof ArrayBuffer) || data.byteLength < 32) {
       throw Error("Downloaded model is empty or not a GLB");
@@ -105,12 +168,22 @@
         throw Error("Model texture is not embedded");
       }
     }
-    const animations = (Array.isArray(doc.animations) ? doc.animations : [])
-      .filter(clip => Array.isArray(clip?.channels) && clip.channels.length &&
-                      Array.isArray(clip?.samplers) && clip.samplers.length)
-      .map((clip, index) => clip.name || "animation_" + index);
-    const idleAnimation = animations.find(name => IDLE.test(name) && !REJECT.test(name));
-    if (!idleAnimation) throw Error("Model has no identifiable idle animation");
+    const validClips = (Array.isArray(doc.animations) ? doc.animations : [])
+      .map((clip, index) => ({ clip, name: clip?.name || "animation_" + index }))
+      .filter(({ clip }) => Array.isArray(clip?.channels) && clip.channels.length &&
+                            Array.isArray(clip?.samplers) && clip.samplers.length);
+    const animations = validClips.map(item => item.name);
+    let idleAnimation = animations.find(name => IDLE.test(name) && !REJECT.test(name));
+    if (!idleAnimation && validClips.length === 1 &&
+        /^Animation(?:[. _-]\d+)?$/i.test(validClips[0].name) &&
+        hasMovingSkinnedJoints(doc, data, size, validClips[0].clip)) {
+      // The importer flattened the original idle name to "Animation", but
+      // this GLB contains a real, non-static multi-joint skeletal animation.
+      idleAnimation = validClips[0].name;
+    }
+    if (!idleAnimation) {
+      throw Error("No supported moving idle clip was found in this GLB");
+    }
     return { idleAnimation, animations };
   }
 
