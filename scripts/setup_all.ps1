@@ -1,7 +1,8 @@
 param(
     [switch]$SkipSwitchAssets,
     [switch]$SkipInstall,
-    [switch]$SwitchAssetsOnly
+    [switch]$SwitchAssetsOnly,
+    [switch]$BakeSwitchMaterials
 )
 
 $ErrorActionPreference = "Stop"
@@ -775,6 +776,13 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
     $Args = @("-u", $Script)
     $Args += $Archives
     $Args += @("--blender", $Blender, "--refresh-changed")
+    if ($BakeSwitchMaterials) {
+        # Force reconversion because the v11 GLBs contain flattened base maps:
+        # model UVs, masks and palette-layer colors must be baked from original
+        # archives. Completed replacements are validated before overwrite.
+        Stamp "Rebuilding original Switch color shaders; unchanged older GLBs will not be deleted."
+        $Args += @("--bake-switch-shaders", "--force")
+    }
     $env:PYTHONUNBUFFERED = "1"
     Push-Location $RepoRoot
     try {
