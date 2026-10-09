@@ -57,7 +57,7 @@ let cameraFitTimer = null;
 // Species-specific camera pivot corrections. Units are a fraction of
 // horizontal model bounds; they only affect framing, never meshes or rigs.
 const CAMERA_PIVOT_ADJUSTMENTS = Object.freeze({
-  3: 0.30, // Venusaur: extended vine geometry pushes the bounds ahead of the body.
+  3: -0.30, // Venusaur: correct forward/back position without moving left or right.
 });
 
 
@@ -195,7 +195,7 @@ function computeCameraFrame(dimensions, center, viewportWidth, viewportHeight, m
   const yOffset = Number.isFinite(extra) && Math.abs(extra) <= 0.3 ? extra : 0;
   return {
     distance,
-    target: [cx + Math.max(width, depth) * (CAMERA_PIVOT_ADJUSTMENTS[Number(model?.dex)] || 0), cy + height * (0.035 + yOffset), cz],
+    target: [cx, cy, cz + Math.max(width, depth) * (CAMERA_PIVOT_ADJUSTMENTS[Number(model?.dex)] || 0)],
   };
 }
 
