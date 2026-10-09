@@ -85,7 +85,9 @@
             valid: true,
             ready: true,
             idleAnimation: idle,
-            idleBreaks: (saved?.idleBreaks || []).filter(name => clips.includes(name) && name !== idle),
+            animations: clips,
+            idleBreaks: (Array.isArray(saved?.idleBreaks) ? saved.idleBreaks : [])
+              .filter(name => clips.includes(name) && name !== idle),
           });
         }
       }
@@ -99,5 +101,35 @@
     return { models, scanned: modelFiles.length };
   }
 
-  window.POKEDEX3D_LOCAL_SWITCH = Object.freeze({ fromFiles });
+  function buildManifest(models) {
+    const rows = [];
+    const used = new Set();
+    for (const model of models || []) {
+      const dex = Number(model?.dex);
+      if (!Number.isInteger(dex) || dex < 1 || dex > 1025 ||
+          String(model.form) !== "regular" || !model.file || used.has(dex)) continue;
+      const animations = Array.isArray(model.animations) ? model.animations : [];
+      if (!animations.includes(model.idleAnimation)) continue;
+      used.add(dex);
+      rows.push({
+        dex, name: String(model.name || ""), form: "regular",
+        path: String(dex).padStart(4, "0") + "/regular.glb",
+        bytes: model.file.size,
+        animations,
+        idleAnimation: model.idleAnimation,
+        idleBreaks: Array.isArray(model.idleBreaks) ? model.idleBreaks : [],
+        ready: true, valid: true
+      });
+    }
+    rows.sort((a, b) => a.dex - b.dex);
+    return {
+      format: 1,
+      source: "browser-validated-local-switch-models",
+      models: rows.length,
+      validation: "GLB header, mesh/material base-color binding, animation and idle metadata only; appearance and redistribution rights not verified",
+      entries: rows
+    };
+  }
+
+  window.POKEDEX3D_LOCAL_SWITCH = Object.freeze({ fromFiles, buildManifest });
 })();
