@@ -161,13 +161,13 @@ function scheduleIdleBreak() {
 // looks from +Z. Frame the actual *loaded* mesh, never use the same automatic
 // camera radius for a tiny Pokemon and a huge winged Pokemon.
 function resetCamera() {
-  // The original Switch meshes are Z-up and face +Y, unlike the Y-up
+  // The original Switch meshes are -Z-up and face +Y, unlike the Y-up
   // convention of glTF/model-viewer. index.html corrects their orientation
-  // with a -90 degree pitch, so their front now faces -Z in viewer space.
+  // with a +90 degree pitch, so their front now faces +Z in viewer space.
   const hasOverride = currentModel?.cameraAzimuth !== undefined
     && currentModel?.cameraAzimuth !== null
     && Number.isFinite(Number(currentModel.cameraAzimuth));
-  const azimuth = hasOverride ? Number(currentModel.cameraAzimuth) : 180;
+  const azimuth = hasOverride ? Number(currentModel.cameraAzimuth) : 0;
 
   // Let model-viewer calculate both the center and radius from the actual
   // rotated GLB. The previous meter-based distance was wrong for many
