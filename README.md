@@ -93,11 +93,20 @@ Revalidates the existing strict Switch pack without doing a full reconversion. I
 
 ## Browser viewer
 
-Run:
+Double-click `launch-index.bat` to open the offline index. No EXE, installer,
+or terminal command is required once the project files are up to date. The
+viewer has a **Repair textures** button; click it, confirm, and leave the
+launcher window open while the original shader materials are rebuilt. The
+on-screen log displays progress and failures. This is optional and can take a
+long time; imported Switch model files are retained until a replacement passes
+validation.
 
-```powershell
-.\launch-index.bat
-```
+Opening `index.html` directly without the launcher can display models already
+present, but browser security prevents it from running Blender or repairing
+files. The repair button therefore requires the local `launch-index.bat` server.
+
+After the repair finishes successfully, refresh the browser index to load the
+new textures. It does not build, install, or require the native Windows EXE.
 
 The browser viewer reads only `web/models/switch-manifest.js`. It has no CDN, PokeMiners, generic-model, or battle-engine fallback path.
 
