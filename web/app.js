@@ -149,17 +149,71 @@ function scheduleIdleBreak() {
   }, 9000 + Math.floor(Math.random() * 6000));
 }
 
+// The original Switch exports face -Z, whereas model-viewer's 0deg orbit
+// looks from +Z. Frame the actual *loaded* mesh, never use the same automatic
+// camera radius for a tiny Pokemon and a huge winged Pokemon.
 function resetCamera() {
-  const target = currentModel?.cameraTarget;
-  viewer.cameraTarget =
-    Array.isArray(target) && target.length === 3
-      ? target.map(value => Number(value).toFixed(4) + "m").join(" ")
-      : "auto auto auto";
-  // theta is measured down from +Y: 65deg positions the camera 25deg ABOVE
-  // the Pokemon. A 20deg yaw gives a natural three-quarter front view.
-  viewer.cameraOrbit = "20deg 65deg auto";
-  viewer.fieldOfView = (Number(currentModel?.fieldOfView) || 30) + "deg";
+  const fov = 32;
+  const azimuth = Number.isFinite(Number(currentModel?.cameraAzimuth))
+    ? Number(currentModel.cameraAzimuth) : 165;
+  const polar = 76;
+  viewer.fieldOfView = fov + "deg";
+
+  const center = viewer.getBoundingBoxCenter?.();
+  const dimensions = viewer.getDimensions?.();
+  const coordinates = center && [center.x, center.y, center.z];
+  const sizes = dimensions && [dimensions.x, dimensions.y, dimensions.z];
+  if (coordinates?.every(Number.isFinite) &&
+      sizes?.every(value => Number.isFinite(value) && value > 0)) {
+    viewer.cameraTarget = coordinates.map(value => value.toFixed(4) + "m").join(" ");
+    const [width, height, depth] = sizes;
+    const aspect = Math.max(0.4, (viewer.clientWidth || 1) / (viewer.clientHeight || 1));
+    const az = azimuth * Math.PI / 180;
+    const elevation = (90 - polar) * Math.PI / 180;
+    // The model-viewer bounds include wings, feet, horns, and tails. Estimate
+    // their projected screen space from this view and leave a 20% margin.
+    const visibleWidth = Math.abs(Math.cos(az)) * width + Math.abs(Math.sin(az)) * depth;
+    const visibleHeight = Math.abs(Math.cos(elevation)) * height +
+      Math.abs(Math.sin(elevation)) * depth;
+    const tanHalfVertical = Math.tan(fov * Math.PI / 360);
+    const distance = 1.2 * Math.max(
+      visibleHeight / (2 * tanHalfVertical),
+      visibleWidth / (2 * tanHalfVertical * aspect),
+      Math.hypot(width, height, depth) * 0.55
+    );
+    if (Number.isFinite(distance) && distance > 0 && distance < 10000) {
+      viewer.cameraOrbit = azimuth + "deg " + polar + "deg " +
+        Math.max(0.15, distance).toFixed(3) + "m";
+    } else {
+      viewer.cameraOrbit = azimuth + "deg " + polar + "deg 130%";
+    }
+  } else {
+    viewer.cameraTarget = "auto auto auto";
+    viewer.cameraOrbit = azimuth + "deg " + polar + "deg 130%";
+  }
   viewer.jumpCameraToGoal?.();
+}
+
+// Old Switch GLBs exported every body material with alphaMode=BLEND even
+// when the original source shader described solid body geometry. BLEND can
+// cause see-through faces and unreliable depth sorting. Keep effects, eyes,
+// flames, and other intentional cutouts translucent. This cannot recover
+// missing Nintendo palette/shader colors; those require a source re-export.
+function correctOpaqueBodyMaterials() {
+  const materials = viewer.model?.materials;
+  if (!Array.isArray(materials)) return 0;
+  let corrected = 0;
+  for (const material of materials) {
+    const name = String(material?.name || "").toLowerCase();
+    if (!/^body(?:$|[_ .-])/.test(name)) continue;
+    if (typeof material?.setAlphaMode !== "function") continue;
+    if (material.getAlphaMode?.() !== "BLEND") continue;
+    try {
+      material.setAlphaMode("OPAQUE");
+      corrected++;
+    } catch (_) { /* Preserve the material if this viewer can't edit it. */ }
+  }
+  return corrected;
 }
 
 function populateFormSelect(model) {
@@ -302,6 +356,7 @@ function applyFilter(loadFirst = true) {
 
 viewer.addEventListener("load", () => {
   clearLoadTimer();
+  correctOpaqueBodyMaterials();
   resetCamera();
   startIdle();
   if (idleAnimation) {
