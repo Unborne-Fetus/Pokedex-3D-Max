@@ -34,7 +34,7 @@ assert.match(html, /camera-orbit="0deg 90deg 70%"/,
 
 const regular = fixture({x: 0.8, y: 1.1, z: 0.6});
 regular.context.resetCamera();
-assert.match(regular.viewer.cameraOrbit, /^0deg 90deg [\\d.]+m$/,
+assert.match(regular.viewer.cameraOrbit, /^0deg 90deg [\d.]+m$/,
   "Each Pokémon must get a measured meter-based camera distance");
 assert.equal(regular.viewer.fieldOfView, "30deg");
 assert.equal(regular.viewer.turntable, 0);
@@ -76,9 +76,9 @@ assert.equal(unavailable.viewer.cameraOrbit, "0deg 90deg 60%",
 
 assert.ok(!app.includes("correctOpaqueBodyMaterials();"),
   "Do not destroy genuine Switch alpha cutouts");
-assert.match(app, /startIdle\\(\\);\\s*scheduleCameraFit\\(\\);/,
+assert.match(app, /startIdle\(\);\s*scheduleCameraFit\(\);/,
   "Wait for the idle pose before measuring the Pokémon");
-assert.match(app, /await viewer\\.updateFraming\\?\\.\\(\\)/,
+assert.match(app, /await viewer\.updateFraming\?\.\(\)/,
   "Wait for asynchronous model-viewer framing to finish");
 assert.match(app, /sequence === loadSequence/,
   "Ignore late framing callbacks from the previous Pokémon");
