@@ -338,7 +338,20 @@ function loadModel(model) {
         if (!reply.ok) throw Error("GitHub returned HTTP " + reply.status);
         const data = await reply.arrayBuffer();
         if (abort.signal.aborted || selectedSequence !== loadSequence) return;
-        const checked = window.POKEDEX3D_REMOTE_SWITCH.inspect(data);
+        const checked = fromRemoteManifest
+          ? window.POKEDEX3D_REMOTE_SWITCH.inspect(data)
+          : (() => {
+              const view = new DataView(data);
+              const doc = JSON.parse(new TextDecoder().decode(
+                new Uint8Array(data, 20, view.getUint32(12, true))));
+              const animations = (doc.animations || [])
+                .filter(clip => clip.channels?.length && clip.samplers?.length)
+                .map(clip => clip.name).filter(Boolean);
+              const idleAnimation = chooseIdle(model, animations)
+                || (animations.length === 1 && /^Animation(?:[. _-]\\d+)?$/i.test(animations[0])
+                  ? animations[0] : null);
+              return { animations, idleAnimation };
+            })();
         if (abort.signal.aborted || selectedSequence !== loadSequence) return;
         model.idleAnimation = checked.idleAnimation;
         model.idleBreaks = (model.idleBreaks || [])
