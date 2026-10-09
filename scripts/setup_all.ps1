@@ -483,9 +483,34 @@ function TestSwitchArchiveComplete([string]$ArchivePath) {
         $SevenZip = Get-Command 7z, 7zz, 7za -ErrorAction SilentlyContinue |
             Select-Object -First 1
         if (-not $SevenZip) {
-            Stamp ("Skipping unverified .7z archive until 7-Zip is available: " +
-                [IO.Path]::GetFileName($ArchivePath))
-            return $false
+            # 7-Zip is bootstrapped later in setup. Verify the original 7z
+            # signature and that its NextHeader lies wholly within the file.
+            # This detects quota-truncated transfers before 7z is installed.
+            $Stream = $null
+            $Reader = $null
+            try {
+                $Stream = [IO.File]::OpenRead($ArchivePath)
+                if ($Stream.Length -lt 32) { return $false }
+                $Reader = New-Object IO.BinaryReader($Stream)
+                $Signature = $Reader.ReadBytes(6)
+                if (-not ([BitConverter]::ToString($Signature) -eq "37-7A-BC-AF-27-1C")) {
+                    return $false
+                }
+                [void]$Reader.ReadBytes(2)
+                [void]$Reader.ReadUInt32()
+                $Offset = $Reader.ReadUInt64()
+                $Size = $Reader.ReadUInt64()
+                [void]$Reader.ReadUInt32()
+                if ($Offset -gt [uint64]$Stream.Length -or $Size -gt [uint64]$Stream.Length) {
+                    return $false
+                }
+                return ($Offset + $Size -le [uint64]($Stream.Length - 32))
+            } catch {
+                return $false
+            } finally {
+                if ($Reader) { $Reader.Dispose() }
+                elseif ($Stream) { $Stream.Dispose() }
+            }
         }
         $PreviousPreference = $ErrorActionPreference
         $ErrorActionPreference = "Continue"
