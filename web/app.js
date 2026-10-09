@@ -157,29 +157,75 @@ function scheduleIdleBreak() {
   }, 9000 + Math.floor(Math.random() * 6000));
 }
 
-// The original Switch exports face -Z, whereas model-viewer's 0deg orbit
-// looks from +Z. Frame the actual *loaded* mesh, never use the same automatic
-// camera radius for a tiny Pokemon and a huge winged Pokemon.
+// Fit every Switch Pokémon independently. A fixed orbit percentage makes
+// differently proportioned or animated models appear tiny or badly cropped.
+function computeCameraFrame(dimensions, center, viewportWidth, viewportHeight, model = {}) {
+  const values = [dimensions?.x, dimensions?.y, dimensions?.z, center?.x, center?.y, center?.z]
+    .map(Number);
+  if (!values.every(Number.isFinite) || values.slice(0, 3).some(v => v <= 0)) return null;
+
+  const [width, height, depth, cx, cy, cz] = values;
+  const viewportAspect = Math.max(0.35,
+    (Number(viewportWidth) || 1) / (Number(viewportHeight) || 1));
+  const fov = 30;
+  const tanHalfFov = Math.tan(fov * Math.PI / 360);
+
+  // Reserve breathing room for horns, wings, feet, and animated poses.
+  // The depth term prevents the closest points clipping the camera plane.
+  const fill = 0.74;
+  let distance = Math.max(
+    height / (2 * tanHalfFov * fill),
+    width / (2 * tanHalfFov * fill * viewportAspect),
+  ) + depth * 0.5;
+
+  // Verified catalog metadata can tune genuinely unusual individual models.
+  const scale = Number(model?.cameraDistanceScale);
+  if (Number.isFinite(scale) && scale >= 0.5 && scale <= 2) distance *= scale;
+  if (!Number.isFinite(distance) || distance <= 0) return null;
+
+  // Slightly lower the displayed Pokémon by lifting the camera target.
+  // Offsets are relative to its actual size, not fixed world coordinates.
+  const extra = Number(model?.cameraTargetYOffset);
+  const yOffset = Number.isFinite(extra) && Math.abs(extra) <= 0.3 ? extra : 0;
+  return {
+    distance,
+    target: [cx, cy + height * (0.035 + yOffset), cz],
+  };
+}
+
 function resetCamera() {
-  // The original Switch meshes are -Z-up and face +Y, unlike the Y-up
-  // convention of glTF/model-viewer. index.html corrects their orientation
-  // with a +90 degree pitch, so their front now faces +Z in viewer space.
   const hasOverride = currentModel?.cameraAzimuth !== undefined
     && currentModel?.cameraAzimuth !== null
     && Number.isFinite(Number(currentModel.cameraAzimuth));
   const azimuth = hasOverride ? Number(currentModel.cameraAzimuth) : 0;
-
-  // Let model-viewer calculate both the center and radius from the actual
-  // rotated GLB. The previous meter-based distance was wrong for many
-  // animated meshes, resulting in cropped or tiny models. Percent radius
-  // auto-fits every model to the viewer's aspect ratio.
+  const frame = computeCameraFrame(
+    viewer.getDimensions?.(),
+    viewer.getBoundingBoxCenter?.(),
+    viewer.clientWidth,
+    viewer.clientHeight,
+    currentModel,
+  );
   viewer.fieldOfView = "30deg";
-  viewer.cameraTarget = "auto auto auto";
-  // A closer-than-automatic orbit keeps small Pokemon readable without
-  // changing the verified front-facing axis or per-model centering.
-  viewer.cameraOrbit = azimuth + "deg 90deg 40%";
+  if (frame) {
+    viewer.cameraTarget = frame.target.map(n => n.toFixed(4) + "m").join(" ");
+    viewer.cameraOrbit = azimuth + "deg 90deg " + frame.distance.toFixed(4) + "m";
+  } else {
+    // Fallback only for corrupt or not-yet-reported model dimensions.
+    viewer.cameraTarget = "auto auto auto";
+    viewer.cameraOrbit = azimuth + "deg 90deg 60%";
+  }
   viewer.resetTurntableRotation?.(0);
   viewer.jumpCameraToGoal?.();
+}
+
+// Updating bounds is asynchronous. Never apply an old model's camera settings
+// to a newly selected Pokémon while a load or animation is in flight.
+async function applyCameraFit(sequence = loadSequence) {
+  if (!viewer.loaded || sequence !== loadSequence) return;
+  try {
+    await viewer.updateFraming?.();
+  } catch (_) { /* Keep last known bounds on older model-viewer releases. */ }
+  if (viewer.loaded && sequence === loadSequence) resetCamera();
 }
 
 // Do not override legacy body-material alpha modes in the browser. Some Switch
@@ -190,24 +236,15 @@ function resetCamera() {
 
 function scheduleCameraFit() {
   clearCameraFitTimer();
-
-  // Recompute the automatic framing after the first real animation pose,
-  // then repeat after a short delay for models with slower pose updates.
+  const sequence = loadSequence;
+  // Use the visible idle pose; many Switch rest poses have wider geometry.
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      if (viewer.loaded) {
-        viewer.updateFraming?.();
-        resetCamera();
-      }
-    });
+    requestAnimationFrame(() => { void applyCameraFit(sequence); });
   });
   cameraFitTimer = setTimeout(() => {
     cameraFitTimer = null;
-    if (viewer.loaded) {
-        viewer.updateFraming?.();
-        resetCamera();
-      }
-  }, 220);
+    void applyCameraFit(sequence);
+  }, 240);
 }
 
 
@@ -603,7 +640,18 @@ if (!isLocalIndexServer()) {
   repairTexturesBtn.classList.add("hidden");
 }
 
-resetCameraBtn.addEventListener("click", resetCamera);
+resetCameraBtn.addEventListener("click", () => { void applyCameraFit(); });
+
+// Recalculate after a viewport resize, when available width/height changes.
+let cameraResizeTimer = null;
+window.addEventListener("resize", () => {
+  if (cameraResizeTimer !== null) clearTimeout(cameraResizeTimer);
+  const sequence = loadSequence;
+  cameraResizeTimer = setTimeout(() => {
+    cameraResizeTimer = null;
+    void applyCameraFit(sequence);
+  }, 140);
+});
 
 toggleRotateBtn.addEventListener("click", () => {
   autoRotate = !autoRotate;
