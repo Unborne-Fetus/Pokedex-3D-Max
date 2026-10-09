@@ -32,6 +32,7 @@ jobs:
         run: |
           node scripts/check_shared_app.js
           node scripts/test_static_switch_catalog.js
+          node scripts/test_remote_switch_catalog.js
           python3 scripts/test_sync_switch_web.py
 
       - name: Prepare static site
