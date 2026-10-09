@@ -52,6 +52,7 @@ let localFolderActive = false;
 let localModelsForExport = [];
 let remoteAbort = null;
 let loadSequence = 0;
+let cameraFitTimer = null;
 
 
 function escapeHtml(value) {
@@ -79,6 +80,13 @@ function clearLoadTimer() {
   if (loadTimer !== null) {
     clearTimeout(loadTimer);
     loadTimer = null;
+  }
+}
+
+function clearCameraFitTimer() {
+  if (cameraFitTimer !== null) {
+    clearTimeout(cameraFitTimer);
+    cameraFitTimer = null;
   }
 }
 
@@ -194,27 +202,30 @@ function resetCamera() {
   viewer.jumpCameraToGoal?.();
 }
 
-// Old Switch GLBs exported every body material with alphaMode=BLEND even
-// when the original source shader described solid body geometry. BLEND can
-// cause see-through faces and unreliable depth sorting. Keep effects, eyes,
-// flames, and other intentional cutouts translucent. This cannot recover
-// missing Nintendo palette/shader colors; those require a source re-export.
-function correctOpaqueBodyMaterials() {
-  const materials = viewer.model?.materials;
-  if (!Array.isArray(materials)) return 0;
-  let corrected = 0;
-  for (const material of materials) {
-    const name = String(material?.name || "").toLowerCase();
-    if (!/^body(?:$|[_ .-])/.test(name)) continue;
-    if (typeof material?.setAlphaMode !== "function") continue;
-    if (material.getAlphaMode?.() !== "BLEND") continue;
-    try {
-      material.setAlphaMode("OPAQUE");
-      corrected++;
-    } catch (_) { /* Preserve the material if this viewer can't edit it. */ }
-  }
-  return corrected;
+// Do not override legacy body-material alpha modes in the browser. Some Switch
+// meshes use alpha-cutout silhouette cards (fur, feathers, whiskers, etc.), so
+// forcing every body_* material to OPAQUE creates the white triangular spikes
+// seen in legacy exports. Rebuilt GLBs must carry the correct alpha policy from
+// the source material instead.
+
+function scheduleCameraFit() {
+  clearCameraFitTimer();
+
+  // model-viewer reports bounds for the currently posed mesh. The old code
+  // framed the bind/rest pose and only then started the idle animation, which
+  // made some Pokemon tiny while others were clipped. Fit after the idle pose
+  // has reached the renderer, then make one delayed correction for slower rigs.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (viewer.loaded) resetCamera();
+    });
+  });
+  cameraFitTimer = setTimeout(() => {
+    cameraFitTimer = null;
+    if (viewer.loaded) resetCamera();
+  }, 220);
 }
+
 
 function populateFormSelect(model) {
   formSelect.replaceChildren();
@@ -255,6 +266,7 @@ function renderList() {
 function loadModel(model) {
   clearBreakTimer();
   clearLoadTimer();
+  clearCameraFitTimer();
   playingBreak = false;
   idleAnimation = null;
   currentModel = model;
@@ -356,9 +368,8 @@ function applyFilter(loadFirst = true) {
 
 viewer.addEventListener("load", () => {
   clearLoadTimer();
-  correctOpaqueBodyMaterials();
-  resetCamera();
   startIdle();
+  scheduleCameraFit();
   if (idleAnimation) {
     messageEl.classList.add("hidden");
     scheduleIdleBreak();
