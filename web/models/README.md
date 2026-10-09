@@ -1,19 +1,31 @@
-# Clean model import folder
+# Switch model catalog for the web index
 
-This directory contains models that have been intentionally imported and validated for Pokedex 3D Max.
+The public `index.html` is a static website. Its default
+`switch-manifest.js` / `switch-manifest.json` are empty until a
+validated model collection is specifically made available.
 
-Do not manually edit `manifest.js` or `manifest.json`. Use:
+## Browser-only use
 
-```bat
-python scripts\import_model.py "PATH_TO_MODEL.glb" --dex 1 --name Bulbasaur --form regular
-```
+Select **Open Switch model folder** in the website, then select the
+`offline-models` or `web/models` folder already containing original
+converted Switch GLBs in `switch/####/regular.glb` paths.
 
-For FBX, DAE, OBJ, or glTF source files, install Blender and run the same command. The importer will call Blender in background mode and export a GLB without deliberately changing the rig, animations, materials, or textures.
+The browser reads and validates those GLBs locally; it does **not**
+upload them or require Python, PowerShell, or `launch-index.bat`.
+The optional `switch-model-metadata.json` or `switch-manifest.json`
+supplies verified idle clip names.
 
-Verified animation clips can be recorded during import:
+## Site hosting
 
-```bat
-python scripts\import_model.py "Bulbasaur.glb" --dex 1 --name Bulbasaur --idle "Idle" --idle-break "IdleBreak"
-```
+The repository intentionally ignores `web/models/switch/`; the original
+downloaded game archives and generated GLBs are not automatically
+committed or publicly deployed. Site operators can host suitably licensed
+converted GLBs at the paths listed in a generated `switch-manifest.js`.
+The existing `scripts/sync_switch_web.py` creates this manifest and
+copies the active local Switch files, but GitHub Pages CI has no access
+to the original files on a visitor's computer.
 
-Only explicitly verified idle-break clips should be added. Unknown animations are not guessed.
+Before publishing any third-party character or game assets, confirm
+that redistribution is authorized. Do not replace missing Switch models
+with unverified fallback libraries. The visitor's folder picker works
+without any public asset hosting.
