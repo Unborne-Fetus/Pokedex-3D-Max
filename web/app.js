@@ -175,7 +175,9 @@ function resetCamera() {
   // auto-fits every model to the viewer's aspect ratio.
   viewer.fieldOfView = "30deg";
   viewer.cameraTarget = "auto auto auto";
-  viewer.cameraOrbit = azimuth + "deg 90deg 125%";
+  // A closer-than-automatic orbit keeps small Pokemon readable without
+  // changing the verified front-facing axis or per-model centering.
+  viewer.cameraOrbit = azimuth + "deg 90deg 60%";
   viewer.resetTurntableRotation?.(0);
   viewer.jumpCameraToGoal?.();
 }
