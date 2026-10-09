@@ -10,7 +10,7 @@ const context = {
   TextDecoder, setTimeout,
 };
 vm.runInNewContext(script, context, { filename: 'web/local-switch-catalog.js' });
-const { fromFiles } = context.window.POKEDEX3D_LOCAL_SWITCH;
+const { fromFiles, buildManifest } = context.window.POKEDEX3D_LOCAL_SWITCH;
 
 function file(relative, obj) {
   const json = Buffer.from(JSON.stringify(obj), 'utf8');
@@ -53,6 +53,14 @@ function doc(idle = 'idle', withTextures = true) {
   assert.equal(output.models[0].idleAnimation, 'idle');
   assert.equal(output.models[0].url, 'web/models/switch/0001/regular.glb');
   assert.ok(output.models[0].file === files[0], 'Original local File must remain in browser memory');
+  assert.deepEqual(Array.from(output.models[0].animations), ['idle']);
+  const manifest = buildManifest(output.models);
+  assert.equal(manifest.format, 1);
+  assert.equal(manifest.models, 1);
+  assert.equal(manifest.entries[0].path, '0001/regular.glb');
+  assert.equal(manifest.entries[0].bytes, files[0].size);
+  assert.equal(manifest.entries[0].idleAnimation, 'idle');
+  assert.ok(manifest.validation.includes('appearance and redistribution rights not verified'));
   const annotated = await fromFiles([
     file('offline-models/switch/0002/regular.glb', doc('action_00')),
     Object.assign(new Blob([JSON.stringify([
