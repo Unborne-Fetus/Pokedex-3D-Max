@@ -328,7 +328,7 @@ def _material_base_color_factor(material):
     return (0.8, 0.8, 0.8, 1.0)
 
 
-def prepare_materials_for_gltf() -> tuple[int, int]:
+def prepare_materials_for_gltf() -> tuple[int, int, list[dict]]:
     """Flatten imported Pokémon materials into glTF-compatible PBR nodes.
 
     Both the newer TRMDL importer and the legacy GFBMDL importer can build
@@ -338,6 +338,7 @@ def prepare_materials_for_gltf() -> tuple[int, int]:
     """
     total = 0
     textured = 0
+    missing: list[dict] = []
 
     for material in bpy.data.materials:
         if material is None:
@@ -354,6 +355,19 @@ def prepare_materials_for_gltf() -> tuple[int, int]:
         total += 1
         image = _linked_base_color_image(material)
         base_factor = _material_base_color_factor(material)
+        original_images = []
+        original_albedo_links = []
+        if material.use_nodes and material.node_tree is not None:
+            for node in material.node_tree.nodes:
+                if node.type == "TEX_IMAGE":
+                    original_images.append(
+                        str(node.image.name) if node.image is not None else "<unassigned>"
+                    )
+                    for output in node.outputs:
+                        for link in output.links:
+                            socket_name = str(getattr(link.to_socket, "name", "") or "")
+                            if "albedo" in socket_name.casefold() or "base color" in socket_name.casefold():
+                                original_albedo_links.append(socket_name)
 
         material.use_nodes = True
         nodes = material.node_tree.nodes
@@ -405,8 +419,20 @@ def prepare_materials_for_gltf() -> tuple[int, int]:
                 flush=True,
             )
         else:
+            # Record the imported material graph before flattening, so it is
+            # possible to diagnose exactly which original texture was absent.
+            # This never substitutes a made-up material or relaxes validation.
+            missing.append({
+                "material": material.name,
+                "authoredBaseColor": list(base_factor),
+                "importerBaseColorImage": str(material.get("pokedex3d_basecolor_image", "") or ""),
+                "importerBaseColorPath": str(material.get("pokedex3d_basecolor_path", "") or ""),
+                "sourceImages": original_images,
+                "sourceAlbedoLinks": original_albedo_links,
+            })
             print(
-                f"GLTF material flatten: {material.name} -> color {base_factor}",
+                f"GLTF material flatten: {material.name} -> color {base_factor} "
+                f"(source images: {original_images[:5]}; original albedo links: {original_albedo_links[:5]})",
                 flush=True,
             )
 
@@ -415,7 +441,7 @@ def prepare_materials_for_gltf() -> tuple[int, int]:
         "have standard base-color textures.",
         flush=True,
     )
-    return total, textured
+    return total, textured, missing
 
 
 def glb_base_color_texture_count(path: Path) -> int:
@@ -543,6 +569,7 @@ for index, job in enumerate(jobs, start=1):
         flush=True,
     )
 
+    missing_materials = []
     try:
         if temporary.exists():
             temporary.unlink()
@@ -577,7 +604,7 @@ for index, job in enumerate(jobs, start=1):
         # will receive an untextured/white material.
         allow_broken_textures = os.environ.get("POKEDEX3D_ALLOW_BROKEN_TEXTURES") == "1"
         try:
-            total_materials, textured_materials = prepare_materials_for_gltf()
+            total_materials, textured_materials, missing_materials = prepare_materials_for_gltf()
         except Exception as error:
             if not allow_broken_textures:
                 raise
@@ -658,6 +685,7 @@ for index, job in enumerate(jobs, start=1):
                 for clip in (job.get("animations") or [])
             ],
             "error": str(exc),
+            "untexturedMaterials": missing_materials,
         })
         traceback.print_exc()
     finally:
