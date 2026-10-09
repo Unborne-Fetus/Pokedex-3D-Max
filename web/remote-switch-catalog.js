@@ -157,5 +157,10 @@
   }
 
   window.POKEDEX3D_REMOTE_SWITCH = Object.freeze({ prepare, inspect });
-  load();
+  // Defer catalog notifications until the main viewer has registered handlers.
+  if (typeof document !== "undefined" && document.readyState !== "complete") {
+    document.addEventListener("DOMContentLoaded", load, { once: true });
+  } else {
+    setTimeout(load, 0);
+  }
 })();
