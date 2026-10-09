@@ -1,45 +1,28 @@
-# Switch model catalog for the web index
+# Website model inventory
 
-The public `index.html` is a static website. Its default
-`switch-manifest.js` / `switch-manifest.json` are empty until a
-validated model collection is specifically made available.
+The deployed GitHub Pages site is hosted from the **public**
+[`Pokedex-3D-Models-Animations`](https://github.com/Unborne-Fetus/Pokedex-3D-Models-Animations)
+repository, not from this private development repository.
 
-## Browser-only use
+The public repository includes `index.html`, `web/`, and 756 numbered
+`0001/regular.glb`-style Switch models at its root. GitHub Pages can
+serve the website and GLBs from the same origin once Pages is enabled from
+**main / (root)**. No GitHub Actions workflow, command-line build, or
+payment information is required.
 
-Select **Open Switch model folder** in the website, then select the
-`offline-models` or `web/models` folder already containing original
-converted Switch GLBs in `switch/####/regular.glb` paths.
+`github-inventory.js` stores a small metadata snapshot of the uploaded
+filenames; `remote-source.json` enables the corresponding public catalog.
+A list of filenames is **not** proof of texture or animation quality:
+the browser validates each GLB's embedded material images and idle clips
+when that Pokémon is opened. These checks do not prove the visual
+appearance matches the source game.
 
-The browser reads and validates those GLBs locally; it does **not**
-upload them or require Python, PowerShell, or `launch-index.bat`.
-The optional `switch-model-metadata.json` or `switch-manifest.json`
-supplies verified idle clip names.
+The local `index.html` can still load models through its folder picker.
+Original downloaded Switch archives are not committed to this development
+repository. Uploading publicly redistributable model assets requires
+appropriate permission.
 
-## Site hosting
-
-The repository intentionally ignores `web/models/switch/`; the original
-downloaded game archives and generated GLBs are not automatically
-committed or publicly deployed. Site operators can host suitably licensed
-converted GLBs at the paths listed in a generated `switch-manifest.js`.
-The existing `scripts/sync_switch_web.py` creates this manifest and
-copies the active local Switch files, but GitHub Pages CI has no access
-to the original files on a visitor's computer.
-
-Before publishing any third-party character or game assets, confirm
-that redistribution is authorized. Do not replace missing Switch models
-with unverified fallback libraries. The visitor's folder picker works
-without any public asset hosting.
-
-## Separate private model repository
-
-Model storage: `Unborne-Fetus/Pokedex-3D-Models-Animations`.
-It currently contains converted `0001/regular.glb`-style files.
-A private-repository workflow generates `switch-manifest.json` from GLB validation.
-
-The static viewer supports remote verified manifests via `web/models/remote-source.json`.
-**It is disabled** while the models are private, because publicly deployed GitHub Pages
-cannot load private GitHub blobs without authentication. To enable when assets are
-legally hosted at a publicly reachable HTTPS origin, set `enabled: true`,
-`manifestUrl` to the reachable verified manifest, and optionally `assetBaseUrl`.
-The host must support browser CORS access and serve `.glb` model files at the
-paths in the manifest. Never add authentication tokens to static website files.
+The currently deployed public website code is a copy of the files under
+this development repository's `index.html` and `web/` (excluding local
+GLBs). Later viewer updates must be synchronized into the public model
+repository to reach its GitHub Pages site.
