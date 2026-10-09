@@ -183,3 +183,19 @@ Once those are stable, features can be reintroduced deliberately from the archiv
 ## Asset and trademark note
 
 Pokedex 3D Max is an unofficial fan project. Pokémon names, character designs, game assets, and related intellectual property belong to their respective rights holders.
+
+## Primary web deployment
+
+The standalone website is hosted from **this repository**, not the separate
+model-and-animation asset repository. GitHub Pages must be enabled once at
+**Settings → Pages → Deploy from a branch → main → / (root) → Save**.
+
+The primary website URL is:
+https://unborne-fetus.github.io/Pokedex-3D-Max/
+
+The public `Pokedex-3D-Models-Animations` repository remains the source of
+regular Switch-model GLBs. Its former website checks whether the primary
+website is live before redirecting visitors there, so an unpublished main
+Pages site will not break the existing viewer. The main index loads remote
+model inventory and GLBs without GitHub Actions, paid services, or an EXE.
+
