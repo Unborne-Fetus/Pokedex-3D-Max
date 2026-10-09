@@ -14,6 +14,13 @@ const nextBtn = document.querySelector("#nextBtn");
 const resetCameraBtn = document.querySelector("#resetCamera");
 const toggleRotateBtn = document.querySelector("#toggleRotate");
 const toggleIdleBreaksBtn = document.querySelector("#toggleIdleBreaks");
+const repairTexturesBtn = document.querySelector("#repairTextures");
+const repairPanel = document.querySelector("#repairPanel");
+const repairTitle = document.querySelector("#repairTitle");
+const repairSummary = document.querySelector("#repairSummary");
+const repairLog = document.querySelector("#repairLog");
+const closeRepairBtn = document.querySelector("#closeRepair");
+
 
 const models = (Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
   ? window.POKEDEX3D_SWITCH_MODELS
@@ -34,6 +41,9 @@ let idleAnimation = null;
 let playingBreak = false;
 let breakTimer = null;
 let loadTimer = null;
+let repairPollTimer = null;
+let repairInProgress = false;
+
 
 function escapeHtml(value) {
   return String(value)
@@ -275,6 +285,121 @@ nextBtn.addEventListener("click", () => {
   if (!filtered.length) return;
   selectModel((selectedIndex + 1) % filtered.length);
 });
+
+
+// Original Switch shader texture repair: works in the local launch-index.bat
+// server only. A plain file:// index cannot run local Python/Blender commands.
+function openRepairPanel() {
+  repairPanel.classList.remove("hidden");
+}
+
+function stopRepairPolling() {
+  if (repairPollTimer !== null) {
+    clearTimeout(repairPollTimer);
+    repairPollTimer = null;
+  }
+}
+
+function isLocalIndexServer() {
+  return location.protocol === "http:" && location.hostname === "127.0.0.1";
+}
+
+async function pollRepairStatus(showPanel = true) {
+  stopRepairPolling();
+  if (!isLocalIndexServer()) {
+    repairTexturesBtn.title = "Open launch-index.bat to repair original textures";
+    return;
+  }
+  try {
+    const reply = await fetch("/__pokedex3d/repair-status", { cache: "no-store" });
+    if (!reply.ok) throw Error("The local launcher does not support texture repair yet");
+    const info = await reply.json();
+    repairInProgress = Boolean(info.running);
+    repairTexturesBtn.disabled = repairInProgress || !info.available;
+    repairTexturesBtn.textContent = repairInProgress ? "Repairing…" : "Repair textures";
+    if (!info.available) {
+      repairTexturesBtn.title = "Texture repair requires the updated launch-index.bat and project scripts on Windows";
+    }
+    if (showPanel || repairInProgress) {
+      openRepairPanel();
+      repairLog.textContent = info.logTail || (repairInProgress ? "Starting texture rebuild…" : "No repair has run yet.");
+      if (repairInProgress) {
+        repairTitle.textContent = "Repairing original Switch textures…";
+        repairSummary.textContent = "This may take a while. Keep launch-index.bat open. Your original models are preserved until replacements pass validation.";
+        repairPollTimer = setTimeout(() => pollRepairStatus(true), 1800);
+      } else if (info.finished && info.exitCode === 0) {
+        repairTitle.textContent = "Texture rebuild complete";
+        repairSummary.textContent = "Refresh the page to load the repaired Switch models. No EXE build is required.";
+      } else if (info.finished) {
+        repairTitle.textContent = "Texture repair stopped";
+        repairSummary.textContent = (info.error || "The rebuild did not complete. Existing model files were kept where possible.") + " Review the log below.";
+      } else {
+        repairTitle.textContent = "Original Switch texture repair";
+        repairSummary.textContent = "This will rebuild original shader colors without downloading replacement models.";
+      }
+    }
+  } catch (error) {
+    repairInProgress = false;
+    repairTexturesBtn.disabled = false;
+    repairTexturesBtn.title = "An updated launch-index.bat is needed to use this feature";
+    if (showPanel) {
+      openRepairPanel();
+      repairTitle.textContent = "Repair not available in this launcher";
+      repairSummary.textContent = "Open the updated launch-index.bat with the full project files. No terminal or EXE is required.";
+      repairLog.textContent = String(error.message || error);
+    }
+  }
+}
+
+repairTexturesBtn.addEventListener("click", async () => {
+  if (!isLocalIndexServer()) {
+    openRepairPanel();
+    repairTitle.textContent = "Use launch-index.bat";
+    repairSummary.textContent = "The raw index.html cannot modify local model files. Open launch-index.bat from the updated project folder.";
+    repairLog.textContent = "Your existing Switch models have not been changed.";
+    return;
+  }
+  if (repairInProgress) {
+    await pollRepairStatus(true);
+    return;
+  }
+  if (!window.confirm(
+    "Rebuild original Switch shader colors and fix opaque-body transparency?\n\n" +
+    "This may take a long time. Keep launch-index.bat open. Existing models stay until replacements validate.\n\nStart repair?"
+  )) return;
+
+  repairTexturesBtn.disabled = true;
+  openRepairPanel();
+  repairTitle.textContent = "Starting original Switch texture rebuild…";
+  repairSummary.textContent = "Please keep launch-index.bat open while the repair runs.";
+  repairLog.textContent = "Preparing…";
+  try {
+    const reply = await fetch("/__pokedex3d/repair-textures", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    });
+    const info = await reply.json();
+    if (!reply.ok) throw Error(info.error || "Failed to start texture repair");
+    repairInProgress = true;
+    await pollRepairStatus(true);
+  } catch (error) {
+    repairInProgress = false;
+    repairTexturesBtn.disabled = false;
+    repairTitle.textContent = "Could not start texture repair";
+    repairSummary.textContent = String(error.message || error);
+    repairLog.textContent = "Previously imported Switch models remain available.";
+  }
+});
+
+closeRepairBtn.addEventListener("click", () => {
+  repairPanel.classList.add("hidden");
+  // A running repair continues in the local launcher when panel is closed.
+});
+
+if (isLocalIndexServer()) {
+  pollRepairStatus(false);
+}
 
 resetCameraBtn.addEventListener("click", resetCamera);
 
