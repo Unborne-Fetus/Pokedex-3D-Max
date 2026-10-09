@@ -2,7 +2,7 @@
   {
     "dex": 1,
     "form": "regular",
-    "url": "web/models/switch/0001/regular.glb",
+    "url": "web/models/switch/0001/regular.glb?v=bulbasaur-uv-2",
     "source": "original-switch-local-merge",
     "valid": true,
     "ready": true
