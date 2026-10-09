@@ -793,7 +793,7 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         if ($ProbeExit -ne 0) {
             throw "Switch shader-bake smoke test failed (exit $ProbeExit); existing verified model pack was preserved."
         }
-        # Force reconversion because the v11 GLBs contain flattened base maps:
+        # Force reconversion because the v12 GLBs contain flattened base maps:
         # model UVs, masks and palette-layer colors must be baked from original
         # archives. Completed replacements are validated before overwrite.
         Stamp "Shader-bake smoke test passed. Rebuilding original layered Switch colors."
@@ -841,9 +841,9 @@ function RestoreOrImportSwitchExports([string]$PythonCommand) {
     $Recovered = RestoreInstalledSwitchExports $PythonCommand
 
     if ($SkipSwitchAssets) {
-        $ReadyMarker = Join-Path $RepoRoot ".cache\switch-game-assets\pipeline-v11.ready.json"
+        $ReadyMarker = Join-Path $RepoRoot ".cache\switch-game-assets\pipeline-v12.ready.json"
         if (-not (Test-Path $ReadyMarker)) {
-            throw "Fast mode requires a completed pipeline-v11 baseline. Run setup-all.bat switch or setup-all.bat full first."
+            throw "Fast mode requires a completed pipeline-v12 baseline. Run setup-all.bat switch or setup-all.bat full first."
         }
         if (-not $Recovered) {
             throw "No validated regular Switch exports remain. Run setup-all.bat switch or setup-all.bat full."
@@ -853,12 +853,12 @@ function RestoreOrImportSwitchExports([string]$PythonCommand) {
     }
 
     # Full/switch mode always runs the current conversion pipeline. The importer
-    # reuses unchanged v11 outputs but reconverts anything from an older pipeline.
+    # reuses unchanged v12 outputs but reconverts anything from an older pipeline.
     $Blender = EnsureBlender
     ImportSwitchGameAssets $PythonCommand $Blender
     $Recovered = RestoreInstalledSwitchExports $PythonCommand
     if (-not $Recovered) {
-        throw "No validated regular animated Switch models survived the strict v11 import."
+        throw "No validated regular animated Switch models survived the strict v12 import."
     }
     VerifySwitchBaseline $PythonCommand
 }

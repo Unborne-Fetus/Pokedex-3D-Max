@@ -193,7 +193,13 @@ model-and-animation asset repository. GitHub Pages must be enabled once at
 The primary website URL is:
 https://unborne-fetus.github.io/Pokedex-3D-Max/
 
-The public `Pokedex-3D-Models-Animations` repository remains the source of
+The 756 regular Switch GLBs are now included under `web/models/switch/` in this
+repository, with original palette colors, alpha policies, UV transforms and
+sampler wrapping restored from extracted Switch material records. Geometry,
+skins and animation payloads are byte-identical to the previous exports.
+The original model repository is retained as a backup.
+
+The public `Pokedex-3D-Models-Animations` repository remains the backup source of
 regular Switch-model GLBs. Its former website checks whether the primary
 website is live before redirecting visitors there, so an unpublished main
 Pages site will not break the existing viewer. The main index loads remote

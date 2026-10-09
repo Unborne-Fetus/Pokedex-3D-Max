@@ -35,7 +35,10 @@ jobs:
             while IFS= read -r -d '' source; do
               dex="$(basename "$(dirname "$source")")"
               mkdir -p "web/models/switch/$dex"
-              cp "$source" "web/models/switch/$dex/regular.glb"
+              # Keep repaired local exports; the backup contains older maps.
+              if [ ! -s "web/models/switch/$dex/regular.glb" ]; then
+                cp "$source" "web/models/switch/$dex/regular.glb"
+              fi
             done
           python3 scripts/build_merged_switch_manifest.py
           test "$(find web/models/switch -name regular.glb | wc -l)" -ge 700

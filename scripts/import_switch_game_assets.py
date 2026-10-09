@@ -25,7 +25,7 @@ ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blende
 ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
 BLENDER_DEPS = CACHE / "blender-python-deps"
 CONVERSION_CACHE = CACHE / "switch-conversion-cache.json"
-CONVERSION_PIPELINE_VERSION = 11
+CONVERSION_PIPELINE_VERSION = 12
 PIPELINE_READY = CACHE / f"pipeline-v{CONVERSION_PIPELINE_VERSION}.ready.json"
 COVERAGE_REPORT = CACHE / "switch-animation-coverage.json"
 
@@ -1446,10 +1446,43 @@ def _pokedex3d_gfb_material_color(material):
                 "    # Suppressed huge vertex-weight debug dump for batch imports.\n",
             )
 
+        # POKEDEX3D_GFB_EXACT_ALBEDO_V2: TextureMaps.Index is zero-based.
+        # Scoring a descriptor together with index +/-1 let neighboring
+        # normals disqualify Col0Tex and selected Default_lta or sphere maps.
+        # Select the semantic sampler first, then resolve only its own index.
+        exact_albedo_maps = '''def _pokedex3d_gfb_material_maps(material, model):
+    descriptors = []
+    for i in range(material.TextureMapsLength()):
+        mapping = material.TextureMaps(i)
+        if mapping is None:
+            continue
+        sampler = _pokedex3d_gfb_decode(mapping.Sampler()).strip()
+        semantic = re.sub(r"[^a-z0-9]+", "", sampler.casefold())
+        if semantic not in ("col0tex", "basecolormap", "albedomap", "diffusemap"):
+            continue
+        index = int(mapping.Index())
+        if not 0 <= index < model.TextureNamesLength():
+            continue
+        name = _pokedex3d_gfb_decode(model.TextureNames(index)).strip()
+        if name:
+            descriptors.append({"order": i, "sampler": sampler,
+                "index": index, "texture": name,
+                "textureCandidates": [name], "score": 1000})
+    return descriptors
+
+'''
+        text, replaced = re.subn(
+            r"def _pokedex3d_gfb_material_maps\(material, model\):\n.*?(?=def _pokedex3d_gfb_resolve_material_fallback\()",
+            lambda _: exact_albedo_maps,
+            text, count=1, flags=re.S,
+        )
+        if replaced != 1:
+            raise RuntimeError("Cannot install exact GFBMDL albedo selector")
+
         required_gfbmdl_markers = (
             "# POKEDEX3D_GFBMDL_TEXTURE_RESOLVER_V1",
             "def _pokedex3d_gfb_resolve_material_fallback(",
-            '"textureCandidates": texture_candidates',
+            '"textureCandidates": [name]',
             "def CreateMaterial(material, model=None, model_dir=None):",
             '_pokedex3d_gfb_resolve_material_fallback(mat_name, model_dir or ".")',
             "def LoadModel(buf, filename, model_dir=None):",

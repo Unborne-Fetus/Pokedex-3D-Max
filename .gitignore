@@ -20,9 +20,9 @@ web/models/pokeminers-manifest.js
 .cache/pokeminers-jobs.json
 
 # Locally generated official-game model conversions
-web/models/switch/
 .cache/switch-game-assets/
 .tools/pokemon_switch_model_importer/
+__pycache__/
 
 
 # Generated remote Switch model-pack release shards

@@ -14,6 +14,7 @@ const browser = { POKEDEX3D_NAMES: { 1: "Bulbasaur" } };
 const events = [];
 const context = {
   window: browser, TextDecoder, URL, setTimeout,
+  ArrayBuffer, DataView, Uint8Array, Float32Array,
   document: { readyState: "loading", addEventListener() {} },
   location: { protocol: "https:" },
   CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options.detail; } },

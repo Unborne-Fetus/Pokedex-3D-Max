@@ -20,7 +20,7 @@ if /I "%~1"=="full" (
 ) else if /I "%~1"=="textures" (
   set "MODE=TEXTURES"
   set "SETUP_ARGS=-SwitchAssetsOnly -SkipInstall -BakeSwitchMaterials"
-) else if exist "%~dp0.cache\switch-game-assets\pipeline-v11.ready.json" (
+) else if exist "%~dp0.cache\switch-game-assets\pipeline-v12.ready.json" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipSwitchAssets"
 )
@@ -58,7 +58,7 @@ if "%MODE%"=="FULL" (
 ) else (
   echo FAST MODE:
   echo   Revalidates your already-imported regular Switch models and skips reconversion.
-  echo   This is the default only after a fully validated v11 model import.
+  echo   This is the default only after a fully validated v12 model import.
   echo   Run setup-all.bat switch to refresh Switch assets without rebuilding the app.
   echo   Run setup-all.bat full when you intentionally want the complete build pipeline.
 )

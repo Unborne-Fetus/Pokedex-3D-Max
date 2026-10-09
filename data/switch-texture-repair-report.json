@@ -1,0 +1,4546 @@
+{
+  "repaired": [
+    {
+      "dex": 1,
+      "source": "pm0001_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 2,
+      "source": "pm0002_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 3,
+      "source": "pm0003_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 4,
+      "source": "pm0004_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 5,
+      "source": "pm0005_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 6,
+      "source": "pm0006_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 7,
+      "source": "pm0007_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 8,
+      "source": "pm0008_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 9,
+      "source": "pm0009_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 13,
+      "source": "pm0013_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 14,
+      "source": "pm0014_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 15,
+      "source": "pm0015_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 16,
+      "source": "pm0016_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 17,
+      "source": "pm0017_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 18,
+      "source": "pm0018_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 23,
+      "source": "pm0023_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 24,
+      "source": "pm0024_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 25,
+      "source": "pm0025_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 26,
+      "source": "pm0026_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 35,
+      "source": "pm0035_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 36,
+      "source": "pm0036_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 37,
+      "source": "pm0037_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 38,
+      "source": "pm0038_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 39,
+      "source": "pm0039_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 40,
+      "source": "pm0040_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 41,
+      "source": "pm0041_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 2
+    },
+    {
+      "dex": 42,
+      "source": "pm0042_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 43,
+      "source": "pm0043_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 44,
+      "source": "pm0044_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 1
+    },
+    {
+      "dex": 45,
+      "source": "pm0045_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 46,
+      "source": "pm0046_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 47,
+      "source": "pm0047_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 48,
+      "source": "pm0048_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 49,
+      "source": "pm0049_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 50,
+      "source": "pm0050_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 51,
+      "source": "pm0051_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 52,
+      "source": "pm0052_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 53,
+      "source": "pm0053_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 54,
+      "source": "pm0054_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 55,
+      "source": "pm0055_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 56,
+      "source": "pm0056_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 57,
+      "source": "pm0057_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 58,
+      "source": "pm0058_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 59,
+      "source": "pm0059_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 63,
+      "source": "pm0063_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 1
+    },
+    {
+      "dex": 64,
+      "source": "pm0064_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 65,
+      "source": "pm0065_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 66,
+      "source": "pm0066_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 67,
+      "source": "pm0067_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 68,
+      "source": "pm0068_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 69,
+      "source": "pm0069_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 70,
+      "source": "pm0070_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 71,
+      "source": "pm0071_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 72,
+      "source": "pm0072_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 73,
+      "source": "pm0073_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 74,
+      "source": "pm0074_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 75,
+      "source": "pm0075_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 76,
+      "source": "pm0076_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 77,
+      "source": "pm0077_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 78,
+      "source": "pm0078_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 79,
+      "source": "pm0079_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 80,
+      "source": "pm0080_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 81,
+      "source": "pm0081_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 82,
+      "source": "pm0082_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 83,
+      "source": "pm0083_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 8
+    },
+    {
+      "dex": 84,
+      "source": "pm0084_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 6
+    },
+    {
+      "dex": 85,
+      "source": "pm0085_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 8
+    },
+    {
+      "dex": 86,
+      "source": "pm0086_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 87,
+      "source": "pm0087_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 88,
+      "source": "pm0088_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 89,
+      "source": "pm0089_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 90,
+      "source": "pm0090_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 91,
+      "source": "pm0091_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 92,
+      "source": "pm0092_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 93,
+      "source": "pm0093_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 94,
+      "source": "pm0094_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 95,
+      "source": "pm0095_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 96,
+      "source": "pm0096_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 97,
+      "source": "pm0097_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 100,
+      "source": "pm0100_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 101,
+      "source": "pm0101_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 102,
+      "source": "pm0102_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 8
+    },
+    {
+      "dex": 103,
+      "source": "pm0103_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 8
+    },
+    {
+      "dex": 104,
+      "source": "pm0104_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 105,
+      "source": "pm0105_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 106,
+      "source": "pm0106_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 107,
+      "source": "pm0107_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 108,
+      "source": "pm0108_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 111,
+      "source": "pm0111_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 112,
+      "source": "pm0112_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 113,
+      "source": "pm0113_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 114,
+      "source": "pm0114_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 115,
+      "source": "pm0115_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 116,
+      "source": "pm0116_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 117,
+      "source": "pm0117_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 120,
+      "source": "pm0120_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 121,
+      "source": "pm0121_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 122,
+      "source": "pm0122_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 123,
+      "source": "pm0123_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 125,
+      "source": "pm0125_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 126,
+      "source": "pm0126_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 127,
+      "source": "pm0127_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 128,
+      "source": "pm0128_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 129,
+      "source": "pm0129_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 130,
+      "source": "pm0130_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 131,
+      "source": "pm0131_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 132,
+      "source": "pm0132_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 133,
+      "source": "pm0133_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 134,
+      "source": "pm0134_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 135,
+      "source": "pm0135_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 136,
+      "source": "pm0136_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 137,
+      "source": "pm0137_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 142,
+      "source": "pm0142_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 143,
+      "source": "pm0143_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 1
+    },
+    {
+      "dex": 144,
+      "source": "pm0144_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 145,
+      "source": "pm0145_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 146,
+      "source": "pm0146_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 147,
+      "source": "pm0147_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 148,
+      "source": "pm0148_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 149,
+      "source": "pm0149_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 150,
+      "source": "pm0150_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 151,
+      "source": "pm0151_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 152,
+      "source": "pm0152_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 153,
+      "source": "pm0153_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 154,
+      "source": "pm0154_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 155,
+      "source": "pm0155_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 156,
+      "source": "pm0156_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 157,
+      "source": "pm0157_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 158,
+      "source": "pm0158_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 159,
+      "source": "pm0159_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 160,
+      "source": "pm0160_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 167,
+      "source": "pm0167_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 168,
+      "source": "pm0168_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 169,
+      "source": "pm0169_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 170,
+      "source": "pm0170_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 171,
+      "source": "pm0171_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 172,
+      "source": "pm0172_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 173,
+      "source": "pm0173_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 174,
+      "source": "pm0174_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 175,
+      "source": "pm0175_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 176,
+      "source": "pm0176_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 179,
+      "source": "pm0179_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 180,
+      "source": "pm0180_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 181,
+      "source": "pm0181_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 182,
+      "source": "pm0182_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 183,
+      "source": "pm0183_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 184,
+      "source": "pm0184_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 185,
+      "source": "pm0185_01_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 187,
+      "source": "pm0187_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 188,
+      "source": "pm0188_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 189,
+      "source": "pm0189_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 190,
+      "source": "pm0190_01_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 191,
+      "source": "pm0191_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 192,
+      "source": "pm0192_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 2
+    },
+    {
+      "dex": 193,
+      "source": "pm0193_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 194,
+      "source": "pm0194_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 195,
+      "source": "pm0195_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 196,
+      "source": "pm0196_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 197,
+      "source": "pm0197_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 198,
+      "source": "pm0198_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 199,
+      "source": "pm0199_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 200,
+      "source": "pm0200_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 203,
+      "source": "pm0203_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 204,
+      "source": "pm0204_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 205,
+      "source": "pm0205_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 206,
+      "source": "pm0206_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 1
+    },
+    {
+      "dex": 207,
+      "source": "pm0207_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 208,
+      "source": "pm0208_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 209,
+      "source": "pm0209_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 210,
+      "source": "pm0210_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 211,
+      "source": "pm0211_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 212,
+      "source": "pm0212_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 214,
+      "source": "pm0214_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 215,
+      "source": "pm0215_01_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 216,
+      "source": "pm0216_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 217,
+      "source": "pm0217_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 220,
+      "source": "pm0220_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 1
+    },
+    {
+      "dex": 221,
+      "source": "pm0221_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 223,
+      "source": "pm0223_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 224,
+      "source": "pm0224_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 225,
+      "source": "pm0225_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 226,
+      "source": "pm0226_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 227,
+      "source": "pm0227_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 228,
+      "source": "pm0228_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 229,
+      "source": "pm0229_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 230,
+      "source": "pm0230_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 231,
+      "source": "pm0231_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 232,
+      "source": "pm0232_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 233,
+      "source": "pm0233_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 234,
+      "source": "pm0234_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 235,
+      "source": "pm0235_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 236,
+      "source": "pm0236_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 237,
+      "source": "pm0237_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 239,
+      "source": "pm0239_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 240,
+      "source": "pm0240_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 242,
+      "source": "pm0242_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 243,
+      "source": "pm0243_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 5
+    },
+    {
+      "dex": 244,
+      "source": "pm0244_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 7
+    },
+    {
+      "dex": 245,
+      "source": "pm0245_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 5
+    },
+    {
+      "dex": 246,
+      "source": "pm0246_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 247,
+      "source": "pm0247_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 248,
+      "source": "pm0248_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 249,
+      "source": "pm0249_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 5
+    },
+    {
+      "dex": 250,
+      "source": "pm0250_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 6
+    },
+    {
+      "dex": 252,
+      "source": "pm0252_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 253,
+      "source": "pm0253_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 254,
+      "source": "pm0254_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 255,
+      "source": "pm0255_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 256,
+      "source": "pm0256_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 257,
+      "source": "pm0257_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 258,
+      "source": "pm0258_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 259,
+      "source": "pm0259_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 260,
+      "source": "pm0260_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 265,
+      "source": "pm0265_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 266,
+      "source": "pm0266_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 267,
+      "source": "pm0267_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 268,
+      "source": "pm0268_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 269,
+      "source": "pm0269_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 278,
+      "source": "pm0278_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 279,
+      "source": "pm0279_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 280,
+      "source": "pm0280_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 281,
+      "source": "pm0281_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 282,
+      "source": "pm0282_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 283,
+      "source": "pm0283_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 284,
+      "source": "pm0284_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 285,
+      "source": "pm0285_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 286,
+      "source": "pm0286_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 287,
+      "source": "pm0287_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 288,
+      "source": "pm0288_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 289,
+      "source": "pm0289_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 296,
+      "source": "pm0296_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 1
+    },
+    {
+      "dex": 297,
+      "source": "pm0297_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 298,
+      "source": "pm0298_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 299,
+      "source": "pm0299_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 1
+    },
+    {
+      "dex": 302,
+      "source": "pm0302_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 303,
+      "source": "pm0303_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 304,
+      "source": "pm0304_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 305,
+      "source": "pm0305_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 306,
+      "source": "pm0306_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 307,
+      "source": "pm0307_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 308,
+      "source": "pm0308_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 309,
+      "source": "pm0309_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 310,
+      "source": "pm0310_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 311,
+      "source": "pm0311_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 312,
+      "source": "pm0312_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 315,
+      "source": "pm0315_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 316,
+      "source": "pm0316_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 2
+    },
+    {
+      "dex": 317,
+      "source": "pm0317_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 318,
+      "source": "pm0318_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 319,
+      "source": "pm0319_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 322,
+      "source": "pm0322_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 323,
+      "source": "pm0323_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 324,
+      "source": "pm0324_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 325,
+      "source": "pm0325_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 326,
+      "source": "pm0326_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 328,
+      "source": "pm0328_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 329,
+      "source": "pm0329_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 6
+    },
+    {
+      "dex": 330,
+      "source": "pm0330_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 6
+    },
+    {
+      "dex": 331,
+      "source": "pm0331_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 332,
+      "source": "pm0332_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 333,
+      "source": "pm0333_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 334,
+      "source": "pm0334_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 335,
+      "source": "pm0335_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 336,
+      "source": "pm0336_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 339,
+      "source": "pm0339_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 340,
+      "source": "pm0340_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 349,
+      "source": "pm0349_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 350,
+      "source": "pm0350_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 352,
+      "source": "pm0352_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 353,
+      "source": "pm0353_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 354,
+      "source": "pm0354_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 355,
+      "source": "pm0355_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 2
+    },
+    {
+      "dex": 356,
+      "source": "pm0356_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 357,
+      "source": "pm0357_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 358,
+      "source": "pm0358_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 359,
+      "source": "pm0359_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 361,
+      "source": "pm0361_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 362,
+      "source": "pm0362_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 363,
+      "source": "pm0363_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 364,
+      "source": "pm0364_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 2
+    },
+    {
+      "dex": 365,
+      "source": "pm0365_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 370,
+      "source": "pm0370_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 371,
+      "source": "pm0371_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 372,
+      "source": "pm0372_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 373,
+      "source": "pm0373_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 374,
+      "source": "pm0374_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 375,
+      "source": "pm0375_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 376,
+      "source": "pm0376_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 377,
+      "source": "pm0377_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 378,
+      "source": "pm0378_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 379,
+      "source": "pm0379_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 380,
+      "source": "pm0380_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 381,
+      "source": "pm0381_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 382,
+      "source": "pm0382_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 383,
+      "source": "pm0383_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 384,
+      "source": "pm0384_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 387,
+      "source": "pm0387_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 388,
+      "source": "pm0388_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 389,
+      "source": "pm0389_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 390,
+      "source": "pm0390_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 391,
+      "source": "pm0391_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 392,
+      "source": "pm0392_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 393,
+      "source": "pm0393_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 394,
+      "source": "pm0394_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 395,
+      "source": "pm0395_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 396,
+      "source": "pm0396_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 397,
+      "source": "pm0397_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 398,
+      "source": "pm0398_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 399,
+      "source": "pm0399_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 400,
+      "source": "pm0400_01_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 401,
+      "source": "pm0401_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 402,
+      "source": "pm0402_01_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 403,
+      "source": "pm0403_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 404,
+      "source": "pm0404_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 405,
+      "source": "pm0405_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 406,
+      "source": "pm0406_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 407,
+      "source": "pm0407_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 408,
+      "source": "pm0408_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 409,
+      "source": "pm0409_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 410,
+      "source": "pm0410_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 411,
+      "source": "pm0411_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 414,
+      "source": "pm0414_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 415,
+      "source": "pm0415_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 416,
+      "source": "pm0416_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 417,
+      "source": "pm0417_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 418,
+      "source": "pm0418_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 419,
+      "source": "pm0419_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 420,
+      "source": "pm0420_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 424,
+      "source": "pm0424_01_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 425,
+      "source": "pm0425_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 426,
+      "source": "pm0426_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 427,
+      "source": "pm0427_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 428,
+      "source": "pm0428_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 429,
+      "source": "pm0429_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 430,
+      "source": "pm0430_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 431,
+      "source": "pm0431_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 432,
+      "source": "pm0432_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 433,
+      "source": "pm0433_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 434,
+      "source": "pm0434_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 435,
+      "source": "pm0435_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 436,
+      "source": "pm0436_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 437,
+      "source": "pm0437_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 438,
+      "source": "pm0438_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 439,
+      "source": "pm0439_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 440,
+      "source": "pm0440_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 441,
+      "source": "pm0441_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 442,
+      "source": "pm0442_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 443,
+      "source": "pm0443_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 444,
+      "source": "pm0444_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 445,
+      "source": "pm0445_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 446,
+      "source": "pm0446_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 447,
+      "source": "pm0447_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 448,
+      "source": "pm0448_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 449,
+      "source": "pm0449_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 450,
+      "source": "pm0450_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 451,
+      "source": "pm0451_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 452,
+      "source": "pm0452_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 453,
+      "source": "pm0453_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 454,
+      "source": "pm0454_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 455,
+      "source": "pm0455_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 456,
+      "source": "pm0456_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 457,
+      "source": "pm0457_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 458,
+      "source": "pm0458_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 459,
+      "source": "pm0459_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 460,
+      "source": "pm0460_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 461,
+      "source": "pm0461_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 462,
+      "source": "pm0462_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 463,
+      "source": "pm0463_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 464,
+      "source": "pm0464_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 465,
+      "source": "pm0465_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 466,
+      "source": "pm0466_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 467,
+      "source": "pm0467_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 468,
+      "source": "pm0468_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 469,
+      "source": "pm0469_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 470,
+      "source": "pm0470_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 471,
+      "source": "pm0471_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 472,
+      "source": "pm0472_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 473,
+      "source": "pm0473_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 474,
+      "source": "pm0474_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 475,
+      "source": "pm0475_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 476,
+      "source": "pm0476_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 477,
+      "source": "pm0477_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 478,
+      "source": "pm0478_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 480,
+      "source": "pm0480_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 1
+    },
+    {
+      "dex": 481,
+      "source": "pm0481_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 482,
+      "source": "pm0482_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 483,
+      "source": "pm0483_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 10
+    },
+    {
+      "dex": 484,
+      "source": "pm0484_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 13
+    },
+    {
+      "dex": 485,
+      "source": "pm0485_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 486,
+      "source": "pm0486_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 488,
+      "source": "pm0488_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 489,
+      "source": "pm0489_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 490,
+      "source": "pm0490_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 491,
+      "source": "pm0491_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 494,
+      "source": "pm0494_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 7
+    },
+    {
+      "dex": 495,
+      "source": "pm0495_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 496,
+      "source": "pm0496_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 497,
+      "source": "pm0497_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 498,
+      "source": "pm0498_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 499,
+      "source": "pm0499_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 500,
+      "source": "pm0500_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 501,
+      "source": "pm0501_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 502,
+      "source": "pm0502_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 503,
+      "source": "pm0503_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 504,
+      "source": "pm0504_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 505,
+      "source": "pm0505_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 506,
+      "source": "pm0506_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 6
+    },
+    {
+      "dex": 507,
+      "source": "pm0507_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 4
+    },
+    {
+      "dex": 508,
+      "source": "pm0508_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 5
+    },
+    {
+      "dex": 509,
+      "source": "pm0509_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 510,
+      "source": "pm0510_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 511,
+      "source": "pm0511_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 512,
+      "source": "pm0512_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 513,
+      "source": "pm0513_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 514,
+      "source": "pm0514_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 515,
+      "source": "pm0515_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 516,
+      "source": "pm0516_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 517,
+      "source": "pm0517_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 518,
+      "source": "pm0518_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 519,
+      "source": "pm0519_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 3
+    },
+    {
+      "dex": 520,
+      "source": "pm0520_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 3
+    },
+    {
+      "dex": 521,
+      "source": "pm0521_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 6
+    },
+    {
+      "dex": 522,
+      "source": "pm0522_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 523,
+      "source": "pm0523_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 524,
+      "source": "pm0524_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 2
+    },
+    {
+      "dex": 525,
+      "source": "pm0525_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 3
+    },
+    {
+      "dex": 526,
+      "source": "pm0526_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 4
+    },
+    {
+      "dex": 527,
+      "source": "pm0527_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 4
+    },
+    {
+      "dex": 528,
+      "source": "pm0528_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 5
+    },
+    {
+      "dex": 529,
+      "source": "pm0529_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 530,
+      "source": "pm0530_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 531,
+      "source": "pm0531_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 532,
+      "source": "pm0532_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 5
+    },
+    {
+      "dex": 533,
+      "source": "pm0533_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 5
+    },
+    {
+      "dex": 534,
+      "source": "pm0534_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 5
+    },
+    {
+      "dex": 535,
+      "source": "pm0535_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 3
+    },
+    {
+      "dex": 536,
+      "source": "pm0536_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 7
+    },
+    {
+      "dex": 537,
+      "source": "pm0537_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 7
+    },
+    {
+      "dex": 538,
+      "source": "pm0538_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 539,
+      "source": "pm0539_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 543,
+      "source": "pm0543_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 544,
+      "source": "pm0544_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 545,
+      "source": "pm0545_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 546,
+      "source": "pm0546_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 547,
+      "source": "pm0547_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 5
+    },
+    {
+      "dex": 548,
+      "source": "pm0548_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 549,
+      "source": "pm0549_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 551,
+      "source": "pm0551_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 552,
+      "source": "pm0552_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 553,
+      "source": "pm0553_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 554,
+      "source": "pm0554_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 4
+    },
+    {
+      "dex": 556,
+      "source": "pm0556_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 3
+    },
+    {
+      "dex": 557,
+      "source": "pm0557_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 7
+    },
+    {
+      "dex": 558,
+      "source": "pm0558_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 5
+    },
+    {
+      "dex": 559,
+      "source": "pm0559_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 560,
+      "source": "pm0560_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 561,
+      "source": "pm0561_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 4
+    },
+    {
+      "dex": 562,
+      "source": "pm0562_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 563,
+      "source": "pm0563_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 564,
+      "source": "pm0564_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 6
+    },
+    {
+      "dex": 565,
+      "source": "pm0565_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 5
+    },
+    {
+      "dex": 566,
+      "source": "pm0566_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 8
+    },
+    {
+      "dex": 567,
+      "source": "pm0567_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 7
+    },
+    {
+      "dex": 568,
+      "source": "pm0568_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 569,
+      "source": "pm0569_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 570,
+      "source": "pm0570_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 571,
+      "source": "pm0571_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 572,
+      "source": "pm0572_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 573,
+      "source": "pm0573_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 574,
+      "source": "pm0574_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 575,
+      "source": "pm0575_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 576,
+      "source": "pm0576_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 577,
+      "source": "pm0577_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 578,
+      "source": "pm0578_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 579,
+      "source": "pm0579_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 582,
+      "source": "pm0582_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 583,
+      "source": "pm0583_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 584,
+      "source": "pm0584_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 587,
+      "source": "pm0587_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 588,
+      "source": "pm0588_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 3
+    },
+    {
+      "dex": 589,
+      "source": "pm0589_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 8
+    },
+    {
+      "dex": 590,
+      "source": "pm0590_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 3
+    },
+    {
+      "dex": 591,
+      "source": "pm0591_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 592,
+      "source": "pm0592_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 6
+    },
+    {
+      "dex": 593,
+      "source": "pm0593_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 6
+    },
+    {
+      "dex": 594,
+      "source": "pm0594_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 595,
+      "source": "pm0595_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 5
+    },
+    {
+      "dex": 596,
+      "source": "pm0596_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 6
+    },
+    {
+      "dex": 597,
+      "source": "pm0597_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 3
+    },
+    {
+      "dex": 598,
+      "source": "pm0598_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 6
+    },
+    {
+      "dex": 599,
+      "source": "pm0599_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 4
+    },
+    {
+      "dex": 600,
+      "source": "pm0600_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 5
+    },
+    {
+      "dex": 601,
+      "source": "pm0601_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 8
+    },
+    {
+      "dex": 602,
+      "source": "pm0602_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 603,
+      "source": "pm0603_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 604,
+      "source": "pm0604_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 605,
+      "source": "pm0605_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 7
+    },
+    {
+      "dex": 606,
+      "source": "pm0606_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 6
+    },
+    {
+      "dex": 607,
+      "source": "pm0607_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 608,
+      "source": "pm0608_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 609,
+      "source": "pm0609_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 610,
+      "source": "pm0610_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 611,
+      "source": "pm0611_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 612,
+      "source": "pm0612_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 613,
+      "source": "pm0613_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 614,
+      "source": "pm0614_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 615,
+      "source": "pm0615_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 8
+    },
+    {
+      "dex": 616,
+      "source": "pm0616_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 5
+    },
+    {
+      "dex": 617,
+      "source": "pm0617_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 4
+    },
+    {
+      "dex": 618,
+      "source": "pm0618_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 619,
+      "source": "pm0619_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 6
+    },
+    {
+      "dex": 620,
+      "source": "pm0620_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 3
+    },
+    {
+      "dex": 621,
+      "source": "pm0621_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 7
+    },
+    {
+      "dex": 622,
+      "source": "pm0622_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 623,
+      "source": "pm0623_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 624,
+      "source": "pm0624_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 625,
+      "source": "pm0625_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 626,
+      "source": "pm0626_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 11
+    },
+    {
+      "dex": 627,
+      "source": "pm0627_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 628,
+      "source": "pm0628_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 629,
+      "source": "pm0629_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 4
+    },
+    {
+      "dex": 630,
+      "source": "pm0630_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 9
+    },
+    {
+      "dex": 631,
+      "source": "pm0631_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 7
+    },
+    {
+      "dex": 632,
+      "source": "pm0632_00.gfbmdl",
+      "game": "SwSh-PokeGen4-5",
+      "materials": 9
+    },
+    {
+      "dex": 633,
+      "source": "pm0633_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 1
+    },
+    {
+      "dex": 634,
+      "source": "pm0634_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 2
+    },
+    {
+      "dex": 635,
+      "source": "pm0635_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 636,
+      "source": "pm0636_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 637,
+      "source": "pm0637_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 638,
+      "source": "pm0638_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 639,
+      "source": "pm0639_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 640,
+      "source": "pm0640_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 643,
+      "source": "pm0643_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 7
+    },
+    {
+      "dex": 644,
+      "source": "pm0644_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 8
+    },
+    {
+      "dex": 702,
+      "source": "pm0702_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 703,
+      "source": "pm0703_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 704,
+      "source": "pm0704_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 705,
+      "source": "pm0705_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 706,
+      "source": "pm0706_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 707,
+      "source": "pm0707_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 709,
+      "source": "pm0709_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 710,
+      "source": "pm0710_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 711,
+      "source": "pm0711_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 712,
+      "source": "pm0712_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 716,
+      "source": "pm0716_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 717,
+      "source": "pm0717_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 718,
+      "source": "pm0718_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 719,
+      "source": "pm0719_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 720,
+      "source": "pm0720_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 721,
+      "source": "pm0721_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 722,
+      "source": "pm0722_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 723,
+      "source": "pm0723_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 724,
+      "source": "pm0724_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 726,
+      "source": "pm0726_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 727,
+      "source": "pm0727_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 728,
+      "source": "pm0728_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 729,
+      "source": "pm0729_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 730,
+      "source": "pm0730_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 731,
+      "source": "pm0731_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 732,
+      "source": "pm0732_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 733,
+      "source": "pm0733_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 734,
+      "source": "pm0734_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 737,
+      "source": "pm0737_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 738,
+      "source": "pm0738_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 739,
+      "source": "pm0739_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 740,
+      "source": "pm0740_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 741,
+      "source": "pm0741_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 742,
+      "source": "pm0742_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 743,
+      "source": "pm0743_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 744,
+      "source": "pm0744_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 745,
+      "source": "pm0745_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 747,
+      "source": "pm0747_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 748,
+      "source": "pm0748_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 749,
+      "source": "pm0749_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 751,
+      "source": "pm0751_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 752,
+      "source": "pm0752_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 753,
+      "source": "pm0753_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 754,
+      "source": "pm0754_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 755,
+      "source": "pm0755_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 756,
+      "source": "pm0756_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 757,
+      "source": "pm0757_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 758,
+      "source": "pm0758_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 759,
+      "source": "pm0759_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 760,
+      "source": "pm0760_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 761,
+      "source": "pm0761_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 762,
+      "source": "pm0762_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 763,
+      "source": "pm0763_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 764,
+      "source": "pm0764_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 765,
+      "source": "pm0765_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 766,
+      "source": "pm0766_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 767,
+      "source": "pm0767_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 768,
+      "source": "pm0768_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 769,
+      "source": "pm0769_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 772,
+      "source": "pm0772_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 773,
+      "source": "pm0773_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 801,
+      "source": "pm0801_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 802,
+      "source": "pm0802_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 805,
+      "source": "pm0805_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 806,
+      "source": "pm0806_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 807,
+      "source": "pm0807_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 808,
+      "source": "pm0808_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 809,
+      "source": "pm0809_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 8
+    },
+    {
+      "dex": 810,
+      "source": "pm0810_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 811,
+      "source": "pm0811_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 2
+    },
+    {
+      "dex": 812,
+      "source": "pm0812_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 813,
+      "source": "pm0813_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 814,
+      "source": "pm0814_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 815,
+      "source": "pm0815_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 816,
+      "source": "pm0951_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 817,
+      "source": "pm0952_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 5
+    },
+    {
+      "dex": 818,
+      "source": "pm0953_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 4
+    },
+    {
+      "dex": 819,
+      "source": "pm0909_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 820,
+      "source": "pm0910_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 9
+    },
+    {
+      "dex": 821,
+      "source": "pm0918_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 4
+    },
+    {
+      "dex": 822,
+      "source": "pm0822_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 8
+    },
+    {
+      "dex": 823,
+      "source": "pm0823_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 8
+    },
+    {
+      "dex": 824,
+      "source": "pm0930_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 825,
+      "source": "pm0931_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 7
+    },
+    {
+      "dex": 826,
+      "source": "pm0826_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 827,
+      "source": "pm0827_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 828,
+      "source": "pm0828_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 829,
+      "source": "pm0905_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 830,
+      "source": "pm0906_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 831,
+      "source": "pm0911_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 5
+    },
+    {
+      "dex": 832,
+      "source": "pm0912_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 5
+    },
+    {
+      "dex": 833,
+      "source": "pm0903_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 9
+    },
+    {
+      "dex": 834,
+      "source": "pm0904_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 7
+    },
+    {
+      "dex": 835,
+      "source": "pm0907_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 5
+    },
+    {
+      "dex": 836,
+      "source": "pm0908_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 4
+    },
+    {
+      "dex": 837,
+      "source": "pm0933_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 4
+    },
+    {
+      "dex": 838,
+      "source": "pm0934_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 8
+    },
+    {
+      "dex": 839,
+      "source": "pm0839_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 840,
+      "source": "pm0840_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 841,
+      "source": "pm0841_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 842,
+      "source": "pm0842_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 843,
+      "source": "pm0843_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 844,
+      "source": "pm0844_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 845,
+      "source": "pm0845_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 8
+    },
+    {
+      "dex": 846,
+      "source": "pm0846_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 5
+    },
+    {
+      "dex": 847,
+      "source": "pm0847_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 848,
+      "source": "pm0848_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 5
+    },
+    {
+      "dex": 849,
+      "source": "pm0849_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 7
+    },
+    {
+      "dex": 850,
+      "source": "pm0850_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 7
+    },
+    {
+      "dex": 851,
+      "source": "pm0851_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 7
+    },
+    {
+      "dex": 852,
+      "source": "pm0964_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 4
+    },
+    {
+      "dex": 853,
+      "source": "pm0965_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 5
+    },
+    {
+      "dex": 855,
+      "source": "pm0855_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 856,
+      "source": "pm0856_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 857,
+      "source": "pm0970_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 4
+    },
+    {
+      "dex": 858,
+      "source": "pm0971_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 859,
+      "source": "pm0859_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 860,
+      "source": "pm0860_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 861,
+      "source": "pm0959_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 7
+    },
+    {
+      "dex": 863,
+      "source": "pm0863_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 4
+    },
+    {
+      "dex": 866,
+      "source": "pm0866_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 867,
+      "source": "pm0867_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 868,
+      "source": "pm0868_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 869,
+      "source": "pm0869_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 870,
+      "source": "pm0923_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 9
+    },
+    {
+      "dex": 871,
+      "source": "pm0871_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 8
+    },
+    {
+      "dex": 872,
+      "source": "pm0872_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 8
+    },
+    {
+      "dex": 873,
+      "source": "pm0873_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 8
+    },
+    {
+      "dex": 874,
+      "source": "pm0874_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 7
+    },
+    {
+      "dex": 876,
+      "source": "pm0942_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 5
+    },
+    {
+      "dex": 878,
+      "source": "pm0926_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 4
+    },
+    {
+      "dex": 879,
+      "source": "pm0927_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 880,
+      "source": "pm0960_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 3
+    },
+    {
+      "dex": 881,
+      "source": "pm0961_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 882,
+      "source": "pm0962_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 4
+    },
+    {
+      "dex": 883,
+      "source": "pm0883_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 884,
+      "source": "pm0929_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 885,
+      "source": "pm0976_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 4
+    },
+    {
+      "dex": 886,
+      "source": "pm0977_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 8
+    },
+    {
+      "dex": 887,
+      "source": "pm0978_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 10
+    },
+    {
+      "dex": 888,
+      "source": "pm0888_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 8
+    },
+    {
+      "dex": 890,
+      "source": "pm0940_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 9
+    },
+    {
+      "dex": 891,
+      "source": "pm0891_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 892,
+      "source": "pm0892_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 894,
+      "source": "pm0989_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 8
+    },
+    {
+      "dex": 895,
+      "source": "pm0990_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 5
+    },
+    {
+      "dex": 896,
+      "source": "pm0984_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 6
+    },
+    {
+      "dex": 897,
+      "source": "pm0985_00_00.gfbmdl",
+      "game": "SwSh-PokeGen8",
+      "materials": 5
+    },
+    {
+      "dex": 901,
+      "source": "pm0901_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 6
+    },
+    {
+      "dex": 902,
+      "source": "pm0902_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 903,
+      "source": "pm0903_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 904,
+      "source": "pm0904_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 909,
+      "source": "pm0909_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 910,
+      "source": "pm0910_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 913,
+      "source": "pm0913_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 914,
+      "source": "pm0914_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 918,
+      "source": "pm0918_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 919,
+      "source": "pm0919_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 8
+    },
+    {
+      "dex": 920,
+      "source": "pm0920_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 8
+    },
+    {
+      "dex": 921,
+      "source": "pm0921_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 5
+    },
+    {
+      "dex": 923,
+      "source": "pm0923_00_00.trmtr",
+      "game": "ZA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 924,
+      "source": "pm0924_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 3
+    },
+    {
+      "dex": 926,
+      "source": "pm0926_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 927,
+      "source": "pm0927_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 929,
+      "source": "pm0929_00_00.trmtr",
+      "game": "SV-PokeDLC2",
+      "materials": 5
+    },
+    {
+      "dex": 933,
+      "source": "pm0933_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 934,
+      "source": "pm0934_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 935,
+      "source": "pm0935_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 936,
+      "source": "pm0936_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 937,
+      "source": "pm0937_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 940,
+      "source": "pm0940_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 942,
+      "source": "pm0942_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 4
+    },
+    {
+      "dex": 944,
+      "source": "pm0944_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 945,
+      "source": "pm0945_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 946,
+      "source": "pm0946_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 948,
+      "source": "pm0948_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 949,
+      "source": "pm0949_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 950,
+      "source": "pm0950_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 951,
+      "source": "pm0951_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 952,
+      "source": "pm0952_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 953,
+      "source": "pm0953_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 954,
+      "source": "pm0954_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 955,
+      "source": "pm0955_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 956,
+      "source": "pm0956_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 957,
+      "source": "pm0957_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 958,
+      "source": "pm0958_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 959,
+      "source": "pm0959_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 964,
+      "source": "pm0964_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 7
+    },
+    {
+      "dex": 965,
+      "source": "pm0965_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 8
+    },
+    {
+      "dex": 966,
+      "source": "pm0966_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 967,
+      "source": "pm0967_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 968,
+      "source": "pm0968_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 969,
+      "source": "pm0969_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 2
+    },
+    {
+      "dex": 970,
+      "source": "pm0970_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 971,
+      "source": "pm0971_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 974,
+      "source": "pm0974_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 976,
+      "source": "pm0976_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 977,
+      "source": "pm0977_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 978,
+      "source": "pm0978_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 982,
+      "source": "pm0982_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 984,
+      "source": "pm0984_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 985,
+      "source": "pm0985_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 989,
+      "source": "pm0989_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 990,
+      "source": "pm0990_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 1001,
+      "source": "pm1001_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 1002,
+      "source": "pm1002_00_00.trmtr",
+      "game": "ZA-PokeDLC",
+      "materials": 8
+    },
+    {
+      "dex": 1007,
+      "source": "pm1007_00_00.trmtr",
+      "game": "LA-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 1010,
+      "source": "pm1010_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 1011,
+      "source": "pm1011_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 1012,
+      "source": "pm1012_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 1013,
+      "source": "pm1013_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 1014,
+      "source": "pm1014_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 8
+    },
+    {
+      "dex": 1015,
+      "source": "pm1015_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 1016,
+      "source": "pm1016_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 1017,
+      "source": "pm1017_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 1018,
+      "source": "pm1018_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 7
+    },
+    {
+      "dex": 1019,
+      "source": "pm1019_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 6
+    },
+    {
+      "dex": 1020,
+      "source": "pm1020_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 1022,
+      "source": "pm1022_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    },
+    {
+      "dex": 1023,
+      "source": "pm1023_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 5
+    },
+    {
+      "dex": 1024,
+      "source": "pm1024_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 3
+    },
+    {
+      "dex": 1025,
+      "source": "pm1025_00_00.trmtr",
+      "game": "SV-Poke",
+      "materials": 4
+    }
+  ],
+  "failed": [],
+  "validation": {
+    "models": 756,
+    "meshAndAnimationPayloads": "byte-identical to original exports",
+    "appearance": "rendered samples checked; full catalog not individually inspected"
+  }
+}
