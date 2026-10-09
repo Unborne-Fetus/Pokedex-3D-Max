@@ -328,6 +328,102 @@ def _material_base_color_factor(material):
     return (0.8, 0.8, 0.8, 1.0)
 
 
+def bake_switch_shader_colors(source: Path) -> None:
+    """Bake the original Nintendo material graph into portable glTF albedo.
+
+    Merely copying the imported *_alb image loses PokémonShader's per-layer
+    colors and mask lookup. Cycles' color-only diffuse bake evaluates the
+    original graph on the original UVs before it is replaced by PBR nodes.
+    Never generate a substitute texture when baking is impossible.
+    """
+    meshes = [obj for obj in bpy.context.scene.objects if obj.type == "MESH"]
+    if not meshes:
+        raise RuntimeError("Cannot bake Switch colors: no mesh objects")
+    for obj in meshes:
+        if not getattr(obj.data, "uv_layers", None) or not obj.data.uv_layers.active:
+            raise RuntimeError(
+                f"Cannot bake original Switch shader: missing UVs on {obj.name}"
+            )
+
+    originals = {}
+    targets = {}
+    for obj in meshes:
+        for slot in obj.material_slots:
+            mat = slot.material
+            if mat is None or mat in targets:
+                continue
+            base = _linked_base_color_image(mat)
+            if base is None or not base.has_data:
+                raise RuntimeError(
+                    f"Cannot bake original Switch shader: missing source albedo on {mat.name}"
+                )
+            width = int(base.size[0])
+            height = int(base.size[1])
+            if width <= 0 or height <= 0:
+                raise RuntimeError(f"Invalid original texture resolution on {mat.name}")
+            # Preserve native texel detail when feasible; avoid enormous masks.
+            scale = min(1.0, 2048.0 / max(width, height))
+            width = max(1, int(width * scale))
+            height = max(1, int(height * scale))
+            image = bpy.data.images.new(
+                f"POKEDEX3D_SHADER_BAKE_{len(targets)}",
+                width=width, height=height, alpha=True,
+            )
+            mat.use_nodes = True
+            node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+            node.name = "POKEDEX3D_SHADER_BAKE_TARGET"
+            node.image = image
+            mat.node_tree.nodes.active = node
+            targets[mat] = image
+            originals[mat] = base
+
+    if not targets:
+        raise RuntimeError("Cannot bake Switch colors: no usable mesh materials")
+
+    scene = bpy.context.scene
+    scene.render.engine = "CYCLES"
+    scene.cycles.samples = 1
+    scene.render.bake.use_selected_to_active = False
+    scene.render.bake.margin = 2
+    bpy.ops.object.select_all(action="DESELECT")
+    for obj in meshes:
+        obj.hide_set(False)
+        obj.select_set(True)
+    bpy.context.view_layer.objects.active = meshes[0]
+    print(
+        f"Baking original layered Switch material colors for {len(targets)} material(s)...",
+        flush=True,
+    )
+    result = bpy.ops.object.bake(type="DIFFUSE", pass_filter={"COLOR"})
+    if "FINISHED" not in result:
+        raise RuntimeError(f"Switch color bake returned {result}")
+
+    bake_dir = jobs_path.parent / "shader-baked" / source.stem
+    bake_dir.mkdir(parents=True, exist_ok=True)
+    from array import array
+    for index, (mat, image) in enumerate(targets.items()):
+        base = originals[mat]
+        # Bake writes RGB. Preserve any original albedo transparency instead
+        # of turning feathers, fur cutouts, and eyelashes into opaque polygons.
+        if int(base.size[0]) == int(image.size[0]) and int(base.size[1]) == int(image.size[1]):
+            count = int(image.size[0]) * int(image.size[1]) * 4
+            original_pixels = array("f", [0.0]) * count
+            baked_pixels = array("f", [0.0]) * count
+            base.pixels.foreach_get(original_pixels)
+            image.pixels.foreach_get(baked_pixels)
+            for offset in range(3, count, 4):
+                baked_pixels[offset] = original_pixels[offset]
+            image.pixels.foreach_set(baked_pixels)
+            image.update()
+
+        image.filepath_raw = str(bake_dir / f"material-{index:03d}.png")
+        image.file_format = "PNG"
+        image.save()
+        mat["pokedex3d_basecolor_image"] = image.name
+        mat["pokedex3d_basecolor_path"] = image.filepath_raw
+        print(f"Switch shader baked: {mat.name} -> {image.filepath_raw}", flush=True)
+
+
 def prepare_materials_for_gltf() -> tuple[int, int, list[dict]]:
     """Flatten imported Pokémon materials into glTF-compatible PBR nodes.
 
@@ -549,6 +645,9 @@ for index, job in enumerate(jobs, start=1):
     destination = Path(job["output"]).resolve()
     temporary = destination.with_name(destination.stem + ".partial.glb")
 
+    bake_enabled = bool(job.get("bakeSwitchShaders"))
+    bake_directory = jobs_path.parent / "shader-baked" / source.stem
+
     job_texture_roots = [
         str(Path(path).resolve())
         for path in (job.get("textureRoots") or [])
@@ -598,6 +697,9 @@ for index, job in enumerate(jobs, start=1):
 
         if wants_animation and animation_rejection is None and imported_animations <= 0:
             raise RuntimeError("Animation candidates were selected but none were imported")
+
+        if bake_enabled:
+            bake_switch_shader_colors(source)
 
         # The upstream importer uses a custom PokemonShader node group. Flatten
         # it to standard PBR nodes before GLB export or Filament/model-viewer
@@ -694,6 +796,11 @@ for index, job in enumerate(jobs, start=1):
                 temporary.unlink()
             except Exception:
                 pass
+        if bake_enabled and bake_directory.is_dir():
+            # The validated GLB embeds its final PNGs, so temporary shader
+            # renders are not needed in the runtime pack.
+            import shutil
+            shutil.rmtree(bake_directory, ignore_errors=True)
 
 results_path = jobs_path.with_name("switch-model-results.json")
 results_path.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
