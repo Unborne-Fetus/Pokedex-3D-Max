@@ -7,7 +7,7 @@ const path = require("node:path");
 const app = fs.readFileSync(path.join(__dirname, "../web/app.js"), "utf8");
 const start = app.indexOf("function resetCamera()");
 const end = app.indexOf("function populateFormSelect(", start);
-assert.ok(start >= 0 && end > start, "Switch camera/material functions are missing");
+assert.ok(start >= 0 && end > start, "Switch camera functions are missing");
 const source = app.slice(start, end);
 
 function frame(bounds, center, width, height, materials = [], model = {}) {
@@ -18,34 +18,20 @@ function frame(bounds, center, width, height, materials = [], model = {}) {
     model: { materials },
     jumpCameraToGoal() { this.jumped = true; },
   };
-  const context = { viewer, currentModel: model, Number, Math };
+  const context = { viewer, currentModel: model, Number, Math, clearTimeout, setTimeout, requestAnimationFrame: fn => fn(), cameraFitTimer: null };
   vm.runInNewContext(source, context);
   context.resetCamera();
-  return { viewer, corrected: context.correctOpaqueBodyMaterials() };
+  return { viewer };
 }
-const body = { name: "body_a", mode: "BLEND",
-  getAlphaMode() { return this.mode; },
-  setAlphaMode(value) { this.mode = value; },
-};
-const eye = { name: "l_eye", mode: "BLEND",
-  getAlphaMode() { return this.mode; },
-  setAlphaMode(value) { this.mode = value; },
-};
-const flame = { name: "fire", mode: "BLEND",
-  getAlphaMode() { return this.mode; },
-  setAlphaMode(value) { this.mode = value; },
-};
-
 const small = frame({ x: 0.6, y: 1.1, z: 0.8 },
-                    { x: 0, y: 0, z: -0.5 }, 900, 600,
-                    [body, eye, flame]);
+                    { x: 0, y: 0, z: -0.5 }, 900, 600);
 assert.ok(small.viewer.cameraOrbit.startsWith("165deg 76deg"));
 assert.equal(small.viewer.cameraTarget, "0.0000m 0.0000m -0.5000m");
 assert.equal(small.viewer.fieldOfView, "32deg");
-assert.equal(small.corrected, 1);
-assert.equal(body.mode, "OPAQUE");
-assert.equal(eye.mode, "BLEND");
-assert.equal(flame.mode, "BLEND");
+assert.ok(!app.includes('correctOpaqueBodyMaterials();'),
+  "Legacy body alpha modes must not be overridden at runtime");
+assert.ok(app.indexOf("startIdle();") < app.indexOf("scheduleCameraFit();"),
+  "Idle pose must start before default camera framing");
 
 const giant = frame({ x: 5.0, y: 5.4, z: 1.8 },
                     { x: 1, y: -1.5, z: -2 }, 480, 600);
