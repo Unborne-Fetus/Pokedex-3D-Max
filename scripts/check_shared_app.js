@@ -7,7 +7,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
-for (const file of ['web/app.js', 'web/species-names.js']) {
+for (const file of ['web/app.js', 'web/species-names.js', 'web/local-switch-catalog.js']) {
   new vm.Script(read(file), {filename:file});
 }
 
@@ -26,6 +26,9 @@ for (const [,src] of html.matchAll(/<script[^>]+src="([^"?]+)(?:\?[^" ]*)?"/g)) 
 assert.ok(!/battle[-_ ]?sim|brisk-engine|showBattle|battleView/i.test(html), 'Battle UI/engine must not be bundled');
 assert.ok(!/pokeminers-manifest|pokedex3dpro-manifest|web\/models\/manifest\.js/i.test(html), 'Only the Switch manifest may feed models');
 assert.ok(!/pokemon-3d-api|PokeMiners|fallbackUrl|raw\.githubusercontent|esm\.sh/i.test(app), 'Viewer must not contain legacy/remote model fallbacks');
+assert.ok(/POKEDEX3D_LOCAL_SWITCH/.test(app), 'Browser must support local Switch files without launcher');
+assert.ok(/local-switch-catalog\.js/.test(html), 'Standalone browser catalog script must load');
+assert.ok(/id="localModelsFolder"/.test(html), 'Static index must have a model folder picker');
 assert.ok(/POKEDEX3D_SWITCH_MODELS/.test(app), 'Viewer must read the Switch manifest');
 assert.ok(/form \|\| "regular"\)\.toLowerCase\(\) === "regular"/.test(app), 'Viewer must filter to regular forms');
 assert.ok(/includes\("\/switch\/"\)/.test(app), 'Viewer must enforce Switch model paths');
