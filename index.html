@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin />
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-  <link rel="stylesheet" href="web/styles.css?v=5" />
+  <link rel="stylesheet" href="web/styles.css?v=6" />
   <script defer src="web/vendor/model-viewer.min.js"></script>
 </head>
 <body>
@@ -24,6 +24,7 @@
     <aside class="sidebar">
       <div class="browser-folder-picker">
         <button id="chooseLocalModels" type="button">Open Switch model folder</button>
+        <button id="exportModelManifest" type="button" disabled title="Open a folder first, then download its verified inventory">Export model catalog</button>
         <input id="localModelsFolder" type="file" webkitdirectory directory multiple hidden aria-label="Choose validated Switch model folder" />
         <p id="folderStatus">Works entirely in your browser. Models stay on your device.</p>
       </div>
@@ -116,9 +117,9 @@
   </script>
   <script src="web/species-names.js"></script>
   <script src="web/models/switch-manifest.js?v=4" onerror="this.remove()"></script>
-  <script defer src="web/local-switch-catalog.js?v=1"></script>
+  <script defer src="web/local-switch-catalog.js?v=2"></script>
   <script defer src="web/remote-switch-catalog.js?v=1"></script>
-  <script defer src="web/app.js?v=33"></script>
+  <script defer src="web/app.js?v=34"></script>
 </body>
 </html>
 
