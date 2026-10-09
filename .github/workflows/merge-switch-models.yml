@@ -17,7 +17,7 @@ concurrency:
 jobs:
   merge-models:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Checkout Pokedex 3D Max
         uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
 
       - name: Fetch original model repository
         run: |
-          git clone --depth 1 --filter=blob:none https://github.com/Unborne-Fetus/Pokedex-3D-Models-Animations.git "$RUNNER_TEMP/switch-models"
+          git clone --depth 1 https://github.com/Unborne-Fetus/Pokedex-3D-Models-Animations.git "$RUNNER_TEMP/switch-models"
 
       - name: Copy original GLBs into main repo
         run: |
