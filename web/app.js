@@ -50,6 +50,8 @@ let repairInProgress = false;
 let activeObjectUrl = null;
 let localFolderActive = false;
 let localModelsForExport = [];
+let remoteAbort = null;
+let loadSequence = 0;
 
 
 function escapeHtml(value) {
@@ -202,6 +204,12 @@ function loadModel(model) {
   playingBreak = false;
   idleAnimation = null;
   currentModel = model;
+  ++loadSequence;
+  if (remoteAbort) {
+    remoteAbort.abort();
+    remoteAbort = null;
+  }
+  const selectedSequence = loadSequence;
 
   const catalogUrl = String(model?.url || "");
   const fromLocalFolder = typeof File !== "undefined" && model?.file instanceof File;
@@ -221,18 +229,48 @@ function loadModel(model) {
     URL.revokeObjectURL(activeObjectUrl);
     activeObjectUrl = null;
   }
+  viewer.alt = "3D Switch model of " + prettyName(model);
+  loadTimer = setTimeout(() => {
+    if (selectedSequence !== loadSequence) return;
+    messageEl.textContent = "Switch model is taking longer than expected to load. Check your connection or try another Pokémon.";
+    messageEl.classList.remove("hidden");
+  }, fromRemoteManifest ? 30000 : 15000);
+
   if (fromLocalFolder) {
     activeObjectUrl = URL.createObjectURL(model.file);
     viewer.src = activeObjectUrl;
+  } else if (fromRemoteManifest) {
+    // Public GitHub file inventories list paths, not proof of safe assets.
+    // Download once, inspect the real GLB for embedded color and a valid
+    // idle, then render that exact same downloaded data through a blob URL.
+    const abort = new AbortController();
+    remoteAbort = abort;
+    (async () => {
+      try {
+        const reply = await fetch(catalogUrl, { mode: "cors", signal: abort.signal });
+        if (!reply.ok) throw Error("GitHub returned HTTP " + reply.status);
+        const data = await reply.arrayBuffer();
+        if (abort.signal.aborted || selectedSequence !== loadSequence) return;
+        const checked = window.POKEDEX3D_REMOTE_SWITCH.inspect(data);
+        if (abort.signal.aborted || selectedSequence !== loadSequence) return;
+        model.idleAnimation = checked.idleAnimation;
+        model.idleBreaks = (model.idleBreaks || [])
+          .filter(name => checked.animations.includes(name) && name !== checked.idleAnimation);
+        activeObjectUrl = URL.createObjectURL(new Blob([data], { type: "model/gltf-binary" }));
+        viewer.src = activeObjectUrl;
+      } catch (error) {
+        if (abort.signal.aborted || selectedSequence !== loadSequence) return;
+        clearLoadTimer();
+        messageEl.textContent = "Could not load verified Switch GLB from GitHub: " +
+          String(error.message || error) + ". Try a different Pokémon.";
+        messageEl.classList.remove("hidden");
+      } finally {
+        if (remoteAbort === abort) remoteAbort = null;
+      }
+    })();
   } else {
     viewer.src = catalogUrl;
   }
-  viewer.alt = "3D Switch model of " + prettyName(model);
-
-  loadTimer = setTimeout(() => {
-    messageEl.textContent = "Switch model failed to load. No fallback model was substituted.";
-    messageEl.classList.remove("hidden");
-  }, 15000);
 }
 
 function selectModel(index) {
@@ -425,18 +463,23 @@ if (isLocalIndexServer()) {
 // static page. The configured source is disabled while its GitHub repo remains
 // private; visitors are never asked for personal GitHub credentials.
 window.addEventListener("pokedex3d:remote-switch-catalog", event => {
-  if (localFolderActive || models.length) return;
+  if (localFolderActive || models.some(model => !model.remoteSwitch)) return;
   const incoming = Array.isArray(event.detail?.models) ? event.detail.models : [];
   if (!incoming.length) return;
+  const selectedDex = models[selectedIndex]?.dex;
+  const currentQuery = searchEl.value.trim().toLowerCase().replace(/^#/, "");
   models = incoming;
-  filtered = [...models];
-  selectedIndex = 0;
-  searchEl.value = "";
   window.POKEDEX3D_MODELS = models;
-  folderStatus.textContent = "Verified hosted Switch models loaded.";
-  statusEl.textContent = models.length.toLocaleString() + " hosted Switch models ready";
+  filtered = currentQuery ? models.filter(model =>
+    String(model.dex) === currentQuery || prettyName(model).toLowerCase().includes(currentQuery)
+  ) : [...models];
+  selectedIndex = Math.max(0, filtered.findIndex(model => model.dex === selectedDex));
+  folderStatus.textContent = "Models stream from the public GitHub repository. Individual textures and idles are checked when opened.";
+  statusEl.textContent = models.length.toLocaleString() + " uploaded Switch models on GitHub";
   renderList();
-  selectModel(0);
+  if (filtered.length && (!currentModel || !models.some(model => model.dex === currentModel.dex))) {
+    selectModel(selectedIndex);
+  }
 });
 window.addEventListener("pokedex3d:remote-switch-error", event => {
   if (models.length || localFolderActive) return;
@@ -459,7 +502,7 @@ exportModelManifestBtn.addEventListener("click", () => {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
-  folderStatus.textContent = "Downloaded a catalog for " + catalog.models + " models. You can upload the JSON to your private GitHub model repository using its website; no Actions or billing required.";
+  folderStatus.textContent = "Downloaded a catalog for " + catalog.models + " models. You can upload the JSON to your GitHub model repository; no Actions or billing required.";
 });
 chooseLocalModelsBtn.addEventListener("click", () => localModelsFolder.click());
 localModelsFolder.addEventListener("change", async () => {
