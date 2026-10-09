@@ -136,7 +136,9 @@ function resetCamera() {
     Array.isArray(target) && target.length === 3
       ? target.map(value => Number(value).toFixed(4) + "m").join(" ")
       : "auto auto auto";
-  viewer.cameraOrbit = "0deg 75deg auto";
+  // theta is measured down from +Y: 65deg positions the camera 25deg ABOVE
+  // the Pokemon. A 20deg yaw gives a natural three-quarter front view.
+  viewer.cameraOrbit = "20deg 65deg auto";
   viewer.fieldOfView = (Number(currentModel?.fieldOfView) || 30) + "deg";
   viewer.jumpCameraToGoal?.();
 }
