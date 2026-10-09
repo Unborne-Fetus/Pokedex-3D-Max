@@ -326,8 +326,8 @@ function loadModel(model) {
   if (fromLocalFolder) {
     activeObjectUrl = URL.createObjectURL(model.file);
     viewer.src = activeObjectUrl;
-  } else if (fromRemoteManifest) {
-    // Public GitHub file inventories list paths, not proof of safe assets.
+  } else if (fromRemoteManifest || model.source === "original-switch-local-merge") {
+    // GitHub inventories and merged local catalogs omit idle metadata.
     // Download once, inspect the real GLB for embedded color and a valid
     // idle, then render that exact same downloaded data through a blob URL.
     const abort = new AbortController();
