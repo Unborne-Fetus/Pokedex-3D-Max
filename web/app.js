@@ -161,44 +161,22 @@ function scheduleIdleBreak() {
 // looks from +Z. Frame the actual *loaded* mesh, never use the same automatic
 // camera radius for a tiny Pokemon and a huge winged Pokemon.
 function resetCamera() {
-  const fov = 32;
-  const azimuth = Number.isFinite(Number(currentModel?.cameraAzimuth))
-    ? Number(currentModel.cameraAzimuth) : 165;
-  const polar = 76;
-  viewer.fieldOfView = fov + "deg";
+  // The original Switch meshes are Z-up and face +Y, unlike the Y-up
+  // convention of glTF/model-viewer. index.html corrects their orientation
+  // with a -90 degree pitch, so their front now faces -Z in viewer space.
+  const hasOverride = currentModel?.cameraAzimuth !== undefined
+    && currentModel?.cameraAzimuth !== null
+    && Number.isFinite(Number(currentModel.cameraAzimuth));
+  const azimuth = hasOverride ? Number(currentModel.cameraAzimuth) : 180;
 
-  const center = viewer.getBoundingBoxCenter?.();
-  const dimensions = viewer.getDimensions?.();
-  const coordinates = center && [center.x, center.y, center.z];
-  const sizes = dimensions && [dimensions.x, dimensions.y, dimensions.z];
-  if (coordinates?.every(Number.isFinite) &&
-      sizes?.every(value => Number.isFinite(value) && value > 0)) {
-    viewer.cameraTarget = coordinates.map(value => value.toFixed(4) + "m").join(" ");
-    const [width, height, depth] = sizes;
-    const aspect = Math.max(0.4, (viewer.clientWidth || 1) / (viewer.clientHeight || 1));
-    const az = azimuth * Math.PI / 180;
-    const elevation = (90 - polar) * Math.PI / 180;
-    // The model-viewer bounds include wings, feet, horns, and tails. Estimate
-    // their projected screen space from this view and leave a 20% margin.
-    const visibleWidth = Math.abs(Math.cos(az)) * width + Math.abs(Math.sin(az)) * depth;
-    const visibleHeight = Math.abs(Math.cos(elevation)) * height +
-      Math.abs(Math.sin(elevation)) * depth;
-    const tanHalfVertical = Math.tan(fov * Math.PI / 360);
-    const distance = 1.2 * Math.max(
-      visibleHeight / (2 * tanHalfVertical),
-      visibleWidth / (2 * tanHalfVertical * aspect),
-      Math.hypot(width, height, depth) * 0.55
-    );
-    if (Number.isFinite(distance) && distance > 0 && distance < 10000) {
-      viewer.cameraOrbit = azimuth + "deg " + polar + "deg " +
-        Math.max(0.15, distance).toFixed(3) + "m";
-    } else {
-      viewer.cameraOrbit = azimuth + "deg " + polar + "deg 130%";
-    }
-  } else {
-    viewer.cameraTarget = "auto auto auto";
-    viewer.cameraOrbit = azimuth + "deg " + polar + "deg 130%";
-  }
+  // Let model-viewer calculate both the center and radius from the actual
+  // rotated GLB. The previous meter-based distance was wrong for many
+  // animated meshes, resulting in cropped or tiny models. Percent radius
+  // auto-fits every model to the viewer's aspect ratio.
+  viewer.fieldOfView = "30deg";
+  viewer.cameraTarget = "auto auto auto";
+  viewer.cameraOrbit = azimuth + "deg 90deg 125%";
+  viewer.resetTurntableRotation?.(0);
   viewer.jumpCameraToGoal?.();
 }
 
@@ -211,18 +189,22 @@ function resetCamera() {
 function scheduleCameraFit() {
   clearCameraFitTimer();
 
-  // model-viewer reports bounds for the currently posed mesh. The old code
-  // framed the bind/rest pose and only then started the idle animation, which
-  // made some Pokemon tiny while others were clipped. Fit after the idle pose
-  // has reached the renderer, then make one delayed correction for slower rigs.
+  // Recompute the automatic framing after the first real animation pose,
+  // then repeat after a short delay for models with slower pose updates.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      if (viewer.loaded) resetCamera();
+      if (viewer.loaded) {
+        viewer.updateFraming?.();
+        resetCamera();
+      }
     });
   });
   cameraFitTimer = setTimeout(() => {
     cameraFitTimer = null;
-    if (viewer.loaded) resetCamera();
+    if (viewer.loaded) {
+        viewer.updateFraming?.();
+        resetCamera();
+      }
   }, 220);
 }
 
