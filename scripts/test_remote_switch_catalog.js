@@ -71,5 +71,67 @@ function testGlb(options = {}) {
 assert.equal(inspect(testGlb()).idleAnimation, "BattleIdle_01");
 assert.throws(() => inspect(testGlb({ animation: "attack_01" })), /idle/);
 assert.throws(() => inspect(testGlb({ noImage: true })), /image/);
+
+// Blender exports some genuine Switch idles with only the name "Animation".
+// Accept a single generic clip only when several joints actually move.
+function genericRigClip(moving) {
+  const times = Buffer.alloc(8);
+  times.writeFloatLE(0, 0);
+  times.writeFloatLE(1.833333, 4);
+  const tracks = [0, 1, 2].map(index => {
+    const track = Buffer.alloc(24);
+    track.writeFloatLE(0, 0);
+    track.writeFloatLE(moving ? 0.02 + index * 0.01 : 0, 12);
+    return track;
+  });
+  const bin = Buffer.concat([times, ...tracks]);
+  const doc = {
+    asset: { version: "2.0" },
+    buffers: [{ byteLength: bin.length }],
+    bufferViews: [
+      { buffer: 0, byteOffset: 0, byteLength: 8 },
+      ...tracks.map((track, index) => ({
+        buffer: 0, byteOffset: 8 + 24 * index, byteLength: 24,
+      })),
+    ],
+    accessors: [
+      { bufferView: 0, componentType: 5126, count: 2,
+        type: "SCALAR", min: [0], max: [1.833333] },
+      ...tracks.map((_, index) => ({
+        bufferView: index + 1, componentType: 5126, count: 2, type: "VEC3",
+      })),
+    ],
+    nodes: [{}, {}, {}],
+    skins: [{ joints: [0, 1, 2] }],
+    meshes: [{}], scenes: [{}],
+    materials: [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 } } }],
+    textures: [{ source: 0 }], images: [{ bufferView: 0 }],
+    animations: [{
+      name: "Animation",
+      samplers: tracks.map((_, index) => ({
+        input: 0, output: index + 1, interpolation: "LINEAR",
+      })),
+      channels: tracks.map((_, index) => ({
+        sampler: index, target: { node: index, path: "translation" },
+      })),
+    }],
+  };
+  const json = Buffer.from(JSON.stringify(doc));
+  const padded = Buffer.concat([json, Buffer.alloc((4 - json.length % 4) % 4, 32)]);
+  const header = Buffer.alloc(20);
+  header.writeUInt32LE(0x46546c67, 0);
+  header.writeUInt32LE(2, 4);
+  header.writeUInt32LE(20 + padded.length + 8 + bin.length, 8);
+  header.writeUInt32LE(padded.length, 12);
+  header.writeUInt32LE(0x4e4f534a, 16);
+  const binHeader = Buffer.alloc(8);
+  binHeader.writeUInt32LE(bin.length, 0);
+  binHeader.writeUInt32LE(0x004e4942, 4);
+  const bytes = Buffer.concat([header, padded, binHeader, bin]);
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+}
+assert.equal(inspect(genericRigClip(true)).idleAnimation, "Animation");
+assert.throws(() => inspect(genericRigClip(false)), /moving idle/);
+
 assert.equal(events.length, 0, "Network/start must wait for the page to finish loading");
-console.log("GitHub-only web model tests passed: inventory, safe URLs, embedded textures, and real idle validation.");
+console.log("GitHub-only model tests passed: named idles, moving single Animation clips, static rejection, and textures.");
