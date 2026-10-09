@@ -328,6 +328,25 @@ def _material_base_color_factor(material):
     return (0.8, 0.8, 0.8, 1.0)
 
 
+def switch_alpha_mode(material) -> str:
+    """Choose alpha from the original material policy, not its image channel.
+
+    Switch albedo files can use the alpha channel for masks/shader data even
+    while the mesh is wholly opaque. Only materials authored for cutout or
+    transparency should expose that channel to glTF's opacity input.
+    """
+    if bool(material.get("pokedex3d_source_alpha_test", False)):
+        return "MASK"
+    kind = str(material.get("pokedex3d_source_alpha_type", "") or "").casefold()
+    if any(token in kind for token in ("cutout", "mask", "clip", "alphatest")):
+        return "MASK"
+    if any(token in kind for token in ("blend", "translucent", "transparent", "additive")):
+        return "BLEND"
+    # Source "Opaque" or an unknown/no alpha policy must not turn body parts
+    # translucent just because an imported albedo contains auxiliary alpha.
+    return "OPAQUE"
+
+
 def bake_switch_shader_colors(source: Path) -> None:
     """Bake the original Nintendo material graph into portable glTF albedo.
 
@@ -403,9 +422,14 @@ def bake_switch_shader_colors(source: Path) -> None:
     from array import array
     for index, (mat, image) in enumerate(targets.items()):
         base = originals[mat]
-        # Bake writes RGB. Preserve any original albedo transparency instead
-        # of turning feathers, fur cutouts, and eyelashes into opaque polygons.
-        if int(base.size[0]) == int(image.size[0]) and int(base.size[1]) == int(image.size[1]):
+        # Do not blindly bake the source albedo alpha as opacity. Most Switch
+        # bodies use OPAQUE materials even when texture alpha contains shader
+        # masks. Only explicit cutout/translucent material types keep alpha.
+        alpha_policy = switch_alpha_mode(mat)
+        if alpha_policy != "OPAQUE" and (
+            int(base.size[0]) == int(image.size[0])
+            and int(base.size[1]) == int(image.size[1])
+        ):
             count = int(image.size[0]) * int(image.size[1]) * 4
             original_pixels = array("f", [0.0]) * count
             baked_pixels = array("f", [0.0]) * count
@@ -488,8 +512,11 @@ def prepare_materials_for_gltf() -> tuple[int, int, list[dict]]:
             )
 
         base_socket.default_value = base_factor
+        alpha_policy = switch_alpha_mode(material)
         if alpha_socket is not None:
-            alpha_socket.default_value = base_factor[3]
+            alpha_socket.default_value = (
+                1.0 if alpha_policy == "OPAQUE" else base_factor[3]
+            )
 
         if image is not None:
             tex = nodes.new("ShaderNodeTexImage")
@@ -503,8 +530,16 @@ def prepare_materials_for_gltf() -> tuple[int, int, list[dict]]:
                 pass
 
             links.new(tex.outputs["Color"], base_socket)
-            if alpha_socket is not None and "Alpha" in tex.outputs:
+            if (
+                alpha_policy != "OPAQUE"
+                and alpha_socket is not None
+                and "Alpha" in tex.outputs
+            ):
                 links.new(tex.outputs["Alpha"], alpha_socket)
+            print(
+                f"GLTF alpha policy: {material.name} -> {alpha_policy}",
+                flush=True,
+            )
 
         links.new(principled.outputs["BSDF"], output.inputs["Surface"])
 
