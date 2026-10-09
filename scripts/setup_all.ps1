@@ -556,6 +556,48 @@ function FindSwitchAssetArchives {
             if (-not $Found.Contains($File.FullName)) { $Found.Add($File.FullName) }
         }
     }
+    # Archives may have moved or disappeared after a Python/Windows reinstall.
+    # Reuse source trees previously extracted by the Switch importer, but only
+    # when no local original model archive is available. Never use old GLB
+    # stand-ins, unrelated folders, or a previous model publication as source.
+    $ModelArchivesPresent = @($Found | Where-Object {
+        (Split-Path $_ -Leaf) -match '(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke' -and
+        (Split-Path $_ -Leaf) -notmatch '(?i)(anim|animation|poketex|texture)'
+    }).Count -gt 0
+    if (-not $ModelArchivesPresent) {
+        $SourceCaches = @(
+            (Join-Path $RepoRoot ".cache\switch-game-assets\extracted"),
+            (Join-Path $RepoRoot ".cache\switch-game-assets")
+        )
+        $RecoveredTrees = 0
+        foreach ($CacheRoot in $SourceCaches) {
+            if (-not (Test-Path $CacheRoot -PathType Container)) { continue }
+            $Candidates = @(Get-ChildItem -LiteralPath $CacheRoot -Directory -ErrorAction SilentlyContinue |
+                Where-Object {
+                    $_.Name -match '(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke' -and
+                    $_.Name -notmatch '(?i)(sharedtex|trainers|texture)'
+                })
+            foreach ($Candidate in $Candidates) {
+                # Extracted archived packs have a completed-cache marker; older
+                # direct extraction layouts have original source files instead.
+                $Completed = Test-Path (Join-Path $Candidate.FullName ".complete.json")
+                $ModelExample = Get-ChildItem -LiteralPath $Candidate.FullName -File -Recurse -ErrorAction SilentlyContinue |
+                    Where-Object { $_.Extension -in @(".trmdl", ".gfbmdl") } |
+                    Select-Object -First 1
+                if (-not $ModelExample) { continue }
+                if (-not $Completed) {
+                    Stamp ("Using existing source tree without archive marker: " + $Candidate.Name)
+                }
+                if (-not $Found.Contains($Candidate.FullName)) {
+                    $Found.Add($Candidate.FullName)
+                    $RecoveredTrees++
+                }
+            }
+        }
+        if ($RecoveredTrees -gt 0) {
+            Stamp ("Recovered " + $RecoveredTrees + " local original Switch source tree(s) without MEGA.")
+        }
+    }
     return $Found.ToArray()
 }
 
@@ -612,20 +654,23 @@ function ImportSwitchGameAssets([string]$PythonCommand, [string]$Blender) {
         (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
     })
 
-    # Restore the source archives already downloaded for these models.
-    # Only download original archives if none are present locally.
-    try {
-        if ($ModelArchives.Count -eq 0) { DownloadMegaSwitchAssets }
+    # Import from any local original archives or recovered extracted source
+    # trees. Only attempt remote discovery when absolutely no model source
+    # exists. A refused public MEGA folder must not prevent offline conversion.
+    if ($ModelArchives.Count -eq 0) {
+        Stamp "No local original Switch model sources found; trying MEGA discovery."
+        try {
+            DownloadMegaSwitchAssets
+        } catch {
+            Stamp ("MEGA shared-folder discovery unavailable: " + $_.Exception.Message)
+        }
         $AllArchives = @(FindSwitchAssetArchives)
         $ModelArchives = @($AllArchives | Where-Object {
             (Split-Path $_ -Leaf) -notmatch "(?i)(anim|animation|pokeanim|poketex|texture)"
         })
-    } catch {
-        if ($ModelArchives.Count -eq 0) { throw }
-        Stamp ("MEGA sync unavailable; continuing with validated local archives: " + $_.Exception.Message)
     }
     if ($ModelArchives.Count -eq 0) {
-        throw "The selective MEGA download completed, but no Pokemon model archives were discovered."
+        throw "No original Switch model ZIP/7z archives or extracted source trees were found locally, and MEGA could not supply them. Restore your original archives to switch-assets, or repair the MEGA shared-folder link. No existing files were deleted."
     }
     try {
         DownloadMissingSwitchAnimationArchives $AllArchives
