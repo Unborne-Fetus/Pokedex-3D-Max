@@ -295,3 +295,7 @@ model-viewer.fallback-active { visibility: hidden; }
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
+
+/* No-billing manifest export, directly from the browser's inspected files. */
+#exportModelManifest { margin-top: 8px; border-color: #547d9f; width: 100%; }
+#exportModelManifest:disabled { opacity: .5; cursor: not-allowed; }
