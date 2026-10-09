@@ -48,7 +48,9 @@
     ctx.save();
     const spots = kind === "squirtle"
       ? [[62, 51, 5.3, 8.0], [69, 71, 2.3, 3.2]]
-      : [[53, 41, 5.6, 8.2], [70, 69, 2.0, 2.8]];
+      : kind === "wartortle"
+        ? [[61, 48, 4.2, 6.0], [69, 65, 1.7, 2.2]]
+        : [[53, 41, 5.6, 8.2], [70, 69, 2.0, 2.8]];
     ctx.fillStyle = "#ffffff";
     for (const [x, y, rx, ry] of spots) {
       ctx.beginPath();
@@ -77,66 +79,21 @@
     ctx.putImageData(image, 0, 0);
   }
 
-  // Charizard's inner-wing blue exists in the source atlas, but its edge
-  // padding is orange. Expand the blue membrane a few texels to remove
-  // orange seams without recoloring the orange outer wing/body.
-  function repairCharizardAtlas(ctx, width, height) {
-    const image = ctx.getImageData(0, 0, width, height);
-    const source = new Uint8ClampedArray(image.data);
-    const pixels = image.data;
-    const sx = width / 1024, sy = height / 1024;
-    const radius = Math.max(1, Math.round(11 * Math.min(sx, sy)));
-    const xStart = Math.max(0, Math.floor(45 * sx));
-    const xStop = Math.min(width, Math.ceil(977 * sx));
-    const yStart = Math.max(0, Math.floor(342 * sy));
-    const yStop = Math.min(height, Math.ceil(980 * sy));
-    function blue(at) {
-      return source[at + 2] > source[at] * 1.4 &&
-        source[at + 2] > source[at + 1] * 1.10 &&
-        source[at + 2] > 65 && source[at + 3] > 0;
-    }
-    for (let y = yStart; y < yStop; y++) {
-      for (let x = xStart; x < xStop; x++) {
-        if (x > width * 0.46 && x < width * 0.56) continue;
-        const idx = (y * width + x) * 4;
-        if (blue(idx)) continue;
-        if (source[idx] < 140 || source[idx + 1] < 80 ||
-            source[idx + 2] > 150) continue;
-        let match = -1;
-        for (let step = 1; step <= radius && match < 0; step++) {
-          for (const [dx, dy] of [[step, 0], [-step, 0], [0, step], [0, -step]]) {
-            const nx = x + dx, ny = y + dy;
-            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-              const at = (ny * width + nx) * 4;
-              if (blue(at)) { match = at; break; }
-            }
-          }
-        }
-        if (match >= 0) {
-          pixels[idx] = source[match];
-          pixels[idx + 1] = source[match + 1];
-          pixels[idx + 2] = source[match + 2];
-        }
-      }
-    }
-    // Recolor the orange mouth interior beneath the pink tongue. Keep
-    // the tongue itself pink and the blue membrane fully unchanged.
-    for (let y = Math.floor(804 * sy); y < Math.min(height, Math.ceil(987 * sy)); y++) {
-      for (let x = Math.floor(427 * sx); x < Math.min(width, Math.ceil(603 * sx)); x++) {
-        const dx = (x / sx - 515) / 88;
-        const dy = (y / sy - 894) / 97;
-        if (dx * dx + dy * dy >= 1) continue;
-        const i = (y * width + x) * 4;
-        const r = source[i], g = source[i + 1], b = source[i + 2];
-        // Exclude the existing rosy tongue colors and dark outlines.
-        if (r > 140 && g > 95 && b < 115 && g > b * 1.15) {
-          pixels[i] = Math.round(r * 0.57);
-          pixels[i + 1] = Math.round(g * 0.20);
-          pixels[i + 2] = Math.round(Math.max(39, b * 0.72));
-        }
-      }
-    }
-    ctx.putImageData(image, 0, 0);
+  // Switch exports retained negative V coordinates on secondary atlases.
+  // CLAMP_TO_EDGE turned those whole regions into the topmost texture row,
+  // making blue wing membranes orange and shell palettes monochrome.
+  // Keep their original UVs and textures: translate V into the atlas.
+  function offsetTextureV(doc, name, amount = 1) {
+    const tex = material(doc, name)?.pbrMetallicRoughness?.baseColorTexture;
+    if (!tex) return;
+    const extension = tex.extensions || (tex.extensions = {});
+    const transform = extension.KHR_texture_transform ||
+      (extension.KHR_texture_transform = {});
+    const previous = transform.offset || [0, 0];
+    transform.offset = [previous[0], amount];
+    const extensionsUsed = doc.extensionsUsed || (doc.extensionsUsed = []);
+    if (!extensionsUsed.includes("KHR_texture_transform"))
+      extensionsUsed.push("KHR_texture_transform");
   }
 
   function material(doc, name) {
@@ -165,20 +122,35 @@
       if (dex === 4) {
         changes.push([1, (ctx, w, h) => shineEye(ctx, w, h, "charmander")]);
       } else if (dex === 6) {
-        changes.push([1, repairCharizardAtlas]);
+        // The original atlas already has blue inner wings and pink mouth parts.
+        // These were invisible because the body_b UVs were negative and clamped.
+        offsetTextureV(doc, "body_b", 1);
+        offsetTextureV(doc, "fire", 2);
       } else if (dex === 7) {
-        // body_b_01 is Squirtle's tail, not its belly. Undo the old swap.
-        setTexture(doc, "body_b_01", 1);
+        // The original shell atlas contains the beige patterned plastron AND
+        // brown carapace. No shell/tail palette should be exchanged.
+        setTexture(doc, "body_b_01", 1); // tail, NOT the belly
+        setTexture(doc, "body_b_00", 4); // shell
+        offsetTextureV(doc, "body_b_01", 1);
+        offsetTextureV(doc, "body_b_00", 1);
         changes.push([2, (ctx, w, h) => shineEye(ctx, w, h, "squirtle")]);
       } else if (dex === 8) {
-        // Preserve the correct blue appendage UV atlas; remove the red patch.
+        // Blue appendages have their own image; the beige patterned front
+        // and dark-brown back are two different shell primitives.
         setTexture(doc, "body_b_02", 1);
         setTexture(doc, "body_b_00", 5);
+        setTexture(doc, "body_b_01", 5);
+        offsetTextureV(doc, "body_b_02", 1);
+        offsetTextureV(doc, "body_b_00", 1);
+        offsetTextureV(doc, "body_b_01", 1);
+        const rearShell = material(doc, "body_b_00");
+        const frontShell = material(doc, "body_b_01");
+        if (rearShell?.pbrMetallicRoughness)
+          rearShell.pbrMetallicRoughness.baseColorFactor = [0.52, 0.35, 0.24, 1];
+        if (frontShell?.pbrMetallicRoughness)
+          frontShell.pbrMetallicRoughness.baseColorFactor = [1, 1, 1, 1];
         changes.push([1, blueWartortleAppendages]);
-        // Main back shell, separate from the detailed beige front.
-        const back = material(doc, "body_b_01");
-        if (back?.pbrMetallicRoughness)
-          back.pbrMetallicRoughness.baseColorFactor = [0.77, 0.61, 0.44, 1];
+        changes.push([2, (ctx, w, h) => shineEye(ctx, w, h, "wartortle")]);
       }
       let newBinSize = oldBinLength;
       const extra = [];
