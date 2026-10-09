@@ -419,8 +419,10 @@ def bake_switch_shader_colors(source: Path) -> None:
         image.filepath_raw = str(bake_dir / f"material-{index:03d}.png")
         image.file_format = "PNG"
         image.save()
+        image.alpha_mode = "CHANNEL_PACKED"
         mat["pokedex3d_basecolor_image"] = image.name
         mat["pokedex3d_basecolor_path"] = image.filepath_raw
+        mat["pokedex3d_shader_baked"] = True
         print(f"Switch shader baked: {mat.name} -> {image.filepath_raw}", flush=True)
 
 
@@ -450,7 +452,13 @@ def prepare_materials_for_gltf() -> tuple[int, int, list[dict]]:
 
         total += 1
         image = _linked_base_color_image(material)
-        base_factor = _material_base_color_factor(material)
+        # The bake already contains Nintendo's original shader tints/layers.
+        # Applying the old base-color factor would multiply those colors twice.
+        base_factor = (
+            (1.0, 1.0, 1.0, 1.0)
+            if material.get("pokedex3d_shader_baked")
+            else _material_base_color_factor(material)
+        )
         original_images = []
         original_albedo_links = []
         if material.use_nodes and material.node_tree is not None:
