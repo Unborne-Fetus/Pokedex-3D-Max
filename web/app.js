@@ -47,6 +47,7 @@ let loadTimer = null;
 let repairPollTimer = null;
 let repairInProgress = false;
 let activeObjectUrl = null;
+let localFolderActive = false;
 
 
 function escapeHtml(value) {
@@ -202,7 +203,9 @@ function loadModel(model) {
 
   const catalogUrl = String(model?.url || "");
   const fromLocalFolder = typeof File !== "undefined" && model?.file instanceof File;
-  if (!catalogUrl || !catalogUrl.replaceAll("\\", "/").includes("/switch/")) {
+  const fromRemoteManifest = model?.remoteSwitch === true
+    && /^https:\/\/[^/]+\/(?:.*\/)?\d{4}\/regular\.glb$/.test(catalogUrl);
+  if (!catalogUrl || (!catalogUrl.replaceAll("\\", "/").includes("/switch/") && !fromRemoteManifest)) {
     messageEl.textContent = "Blocked non-Switch model source.";
     messageEl.classList.remove("hidden");
     viewer.removeAttribute("src");
@@ -416,6 +419,29 @@ if (isLocalIndexServer()) {
 }
 
 
+// A separately hosted verified Switch catalog can fill an otherwise empty
+// static page. The configured source is disabled while its GitHub repo remains
+// private; visitors are never asked for personal GitHub credentials.
+window.addEventListener("pokedex3d:remote-switch-catalog", event => {
+  if (localFolderActive || models.length) return;
+  const incoming = Array.isArray(event.detail?.models) ? event.detail.models : [];
+  if (!incoming.length) return;
+  models = incoming;
+  filtered = [...models];
+  selectedIndex = 0;
+  searchEl.value = "";
+  window.POKEDEX3D_MODELS = models;
+  folderStatus.textContent = "Verified hosted Switch models loaded.";
+  statusEl.textContent = models.length.toLocaleString() + " hosted Switch models ready";
+  renderList();
+  selectModel(0);
+});
+window.addEventListener("pokedex3d:remote-switch-error", event => {
+  if (models.length || localFolderActive) return;
+  folderStatus.textContent = "Hosted model catalog unavailable: " +
+    String(event.detail?.message || "unknown error") + ". You can still open a local folder.";
+});
+
 // Static site mode: open already-converted models directly from the visitor's
 // device. File selections never leave the browser; no Python or local server.
 chooseLocalModelsBtn.addEventListener("click", () => localModelsFolder.click());
@@ -441,6 +467,7 @@ localModelsFolder.addEventListener("change", async () => {
       URL.revokeObjectURL(activeObjectUrl);
       activeObjectUrl = null;
     }
+    localFolderActive = true;
     models = outcome.models;
     window.POKEDEX3D_MODELS = models;
     folderStatus.textContent = models.length + " verified Switch models loaded locally. None were uploaded.";
