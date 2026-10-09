@@ -296,7 +296,7 @@ function repairKnownMaterialBindings(buffer, dex) {
   const corrections = dex === 7
     ? [["body_b_01", 1, 4]] // Squirtle: use the beige shell/belly palette.
     : dex === 8
-      ? [["body_b_00", 4, 5]] // Wartortle: restore patterned shell palette.
+      ? [["body_b_00", 4, 5], ["body_b_02", 1, 0]] // Wartortle: patterned shell, blue ears and tail.
       : [];
   if (!corrections.length) return buffer;
   const bytes = new Uint8Array(buffer);
