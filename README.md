@@ -110,6 +110,32 @@ new textures. It does not build, install, or require the native Windows EXE.
 
 The browser viewer reads only `web/models/switch-manifest.js`. It has no CDN, PokeMiners, generic-model, or battle-engine fallback path.
 
+## Standalone website (no launcher)
+
+The GitHub Pages index now works as a purely static browser application. Open
+`index.html` directly or visit the deployed site. No Windows EXE, Python,
+PowerShell, or `launch-index.bat` is needed to **view** converted models.
+
+- Choose **Open Switch model folder**. Select the `offline-models` folder
+  created by the successful original Switch import (or `web/models` if it contains
+  the `switch` subfolder).
+- The browser validates the GLB mesh, base-color texture coverage, and animated
+  idle locally, then loads the selected regular-form models. All selected files
+  remain on the visitor's computer; nothing is uploaded to the website.
+- Selecting the folder again replaces the browser's current model list.
+
+**Public visitors without local model files:** the GitHub Pages deployment
+currently publishes only the browser software, not Nintendo's game models.
+The tracked `web/models/switch-manifest.js` is deliberately empty and
+`web/models/switch/` is gitignored. An operator must separately host or
+publish assets they are authorized to distribute before an anonymous visitor
+can browse the models without choosing files. Do not assume the 903 local
+exports are present on GitHub Pages or redistribute source game files.
+
+The **Repair textures** button is restricted to the local Python server
+started by `launch-index.bat`. A static web page cannot execute Blender
+on a visitor's computer; repair/baking is a separate development task.
+
 ## Windows model location
 
 The native Windows viewer reads the validated model pack from:
