@@ -46,6 +46,9 @@
   }
 
   async function load() {
+    // An index.html opened directly from disk cannot fetch another file://
+    // resource. Keep local-folder browsing quiet and fully independent.
+    if (location.protocol === "file:") return;
     let config;
     try {
       const response = await fetch(CONFIG, { cache: "no-store" });
