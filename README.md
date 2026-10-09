@@ -110,6 +110,32 @@ new textures. It does not build, install, or require the native Windows EXE.
 
 The browser viewer reads only `web/models/switch-manifest.js`. It has no CDN, PokeMiners, generic-model, or battle-engine fallback path.
 
+## No billing, no Actions, no commands
+
+The custom GitHub Actions workflows were removed: the project no longer
+requires a GitHub billing setup to generate a model catalog or to prepare
+the browser version.
+
+**Generate a manifest:** double-click `index.html`, click **Open Switch
+model folder**, select your converted models, then click **Export model catalog**.
+The downloaded `switch-manifest.json` can be uploaded to the private
+`Pokedex-3D-Models-Animations` repository through GitHub's website under
+**Add file → Upload files**. The catalog includes only structurally accepted
+regular Switch files. Visual texture/alpha appearance still needs inspection.
+
+**Publish only the code as a free public website:** use a static host with a
+free, no-card drag-and-drop tier (for example Netlify Drop). In File Explorer,
+copy `index.html` and the entire `web` folder into a separate new folder,
+then drag that folder onto the host's upload area. Visitors can open the
+published viewer and pick their *own* model folder; no Python, launcher, or
+installer is required. Do **not** include `.cache`, `offline-models`, or any
+Nintendo asset archives in the website folder.
+
+The model repository remains private. A public static website cannot
+automatically serve those models while they are private. Separately hosting
+model assets requires suitable distribution permission and public HTTPS/CORS
+access; never embed private GitHub tokens in the web app.
+
 ## Standalone website (no launcher)
 
 The GitHub Pages index now works as a purely static browser application. Open
