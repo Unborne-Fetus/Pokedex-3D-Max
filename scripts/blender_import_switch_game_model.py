@@ -416,10 +416,10 @@ def bake_switch_shader_colors(source: Path) -> None:
             image.pixels.foreach_set(baked_pixels)
             image.update()
 
+        image.alpha_mode = "CHANNEL_PACKED"
         image.filepath_raw = str(bake_dir / f"material-{index:03d}.png")
         image.file_format = "PNG"
         image.save()
-        image.alpha_mode = "CHANNEL_PACKED"
         mat["pokedex3d_basecolor_image"] = image.name
         mat["pokedex3d_basecolor_path"] = image.filepath_raw
         mat["pokedex3d_shader_baked"] = True
