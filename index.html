@@ -22,6 +22,11 @@
 
   <main id="dexView" class="layout">
     <aside class="sidebar">
+      <div class="browser-folder-picker">
+        <button id="chooseLocalModels" type="button">Open Switch model folder</button>
+        <input id="localModelsFolder" type="file" webkitdirectory directory multiple hidden aria-label="Choose validated Switch model folder" />
+        <p id="folderStatus">Works entirely in your browser. Models stay on your device.</p>
+      </div>
       <input id="search" type="search" placeholder="Search Pokémon or #" autocomplete="off" />
       <div class="toolbar">
         <button id="prevBtn" type="button">← Previous</button>
@@ -111,7 +116,8 @@
   </script>
   <script src="web/species-names.js"></script>
   <script src="web/models/switch-manifest.js?v=4" onerror="this.remove()"></script>
-  <script defer src="web/app.js?v=31"></script>
+  <script defer src="web/local-switch-catalog.js?v=1"></script>
+  <script defer src="web/app.js?v=32"></script>
 </body>
 </html>
 
