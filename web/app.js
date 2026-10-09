@@ -20,9 +20,12 @@ const repairTitle = document.querySelector("#repairTitle");
 const repairSummary = document.querySelector("#repairSummary");
 const repairLog = document.querySelector("#repairLog");
 const closeRepairBtn = document.querySelector("#closeRepair");
+const chooseLocalModelsBtn = document.querySelector("#chooseLocalModels");
+const localModelsFolder = document.querySelector("#localModelsFolder");
+const folderStatus = document.querySelector("#folderStatus");
 
 
-const models = (Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
+let models = (Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
   ? window.POKEDEX3D_SWITCH_MODELS
   : [])
   .filter(model => model?.valid !== false && model?.ready !== false)
@@ -43,6 +46,7 @@ let breakTimer = null;
 let loadTimer = null;
 let repairPollTimer = null;
 let repairInProgress = false;
+let activeObjectUrl = null;
 
 
 function escapeHtml(value) {
@@ -196,8 +200,9 @@ function loadModel(model) {
   idleAnimation = null;
   currentModel = model;
 
-  const url = String(model?.url || "");
-  if (!url || !url.replaceAll("\\", "/").includes("/switch/")) {
+  const catalogUrl = String(model?.url || "");
+  const fromLocalFolder = typeof File !== "undefined" && model?.file instanceof File;
+  if (!catalogUrl || !catalogUrl.replaceAll("\\", "/").includes("/switch/")) {
     messageEl.textContent = "Blocked non-Switch model source.";
     messageEl.classList.remove("hidden");
     viewer.removeAttribute("src");
@@ -207,7 +212,16 @@ function loadModel(model) {
   messageEl.textContent = "Loading original Switch model…";
   messageEl.classList.remove("hidden");
   viewer.removeAttribute("src");
-  viewer.src = url;
+  if (activeObjectUrl) {
+    URL.revokeObjectURL(activeObjectUrl);
+    activeObjectUrl = null;
+  }
+  if (fromLocalFolder) {
+    activeObjectUrl = URL.createObjectURL(model.file);
+    viewer.src = activeObjectUrl;
+  } else {
+    viewer.src = catalogUrl;
+  }
   viewer.alt = "3D Switch model of " + prettyName(model);
 
   loadTimer = setTimeout(() => {
@@ -401,6 +415,55 @@ if (isLocalIndexServer()) {
   pollRepairStatus(false);
 }
 
+
+// Static site mode: open already-converted models directly from the visitor's
+// device. File selections never leave the browser; no Python or local server.
+chooseLocalModelsBtn.addEventListener("click", () => localModelsFolder.click());
+localModelsFolder.addEventListener("change", async () => {
+  if (!localModelsFolder.files?.length) return;
+  chooseLocalModelsBtn.disabled = true;
+  folderStatus.textContent = "Checking original Switch models and animations…";
+  try {
+    const outcome = await window.POKEDEX3D_LOCAL_SWITCH.fromFiles(
+      localModelsFolder.files,
+      (done, total, good) => {
+        folderStatus.textContent = "Checking " + done + "/" + total +
+          " models · " + good + " verified";
+      }
+    );
+    if (!outcome.models.length) {
+      folderStatus.textContent =
+        "No verified regular Switch GLBs found. Choose the offline-models or web/models folder containing switch/0001/regular.glb.";
+      return;
+    }
+    if (activeObjectUrl) {
+      viewer.removeAttribute("src");
+      URL.revokeObjectURL(activeObjectUrl);
+      activeObjectUrl = null;
+    }
+    models = outcome.models;
+    window.POKEDEX3D_MODELS = models;
+    folderStatus.textContent = models.length + " verified Switch models loaded locally. None were uploaded.";
+    statusEl.textContent = models.length.toLocaleString() + " local regular Switch models ready";
+    searchEl.value = "";
+    filtered = [...models];
+    selectedIndex = 0;
+    renderList();
+    selectModel(0);
+  } catch (error) {
+    folderStatus.textContent = "Could not read that folder: " + String(error.message || error);
+  } finally {
+    chooseLocalModelsBtn.disabled = false;
+    localModelsFolder.value = "";
+  }
+});
+
+if (!isLocalIndexServer()) {
+  // GitHub Pages / index.html is viewer-only; shader baking belongs to the
+  // separate local build environment and must never be offered as a web action.
+  repairTexturesBtn.classList.add("hidden");
+}
+
 resetCameraBtn.addEventListener("click", resetCamera);
 
 toggleRotateBtn.addEventListener("click", () => {
@@ -419,7 +482,7 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
 
 statusEl.textContent = models.length
   ? models.length.toLocaleString() + " regular animated Switch models ready"
-  : "No validated Switch models installed — run setup-all.bat full";
+  : "Choose a Switch model folder to start (no installation needed)";
 
 renderList();
 if (models.length) {
@@ -427,6 +490,6 @@ if (models.length) {
 } else {
   formSelect.replaceChildren();
   formSelect.disabled = true;
-  messageEl.textContent = "No validated regular Switch models are installed.";
+  messageEl.textContent = "Open a folder containing verified Switch GLBs, or use a site with published model assets.";
   messageEl.classList.remove("hidden");
 }
