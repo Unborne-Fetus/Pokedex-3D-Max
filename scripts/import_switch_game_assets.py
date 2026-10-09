@@ -815,6 +815,20 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
         # Keep this patch migration compatible with cached and newly cloned
         # importers; only change the two exact image-loading guards above.
 
+        # POKEDEX3D_SWITCH_ALPHA_SEMANTICS_V1: preserve Nintendo's actual
+        # material-level opacity policy before the custom graph is flattened.
+        # Original albedo PNG alpha is often used as shader data and MUST NOT
+        # automatically make a normally solid Pokémon body translucent.
+        old_switch_material = '''                material.name = mat["mat_name"]
+                materials.append(material)'''
+        new_switch_material = '''                material.name = mat["mat_name"]
+                # POKEDEX3D_SWITCH_ALPHA_SEMANTICS_V1
+                material["pokedex3d_source_alpha_type"] = str(mat.get("mat_alpha_setting", "") or "")
+                material["pokedex3d_source_alpha_test"] = bool(mat.get("mat_enablealpha", False))
+                materials.append(material)'''
+        if old_switch_material in text:
+            text = text.replace(old_switch_material, new_switch_material, 1)
+
         # Route the add-on's normal texture lookups through the resolver.
         text = re.sub(
             r'os\.path\.join\(filep,\s*mat\["([^"]+)"\]\[:-5\]\s*\+\s*textureextension\)',
