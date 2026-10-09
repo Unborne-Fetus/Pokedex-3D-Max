@@ -796,6 +796,25 @@ def _pokedex3d_texture_path(filep, reference, textureextension):
         if old_empty_reference in text:
             text = text.replace(old_empty_reference, new_empty_reference, 1)
 
+        # The pinned upstream TRMDL importer silently refuses decoded albedo
+        # and layer-mask textures with height <= 2, even when they are genuine
+        # Switch palette-strip images. Such material nodes become untextured and
+        # make an otherwise animated model fail the strict coverage check.
+        # Preserve every successfully decoded nonempty source image instead.
+        for texture_node in ("alb_image_texture", "lym_image_texture"):
+            old_guard = (
+                "if img.size[1] > 2:\n"
+                f"                        {texture_node} = material.node_tree.nodes.new"
+            )
+            new_guard = (
+                "if img.size[0] > 0 and img.size[1] > 0:\n"
+                f"                        {texture_node} = material.node_tree.nodes.new"
+            )
+            if old_guard in text:
+                text = text.replace(old_guard, new_guard)
+        # Keep this patch migration compatible with cached and newly cloned
+        # importers; only change the two exact image-loading guards above.
+
         # Route the add-on's normal texture lookups through the resolver.
         text = re.sub(
             r'os\.path\.join\(filep,\s*mat\["([^"]+)"\]\[:-5\]\s*\+\s*textureextension\)',
