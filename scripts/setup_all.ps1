@@ -459,15 +459,58 @@ function GetMegaDesiredRemoteArchives {
     return $Selected.ToArray()
 }
 
+function TestSwitchArchiveComplete([string]$ArchivePath) {
+    # An interrupted MEGA download may leave a >1 MB file without the ZIP
+    # central directory. Never mistake it for a completed model source.
+    if (-not (Test-Path -LiteralPath $ArchivePath -PathType Leaf)) { return $false }
+    $File = Get-Item -LiteralPath $ArchivePath -ErrorAction SilentlyContinue
+    if (-not $File -or $File.Length -le 0) { return $false }
+    $Ext = [IO.Path]::GetExtension($ArchivePath).ToLowerInvariant()
+    if ($Ext -eq ".zip") {
+        $Zip = $null
+        try {
+            Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction Stop
+            $Zip = [System.IO.Compression.ZipFile]::OpenRead($ArchivePath)
+            return ($Zip.Entries.Count -gt 0)
+        } catch {
+            return $false
+        } finally {
+            if ($Zip) { $Zip.Dispose() }
+        }
+    }
+    if ($Ext -eq ".7z") {
+        # 7z header+metadata can be checked without decompressing every file.
+        $SevenZip = Get-Command 7z, 7zz, 7za -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+        if (-not $SevenZip) {
+            Stamp ("Skipping unverified .7z archive until 7-Zip is available: " +
+                [IO.Path]::GetFileName($ArchivePath))
+            return $false
+        }
+        $PreviousPreference = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        try {
+            & $SevenZip.Source l -slt $ArchivePath *> $null
+            return ($LASTEXITCODE -eq 0)
+        } catch {
+            return $false
+        } finally {
+            $ErrorActionPreference = $PreviousPreference
+        }
+    }
+    return $false
+}
+
 function DownloadMegaArchiveWithWatchdog([string]$RemotePath) {
     EnsureDir $MegaAssetCache
     $MegaGet = EnsureMegaCmd
     $Leaf = Split-Path $RemotePath -Leaf
 
     $Existing = Get-ChildItem $MegaAssetCache -File -Recurse -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -eq $Leaf -and $_.Length -gt 1MB } | Select-Object -First 1
+        Where-Object { $_.Name -eq $Leaf -and (TestSwitchArchiveComplete $_.FullName) } |
+        Select-Object -First 1
     if ($Existing) {
-        Stamp ("Already downloaded: " + $Leaf)
+        Stamp ("Already downloaded and archive verified: " + $Leaf)
         return
     }
 
@@ -501,11 +544,13 @@ function DownloadMegaArchiveWithWatchdog([string]$RemotePath) {
         }
 
         $Existing = Get-ChildItem $MegaAssetCache -File -Recurse -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -eq $Leaf -and $_.Length -gt 1MB } | Select-Object -First 1
+            Where-Object { $_.Name -eq $Leaf -and (TestSwitchArchiveComplete $_.FullName) } |
+            Select-Object -First 1
         if ($Existing) {
-            Stamp ("Completed: " + $Leaf + " (" + [math]::Round($Existing.Length / 1MB, 1) + " MB)")
+            Stamp ("Archive verified: " + $Leaf + " (" + [math]::Round($Existing.Length / 1MB, 1) + " MB)")
             return
         }
+        Stamp ("Download not yet a valid complete archive: " + $Leaf + ". Keeping partial data for resumption.")
 
         if ($Attempt -lt $MegaDownloadRetries) {
             Stamp "  retrying after 20 seconds; existing MEGA/cache data is preserved."
@@ -553,7 +598,10 @@ function FindSwitchAssetArchives {
             $PokemonPack = $Name -match "(?i)^(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)[-_ ]*Poke"
             $HasGameToken = $Name -match "(?i)(^|[-_ .])(ZA|SV|LA|PLA|SwSh|LGPE|BDSP)([-_ .]|$)"
             $HasTextureToken = $Name -match "(?i)(PokeTex|Texture|Textures|TexPack|Tex)"
-            return $PokemonPack -or ($HasGameToken -and $HasTextureToken)
+            if (-not ($PokemonPack -or ($HasGameToken -and $HasTextureToken))) {
+                return $false
+            }
+            return (TestSwitchArchiveComplete $_.FullName)
         }
         foreach ($File in $Files) {
             if (-not $Found.Contains($File.FullName)) { $Found.Add($File.FullName) }
