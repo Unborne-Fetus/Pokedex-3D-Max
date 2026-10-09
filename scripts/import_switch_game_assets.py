@@ -1896,6 +1896,7 @@ def run_blender(
     texture_roots: list[Path] | None = None,
     refresh_changed: bool = False,
     force: bool = False,
+    bake_switch_shaders: bool = False,
 ) -> None:
     WEB_ROOT.mkdir(parents=True, exist_ok=True)
     cache = load_conversion_cache()
@@ -1964,6 +1965,7 @@ def run_blender(
             "output": str(out),
             "fingerprint": fingerprint,
             "cacheKey": cache_key,
+            "bakeSwitchShaders": bake_switch_shaders,
         })
 
     if reused:
@@ -2838,6 +2840,11 @@ def main() -> int:
         action="store_true",
         help="reconvert every selected model even when a valid GLB already exists",
     )
+    parser.add_argument(
+        "--bake-switch-shaders",
+        action="store_true",
+        help="evaluate original layered Nintendo shaders into embedded GLB albedo textures (reconverts models with --force)",
+    )
     parser.set_defaults(allow_broken_textures=False)
     args = parser.parse_args()
     os.environ.pop("POKEDEX3D_ALLOW_BROKEN_TEXTURES", None)
@@ -2994,6 +3001,7 @@ def main() -> int:
             texture_roots=texture_roots,
             refresh_changed=args.refresh_changed,
             force=args.force,
+            bake_switch_shaders=args.bake_switch_shaders,
         )
     converted_entries = build_manifest(jobs)
 
