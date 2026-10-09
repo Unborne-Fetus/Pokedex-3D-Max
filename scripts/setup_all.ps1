@@ -581,10 +581,10 @@ function FindSwitchAssetArchives {
                 # Extracted archived packs have a completed-cache marker; older
                 # direct extraction layouts have original source files instead.
                 $Completed = Test-Path (Join-Path $Candidate.FullName ".complete.json")
-                $ModelExample = Get-ChildItem -LiteralPath $Candidate.FullName -File -Recurse -ErrorAction SilentlyContinue |
-                    Where-Object { $_.Extension -in @(".trmdl", ".gfbmdl") } |
+                $SourceExample = Get-ChildItem -LiteralPath $Candidate.FullName -File -Recurse -ErrorAction SilentlyContinue |
+                    Where-Object { $_.Extension -in @(".trmdl", ".gfbmdl", ".tranm", ".gfbanm") } |
                     Select-Object -First 1
-                if (-not $ModelExample) { continue }
+                if (-not $SourceExample) { continue }
                 if (-not $Completed) {
                     Stamp ("Using existing source tree without archive marker: " + $Candidate.Name)
                 }
