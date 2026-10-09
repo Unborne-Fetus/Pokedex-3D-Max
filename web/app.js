@@ -177,7 +177,7 @@ function resetCamera() {
   viewer.cameraTarget = "auto auto auto";
   // A closer-than-automatic orbit keeps small Pokemon readable without
   // changing the verified front-facing axis or per-model centering.
-  viewer.cameraOrbit = azimuth + "deg 90deg 60%";
+  viewer.cameraOrbit = azimuth + "deg 90deg 40%";
   viewer.resetTurntableRotation?.(0);
   viewer.jumpCameraToGoal?.();
 }
