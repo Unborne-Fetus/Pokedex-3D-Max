@@ -71,6 +71,20 @@ git pull
 
 Use this while working specifically on models, animations, or textures. It skips the Windows app build and installer.
 
+### Original Switch shader texture rebuild
+
+`setup-all.bat textures`
+
+The original Nintendo material uses palette colors and layer-mask shaders that a
+plain glTF base-color image cannot represent. This opt-in mode first tests one
+shader bake, then reconverts regular Switch models by baking their original color
+output to textured GLBs. It keeps each previous valid GLB until the replacement
+has passed conversion validation. The process is slower than `switch` mode and
+requires the original archives or extracted sources. Once it succeeds, run
+`setup-all.bat fast` to update the Windows EXE. Use `launch-index.bat` for the
+browser viewer. The texture rebuild is an experimental fidelity improvement,
+not a promise of pixel-identical Nintendo game rendering.
+
 ### Fast
 
 `setup-all.bat fast`
