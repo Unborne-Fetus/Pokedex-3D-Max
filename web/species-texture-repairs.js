@@ -47,7 +47,7 @@
     const sx = width / 128, sy = height / 128;
     ctx.save();
     const spots = kind === "squirtle"
-      ? [[52, 45, 5.3, 8.0], [67, 68, 2.3, 3.2]]
+      ? [[62, 51, 5.3, 8.0], [69, 71, 2.3, 3.2]]
       : [[53, 41, 5.6, 8.2], [70, 69, 2.0, 2.8]];
     ctx.fillStyle = "#ffffff";
     for (const [x, y, rx, ry] of spots) {
