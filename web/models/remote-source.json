@@ -1,8 +1,9 @@
 {
   "repository": "Unborne-Fetus/Pokedex-3D-Models-Animations",
-  "repositoryVisibility": "private",
-  "enabled": false,
-  "manifestUrl": null,
-  "assetBaseUrl": null,
-  "notes": "The source repository is private. Static public browsers cannot fetch these files without credentials. Enable only for an accessible, authorized HTTPS asset host; do not add GitHub tokens."
+  "repositoryVisibility": "public",
+  "enabled": true,
+  "manifestUrl": "https://raw.githubusercontent.com/Unborne-Fetus/Pokedex-3D-Models-Animations/main/uploaded-model-inventory.json",
+  "assetBaseUrl": "https://raw.githubusercontent.com/Unborne-Fetus/Pokedex-3D-Models-Animations/main/",
+  "allowUnverifiedInventory": true,
+  "notes": "Public GitHub file inventory is not a verified manifest; the viewer downloads and checks each requested GLB for embedded base-color images and idle animation before rendering. No token, Actions, or billing required."
 }
