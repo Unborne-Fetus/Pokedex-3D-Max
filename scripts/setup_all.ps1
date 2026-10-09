@@ -418,7 +418,10 @@ function GetMegaDesiredRemoteArchives {
         $Login = InvokeMegaScriptable $MegaLogin @($MegaFolderLink) 90
     }
     if ($Login.ExitCode -ne 0) {
-        throw ("Could not open the shared MEGA folder: " + (($Login.Output | Select-Object -Last 5) -join " "))
+        $Details = (($Login.Output | Select-Object -Last 5) -join " ").Trim()
+        if (-not $Details) { $Details = "MEGAcmd returned no diagnostic output" }
+        throw ("Could not open shared MEGA folder (exit " + $Login.ExitCode +
+            "): " + $Details + ". Check whether the public folder link is still valid.")
     }
 
     Stamp "Scanning MEGA metadata only; the full 14 GB folder will NOT be downloaded."
