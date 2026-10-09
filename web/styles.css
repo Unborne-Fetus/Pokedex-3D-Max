@@ -231,3 +231,47 @@ model-viewer.fallback-active { visibility: hidden; }
 .top-actions{display:flex;align-items:center;gap:8px}
 .top-nav{border:1px solid #31435d;background:#132238;color:#cbd8e8;border-radius:999px;padding:7px 12px}
 .top-nav.active{background:#2a5684;color:#fff;border-color:#66b3ff}
+
+
+/* Browser-only texture rebuilding is opt-in and runs through launch-index.bat. */
+#repairTextures { margin-left: auto; border-color: #689bcb; }
+#repairTextures:disabled { opacity: .6; cursor: progress; }
+.repair-panel {
+  position: absolute;
+  z-index: 4;
+  inset: 14px;
+  max-width: 780px;
+  max-height: calc(100% - 28px);
+  margin: auto;
+  border: 1px solid #527da2;
+  border-radius: 14px;
+  padding: 16px;
+  background: rgba(10, 18, 32, .97);
+  box-shadow: 0 20px 45px rgba(0,0,0,.5);
+  color: #edf4ff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.repair-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.repair-panel p { margin: 0; line-height: 1.5; color: #c9d9ea; }
+.repair-panel pre {
+  background: #09111e;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: .77rem;
+  white-space: pre-wrap;
+  overflow: auto;
+  flex: 1 1 auto;
+  min-height: 70px;
+  margin: 0;
+}
+@media (max-width: 820px) {
+  .viewer-controls { flex-wrap: wrap; }
+  #repairTextures { margin-left: 0; }
+}
