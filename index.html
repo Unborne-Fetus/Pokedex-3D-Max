@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin />
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-  <link rel="stylesheet" href="web/styles.css?v=4" />
+  <link rel="stylesheet" href="web/styles.css?v=5" />
   <script defer src="web/vendor/model-viewer.min.js"></script>
 </head>
 <body>
@@ -65,12 +65,21 @@
         <div id="threeFallback" class="three-fallback hidden" aria-label="Animated rigged Pokémon model"></div>
 
         <div id="viewerMessage" class="viewer-message">Loading model…</div>
+        <div id="repairPanel" class="repair-panel hidden" role="region" aria-label="Texture repair progress">
+          <div class="repair-panel-header">
+            <strong id="repairTitle">Switch texture repair</strong>
+            <button id="closeRepair" type="button" aria-label="Close repair progress">Close</button>
+          </div>
+          <p id="repairSummary">Your original model files are kept until updated exports validate.</p>
+          <pre id="repairLog" aria-live="off">Preparing…</pre>
+        </div>
       </div>
 
       <div class="viewer-controls">
         <button id="resetCamera" type="button">Reset camera</button>
         <button id="toggleRotate" type="button">Auto-rotate: Off</button>
         <button id="toggleIdleBreaks" type="button">Idle breaks: On</button>
+        <button id="repairTextures" type="button">Repair textures</button>
       </div>
 
       <p class="hint">Drag to rotate · Scroll/pinch to zoom · Switch models preferred · nearby Pokémon are prefetched</p>
@@ -102,7 +111,7 @@
   </script>
   <script src="web/species-names.js"></script>
   <script src="web/models/switch-manifest.js?v=4" onerror="this.remove()"></script>
-  <script defer src="web/app.js?v=30"></script>
+  <script defer src="web/app.js?v=31"></script>
 </body>
 </html>
 
