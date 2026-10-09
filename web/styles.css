@@ -275,3 +275,23 @@ model-viewer.fallback-active { visibility: hidden; }
   .viewer-controls { flex-wrap: wrap; }
   #repairTextures { margin-left: 0; }
 }
+
+
+/* Standalone browser mode: pick a pre-converted Switch folder without any
+   installer, background process, local web server, or network transfer. */
+.browser-folder-picker {
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid #314d6b;
+  border-radius: 12px;
+  background: #112139;
+}
+.browser-folder-picker button { width: 100%; border-color: #6aa8df; font-weight: 650; }
+.browser-folder-picker button:disabled { opacity: .65; cursor: wait; }
+.browser-folder-picker p {
+  margin: 8px 0 0;
+  color: #b5cbe1;
+  font-size: .82rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
