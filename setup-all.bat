@@ -17,6 +17,9 @@ if /I "%~1"=="full" (
 ) else if /I "%~1"=="fast" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipSwitchAssets"
+) else if /I "%~1"=="textures" (
+  set "MODE=TEXTURES"
+  set "SETUP_ARGS=-SwitchAssetsOnly -SkipInstall -BakeSwitchMaterials"
 ) else if exist "%~dp0.cache\switch-game-assets\pipeline-v11.ready.json" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipSwitchAssets"
@@ -47,6 +50,11 @@ if "%MODE%"=="FULL" (
   echo   Converts cached original archives only when exported models are missing.
   echo   Runs importer syntax checks and self-tests.
   echo   Skips JDK, Gradle, EXE build, and installer.
+) else if "%MODE%"=="TEXTURES" (
+  echo TEXTURE REBUILD MODE:
+  echo   Bakes original Switch layered shaders and color masks into portable GLB textures.
+  echo   Reuses your downloaded archives; preserves valid GLBs until replacements pass.
+  echo   This can take some time and does NOT reinstall the Windows app.
 ) else (
   echo FAST MODE:
   echo   Revalidates your already-imported regular Switch models and skips reconversion.
@@ -77,7 +85,10 @@ echo ============================================================
 if "%EXITCODE%"=="0" (
   echo Setup finished successfully.
   echo.
-  if "%MODE%"=="SWITCH" (
+  if "%MODE%"=="TEXTURES" (
+    echo Updated baked Switch assets were synced into:
+    echo   %LOCALAPPDATA%\Pokedex3DMax\offline-models
+  ) else if "%MODE%"=="SWITCH" (
     echo Switch assets were synced and imported into:
     echo   %LOCALAPPDATA%\Pokedex3DMax\offline-models
   ) else (
