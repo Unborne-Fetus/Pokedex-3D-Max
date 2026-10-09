@@ -286,13 +286,13 @@ private fun PokemonViewport(model: DesktopModel, bytes: ByteArray, rotate: Boole
         val camera = rememberUnsavedCameraState(
             target = bounds.center,
             distance = initialDistance,
-            azimuth = 0f,
-            elevation = 0f,
+            azimuth = 20f,
+            elevation = 25f,
         )
 
         LaunchedEffect(reset) {
-            camera.azimuth = 0f
-            camera.elevation = 0f
+            camera.azimuth = 20f
+            camera.elevation = 25f
             camera.target = bounds.center
             camera.distance = initialDistance
         }
@@ -452,8 +452,8 @@ private fun AnimatedFilamentViewer(
 
                     orbitCamera.target = fittedTarget
                     orbitCamera.distance = fittedDistance
-                    orbitCamera.azimuth = 0f
-                    orbitCamera.elevation = 0f
+                    orbitCamera.azimuth = 20f
+                    orbitCamera.elevation = 25f
 
                     camera.target = Position(
                         fittedTarget.x,
@@ -463,8 +463,8 @@ private fun AnimatedFilamentViewer(
                     camera.eye = orbitEye(
                         fittedTarget,
                         fittedDistance,
-                        0f,
-                        0f,
+                        20f,
+                        25f,
                     )
                 }
             },
