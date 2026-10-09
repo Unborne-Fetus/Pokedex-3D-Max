@@ -48,6 +48,8 @@
     }).filter(item => item.dex >= 1 && item.dex <= 1025);
     const metaFile = picked.find(file => /(?:^|\/)switch-model-metadata\.json$/i.test(
       String(file.webkitRelativePath || file.name).replaceAll('\\', '/')
+    )) || picked.find(file => /(?:^|\/)switch-manifest\.json$/i.test(
+      String(file.webkitRelativePath || file.name).replaceAll('\\', '/')
     ));
     let metadata = new Map();
     if (metaFile) {
