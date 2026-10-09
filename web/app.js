@@ -21,6 +21,7 @@ const repairSummary = document.querySelector("#repairSummary");
 const repairLog = document.querySelector("#repairLog");
 const closeRepairBtn = document.querySelector("#closeRepair");
 const chooseLocalModelsBtn = document.querySelector("#chooseLocalModels");
+const exportModelManifestBtn = document.querySelector("#exportModelManifest");
 const localModelsFolder = document.querySelector("#localModelsFolder");
 const folderStatus = document.querySelector("#folderStatus");
 
@@ -48,6 +49,7 @@ let repairPollTimer = null;
 let repairInProgress = false;
 let activeObjectUrl = null;
 let localFolderActive = false;
+let localModelsForExport = [];
 
 
 function escapeHtml(value) {
@@ -444,6 +446,21 @@ window.addEventListener("pokedex3d:remote-switch-error", event => {
 
 // Static site mode: open already-converted models directly from the visitor's
 // device. File selections never leave the browser; no Python or local server.
+exportModelManifestBtn.addEventListener("click", () => {
+  if (!localModelsForExport.length) return;
+  const catalog = window.POKEDEX3D_LOCAL_SWITCH.buildManifest(localModelsForExport);
+  if (!catalog.entries.length) return;
+  const blob = new Blob([JSON.stringify(catalog, null, 2) + "\n"], { type: "application/json" });
+  const downloadUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = downloadUrl;
+  link.download = "switch-manifest.json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+  folderStatus.textContent = "Downloaded a catalog for " + catalog.models + " models. You can upload the JSON to your private GitHub model repository using its website; no Actions or billing required.";
+});
 chooseLocalModelsBtn.addEventListener("click", () => localModelsFolder.click());
 localModelsFolder.addEventListener("change", async () => {
   if (!localModelsFolder.files?.length) return;
@@ -468,6 +485,8 @@ localModelsFolder.addEventListener("change", async () => {
       activeObjectUrl = null;
     }
     localFolderActive = true;
+    localModelsForExport = outcome.models;
+    exportModelManifestBtn.disabled = false;
     models = outcome.models;
     window.POKEDEX3D_MODELS = models;
     folderStatus.textContent = models.length + " verified Switch models loaded locally. None were uploaded.";
