@@ -195,7 +195,7 @@ function computeCameraFrame(dimensions, center, viewportWidth, viewportHeight, m
   const yOffset = Number.isFinite(extra) && Math.abs(extra) <= 0.3 ? extra : 0;
   return {
     distance,
-    target: [cx, cy, cz + Math.max(width, depth) * (CAMERA_PIVOT_ADJUSTMENTS[Number(model?.dex)] || 0)],
+    target: [cx, cy + height * (0.035 + yOffset), cz + Math.max(width, depth) * (CAMERA_PIVOT_ADJUSTMENTS[Number(model?.dex)] || 0)],
   };
 }
 
