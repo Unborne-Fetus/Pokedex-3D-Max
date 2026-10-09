@@ -290,40 +290,6 @@ function renderList() {
   updateSelectedRow();
 }
 
-// Fix known incorrect exported Switch material bindings without touching geometry,
-// bones, animations, or embedded texture bytes. GLB JSON indices remain one digit.
-function repairKnownMaterialBindings(buffer, dex) {
-  const corrections = dex === 7
-    ? [["body_b_01", 1, 4]] // Squirtle: use the beige shell/belly palette.
-    : dex === 8
-      ? [["body_b_00", 4, 5], ["body_b_02", 1, 0]] // Wartortle: patterned shell, blue ears and tail.
-      : [];
-  if (!corrections.length) return buffer;
-  const bytes = new Uint8Array(buffer);
-  const view = new DataView(buffer);
-  if (view.getUint32(0, true) !== 0x46546c67) return buffer;
-  const jsonLength = view.getUint32(12, true);
-  if (view.getUint32(16, true) !== 0x4e4f534a) return buffer;
-  const original = new TextDecoder().decode(bytes.subarray(20, 20 + jsonLength));
-  const data = JSON.parse(original);
-  let changed = false;
-  for (const [name, oldIndex, newIndex] of corrections) {
-    const material = data.materials?.find(entry => entry.name === name);
-    if (material?.pbrMetallicRoughness?.baseColorTexture?.index !== oldIndex) continue;
-    material.pbrMetallicRoughness.baseColorTexture.index = newIndex;
-    changed = true;
-  }
-  if (!changed) return buffer;
-  // Updating the JSON chunk in-place is safe only when it fits exactly.
-  const json = JSON.stringify(data);
-  if (json.length > jsonLength) return buffer;
-  const encoded = new TextEncoder().encode(json.padEnd(jsonLength, " "));
-  if (encoded.length !== jsonLength) return buffer;
-  const copy = buffer.slice(0);
-  new Uint8Array(copy).set(encoded, 20);
-  return copy;
-}
-
 function loadModel(model) {
   clearBreakTimer();
   clearLoadTimer();
@@ -376,7 +342,10 @@ function loadModel(model) {
       try {
         const reply = await fetch(catalogUrl, { mode: "cors", signal: abort.signal });
         if (!reply.ok) throw Error("GitHub returned HTTP " + reply.status);
-        const data = repairKnownMaterialBindings(await reply.arrayBuffer(), Number(model.dex));
+        const downloaded = await reply.arrayBuffer();
+        const data = typeof window.POKEDEX3D_REPAIR_SWITCH_MODEL === "function"
+          ? await window.POKEDEX3D_REPAIR_SWITCH_MODEL(downloaded, Number(model.dex))
+          : downloaded;
         if (abort.signal.aborted || selectedSequence !== loadSequence) return;
         const checked = fromRemoteManifest
           ? window.POKEDEX3D_REMOTE_SWITCH.inspect(data)
