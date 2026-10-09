@@ -29,3 +29,17 @@ Before publishing any third-party character or game assets, confirm
 that redistribution is authorized. Do not replace missing Switch models
 with unverified fallback libraries. The visitor's folder picker works
 without any public asset hosting.
+
+## Separate private model repository
+
+Model storage: `Unborne-Fetus/Pokedex-3D-Models-Animations`.
+It currently contains converted `0001/regular.glb`-style files.
+A private-repository workflow generates `switch-manifest.json` from GLB validation.
+
+The static viewer supports remote verified manifests via `web/models/remote-source.json`.
+**It is disabled** while the models are private, because publicly deployed GitHub Pages
+cannot load private GitHub blobs without authentication. To enable when assets are
+legally hosted at a publicly reachable HTTPS origin, set `enabled: true`,
+`manifestUrl` to the reachable verified manifest, and optionally `assetBaseUrl`.
+The host must support browser CORS access and serve `.glb` model files at the
+paths in the manifest. Never add authentication tokens to static website files.
