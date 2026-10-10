@@ -5,7 +5,7 @@ $toolsDir = Join-Path $repoRoot '.tools'
 $reportDir = Join-Path $repoRoot '.cache\remaining-model-diagnosis'
 New-Item -ItemType Directory -Path $toolsDir, $reportDir -Force | Out-Null
 Add-Type -AssemblyName System.IO.Compression
-Write-Host '[Blender setup v4] Checking existing portable installation and cached ZIP files.'
+Write-Host '[Blender setup v5] Checking existing portable installation and cached ZIP files.'
 
 function Find-Blender {
     $cmd = Get-Command blender -ErrorAction SilentlyContinue
@@ -34,22 +34,52 @@ if (-not $blender) {
 
     function Test-BlenderZip([string]$ArchivePath) {
         if (-not (Test-Path -LiteralPath $ArchivePath -PathType Leaf)) { return $false }
+        $size = (Get-Item -LiteralPath $ArchivePath).Length
+        Write-Host "Inspecting cached Blender file: $ArchivePath ($size bytes)"
+        if ($size -lt 100MB) {
+            Write-Warning "Archive is too small to be the Blender portable package."
+            return $false
+        }
+
+        # Python's zipfile understands ZIP64 and reliably checks the central
+        # directory of large Blender archives on older Windows PowerShell.
+        # The setup pipeline already requires Python; support py.exe for
+        # recovery scripts invoked outside setup-all as well.
+        $python = Get-Command python.exe -ErrorAction SilentlyContinue
+        $pyLauncher = if (-not $python) { Get-Command py.exe -ErrorAction SilentlyContinue } else { $null }
+        if ($python -or $pyLauncher) {
+            $probe = 'import zipfile,sys; z=zipfile.ZipFile(sys.argv[1]); paths=z.namelist(); hits=[p for p in paths if p.replace(chr(92),"/").lower().endswith("/blender.exe") or p.lower()=="blender.exe"]; print("ZIP entries:",len(paths),"Blender executables:",len(hits),"First entries:",paths[:3]); sys.exit(0 if hits else 2)'
+            $previous = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            try {
+                if ($python) {
+                    & $python.Source -c $probe $ArchivePath | Out-Host
+                } else {
+                    & $pyLauncher.Source -3 -c $probe $ArchivePath | Out-Host
+                }
+                $probeExit = $LASTEXITCODE
+            } finally {
+                $ErrorActionPreference = $previous
+            }
+            if ($probeExit -eq 0) {
+                Write-Host "Blender ZIP contents verified."
+                return $true
+            }
+            Write-Warning "ZIP validation failed (Python exit code $probeExit). The archive may be incomplete or not contain blender.exe."
+            return $false
+        }
+
         try {
-            $size = (Get-Item -LiteralPath $ArchivePath).Length
             $archive = [IO.Compression.ZipFile]::OpenRead($ArchivePath)
             try {
                 $exe = $archive.Entries | Where-Object {
-                    $_.FullName.Replace('\\', '/').EndsWith('/blender.exe', [StringComparison]::OrdinalIgnoreCase) -or
-                    $_.FullName.Equals('blender.exe', [StringComparison]::OrdinalIgnoreCase)
+                    $_.FullName -match '(^|[\\/])blender[.]exe$'
                 } | Select-Object -First 1
-                if ($exe -and $size -gt 100MB) {
-                    Write-Host "Verified Blender ZIP: $ArchivePath ($size bytes)"
-                    return $true
-                }
-                Write-Warning "ZIP is readable but Blender executable was not found (size $size bytes; entries $($archive.Entries.Count))."
+                if ($exe) { return $true }
+                Write-Warning "ZIP readable, but blender.exe not found."
             } finally { $archive.Dispose() }
         } catch {
-            Write-Warning "ZIP could not be opened: $ArchivePath : $($_.Exception.Message)"
+            Write-Warning "ZIP cannot be opened: $($_.Exception.Message)"
         }
         return $false
     }
@@ -86,7 +116,10 @@ if (-not $blender) {
                 $validZip = $true
                 break
             }
-            Write-Warning "The downloaded file was not a valid Blender archive; trying another source."
+            Write-Warning "The downloaded file did not pass ZIP validation."
+            if ((Test-Path -LiteralPath $fresh) -and ((Get-Item -LiteralPath $fresh).Length -gt 100MB)) {
+                throw "A large Blender download failed ZIP verification. Preserving $fresh for diagnosis instead of downloading 380 MB repeatedly."
+            }
         }
     }
     if (-not $validZip) {
