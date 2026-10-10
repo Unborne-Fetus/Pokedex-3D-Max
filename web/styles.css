@@ -131,6 +131,17 @@ button:hover, select:hover { background: #1a2b45; }
 .viewer-header h2 { margin: 2px 0 0; font-size: 1.8rem; }
 .dex-number { color: #70b7ff; font-weight: 800; }
 .form-name { color: #aebbd0; margin-top: 4px; }
+.candidate-source-link {
+  display: inline-block;
+  margin-top: 5px;
+  color: #a9d3ff;
+  font-size: .79rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.candidate-source-link[hidden] { display: none; }
+.candidate-source-link:hover { color: #d3eaff; }
+
 
 .viewer-wrap {
   position: relative;
