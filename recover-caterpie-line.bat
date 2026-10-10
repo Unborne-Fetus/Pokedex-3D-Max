@@ -46,6 +46,13 @@ if "%MISSING%"=="1" (
     exit /b 2
 )
 
+%PYTHON% -c "import json,pathlib,sys; root=pathlib.Path('web/models'); items=json.loads((root/'switch-manifest.json').read_text(encoding='utf-8')); ready={int(e['dex']) for e in items if e.get('form')=='regular' and e.get('ready') is not False}; sys.exit(0 if {10,11,12}.issubset(ready) else 2)"
+if errorlevel 1 (
+    echo Switch manifest still lacks one or more ready Caterpie-line entries.
+    pause
+    exit /b 2
+)
+
 echo.
 echo Recovered all three models in web\models\switch.
 echo Review each model and its animations, then commit the three GLBs
