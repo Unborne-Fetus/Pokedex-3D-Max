@@ -75,7 +75,7 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 306996,
+    "bytes": 309668,
     "dex": 10,
     "form": "regular",
     "idleAnimation": "Animation",
@@ -84,19 +84,19 @@
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Caterpie",
-    "url": "web/models/switch/0010/regular.glb?v=swsh-root-uv-1",
+    "url": "web/models/switch/0010/regular.glb?v=swsh-color-scale-2",
     "local": true,
     "ready": true,
     "valid": true,
     "idleBreaks": [],
-    "assetRevision": "swsh-root-uv-1",
+    "assetRevision": "swsh-color-scale-2",
     "textureIssues": false
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 236028,
+    "bytes": 306256,
     "dex": 11,
     "form": "regular",
     "idleAnimation": "Animation",
@@ -105,19 +105,19 @@
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Metapod",
-    "url": "web/models/switch/0011/regular.glb?v=swsh-root-uv-1",
+    "url": "web/models/switch/0011/regular.glb?v=swsh-color-scale-2",
     "local": true,
     "ready": true,
     "valid": true,
     "idleBreaks": [],
-    "assetRevision": "swsh-root-uv-1",
+    "assetRevision": "swsh-color-scale-2",
     "textureIssues": false
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 510752,
+    "bytes": 510772,
     "dex": 12,
     "form": "regular",
     "idleAnimation": "Animation",
@@ -126,12 +126,12 @@
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Butterfree",
-    "url": "web/models/switch/0012/regular.glb?v=swsh-root-uv-1",
+    "url": "web/models/switch/0012/regular.glb?v=swsh-color-scale-2",
     "local": true,
     "ready": true,
     "valid": true,
     "idleBreaks": [],
-    "assetRevision": "swsh-root-uv-1",
+    "assetRevision": "swsh-color-scale-2",
     "textureIssues": false
   },
   {
