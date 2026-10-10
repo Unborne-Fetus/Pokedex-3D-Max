@@ -80,6 +80,24 @@ def sketchfab(species: str) -> dict:
             "views":item.get("viewCount",0),
             "tags":[t.get("slug") if isinstance(t,dict) else str(t) for t in (item.get("tags") or [])][:12],
         })
+    # Confirm whether Sketchfab's full model metadata exposes actual animation
+    # clips. The search API does not consistently include isAnimated.
+    for row in matching[:4]:
+        try:
+            detail = json.loads(get("https://api.sketchfab.com/v3/models/" + row["uid"]))
+            row["animationCount"] = detail.get("animationCount")
+            clips = detail.get("animations") or []
+            row["animationClips"] = [v.get("name") for v in clips if isinstance(v,dict)][:10]
+            row["faceCount"] = detail.get("faceCount")
+            row["vertexCount"] = detail.get("vertexCount")
+            row["detailStatus"] = "retrieved"
+            if row["animated"] is None:
+                row["animated"] = (int(row["animationCount"]) > 0) if isinstance(row["animationCount"], int) else bool(clips)
+            sourceLicense = detail.get("license")
+            if isinstance(sourceLicense,dict):
+                row["license"] = {"label":sourceLicense.get("label"),"slug":sourceLicense.get("slug"),"url":sourceLicense.get("url")}
+        except Exception as ex:
+            row["detailError"] = f"{type(ex).__name__}: {ex}"
     matching.sort(key=lambda r:(
         1 if r["animated"] else 0,
         1 if r["downloadable"] else 0,
@@ -106,6 +124,27 @@ def cobblemon_tools(species: str) -> dict:
     except Exception as ex:
         return {"url":url,"error":f"{type(ex).__name__}: {ex}"}
 
+def check_home_sprite(species_id: int) -> dict:
+    root = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
+    urls = {
+        "home": root + "other/home/" + str(species_id) + ".png",
+        "officialArtwork": root + "other/official-artwork/" + str(species_id) + ".png",
+    }
+    result = {}
+    for key,url in urls.items():
+        try:
+            req = urllib.request.Request(url, method="HEAD", headers={"User-Agent":"Pokedex3DMax-Fallback-Audit"})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                result[key] = {
+                    "url":url,"httpStatus":r.status,"bytes":int(r.headers.get("Content-Length", "0") or 0),
+                    "contentType":r.headers.get("Content-Type", ""),
+                    "valid":r.status==200 and "image/" in r.headers.get("Content-Type",""),
+                }
+        except Exception as ex:
+            result[key] = {"url":url,"valid":False,"error":f"{type(ex).__name__}: {ex}"}
+    return result
+
+
 def main():
     result={}
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
@@ -123,7 +162,7 @@ def main():
             for cand in top[:6]:
                 print(f"    {cand['name']!r}  animated={cand['animated']} "
                       f"downloadable={cand['downloadable']} license={cand['license'].get('label')} "
-                      f"url={cand['page']}",flush=True)
+                      f"url={cand['page']} clips={cand.get('animationCount')} detail={cand.get('detailStatus')}",flush=True)
             if row.get("errors"):
                 print("    ERRORS: "+str(row["errors"]),flush=True)
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
@@ -133,6 +172,14 @@ def main():
             result[dex]["cobblemonTools"]=fut.result()
             print(f"Cobblemon #{dex:04d}: "
                   f"{result[dex]['cobblemonTools']}",flush=True)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+        jobs={pool.submit(check_home_sprite,dex):(dex,name) for dex,name in SPECIES.items()}
+        for fut in concurrent.futures.as_completed(jobs):
+            dex,name=jobs[fut]
+            result[dex]["sprites"]=fut.result()
+            rows=result[dex]["sprites"]
+            print(f"Sprites #{dex:04d} {name}: HOME={rows['home'].get('valid')} "
+                  f"ART={rows['officialArtwork'].get('valid')}",flush=True)
     OUT.mkdir(parents=True,exist_ok=True)
     target=OUT/"research.json"
     target.write_text(json.dumps([result[k] for k in sorted(result)],indent=2,ensure_ascii=False)+"\\n",
