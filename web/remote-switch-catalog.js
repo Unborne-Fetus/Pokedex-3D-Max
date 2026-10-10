@@ -54,6 +54,8 @@
         url: url.href, remoteSwitch: true, ready: true, valid: true,
         // An inventory is NOT evidence of texture correctness or animations.
         preflightRequired: inventory,
+        // Use the uploaded file revision to restore only matching animation checks.
+        assetRevision: String(entry.sha256 || entry.sha || entry.bytes || ""),
         idleAnimation: inventory ? null : idle,
         idleBreaks: inventory ? [] : (Array.isArray(entry.idleBreaks) ? entry.idleBreaks : [])
           .filter(name => name !== idle && clips.includes(name)),
@@ -219,7 +221,16 @@
       if (!response.ok) throw Error("GitHub model inventory is temporarily unavailable");
       const live = prepare(config, await response.json());
       if (!live.length) throw Error("Public repository inventory is empty");
-      if (!snapshot || live.length !== snapshot.entries.length) publish(live);
+      // An existing GLB may change without changing the total model count.
+      const snapshotEntries = new Map(
+        (snapshot?.entries || []).map(entry => [Number(entry.dex), entry]));
+      const changed = !snapshot || live.length !== snapshot.entries.length ||
+        live.some(model => {
+          const original = snapshotEntries.get(model.dex);
+          return !original || model.assetRevision !==
+            String(original.sha256 || original.sha || original.bytes || "");
+        });
+      if (changed) publish(live);
     } catch (error) {
       if (!snapshot) {
         window.dispatchEvent(new CustomEvent("pokedex3d:remote-switch-error", {
