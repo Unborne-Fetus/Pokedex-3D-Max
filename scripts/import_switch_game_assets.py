@@ -508,6 +508,33 @@ def infer_form_key(path: Path) -> str:
     return "-".join(parts) if parts else "regular"
 
 
+# The Pokemon Model Ripping Project and Pokemon HOME exports include
+# special-form codes even for the ordinary appearance of a species:
+# Sinistea's common form is 11, Cursola uses Galar code 31, and
+# Squawkabilly's default Green Plumage is 11. Only these known default
+# variants are eligible for the regular Dex slot.
+DEFAULT_SOURCE_FORMS: dict[tuple[str, int], set[tuple[str, ...]]] = {
+    ("swsh", 854): {("11",), ("11", "00")},
+    ("swsh", 864): {("00", "31"), ("31",)},
+    ("sv", 931): {("11",), ("11", "00")},
+}
+
+
+def canonical_regular_form(path: Path, dex: int, game: str) -> tuple[str, str]:
+    """Return catalog form plus STRICT source-form key for matching animations.
+
+    A converted GLB may be called regular, but animations must use the same
+    ORIGINAL coded form. This never pairs alternate-form rigs by Dex alone.
+    """
+    original = infer_form(path)
+    source_key = infer_form_key(path)
+    if original == "regular":
+        return "regular", source_key
+    if tuple(infer_form_parts(path)) in DEFAULT_SOURCE_FORMS.get((game, dex), set()):
+        return "regular", source_key
+    return original, source_key
+
+
 def scan_models(root: Path, game: str) -> list[dict]:
     jobs: list[dict] = []
     for path in root.rglob("*"):
@@ -524,7 +551,7 @@ def scan_models(root: Path, game: str) -> list[dict]:
         # Do not publish them under fictitious species IDs without a game-ID map.
         if dex <= 0 or dex > 1025:
             continue
-        form = infer_form(path)
+        form, source_form_key = canonical_regular_form(path, dex, game)
         if form != "regular":
             continue
         jobs.append(
@@ -532,7 +559,7 @@ def scan_models(root: Path, game: str) -> list[dict]:
                 "dex": dex,
                 "modelId": model_id,
                 "form": form,
-                "formKey": infer_form_key(path),
+                "formKey": source_form_key,
                 "game": game,
                 "source": str(path),
                 "extension": path.suffix.lower(),
@@ -556,7 +583,7 @@ def scan_animations(root: Path, game: str) -> list[dict]:
         # Do not publish them under fictitious species IDs without a game-ID map.
         if dex <= 0 or dex > 1025:
             continue
-        form = infer_form(path)
+        form, source_form_key = canonical_regular_form(path, dex, game)
         if form != "regular":
             continue
         animations.append(
@@ -564,7 +591,7 @@ def scan_animations(root: Path, game: str) -> list[dict]:
                 "dex": dex,
                 "modelId": model_id,
                 "form": form,
-                "formKey": infer_form_key(path),
+                "formKey": source_form_key,
                 "game": game,
                 "source": str(path),
                 "name": path.stem,
@@ -747,7 +774,11 @@ def dedupe_jobs(jobs: list[dict]) -> list[dict]:
     """Prefer one best source per canonical Pokémon/form identity."""
     chosen: dict[tuple[int, str], dict] = {}
     for job in jobs:
-        key = (job["dex"], job.get("formKey", job["form"]))
+        # Multiple encoded source variants must never create two different
+        # output files claiming the one and only regular National Dex slot.
+        # Keep source formKey on the chosen job for matching animations.
+        key = (job["dex"], "regular" if job["form"] == "regular"
+               else job.get("formKey", job["form"]))
         current = chosen.get(key)
         if current is None or job_choice_score(job) > job_choice_score(current):
             chosen[key] = job
@@ -2807,6 +2838,26 @@ def run_self_tests() -> None:
     assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
     assert infer_form_key(Path("pm0479_16_00_20012_battleidle02.tranm")) == "16"
     assert infer_form_key(Path("pm0479_00_00.trmdl")) == "regular"
+    assert canonical_regular_form(Path("pm0972_11_00.gfbmdl"), 854, "swsh") == ("regular", "11")
+    assert canonical_regular_form(Path("pm0972_12_00.gfbmdl"), 854, "swsh") == ("form-12-00", "12")
+    assert canonical_regular_form(Path("pm0947_00_31.gfbmdl"), 864, "swsh") == ("regular", "00-31")
+    assert canonical_regular_form(Path("pm1064_11_00.trmdl"), 931, "sv") == ("regular", "11")
+    assert canonical_regular_form(Path("pm1064_14_00.trmdl"), 931, "sv") == ("form-14-00", "14")
+    with tempfile.TemporaryDirectory() as temporary:
+        source_root = Path(temporary)
+        for filename in (
+            "pm0972_11_00.gfbmdl", "pm0972_11_00_battleidle.gfbanm",
+            "pm0972_12_00.gfbmdl", "pm0947_00_31.gfbmdl",
+            "pm0947_00_31_battleidle.gfbanm",
+        ):
+            (source_root / filename).write_bytes(b"source")
+        model_jobs = scan_models(source_root, "swsh")
+        animation_files = scan_animations(source_root, "swsh")
+        attach_animations(model_jobs, animation_files)
+        assert {job["dex"] for job in model_jobs} == {854, 864}
+        assert all(job["animations"] for job in model_jobs)
+        assert len(dedupe_jobs(model_jobs)) == 2
+
 
     assert national_dex_for_model_id(917, "swsh") == 845
     assert national_dex_for_model_id(920, "swsh") == 823
