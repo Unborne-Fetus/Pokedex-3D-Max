@@ -103,10 +103,13 @@
         throw Error("Wrong Pokémon: " + game + " model pm" + id +
           " is National #" + actual + ", not #" + dex);
       }
-    } else if (id >= 1008 && !statedSha) {
-      // High Pokémon asset IDs are often S/V internal IDs.
-      // Never guess that pm1025 is Pecharunt (#1025).
-      throw Error("Unverified game-internal model ID pm" + id);
+    } else if (id && !provenGame && !game &&
+               (id >= 1008 || (swsh[id] && swsh[id] !== dex))) {
+      // A bare pm0942/pm0964/pm0965 in a selected folder does not
+      // identify Maschiff/Palafin/Varoom. Require source-game evidence
+      // before displaying any ambiguous internal ID.
+      throw Error("Ambiguous game-internal model ID pm" + id +
+        " without verified source-game identity");
     }
     return { embeddedModelId: embedded, sourceGame: game, sourceModelId: id || null };
   }
