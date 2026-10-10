@@ -216,9 +216,19 @@ function EnsureBlender {
     if (-not (Test-Path -LiteralPath $Helper)) {
         throw "Blender setup helper missing: $Helper"
     }
-    & powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $Helper
-    if ($LASTEXITCODE -ne 0) {
-        throw "Portable Blender setup failed (exit $LASTEXITCODE). The ZIP is preserved for a resumable retry."
+    Stamp "Blender helper version v4: checking valid cached ZIPs before any download."
+    # The child uses curl.exe, whose stderr can otherwise be treated as a
+    # terminating NativeCommandError by Windows PowerShell 5.1.
+    $PreviousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $Helper
+        $BlenderSetupExitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $PreviousErrorActionPreference
+    }
+    if ($BlenderSetupExitCode -ne 0) {
+        throw "Portable Blender setup failed (exit $BlenderSetupExitCode). See [Blender setup v4] warnings above or run scripts\\ensure_recovery_blender.ps1 directly for details."
     }
     $PathFile = Join-Path $RepoRoot ".cache\remaining-model-diagnosis\blender-path.txt"
     if (-not (Test-Path -LiteralPath $PathFile)) {
