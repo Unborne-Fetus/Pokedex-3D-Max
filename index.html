@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin />
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-  <link rel="stylesheet" href="web/styles.css?v=6" />
+  <link rel="stylesheet" href="web/styles.css?v=7" />
   <script defer src="web/vendor/model-viewer.min.js"></script>
 </head>
 <body>
@@ -17,6 +17,24 @@
       <h1>Pokedex 3D Max</h1>
       <p id="status">Loading 3D catalog…</p>
     </div>
+    <section class="coverage-meters" aria-label="Pokédex asset progress">
+      <div class="coverage-meter">
+        <div class="coverage-heading"><span>3D models</span><strong id="modelCoverageCount">— / 1,025</strong></div>
+        <div class="coverage-track" id="modelCoverageProgress" role="progressbar"
+             aria-label="3D models available" aria-valuemin="0" aria-valuemax="1025" aria-valuenow="0">
+          <div class="coverage-fill coverage-fill--models" id="modelCoverageFill"></div>
+        </div>
+        <small class="coverage-detail" id="modelCoverageDetail">Checking model catalog…</small>
+      </div>
+      <div class="coverage-meter">
+        <div class="coverage-heading"><span>Idle animations</span><strong id="animationCoverageCount">— / 1,025</strong></div>
+        <div class="coverage-track" id="animationCoverageProgress" role="progressbar"
+             aria-label="Idle animations confirmed" aria-valuemin="0" aria-valuemax="1025" aria-valuenow="0">
+          <div class="coverage-fill coverage-fill--animations" id="animationCoverageFill"></div>
+        </div>
+        <small class="coverage-detail" id="animationCoverageDetail">Checked as each Pokémon opens</small>
+      </div>
+    </section>
     <div class="top-actions"><span class="badge">WEB</span></div>
   </header>
 
@@ -124,7 +142,7 @@
   <script defer src="web/models/github-inventory.js?v=1"></script>
   <script defer src="web/remote-switch-catalog.js?v=3"></script>
   <script defer src="web/species-texture-repairs.js?v=7"></script>
-  <script defer src="web/app.js?v=49"></script>
+  <script defer src="web/app.js?v=50"></script>
 </body>
 </html>
 
