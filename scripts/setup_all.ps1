@@ -210,61 +210,24 @@ function EnsurePython {
 function EnsureBlender {
     Step "STEP 4/6 - Checking Blender"
 
-    $Blender = $null
-    if (Get-Command blender -ErrorAction SilentlyContinue) {
-        $Blender = (Get-Command blender).Source
+    # Share the resumable, ZIP-validated installation path with
+    # recover-remaining-models.bat. Never trust a partially downloaded ZIP.
+    $Helper = Join-Path $RepoRoot "scripts\ensure_recovery_blender.ps1"
+    if (-not (Test-Path -LiteralPath $Helper)) {
+        throw "Blender setup helper missing: $Helper"
     }
-
-    $BlenderRoot = Join-Path $env:ProgramFiles "Blender Foundation"
-    if ((-not $Blender) -and (Test-Path $BlenderRoot)) {
-        $Blender = Get-ChildItem $BlenderRoot -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue |
-            Sort-Object FullName -Descending |
-            Select-Object -First 1 -ExpandProperty FullName
+    & powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $Helper
+    if ($LASTEXITCODE -ne 0) {
+        throw "Portable Blender setup failed (exit $LASTEXITCODE). The ZIP is preserved for a resumable retry."
     }
-
-    $PortableRoot = Join-Path $ToolsDir ("blender-" + $BlenderPortableVersion)
-    $PortableExe = Get-ChildItem $PortableRoot -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue |
-        Select-Object -First 1 -ExpandProperty FullName
-    if ((-not $Blender) -and $PortableExe) { $Blender = $PortableExe }
-
-    if (-not $Blender) {
-        Stamp ("Blender was not found. Downloading portable Blender " + $BlenderPortableVersion + "...")
-        $Zip = Join-Path $ToolsDir ("blender-" + $BlenderPortableVersion + ".zip")
-        if (-not (Test-Path $Zip)) {
-            $Downloaded = $false
-            if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
-                $PreviousErrorActionPreference = $ErrorActionPreference
-                $ErrorActionPreference = "Continue"
-                try {
-                    & curl.exe -L --fail --retry 3 --retry-delay 2 -A "Mozilla/5.0" -o $Zip $BlenderPortableUrl
-                    $Downloaded = ($LASTEXITCODE -eq 0 -and (Test-Path $Zip) -and ((Get-Item $Zip).Length -gt 100MB))
-                } finally {
-                    $ErrorActionPreference = $PreviousErrorActionPreference
-                }
-            }
-            if (-not $Downloaded) {
-                try {
-                    DownloadFile $BlenderPortableUrl $Zip
-                    $Downloaded = (Test-Path $Zip) -and ((Get-Item $Zip).Length -gt 100MB)
-                } catch {
-                    $Downloaded = $false
-                }
-            }
-            if (-not $Downloaded) {
-                if (Test-Path $Zip) { Remove-Item -Force $Zip }
-                throw "Could not download portable Blender from the official Blender archive."
-            }
-        } else {
-            Stamp "Portable Blender ZIP already exists. Reusing it."
-        }
-
-        if (Test-Path $PortableRoot) { Remove-Item -Recurse -Force $PortableRoot }
-        ExpandFresh $Zip $PortableRoot
-        $Blender = Get-ChildItem $PortableRoot -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue |
-            Select-Object -First 1 -ExpandProperty FullName
-        if (-not $Blender) { throw "Portable Blender extracted but blender.exe was not found." }
+    $PathFile = Join-Path $RepoRoot ".cache\remaining-model-diagnosis\blender-path.txt"
+    if (-not (Test-Path -LiteralPath $PathFile)) {
+        throw "Blender setup did not write its executable path."
     }
-
+    $Blender = (Get-Content -LiteralPath $PathFile -Raw).Trim()
+    if (-not $Blender -or -not (Test-Path -LiteralPath $Blender -PathType Leaf)) {
+        throw "Blender executable not found after setup: $Blender"
+    }
     Stamp ("Blender = " + $Blender)
     return $Blender
 }
