@@ -5,6 +5,7 @@ $toolsDir = Join-Path $repoRoot '.tools'
 $reportDir = Join-Path $repoRoot '.cache\remaining-model-diagnosis'
 New-Item -ItemType Directory -Path $toolsDir, $reportDir -Force | Out-Null
 Add-Type -AssemblyName System.IO.Compression
+Write-Host '[Blender setup v4] Checking existing portable installation and cached ZIP files.'
 
 function Find-Blender {
     $cmd = Get-Command blender -ErrorAction SilentlyContinue
@@ -25,8 +26,8 @@ if (-not $blender) {
     $zip = Join-Path $toolsDir "blender-$version.zip"
     $installDir = Join-Path $toolsDir "blender-$version"
     $urls = @(
-        "https://download.blender.org/release/Blender4.5/blender-$version-windows-x64.zip",
-        "https://mirror.blender.org/release/Blender4.5/blender-$version-windows-x64.zip"
+        "https://mirror.blender.org/release/Blender4.5/blender-$version-windows-x64.zip",
+        "https://download.blender.org/release/Blender4.5/blender-$version-windows-x64.zip"
     )
     $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
     if (-not $curl) { throw 'curl.exe is required for resumable Blender downloads (included with Windows 10/11).' }
@@ -65,9 +66,19 @@ if (-not $blender) {
         foreach ($url in $urls) {
             Write-Host "Downloading a clean Blender archive from $url"
             if (Test-Path -LiteralPath $fresh) { Remove-Item -LiteralPath $fresh -Force }
-            & $curl.Source --location --fail --retry 2 --retry-delay 2 --connect-timeout 30 --output $fresh $url
-            if ($LASTEXITCODE -ne 0) {
-                Write-Warning "Download failed with curl exit code $LASTEXITCODE."
+            # Windows PowerShell 5.1 promotes curl's stderr progress/errors to
+            # PowerShell errors when ErrorActionPreference is Stop. Restore it
+            # immediately after the native command and check the actual exit code.
+            $previousErrorAction = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            try {
+                & $curl.Source --location --fail --retry 2 --retry-delay 2 --connect-timeout 30 --progress-bar --output $fresh $url
+                $curlExitCode = $LASTEXITCODE
+            } finally {
+                $ErrorActionPreference = $previousErrorAction
+            }
+            if ($curlExitCode -ne 0) {
+                Write-Warning "Download failed with curl exit code $curlExitCode."
                 continue
             }
             if (Test-BlenderZip $fresh) {
@@ -83,7 +94,11 @@ if (-not $blender) {
     }
     Write-Host 'Blender archive verified. Extracting...'
     New-Item -ItemType Directory -Path $installDir -Force | Out-Null
-    Expand-Archive -LiteralPath $zip -DestinationPath $installDir -Force
+    try {
+        Expand-Archive -LiteralPath $zip -DestinationPath $installDir -Force -ErrorAction Stop
+    } catch {
+        throw "Blender ZIP verified, but extraction failed: $($_.Exception.Message). Archive retained at $zip"
+    }
     $blender = Find-Blender
 }
 if (-not $blender) { throw 'Blender executable still missing after extraction.' }
