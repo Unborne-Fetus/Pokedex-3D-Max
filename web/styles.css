@@ -350,3 +350,12 @@ model-viewer.fallback-active { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .coverage-fill { transition: none; }
 }
+
+@media (max-width: 650px) {
+  .coverage-meters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .coverage-meter:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 420px) {
+  .coverage-meters { grid-template-columns: 1fr; }
+  .coverage-meter:last-child { grid-column: auto; }
+}
