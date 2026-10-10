@@ -9,6 +9,12 @@ echo.
 echo Only the 13 remaining Pokemon will be targeted.
 echo Existing Switch models will not be replaced for other Pokemon.
 echo.
+rem With no file arguments, use setup's targeted MEGA discovery and only
+rem download SV + SwSh Gen8 source packs. Dropped archives run directly.
+if "%~1"=="" (
+    call "%~dp0setup-all.bat" final13
+    exit /b %ERRORLEVEL%
+)
 where py >nul 2>&1
 if not errorlevel 1 (
     py -3 -u "scripts\recover_final_13.py" %*
