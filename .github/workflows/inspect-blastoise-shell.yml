@@ -1,0 +1,50 @@
+name: Inspect Blastoise GLB shell materials
+on:
+  push:
+    paths:
+      - .github/workflows/inspect-blastoise-shell.yml
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract model material and mesh assignments
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, struct
+          p = pathlib.Path('web/models/switch/0009/regular.glb')
+          with p.open('rb') as h:
+              h.seek(12)
+              n, chunk = struct.unpack('<II', h.read(8))
+              doc = json.loads(h.read(n))
+          rows = []
+          for mi, mesh in enumerate(doc.get('meshes', [])):
+              for pi, part in enumerate(mesh.get('primitives', [])):
+                  pos = doc['accessors'][part['attributes']['POSITION']]
+                  material_i = part.get('material', -1)
+                  material = doc['materials'][material_i] if material_i >= 0 else {}
+                  uv = doc['accessors'].get('dummy', None) if False else doc['accessors'][part['attributes']['TEXCOORD_0']] if 'TEXCOORD_0' in part['attributes'] else {}
+                  texture = material.get('pbrMetallicRoughness', {}).get('baseColorTexture', {})
+                  rows.append(dict(mesh=mesh.get('name'), meshIndex=mi, primitiveIndex=pi,
+                    materialIndex=material_i, materialName=material.get('name'),
+                    materialColor=material.get('pbrMetallicRoughness', {}).get('baseColorFactor'),
+                    tex=texture, positionCount=pos.get('count'),
+                    positionMin=pos.get('min'), positionMax=pos.get('max'),
+                    uvCount=uv.get('count')))
+          data=dict(meshes=rows, materialCount=len(doc.get('materials', [])),
+            materials=[dict(name=x.get('name'), base=x.get('pbrMetallicRoughness', {}).get('baseColorTexture')) for x in doc.get('materials', [])])
+          path = pathlib.Path('diagnostics/blastoise-shell-report.json')
+          path.parent.mkdir(exist_ok=True)
+          path.write_text(json.dumps(data, indent=2)+'\n')
+          print(json.dumps(data, indent=2))
+          PY
+      - name: Commit diagnostic report
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add diagnostics/blastoise-shell-report.json
+          git diff --cached --quiet || (git commit -m 'Inspect Blastoise shell mesh layout' && git push)
