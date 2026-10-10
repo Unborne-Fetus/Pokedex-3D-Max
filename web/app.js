@@ -41,9 +41,21 @@ const finishedCoverageFillEl = document.querySelector("#finishedCoverageFill");
 // Keep every numbered National Dex species visible even without a model.
 // Externally hosted preview candidates only fill missing Switch entries and are
 // never written into the regular Switch catalog or marked Finished.
+function correctlyNumberedSwitchModel(model) {
+  if (!model || model.missingModel || model.communityCandidate) return true;
+  const internal = Number(model.sourceModelId ?? model.modelId);
+  const game = String(model.sourceGame || "");
+  // Reject known misnumbered local imports *before* they reach the viewer.
+  // Unknown sources still require per-file identity verification at load.
+  if (!Number.isInteger(internal) ||
+      !/^(?:sv|swsh|la|za)(?:-|$)/i.test(game)) return true;
+  return window.POKEDEX3D_MODEL_IDENTITY.nationalDex(internal, game) === Number(model.dex);
+}
+
 function withMissingSpeciesEntries(catalog, includeCommunity = true) {
   const entries = new Map();
   for (const model of catalog) {
+    if (!correctlyNumberedSwitchModel(model)) continue;
     const dex = Number(model?.dex);
     if (!Number.isInteger(dex) || dex < 1 || dex > 1025) continue;
     if (!entries.has(dex) || (entries.get(dex).missingModel && !model.missingModel)) {
