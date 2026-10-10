@@ -23,13 +23,21 @@ const context = {
 browser.dispatchEvent = event => events.push(event);
 vm.runInNewContext(inventoryScript, context, { filename: "github-inventory.js" });
 vm.runInNewContext(source, context, { filename: "remote-switch-catalog.js" });
-const { prepare, inspect } = browser.POKEDEX3D_REMOTE_SWITCH;
+const { prepare, inspect, bundled } = browser.POKEDEX3D_REMOTE_SWITCH;
 
 assert.equal(sourceConfig.enabled, true);
 assert.equal(sourceConfig.repositoryVisibility, "public");
 assert.equal(sourceConfig.allowUnverifiedInventory, true);
 const selected = prepare(sourceConfig, browser.POKEDEX3D_PUBLIC_INVENTORY);
 assert.equal(selected.length, browser.POKEDEX3D_PUBLIC_INVENTORY.count);
+const preloaded = bundled();
+assert.equal(preloaded.length, selected.length, "The initial page catalog must already include uploaded GLBs");
+for (let dex = 1; dex <= 9; dex++) {
+  const model = preloaded.find(item => item.dex === dex);
+  assert.ok(model && model.remoteSwitch && model.preflightRequired,
+    "Original Switch GLB #" + String(dex).padStart(4, "0") + " must be in the startup catalog");
+}
+
 assert.equal(selected[0].dex, 1);
 assert.equal(selected[0].name, "Bulbasaur");
 assert.equal(selected[0].preflightRequired, true);
