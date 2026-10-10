@@ -71,6 +71,69 @@ class MaterialTests(unittest.TestCase):
                       "vertices", len(xyz), "xyz", bounds(xyz, 3),
                       "uv", bounds(uv, 2))
 
+    def test_blatoise_front_uv_diagnostic(self):
+        import json, struct, io, subprocess, sys
+        try:
+            from PIL import Image
+        except ImportError:
+            subprocess.check_call([sys.executable, "-m", "pip", "-q", "install", "Pillow"])
+            from PIL import Image
+        raw = (Path(__file__).resolve().parents[1] / "web/models/switch/0009/regular.glb").read_bytes()
+        length = struct.unpack_from("<I", raw, 12)[0]
+        doc = json.loads(raw[20:20+length])
+        start = 28 + length
+        images = []
+        for im in doc["images"]:
+            view = doc["bufferViews"][im["bufferView"]]
+            at = start + view.get("byteOffset", 0)
+            images.append(Image.open(io.BytesIO(raw[at:at+view["byteLength"]])).convert("RGB"))
+        def vals(index,width):
+            a=doc["accessors"][index];v=doc["bufferViews"][a["bufferView"]]
+            at=start+v.get("byteOffset",0)+a.get("byteOffset",0)
+            stride=v.get("byteStride",width*4)
+            return [struct.unpack_from("<"+"f"*width,raw,at+j*stride) for j in range(a["count"])]
+        def shade(color):
+            r,g,b=color
+            if b>r*1.08 and b>g*1.02: return "BLUE"
+            if r>b*1.16 and g>b*1.12: return "BEIGE"
+            if max(color)-min(color)<25 and min(color)>160: return "WHITE"
+            if r<145 and g<135 and b<120: return "DARK"
+            return "other"
+        for i, im in enumerate(images[:2]):
+            print("BLASTOISE_COLOR atlas", i, im.size)
+            for row in range(4):
+                summary=[]
+                for col in range(4):
+                    from collections import Counter
+                    colors=Counter(shade(im.getpixel((min(im.width-1,int((col+dx/8)/4*im.width)),min(im.height-1,int((row+dy/8)/4*im.height))))) for dx in range(8) for dy in range(8))
+                    summary.append(dict(colors))
+                print("BLASTOISE_COLOR regions",i,row,summary)
+        for mesh in doc["meshes"]:
+            if "body_mesh" not in mesh.get("name",""): continue
+            for prim in mesh["primitives"]:
+                mat=doc["materials"][prim["material"]]
+                a=prim["attributes"]
+                xyz=vals(a["POSITION"],3)
+                uv=vals(a["TEXCOORD_0"],2)
+                slot=mat["pbrMetallicRoughness"]["baseColorTexture"]
+                tex=doc["textures"][slot["index"]]
+                im=images[tex["source"]]
+                print("BLASTOISE_COLOR BODY",mat["name"],"num",len(xyz))
+                for side in ("center","side"):
+                    selected=[]
+                    for p,t in zip(xyz,uv):
+                        x,y,z=p
+                        if not (-0.25<y<0.42): continue
+                        if side=="center" and not abs(x)<0.18:continue
+                        if side=="side" and not 0.23<abs(x)<0.47:continue
+                        u=t[0]%1
+                        v=(t[1]+(2 if mat["name"].startswith("body_b") else 1))%1
+                        pixel=im.getpixel((min(im.width-1,int(u*im.width)),min(im.height-1,int(v*im.height))))
+                        selected.append((round(x,3),round(y,3),round(z,3),round(t[0],3),round(t[1],3),shade(pixel),pixel))
+                    print("BLASTOISE_COLOR area",mat["name"],side,"total",len(selected))
+                    for item in sorted(selected,key=lambda p:p[2])[:25]:
+                        print("BLASTOISE_COLOR v",item)
+
     def test_directory_names_do_not_reject_albedo(self):
         image = SimpleNamespace(name="pm0025_body_albedo.png", filepath="/download/pokemon/pm0025_body_albedo.png")
         self.assertIs(self.select(self.material([image])), image)
