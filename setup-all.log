@@ -1,0 +1,63 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261010004816
+Username: SPENCERCOMPUTER\Spencer
+RunAs User: SPENCERCOMPUTER\Spencer
+Configuration Name: 
+Machine: SPENCERCOMPUTER (Microsoft Windows NT 10.0.26200.0)
+Host Application: powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File C:\ROM Hacks\Pokedex-3D-Max\scripts\setup_all.ps1 -SwitchAssetsOnly -SkipInstall
+Process ID: 25324
+PSVersion: 5.1.26100.9549
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9549
+BuildVersion: 10.0.26100.9549
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+============================================================
+        Pokedex 3D Max - Windows Setup
+============================================================
+[00:48:16] One-click mode: tools, strict Switch model import, and Windows build are automatic.
+[00:48:16] Nothing is frozen if timestamps keep appearing or a download/build counter changes.
+[00:48:16] Log file: C:\ROM Hacks\Pokedex-3D-Max\setup-all.log
+[00:48:16] Switch-assets-only mode: skipping JDK, Gradle, and Windows packaging.
+
+============================================================
+[00:48:16] STEP 3/6 - Checking Python
+============================================================
+[00:48:16] Found Python 3.14.8
+[00:48:16] Checking Pillow for WebP-to-PNG model conversion...
+[00:48:16] Pillow is already installed.
+[00:48:16] Pillow is ready.
+
+============================================================
+[00:48:16] PRECHECK - Validating Switch importer
+============================================================
+[00:48:16] Compiling Python importer scripts...
+
+[00:48:16] Running Switch importer matching/cache self-tests...
+
+[00:48:16] Switch importer preflight passed.
+[00:48:16] Restoring animated Switch GLBs with valid embedded textures.
+Browser index synced: 162 regular animated Switch model(s).
+Restored 162 regular animated Switch models with embedded textures.
+
+============================================================
+[00:48:28] STEP 4/6 - Checking Blender
+============================================================
+[00:48:28] Blender helper version v4: checking valid cached ZIPs before any download.
+PS>TerminatingError(): "Portable Blender setup failed (exit 1). See [Blender setup v4] warnings above or run scripts\\ensure_recovery_blender.ps1 directly for details."
+>> TerminatingError(): "Portable Blender setup failed (exit 1). See [Blender setup v4] warnings above or run scripts\\ensure_recovery_blender.ps1 directly for details."
+
+============================================================
+[00:49:29] SETUP FAILED
+============================================================
+Portable Blender setup failed (exit 1). See [Blender setup v4] warnings above or run scripts\\ensure_recovery_blender.ps1 directly for details.
+
+Full log: C:\ROM Hacks\Pokedex-3D-Max\setup-all.log
+**********************
+Windows PowerShell transcript end
+End time: 20261010004929
+**********************
