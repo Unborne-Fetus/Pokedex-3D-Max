@@ -1,927 +1,927 @@
 dex	name	local_model	public_model	source_game	source_model_id	original_catalog_dex	verification
-1	Bulbasaur	available	available	ZA-Poke	1		original-glb-sha1-verified
-2	Ivysaur	available	available	ZA-Poke	2		original-glb-sha1-verified
-3	Venusaur	available	available	ZA-Poke	3		original-glb-sha1-verified
-4	Charmander	available	available	ZA-Poke	4		original-glb-sha1-verified
-5	Charmeleon	available	available	ZA-Poke	5		original-glb-sha1-verified
-6	Charizard	available	available	ZA-Poke	6		original-glb-sha1-verified
-7	Squirtle	available	available	ZA-Poke	7		original-glb-sha1-verified
-8	Wartortle	available	available	ZA-Poke	8		original-glb-sha1-verified
-9	Blastoise	available	available	ZA-Poke	9		original-glb-sha1-verified
-10	Caterpie	available	missing	swsh			model-present-provenance-unverified
-11	Metapod	available	missing	swsh			model-present-provenance-unverified
-12	Butterfree	available	missing	swsh			model-present-provenance-unverified
-13	Weedle	available	available	ZA-Poke	13		original-glb-sha1-verified
-14	Kakuna	available	available	ZA-Poke	14		original-glb-sha1-verified
-15	Beedrill	available	available	ZA-Poke	15		original-glb-sha1-verified
-16	Pidgey	available	available	ZA-Poke	16		original-glb-sha1-verified
-17	Pidgeotto	available	available	ZA-Poke	17		original-glb-sha1-verified
-18	Pidgeot	available	available	ZA-Poke	18		original-glb-sha1-verified
-19	Rattata	available	missing	lgpe			model-present-provenance-unverified
-20	Raticate	available	missing	lgpe			model-present-provenance-unverified
-21	Spearow	available	missing	lgpe			model-present-provenance-unverified
-22	Fearow	available	missing	lgpe			model-present-provenance-unverified
-23	Ekans	available	available	ZA-Poke	23		original-glb-sha1-verified
-24	Arbok	available	available	ZA-Poke	24		original-glb-sha1-verified
-25	Pikachu	available	available	ZA-Poke	25		original-glb-sha1-verified
-26	Raichu	available	available	ZA-Poke	26		original-glb-sha1-verified
-27	Sandshrew	available	missing	sv			model-present-provenance-unverified
-28	Sandslash	available	missing	sv			model-present-provenance-unverified
-29	Nidoran♀	available	missing	swsh			model-present-provenance-unverified
-30	Nidorina	available	missing	swsh			model-present-provenance-unverified
-31	Nidoqueen	available	missing	swsh			model-present-provenance-unverified
-32	Nidoran♂	available	missing	swsh			model-present-provenance-unverified
-33	Nidorino	available	missing	swsh			model-present-provenance-unverified
-34	Nidoking	available	missing	swsh			model-present-provenance-unverified
-35	Clefairy	available	available	ZA-Poke	35		original-glb-sha1-verified
-36	Clefable	available	available	ZA-Poke	36		original-glb-sha1-verified
-37	Vulpix	available	available	LA-Poke	37		original-glb-sha1-verified
-38	Ninetales	available	available	LA-Poke	38		original-glb-sha1-verified
-39	Jigglypuff	available	available	ZA-PokeDLC	39		original-glb-sha1-verified
-40	Wigglytuff	available	available	ZA-PokeDLC	40		original-glb-sha1-verified
-41	Zubat	available	available	ZA-PokeDLC	41		original-glb-sha1-verified
-42	Golbat	available	available	ZA-PokeDLC	42		original-glb-sha1-verified
-43	Oddish	available	available	SV-PokeDLC2	43		original-glb-sha1-verified
-44	Gloom	available	available	SV-PokeDLC2	44		original-glb-sha1-verified
-45	Vileplume	available	available	SV-PokeDLC2	45		original-glb-sha1-verified
-46	Paras	available	available	LA-Poke	46		original-glb-sha1-verified
-47	Parasect	available	available	LA-Poke	47		original-glb-sha1-verified
-48	Venonat	available	available	SV-Poke	48		original-glb-sha1-verified
-49	Venomoth	available	available	SV-Poke	49		original-glb-sha1-verified
-50	Diglett	available	available	SV-Poke	50		original-glb-sha1-verified
-51	Dugtrio	available	available	SV-Poke	51		original-glb-sha1-verified
-52	Meowth	available	available	ZA-PokeDLC	52		original-glb-sha1-verified
-53	Persian	available	available	ZA-PokeDLC	53		original-glb-sha1-verified
-54	Psyduck	available	available	LA-Poke	54		original-glb-sha1-verified
-55	Golduck	available	available	LA-Poke	55		original-glb-sha1-verified
-56	Mankey	available	available	ZA-PokeDLC	56		original-glb-sha1-verified
-57	Primeape	available	available	ZA-PokeDLC	57		original-glb-sha1-verified
-58	Growlithe	available	available	SV-Poke	58		original-glb-sha1-verified
-59	Arcanine	available	available	SV-Poke	59		original-glb-sha1-verified
-60	Poliwag	available	missing	sv			model-present-provenance-unverified
-61	Poliwhirl	available	missing	sv			model-present-provenance-unverified
-62	Poliwrath	available	missing	sv			model-present-provenance-unverified
-63	Abra	available	available	ZA-Poke	63		original-glb-sha1-verified
-64	Kadabra	available	available	ZA-Poke	64		original-glb-sha1-verified
-65	Alakazam	available	available	ZA-Poke	65		original-glb-sha1-verified
-66	Machop	available	available	ZA-Poke	66		original-glb-sha1-verified
-67	Machoke	available	available	ZA-Poke	67		original-glb-sha1-verified
-68	Machamp	available	available	ZA-Poke	68		original-glb-sha1-verified
-69	Bellsprout	available	available	ZA-Poke	69		original-glb-sha1-verified
-70	Weepinbell	available	available	ZA-Poke	70		original-glb-sha1-verified
-71	Victreebel	available	available	ZA-Poke	71		original-glb-sha1-verified
-72	Tentacool	available	available	LA-Poke	72		original-glb-sha1-verified
-73	Tentacruel	available	available	LA-Poke	73		original-glb-sha1-verified
-74	Geodude	available	available	LA-Poke	74		original-glb-sha1-verified
-75	Graveler	available	available	LA-Poke	75		original-glb-sha1-verified
-76	Golem	available	available	LA-Poke	76		original-glb-sha1-verified
-77	Ponyta	available	available	LA-Poke	77		original-glb-sha1-verified
-78	Rapidash	available	available	LA-Poke	78		original-glb-sha1-verified
-79	Slowpoke	available	available	ZA-Poke	79		original-glb-sha1-verified
-80	Slowbro	available	available	ZA-Poke	80		original-glb-sha1-verified
-81	Magnemite	available	available	LA-Poke	81		original-glb-sha1-verified
-82	Magneton	available	available	LA-Poke	82		original-glb-sha1-verified
-83	Farfetch’d	available	available	ZA-PokeDLC	83		original-glb-sha1-verified
-84	Doduo	available	available	SV-PokeDLC2	84		original-glb-sha1-verified
-85	Dodrio	available	available	SV-PokeDLC2	85		original-glb-sha1-verified
-86	Seel	available	available	SV-PokeDLC2	86		original-glb-sha1-verified
-87	Dewgong	available	available	SV-PokeDLC2	87		original-glb-sha1-verified
-88	Grimer	available	available	SV-Poke	88		original-glb-sha1-verified
-89	Muk	available	available	SV-Poke	89		original-glb-sha1-verified
-90	Shellder	available	available	SV-Poke	90		original-glb-sha1-verified
-91	Cloyster	available	available	SV-Poke	91		original-glb-sha1-verified
-92	Gastly	available	available	ZA-Poke	92		original-glb-sha1-verified
-93	Haunter	available	available	ZA-Poke	93		original-glb-sha1-verified
-94	Gengar	available	available	ZA-Poke	94		original-glb-sha1-verified
-95	Onix	available	available	ZA-Poke	95		original-glb-sha1-verified
-96	Drowzee	available	available	SV-Poke	96		original-glb-sha1-verified
-97	Hypno	available	available	SV-Poke	97		original-glb-sha1-verified
-98	Krabby	available	missing	swsh			model-present-provenance-unverified
-99	Kingler	available	missing	swsh			model-present-provenance-unverified
-100	Voltorb	available	available	SV-Poke	100		original-glb-sha1-verified
-101	Electrode	available	available	SV-Poke	101		original-glb-sha1-verified
-102	Exeggcute	available	available	SV-PokeDLC2	102		original-glb-sha1-verified
-103	Exeggutor	available	available	SV-PokeDLC2	103		original-glb-sha1-verified
-104	Cubone	available	available	ZA-PokeDLC	104		original-glb-sha1-verified
-105	Marowak	available	available	ZA-PokeDLC	105		original-glb-sha1-verified
-106	Hitmonlee	available	available	SV-PokeDLC2	106		original-glb-sha1-verified
-107	Hitmonchan	available	available	SV-PokeDLC2	107		original-glb-sha1-verified
-108	Lickitung	available	available	LA-Poke	108		original-glb-sha1-verified
-109	Koffing	available	missing	sv			model-present-provenance-unverified
-110	Weezing	available	missing	sv			model-present-provenance-unverified
-111	Rhyhorn	available	available	LA-Poke	111		original-glb-sha1-verified
-112	Rhydon	available	available	LA-Poke	112		original-glb-sha1-verified
-113	Chansey	available	available	LA-Poke	113		original-glb-sha1-verified
-114	Tangela	available	available	LA-Poke	114		original-glb-sha1-verified
-115	Kangaskhan	available	available	ZA-Poke	115		original-glb-sha1-verified
-116	Horsea	available	available	SV-PokeDLC2	116		original-glb-sha1-verified
-117	Seadra	available	available	SV-PokeDLC2	117		original-glb-sha1-verified
-118	Goldeen	available	missing	swsh			model-present-provenance-unverified
-119	Seaking	available	missing	swsh			model-present-provenance-unverified
-120	Staryu	available	available	ZA-Poke	120		original-glb-sha1-verified
-121	Starmie	available	available	ZA-Poke	121		original-glb-sha1-verified
-122	Mr. Mime	available	available	ZA-PokeDLC	122		original-glb-sha1-verified
-123	Scyther	available	available	ZA-Poke	123		original-glb-sha1-verified
-124	Jynx	available	missing	swsh			model-present-provenance-unverified
-125	Electabuzz	available	available	LA-Poke	125		original-glb-sha1-verified
-126	Magmar	available	available	LA-Poke	126		original-glb-sha1-verified
-127	Pinsir	available	available	ZA-Poke	127		original-glb-sha1-verified
-128	Tauros	available	available	SV-Poke	128		original-glb-sha1-verified
-129	Magikarp	available	available	ZA-Poke	129		original-glb-sha1-verified
-130	Gyarados	available	available	ZA-Poke	130		original-glb-sha1-verified
-131	Lapras	available	available	SV-PokeDLC2	131		original-glb-sha1-verified
-132	Ditto	available	available	SV-Poke	132		original-glb-sha1-verified
-133	Eevee	available	available	ZA-Poke	133		original-glb-sha1-verified
-134	Vaporeon	available	available	ZA-Poke	134		original-glb-sha1-verified
-135	Jolteon	available	available	ZA-Poke	135		original-glb-sha1-verified
-136	Flareon	available	available	ZA-Poke	136		original-glb-sha1-verified
-137	Porygon	available	available	ZA-PokeDLC	137		original-glb-sha1-verified
-138	Omanyte	available	missing	swsh			model-present-provenance-unverified
-139	Omastar	available	missing	swsh			model-present-provenance-unverified
-140	Kabuto	available	missing	swsh			model-present-provenance-unverified
-141	Kabutops	available	missing	swsh			model-present-provenance-unverified
-142	Aerodactyl	available	available	ZA-Poke	142		original-glb-sha1-verified
-143	Snorlax	available	available	LA-Poke	143		original-glb-sha1-verified
-144	Articuno	available	available	SV-Poke	144		original-glb-sha1-verified
-145	Zapdos	available	available	SV-Poke	145		original-glb-sha1-verified
-146	Moltres	available	available	SV-Poke	146		original-glb-sha1-verified
-147	Dratini	available	available	ZA-Poke	147		original-glb-sha1-verified
-148	Dragonair	available	available	ZA-Poke	148		original-glb-sha1-verified
-149	Dragonite	available	available	ZA-Poke	149		original-glb-sha1-verified
-150	Mewtwo	available	available	ZA-Poke	150		original-glb-sha1-verified
-151	Mew	available	available	SV-Poke	151		original-glb-sha1-verified
-152	Chikorita	available	available	ZA-Poke	152		original-glb-sha1-verified
-153	Bayleef	available	available	ZA-Poke	153		original-glb-sha1-verified
-154	Meganium	available	available	ZA-Poke	154		original-glb-sha1-verified
-155	Cyndaquil	available	available	LA-Poke	155		original-glb-sha1-verified
-156	Quilava	available	available	LA-Poke	156		original-glb-sha1-verified
-157	Typhlosion	available	available	SV-Poke	157		original-glb-sha1-verified
-158	Totodile	available	available	ZA-Poke	158		original-glb-sha1-verified
-159	Croconaw	available	available	ZA-Poke	159		original-glb-sha1-verified
-160	Feraligatr	available	available	ZA-Poke	160		original-glb-sha1-verified
-161	Sentret	available	missing	sv			model-present-provenance-unverified
-162	Furret	available	missing	sv			model-present-provenance-unverified
-163	Hoothoot	available	missing	sv			model-present-provenance-unverified
-164	Noctowl	available	missing	sv			model-present-provenance-unverified
+1	Bulbasaur	available	available	ZA-Poke	1		original-glb-sha1-cataloged
+2	Ivysaur	available	available	ZA-Poke	2		original-glb-sha1-cataloged
+3	Venusaur	available	available	ZA-Poke	3		original-glb-sha1-cataloged
+4	Charmander	available	available	ZA-Poke	4		original-glb-sha1-cataloged
+5	Charmeleon	available	available	ZA-Poke	5		original-glb-sha1-cataloged
+6	Charizard	available	available	ZA-Poke	6		original-glb-sha1-cataloged
+7	Squirtle	available	available	ZA-Poke	7		original-glb-sha1-cataloged
+8	Wartortle	available	available	ZA-Poke	8		original-glb-sha1-cataloged
+9	Blastoise	available	available	ZA-Poke	9		original-glb-sha1-cataloged
+10	Caterpie	available	missing	swsh			source-id-inventory-only
+11	Metapod	available	missing	swsh			source-id-inventory-only
+12	Butterfree	available	missing	swsh			source-id-inventory-only
+13	Weedle	missing	available	ZA-Poke	13		original-glb-sha1-cataloged
+14	Kakuna	missing	available	ZA-Poke	14		original-glb-sha1-cataloged
+15	Beedrill	missing	available	ZA-Poke	15		original-glb-sha1-cataloged
+16	Pidgey	missing	available	ZA-Poke	16		original-glb-sha1-cataloged
+17	Pidgeotto	missing	available	ZA-Poke	17		original-glb-sha1-cataloged
+18	Pidgeot	missing	available	ZA-Poke	18		original-glb-sha1-cataloged
+19	Rattata	available	missing	lgpe			source-id-inventory-only
+20	Raticate	available	missing	lgpe			source-id-inventory-only
+21	Spearow	available	missing	lgpe			source-id-inventory-only
+22	Fearow	available	missing	lgpe			source-id-inventory-only
+23	Ekans	missing	available	ZA-Poke	23		original-glb-sha1-cataloged
+24	Arbok	missing	available	ZA-Poke	24		original-glb-sha1-cataloged
+25	Pikachu	missing	available	ZA-Poke	25		original-glb-sha1-cataloged
+26	Raichu	missing	available	ZA-Poke	26		original-glb-sha1-cataloged
+27	Sandshrew	available	missing	sv			source-id-inventory-only
+28	Sandslash	available	missing	sv			source-id-inventory-only
+29	Nidoran♀	available	missing	swsh			source-id-inventory-only
+30	Nidorina	available	missing	swsh			source-id-inventory-only
+31	Nidoqueen	available	missing	swsh			source-id-inventory-only
+32	Nidoran♂	available	missing	swsh			source-id-inventory-only
+33	Nidorino	available	missing	swsh			source-id-inventory-only
+34	Nidoking	available	missing	swsh			source-id-inventory-only
+35	Clefairy	missing	available	ZA-Poke	35		original-glb-sha1-cataloged
+36	Clefable	missing	available	ZA-Poke	36		original-glb-sha1-cataloged
+37	Vulpix	missing	available	LA-Poke	37		original-glb-sha1-cataloged
+38	Ninetales	missing	available	LA-Poke	38		original-glb-sha1-cataloged
+39	Jigglypuff	missing	available	ZA-PokeDLC	39		original-glb-sha1-cataloged
+40	Wigglytuff	missing	available	ZA-PokeDLC	40		original-glb-sha1-cataloged
+41	Zubat	missing	available	ZA-PokeDLC	41		original-glb-sha1-cataloged
+42	Golbat	missing	available	ZA-PokeDLC	42		original-glb-sha1-cataloged
+43	Oddish	missing	available	SV-PokeDLC2	43		original-glb-sha1-cataloged
+44	Gloom	missing	available	SV-PokeDLC2	44		original-glb-sha1-cataloged
+45	Vileplume	missing	available	SV-PokeDLC2	45		original-glb-sha1-cataloged
+46	Paras	missing	available	LA-Poke	46		original-glb-sha1-cataloged
+47	Parasect	missing	available	LA-Poke	47		original-glb-sha1-cataloged
+48	Venonat	missing	available	SV-Poke	48		original-glb-sha1-cataloged
+49	Venomoth	missing	available	SV-Poke	49		original-glb-sha1-cataloged
+50	Diglett	missing	available	SV-Poke	50		original-glb-sha1-cataloged
+51	Dugtrio	missing	available	SV-Poke	51		original-glb-sha1-cataloged
+52	Meowth	missing	available	ZA-PokeDLC	52		original-glb-sha1-cataloged
+53	Persian	missing	available	ZA-PokeDLC	53		original-glb-sha1-cataloged
+54	Psyduck	missing	available	LA-Poke	54		original-glb-sha1-cataloged
+55	Golduck	missing	available	LA-Poke	55		original-glb-sha1-cataloged
+56	Mankey	missing	available	ZA-PokeDLC	56		original-glb-sha1-cataloged
+57	Primeape	missing	available	ZA-PokeDLC	57		original-glb-sha1-cataloged
+58	Growlithe	missing	available	SV-Poke	58		original-glb-sha1-cataloged
+59	Arcanine	missing	available	SV-Poke	59		original-glb-sha1-cataloged
+60	Poliwag	available	missing	sv			source-id-inventory-only
+61	Poliwhirl	available	missing	sv			source-id-inventory-only
+62	Poliwrath	available	missing	sv			source-id-inventory-only
+63	Abra	missing	available	ZA-Poke	63		original-glb-sha1-cataloged
+64	Kadabra	missing	available	ZA-Poke	64		original-glb-sha1-cataloged
+65	Alakazam	missing	available	ZA-Poke	65		original-glb-sha1-cataloged
+66	Machop	missing	available	ZA-Poke	66		original-glb-sha1-cataloged
+67	Machoke	missing	available	ZA-Poke	67		original-glb-sha1-cataloged
+68	Machamp	missing	available	ZA-Poke	68		original-glb-sha1-cataloged
+69	Bellsprout	missing	available	ZA-Poke	69		original-glb-sha1-cataloged
+70	Weepinbell	missing	available	ZA-Poke	70		original-glb-sha1-cataloged
+71	Victreebel	missing	available	ZA-Poke	71		original-glb-sha1-cataloged
+72	Tentacool	missing	available	LA-Poke	72		original-glb-sha1-cataloged
+73	Tentacruel	missing	available	LA-Poke	73		original-glb-sha1-cataloged
+74	Geodude	missing	available	LA-Poke	74		original-glb-sha1-cataloged
+75	Graveler	missing	available	LA-Poke	75		original-glb-sha1-cataloged
+76	Golem	missing	available	LA-Poke	76		original-glb-sha1-cataloged
+77	Ponyta	missing	available	LA-Poke	77		original-glb-sha1-cataloged
+78	Rapidash	missing	available	LA-Poke	78		original-glb-sha1-cataloged
+79	Slowpoke	missing	available	ZA-Poke	79		original-glb-sha1-cataloged
+80	Slowbro	missing	available	ZA-Poke	80		original-glb-sha1-cataloged
+81	Magnemite	missing	available	LA-Poke	81		original-glb-sha1-cataloged
+82	Magneton	missing	available	LA-Poke	82		original-glb-sha1-cataloged
+83	Farfetch’d	missing	available	ZA-PokeDLC	83		original-glb-sha1-cataloged
+84	Doduo	missing	available	SV-PokeDLC2	84		original-glb-sha1-cataloged
+85	Dodrio	missing	available	SV-PokeDLC2	85		original-glb-sha1-cataloged
+86	Seel	missing	available	SV-PokeDLC2	86		original-glb-sha1-cataloged
+87	Dewgong	missing	available	SV-PokeDLC2	87		original-glb-sha1-cataloged
+88	Grimer	missing	available	SV-Poke	88		original-glb-sha1-cataloged
+89	Muk	missing	available	SV-Poke	89		original-glb-sha1-cataloged
+90	Shellder	missing	available	SV-Poke	90		original-glb-sha1-cataloged
+91	Cloyster	missing	available	SV-Poke	91		original-glb-sha1-cataloged
+92	Gastly	missing	available	ZA-Poke	92		original-glb-sha1-cataloged
+93	Haunter	missing	available	ZA-Poke	93		original-glb-sha1-cataloged
+94	Gengar	missing	available	ZA-Poke	94		original-glb-sha1-cataloged
+95	Onix	missing	available	ZA-Poke	95		original-glb-sha1-cataloged
+96	Drowzee	missing	available	SV-Poke	96		original-glb-sha1-cataloged
+97	Hypno	missing	available	SV-Poke	97		original-glb-sha1-cataloged
+98	Krabby	available	missing	swsh			source-id-inventory-only
+99	Kingler	available	missing	swsh			source-id-inventory-only
+100	Voltorb	missing	available	SV-Poke	100		original-glb-sha1-cataloged
+101	Electrode	missing	available	SV-Poke	101		original-glb-sha1-cataloged
+102	Exeggcute	missing	available	SV-PokeDLC2	102		original-glb-sha1-cataloged
+103	Exeggutor	missing	available	SV-PokeDLC2	103		original-glb-sha1-cataloged
+104	Cubone	missing	available	ZA-PokeDLC	104		original-glb-sha1-cataloged
+105	Marowak	missing	available	ZA-PokeDLC	105		original-glb-sha1-cataloged
+106	Hitmonlee	missing	available	SV-PokeDLC2	106		original-glb-sha1-cataloged
+107	Hitmonchan	missing	available	SV-PokeDLC2	107		original-glb-sha1-cataloged
+108	Lickitung	missing	available	LA-Poke	108		original-glb-sha1-cataloged
+109	Koffing	available	missing	sv			source-id-inventory-only
+110	Weezing	available	missing	sv			source-id-inventory-only
+111	Rhyhorn	missing	available	LA-Poke	111		original-glb-sha1-cataloged
+112	Rhydon	missing	available	LA-Poke	112		original-glb-sha1-cataloged
+113	Chansey	missing	available	LA-Poke	113		original-glb-sha1-cataloged
+114	Tangela	missing	available	LA-Poke	114		original-glb-sha1-cataloged
+115	Kangaskhan	missing	available	ZA-Poke	115		original-glb-sha1-cataloged
+116	Horsea	missing	available	SV-PokeDLC2	116		original-glb-sha1-cataloged
+117	Seadra	missing	available	SV-PokeDLC2	117		original-glb-sha1-cataloged
+118	Goldeen	available	missing	swsh			source-id-inventory-only
+119	Seaking	available	missing	swsh			source-id-inventory-only
+120	Staryu	missing	available	ZA-Poke	120		original-glb-sha1-cataloged
+121	Starmie	missing	available	ZA-Poke	121		original-glb-sha1-cataloged
+122	Mr. Mime	missing	available	ZA-PokeDLC	122		original-glb-sha1-cataloged
+123	Scyther	missing	available	ZA-Poke	123		original-glb-sha1-cataloged
+124	Jynx	available	missing	swsh			source-id-inventory-only
+125	Electabuzz	missing	available	LA-Poke	125		original-glb-sha1-cataloged
+126	Magmar	missing	available	LA-Poke	126		original-glb-sha1-cataloged
+127	Pinsir	missing	available	ZA-Poke	127		original-glb-sha1-cataloged
+128	Tauros	missing	available	SV-Poke	128		original-glb-sha1-cataloged
+129	Magikarp	missing	available	ZA-Poke	129		original-glb-sha1-cataloged
+130	Gyarados	missing	available	ZA-Poke	130		original-glb-sha1-cataloged
+131	Lapras	missing	available	SV-PokeDLC2	131		original-glb-sha1-cataloged
+132	Ditto	missing	available	SV-Poke	132		original-glb-sha1-cataloged
+133	Eevee	missing	available	ZA-Poke	133		original-glb-sha1-cataloged
+134	Vaporeon	missing	available	ZA-Poke	134		original-glb-sha1-cataloged
+135	Jolteon	missing	available	ZA-Poke	135		original-glb-sha1-cataloged
+136	Flareon	missing	available	ZA-Poke	136		original-glb-sha1-cataloged
+137	Porygon	missing	available	ZA-PokeDLC	137		original-glb-sha1-cataloged
+138	Omanyte	available	missing	swsh			source-id-inventory-only
+139	Omastar	available	missing	swsh			source-id-inventory-only
+140	Kabuto	available	missing	swsh			source-id-inventory-only
+141	Kabutops	available	missing	swsh			source-id-inventory-only
+142	Aerodactyl	missing	available	ZA-Poke	142		original-glb-sha1-cataloged
+143	Snorlax	missing	available	LA-Poke	143		original-glb-sha1-cataloged
+144	Articuno	missing	available	SV-Poke	144		original-glb-sha1-cataloged
+145	Zapdos	missing	available	SV-Poke	145		original-glb-sha1-cataloged
+146	Moltres	missing	available	SV-Poke	146		original-glb-sha1-cataloged
+147	Dratini	missing	available	ZA-Poke	147		original-glb-sha1-cataloged
+148	Dragonair	missing	available	ZA-Poke	148		original-glb-sha1-cataloged
+149	Dragonite	missing	available	ZA-Poke	149		original-glb-sha1-cataloged
+150	Mewtwo	missing	available	ZA-Poke	150		original-glb-sha1-cataloged
+151	Mew	missing	available	SV-Poke	151		original-glb-sha1-cataloged
+152	Chikorita	missing	available	ZA-Poke	152		original-glb-sha1-cataloged
+153	Bayleef	missing	available	ZA-Poke	153		original-glb-sha1-cataloged
+154	Meganium	missing	available	ZA-Poke	154		original-glb-sha1-cataloged
+155	Cyndaquil	missing	available	LA-Poke	155		original-glb-sha1-cataloged
+156	Quilava	missing	available	LA-Poke	156		original-glb-sha1-cataloged
+157	Typhlosion	missing	available	SV-Poke	157		original-glb-sha1-cataloged
+158	Totodile	missing	available	ZA-Poke	158		original-glb-sha1-cataloged
+159	Croconaw	missing	available	ZA-Poke	159		original-glb-sha1-cataloged
+160	Feraligatr	missing	available	ZA-Poke	160		original-glb-sha1-cataloged
+161	Sentret	available	missing	sv			source-id-inventory-only
+162	Furret	available	missing	sv			source-id-inventory-only
+163	Hoothoot	available	missing	sv			source-id-inventory-only
+164	Noctowl	available	missing	sv			source-id-inventory-only
 165	Ledyba	missing	missing				missing
 166	Ledian	missing	missing				missing
-167	Spinarak	available	available	ZA-Poke	167		original-glb-sha1-verified
-168	Ariados	available	available	ZA-Poke	168		original-glb-sha1-verified
-169	Crobat	available	available	ZA-PokeDLC	169		original-glb-sha1-verified
-170	Chinchou	available	available	SV-PokeDLC2	170		original-glb-sha1-verified
-171	Lanturn	available	available	SV-PokeDLC2	171		original-glb-sha1-verified
-172	Pichu	available	available	ZA-Poke	172		original-glb-sha1-verified
-173	Cleffa	available	available	ZA-Poke	173		original-glb-sha1-verified
-174	Igglybuff	available	available	ZA-PokeDLC	174		original-glb-sha1-verified
-175	Togepi	available	available	LA-Poke	175		original-glb-sha1-verified
-176	Togetic	available	available	LA-Poke	176		original-glb-sha1-verified
-177	Natu	available	missing	swsh			model-present-provenance-unverified
-178	Xatu	available	missing	swsh			model-present-provenance-unverified
-179	Mareep	available	available	ZA-Poke	179		original-glb-sha1-verified
-180	Flaaffy	available	available	ZA-Poke	180		original-glb-sha1-verified
-181	Ampharos	available	available	ZA-Poke	181		original-glb-sha1-verified
-182	Bellossom	available	available	SV-PokeDLC2	182		original-glb-sha1-verified
-183	Marill	available	available	SV-Poke	183		original-glb-sha1-verified
-184	Azumarill	available	available	SV-Poke	184		original-glb-sha1-verified
-185	Sudowoodo	available	available	LA-Poke	185		original-glb-sha1-verified
-186	Politoed	available	missing	sv			model-present-provenance-unverified
-187	Hoppip	available	available	SV-Poke	187		original-glb-sha1-verified
-188	Skiploom	available	available	SV-Poke	188		original-glb-sha1-verified
-189	Jumpluff	available	available	SV-Poke	189		original-glb-sha1-verified
-190	Aipom	available	available	LA-Poke	190		original-glb-sha1-verified
-191	Sunkern	available	available	SV-Poke	191		original-glb-sha1-verified
-192	Sunflora	available	available	SV-Poke	192		original-glb-sha1-verified
-193	Yanma	available	available	LA-Poke	193		original-glb-sha1-verified
-194	Wooper	available	available	SV-Poke	194		original-glb-sha1-verified
-195	Quagsire	available	available	SV-Poke	195		original-glb-sha1-verified
-196	Espeon	available	available	ZA-Poke	196		original-glb-sha1-verified
-197	Umbreon	available	available	ZA-Poke	197		original-glb-sha1-verified
-198	Murkrow	available	available	LA-Poke	198		original-glb-sha1-verified
-199	Slowking	available	available	ZA-Poke	199		original-glb-sha1-verified
-200	Misdreavus	available	available	LA-Poke	200		original-glb-sha1-verified
+167	Spinarak	missing	available	ZA-Poke	167		original-glb-sha1-cataloged
+168	Ariados	missing	available	ZA-Poke	168		original-glb-sha1-cataloged
+169	Crobat	missing	available	ZA-PokeDLC	169		original-glb-sha1-cataloged
+170	Chinchou	missing	available	SV-PokeDLC2	170		original-glb-sha1-cataloged
+171	Lanturn	missing	available	SV-PokeDLC2	171		original-glb-sha1-cataloged
+172	Pichu	missing	available	ZA-Poke	172		original-glb-sha1-cataloged
+173	Cleffa	missing	available	ZA-Poke	173		original-glb-sha1-cataloged
+174	Igglybuff	missing	available	ZA-PokeDLC	174		original-glb-sha1-cataloged
+175	Togepi	missing	available	LA-Poke	175		original-glb-sha1-cataloged
+176	Togetic	missing	available	LA-Poke	176		original-glb-sha1-cataloged
+177	Natu	available	missing	swsh			source-id-inventory-only
+178	Xatu	available	missing	swsh			source-id-inventory-only
+179	Mareep	missing	available	ZA-Poke	179		original-glb-sha1-cataloged
+180	Flaaffy	missing	available	ZA-Poke	180		original-glb-sha1-cataloged
+181	Ampharos	missing	available	ZA-Poke	181		original-glb-sha1-cataloged
+182	Bellossom	missing	available	SV-PokeDLC2	182		original-glb-sha1-cataloged
+183	Marill	missing	available	SV-Poke	183		original-glb-sha1-cataloged
+184	Azumarill	missing	available	SV-Poke	184		original-glb-sha1-cataloged
+185	Sudowoodo	missing	available	LA-Poke	185		original-glb-sha1-cataloged
+186	Politoed	available	missing	sv			source-id-inventory-only
+187	Hoppip	missing	available	SV-Poke	187		original-glb-sha1-cataloged
+188	Skiploom	missing	available	SV-Poke	188		original-glb-sha1-cataloged
+189	Jumpluff	missing	available	SV-Poke	189		original-glb-sha1-cataloged
+190	Aipom	missing	available	LA-Poke	190		original-glb-sha1-cataloged
+191	Sunkern	missing	available	SV-Poke	191		original-glb-sha1-cataloged
+192	Sunflora	missing	available	SV-Poke	192		original-glb-sha1-cataloged
+193	Yanma	missing	available	LA-Poke	193		original-glb-sha1-cataloged
+194	Wooper	missing	available	SV-Poke	194		original-glb-sha1-cataloged
+195	Quagsire	missing	available	SV-Poke	195		original-glb-sha1-cataloged
+196	Espeon	missing	available	ZA-Poke	196		original-glb-sha1-cataloged
+197	Umbreon	missing	available	ZA-Poke	197		original-glb-sha1-cataloged
+198	Murkrow	missing	available	LA-Poke	198		original-glb-sha1-cataloged
+199	Slowking	missing	available	ZA-Poke	199		original-glb-sha1-cataloged
+200	Misdreavus	missing	available	LA-Poke	200		original-glb-sha1-cataloged
 201	Unown	missing	missing				missing
-202	Wobbuffet	available	missing	swsh			model-present-provenance-unverified
-203	Girafarig	available	available	SV-Poke	203		original-glb-sha1-verified
-204	Pineco	available	available	SV-Poke	204		original-glb-sha1-verified
-205	Forretress	available	available	SV-Poke	205		original-glb-sha1-verified
-206	Dunsparce	available	available	SV-Poke	206		original-glb-sha1-verified
-207	Gligar	available	available	LA-Poke	207		original-glb-sha1-verified
-208	Steelix	available	available	ZA-Poke	208		original-glb-sha1-verified
-209	Snubbull	available	available	SV-PokeDLC2	209		original-glb-sha1-verified
-210	Granbull	available	available	SV-PokeDLC2	210		original-glb-sha1-verified
-211	Qwilfish	available	available	ZA-PokeDLC	211		original-glb-sha1-verified
-212	Scizor	available	available	ZA-Poke	212		original-glb-sha1-verified
-213	Shuckle	available	missing	swsh			model-present-provenance-unverified
-214	Heracross	available	available	ZA-Poke	214		original-glb-sha1-verified
-215	Sneasel	available	available	LA-Poke	215		original-glb-sha1-verified
-216	Teddiursa	available	available	LA-Poke	216		original-glb-sha1-verified
-217	Ursaring	available	available	LA-Poke	217		original-glb-sha1-verified
-218	Slugma	available	missing	sv			model-present-provenance-unverified
-219	Magcargo	available	missing	sv			model-present-provenance-unverified
-220	Swinub	available	available	LA-Poke	220		original-glb-sha1-verified
-221	Piloswine	available	available	LA-Poke	221		original-glb-sha1-verified
-222	Corsola	available	missing	swsh			model-present-provenance-unverified
-223	Remoraid	available	available	LA-Poke	223		original-glb-sha1-verified
-224	Octillery	available	available	LA-Poke	224		original-glb-sha1-verified
-225	Delibird	available	available	ZA-Poke	225		original-glb-sha1-verified
-226	Mantine	available	available	LA-Poke	226		original-glb-sha1-verified
-227	Skarmory	available	available	ZA-Poke	227		original-glb-sha1-verified
-228	Houndour	available	available	ZA-Poke	228		original-glb-sha1-verified
-229	Houndoom	available	available	ZA-Poke	229		original-glb-sha1-verified
-230	Kingdra	available	available	SV-PokeDLC2	230		original-glb-sha1-verified
-231	Phanpy	available	available	SV-Poke	231		original-glb-sha1-verified
-232	Donphan	available	available	SV-Poke	232		original-glb-sha1-verified
-233	Porygon2	available	available	ZA-PokeDLC	233		original-glb-sha1-verified
-234	Stantler	available	available	LA-Poke	234		original-glb-sha1-verified
-235	Smeargle	available	available	SV-PokeDLC2	235		original-glb-sha1-verified
-236	Tyrogue	available	available	SV-PokeDLC2	236		original-glb-sha1-verified
-237	Hitmontop	available	available	SV-PokeDLC2	237		original-glb-sha1-verified
-238	Smoochum	available	missing	swsh			model-present-provenance-unverified
-239	Elekid	available	available	LA-Poke	239		original-glb-sha1-verified
-240	Magby	available	available	LA-Poke	240		original-glb-sha1-verified
-241	Miltank	available	missing	swsh			model-present-provenance-unverified
-242	Blissey	available	available	LA-Poke	242		original-glb-sha1-verified
-243	Raikou	available	available	SV-PokeDLC2	243		original-glb-sha1-verified
-244	Entei	available	available	SV-PokeDLC2	244		original-glb-sha1-verified
-245	Suicune	available	available	SV-PokeDLC2	245		original-glb-sha1-verified
-246	Larvitar	available	available	ZA-Poke	246		original-glb-sha1-verified
-247	Pupitar	available	available	ZA-Poke	247		original-glb-sha1-verified
-248	Tyranitar	available	available	ZA-Poke	248		original-glb-sha1-verified
-249	Lugia	available	available	SV-PokeDLC2	249		original-glb-sha1-verified
-250	Ho-Oh	available	available	SV-PokeDLC2	250		original-glb-sha1-verified
-251	Celebi	available	missing	swsh			model-present-provenance-unverified
-252	Treecko	available	available	ZA-PokeDLC	252		original-glb-sha1-verified
-253	Grovyle	available	available	ZA-PokeDLC	253		original-glb-sha1-verified
-254	Sceptile	available	available	ZA-PokeDLC	254		original-glb-sha1-verified
-255	Torchic	available	available	ZA-PokeDLC	255		original-glb-sha1-verified
-256	Combusken	available	available	ZA-PokeDLC	256		original-glb-sha1-verified
-257	Blaziken	available	available	ZA-PokeDLC	257		original-glb-sha1-verified
-258	Mudkip	available	available	ZA-PokeDLC	258		original-glb-sha1-verified
-259	Marshtomp	available	available	ZA-PokeDLC	259		original-glb-sha1-verified
-260	Swampert	available	available	ZA-PokeDLC	260		original-glb-sha1-verified
-261	Poochyena	available	missing	sv			model-present-provenance-unverified
-262	Mightyena	available	missing	sv			model-present-provenance-unverified
-263	Zigzagoon	available	missing	swsh			model-present-provenance-unverified
-264	Linoone	available	missing	swsh			model-present-provenance-unverified
-265	Wurmple	available	available	LA-Poke	265		original-glb-sha1-verified
-266	Silcoon	available	available	LA-Poke	266		original-glb-sha1-verified
-267	Beautifly	available	available	LA-Poke	267		original-glb-sha1-verified
-268	Cascoon	available	available	LA-Poke	268		original-glb-sha1-verified
-269	Dustox	available	available	LA-Poke	269		original-glb-sha1-verified
-270	Lotad	available	missing	sv			model-present-provenance-unverified
-271	Lombre	available	missing	sv			model-present-provenance-unverified
-272	Ludicolo	available	missing	sv			model-present-provenance-unverified
-273	Seedot	available	missing	sv			model-present-provenance-unverified
-274	Nuzleaf	available	missing	sv			model-present-provenance-unverified
-275	Shiftry	available	missing	sv			model-present-provenance-unverified
+202	Wobbuffet	available	missing	swsh			source-id-inventory-only
+203	Girafarig	missing	available	SV-Poke	203		original-glb-sha1-cataloged
+204	Pineco	missing	available	SV-Poke	204		original-glb-sha1-cataloged
+205	Forretress	missing	available	SV-Poke	205		original-glb-sha1-cataloged
+206	Dunsparce	missing	available	SV-Poke	206		original-glb-sha1-cataloged
+207	Gligar	missing	available	LA-Poke	207		original-glb-sha1-cataloged
+208	Steelix	missing	available	ZA-Poke	208		original-glb-sha1-cataloged
+209	Snubbull	missing	available	SV-PokeDLC2	209		original-glb-sha1-cataloged
+210	Granbull	missing	available	SV-PokeDLC2	210		original-glb-sha1-cataloged
+211	Qwilfish	missing	available	ZA-PokeDLC	211		original-glb-sha1-cataloged
+212	Scizor	missing	available	ZA-Poke	212		original-glb-sha1-cataloged
+213	Shuckle	available	missing	swsh			source-id-inventory-only
+214	Heracross	missing	available	ZA-Poke	214		original-glb-sha1-cataloged
+215	Sneasel	missing	available	LA-Poke	215		original-glb-sha1-cataloged
+216	Teddiursa	missing	available	LA-Poke	216		original-glb-sha1-cataloged
+217	Ursaring	missing	available	LA-Poke	217		original-glb-sha1-cataloged
+218	Slugma	available	missing	sv			source-id-inventory-only
+219	Magcargo	available	missing	sv			source-id-inventory-only
+220	Swinub	missing	available	LA-Poke	220		original-glb-sha1-cataloged
+221	Piloswine	missing	available	LA-Poke	221		original-glb-sha1-cataloged
+222	Corsola	available	missing	swsh			source-id-inventory-only
+223	Remoraid	missing	available	LA-Poke	223		original-glb-sha1-cataloged
+224	Octillery	missing	available	LA-Poke	224		original-glb-sha1-cataloged
+225	Delibird	missing	available	ZA-Poke	225		original-glb-sha1-cataloged
+226	Mantine	missing	available	LA-Poke	226		original-glb-sha1-cataloged
+227	Skarmory	missing	available	ZA-Poke	227		original-glb-sha1-cataloged
+228	Houndour	missing	available	ZA-Poke	228		original-glb-sha1-cataloged
+229	Houndoom	missing	available	ZA-Poke	229		original-glb-sha1-cataloged
+230	Kingdra	missing	available	SV-PokeDLC2	230		original-glb-sha1-cataloged
+231	Phanpy	missing	available	SV-Poke	231		original-glb-sha1-cataloged
+232	Donphan	missing	available	SV-Poke	232		original-glb-sha1-cataloged
+233	Porygon2	missing	available	ZA-PokeDLC	233		original-glb-sha1-cataloged
+234	Stantler	missing	available	LA-Poke	234		original-glb-sha1-cataloged
+235	Smeargle	missing	available	SV-PokeDLC2	235		original-glb-sha1-cataloged
+236	Tyrogue	missing	available	SV-PokeDLC2	236		original-glb-sha1-cataloged
+237	Hitmontop	missing	available	SV-PokeDLC2	237		original-glb-sha1-cataloged
+238	Smoochum	available	missing	swsh			source-id-inventory-only
+239	Elekid	missing	available	LA-Poke	239		original-glb-sha1-cataloged
+240	Magby	missing	available	LA-Poke	240		original-glb-sha1-cataloged
+241	Miltank	available	missing	swsh			source-id-inventory-only
+242	Blissey	missing	available	LA-Poke	242		original-glb-sha1-cataloged
+243	Raikou	missing	available	SV-PokeDLC2	243		original-glb-sha1-cataloged
+244	Entei	missing	available	SV-PokeDLC2	244		original-glb-sha1-cataloged
+245	Suicune	missing	available	SV-PokeDLC2	245		original-glb-sha1-cataloged
+246	Larvitar	missing	available	ZA-Poke	246		original-glb-sha1-cataloged
+247	Pupitar	missing	available	ZA-Poke	247		original-glb-sha1-cataloged
+248	Tyranitar	missing	available	ZA-Poke	248		original-glb-sha1-cataloged
+249	Lugia	missing	available	SV-PokeDLC2	249		original-glb-sha1-cataloged
+250	Ho-Oh	missing	available	SV-PokeDLC2	250		original-glb-sha1-cataloged
+251	Celebi	available	missing	swsh			source-id-inventory-only
+252	Treecko	missing	available	ZA-PokeDLC	252		original-glb-sha1-cataloged
+253	Grovyle	missing	available	ZA-PokeDLC	253		original-glb-sha1-cataloged
+254	Sceptile	missing	available	ZA-PokeDLC	254		original-glb-sha1-cataloged
+255	Torchic	missing	available	ZA-PokeDLC	255		original-glb-sha1-cataloged
+256	Combusken	missing	available	ZA-PokeDLC	256		original-glb-sha1-cataloged
+257	Blaziken	missing	available	ZA-PokeDLC	257		original-glb-sha1-cataloged
+258	Mudkip	missing	available	ZA-PokeDLC	258		original-glb-sha1-cataloged
+259	Marshtomp	missing	available	ZA-PokeDLC	259		original-glb-sha1-cataloged
+260	Swampert	missing	available	ZA-PokeDLC	260		original-glb-sha1-cataloged
+261	Poochyena	available	missing	sv			source-id-inventory-only
+262	Mightyena	available	missing	sv			source-id-inventory-only
+263	Zigzagoon	available	missing	swsh			source-id-inventory-only
+264	Linoone	available	missing	swsh			source-id-inventory-only
+265	Wurmple	missing	available	LA-Poke	265		original-glb-sha1-cataloged
+266	Silcoon	missing	available	LA-Poke	266		original-glb-sha1-cataloged
+267	Beautifly	missing	available	LA-Poke	267		original-glb-sha1-cataloged
+268	Cascoon	missing	available	LA-Poke	268		original-glb-sha1-cataloged
+269	Dustox	missing	available	LA-Poke	269		original-glb-sha1-cataloged
+270	Lotad	available	missing	sv			source-id-inventory-only
+271	Lombre	available	missing	sv			source-id-inventory-only
+272	Ludicolo	available	missing	sv			source-id-inventory-only
+273	Seedot	available	missing	sv			source-id-inventory-only
+274	Nuzleaf	available	missing	sv			source-id-inventory-only
+275	Shiftry	available	missing	sv			source-id-inventory-only
 276	Taillow	missing	missing				missing
 277	Swellow	missing	missing				missing
-278	Wingull	available	available	SV-Poke	278		original-glb-sha1-verified
-279	Pelipper	available	available	SV-Poke	279		original-glb-sha1-verified
-280	Ralts	available	available	ZA-Poke	280		original-glb-sha1-verified
-281	Kirlia	available	available	ZA-Poke	281		original-glb-sha1-verified
-282	Gardevoir	available	available	ZA-Poke	282		original-glb-sha1-verified
-283	Surskit	available	available	SV-Poke	283		original-glb-sha1-verified
-284	Masquerain	available	available	SV-Poke	284		original-glb-sha1-verified
-285	Shroomish	available	available	SV-Poke	285		original-glb-sha1-verified
-286	Breloom	available	available	SV-Poke	286		original-glb-sha1-verified
-287	Slakoth	available	available	SV-Poke	287		original-glb-sha1-verified
-288	Vigoroth	available	available	SV-Poke	288		original-glb-sha1-verified
-289	Slaking	available	available	SV-Poke	289		original-glb-sha1-verified
-290	Nincada	available	missing	swsh			model-present-provenance-unverified
-291	Ninjask	available	missing	swsh			model-present-provenance-unverified
-292	Shedinja	available	missing	swsh			model-present-provenance-unverified
-293	Whismur	available	missing	swsh			model-present-provenance-unverified
-294	Loudred	available	missing	swsh			model-present-provenance-unverified
-295	Exploud	available	missing	swsh			model-present-provenance-unverified
-296	Makuhita	available	available	SV-Poke	296		original-glb-sha1-verified
-297	Hariyama	available	available	SV-Poke	297		original-glb-sha1-verified
-298	Azurill	available	available	SV-Poke	298		original-glb-sha1-verified
-299	Nosepass	available	available	LA-Poke	299		original-glb-sha1-verified
+278	Wingull	missing	available	SV-Poke	278		original-glb-sha1-cataloged
+279	Pelipper	missing	available	SV-Poke	279		original-glb-sha1-cataloged
+280	Ralts	missing	available	ZA-Poke	280		original-glb-sha1-cataloged
+281	Kirlia	missing	available	ZA-Poke	281		original-glb-sha1-cataloged
+282	Gardevoir	missing	available	ZA-Poke	282		original-glb-sha1-cataloged
+283	Surskit	missing	available	SV-Poke	283		original-glb-sha1-cataloged
+284	Masquerain	missing	available	SV-Poke	284		original-glb-sha1-cataloged
+285	Shroomish	missing	available	SV-Poke	285		original-glb-sha1-cataloged
+286	Breloom	missing	available	SV-Poke	286		original-glb-sha1-cataloged
+287	Slakoth	missing	available	SV-Poke	287		original-glb-sha1-cataloged
+288	Vigoroth	missing	available	SV-Poke	288		original-glb-sha1-cataloged
+289	Slaking	missing	available	SV-Poke	289		original-glb-sha1-cataloged
+290	Nincada	available	missing	swsh			source-id-inventory-only
+291	Ninjask	available	missing	swsh			source-id-inventory-only
+292	Shedinja	available	missing	swsh			source-id-inventory-only
+293	Whismur	available	missing	swsh			source-id-inventory-only
+294	Loudred	available	missing	swsh			source-id-inventory-only
+295	Exploud	available	missing	swsh			source-id-inventory-only
+296	Makuhita	missing	available	SV-Poke	296		original-glb-sha1-cataloged
+297	Hariyama	missing	available	SV-Poke	297		original-glb-sha1-cataloged
+298	Azurill	missing	available	SV-Poke	298		original-glb-sha1-cataloged
+299	Nosepass	missing	available	LA-Poke	299		original-glb-sha1-cataloged
 300	Skitty	missing	missing				missing
 301	Delcatty	missing	missing				missing
-302	Sableye	available	available	ZA-Poke	302		original-glb-sha1-verified
-303	Mawile	available	available	ZA-Poke	303		original-glb-sha1-verified
-304	Aron	available	available	ZA-Poke	304		original-glb-sha1-verified
-305	Lairon	available	available	ZA-Poke	305		original-glb-sha1-verified
-306	Aggron	available	available	ZA-Poke	306		original-glb-sha1-verified
-307	Meditite	available	available	ZA-Poke	307		original-glb-sha1-verified
-308	Medicham	available	available	ZA-Poke	308		original-glb-sha1-verified
-309	Electrike	available	available	ZA-Poke	309		original-glb-sha1-verified
-310	Manectric	available	available	ZA-Poke	310		original-glb-sha1-verified
-311	Plusle	available	available	SV-PokeDLC2	311		original-glb-sha1-verified
-312	Minun	available	available	SV-PokeDLC2	312		original-glb-sha1-verified
-313	Volbeat	available	missing	sv			model-present-provenance-unverified
-314	Illumise	available	missing	sv			model-present-provenance-unverified
-315	Roselia	available	available	ZA-Poke	315		original-glb-sha1-verified
-316	Gulpin	available	available	ZA-PokeDLC	316		original-glb-sha1-verified
-317	Swalot	available	available	ZA-PokeDLC	317		original-glb-sha1-verified
-318	Carvanha	available	available	ZA-Poke	318		original-glb-sha1-verified
-319	Sharpedo	available	available	ZA-Poke	319		original-glb-sha1-verified
-320	Wailmer	available	missing	swsh			model-present-provenance-unverified
-321	Wailord	available	missing	swsh			model-present-provenance-unverified
-322	Numel	available	available	ZA-Poke	322		original-glb-sha1-verified
-323	Camerupt	available	available	ZA-Poke	323		original-glb-sha1-verified
-324	Torkoal	available	available	SV-Poke	324		original-glb-sha1-verified
-325	Spoink	available	available	ZA-PokeDLC	325		original-glb-sha1-verified
-326	Grumpig	available	available	ZA-PokeDLC	326		original-glb-sha1-verified
+302	Sableye	missing	available	ZA-Poke	302		original-glb-sha1-cataloged
+303	Mawile	missing	available	ZA-Poke	303		original-glb-sha1-cataloged
+304	Aron	missing	available	ZA-Poke	304		original-glb-sha1-cataloged
+305	Lairon	missing	available	ZA-Poke	305		original-glb-sha1-cataloged
+306	Aggron	missing	available	ZA-Poke	306		original-glb-sha1-cataloged
+307	Meditite	missing	available	ZA-Poke	307		original-glb-sha1-cataloged
+308	Medicham	missing	available	ZA-Poke	308		original-glb-sha1-cataloged
+309	Electrike	missing	available	ZA-Poke	309		original-glb-sha1-cataloged
+310	Manectric	missing	available	ZA-Poke	310		original-glb-sha1-cataloged
+311	Plusle	missing	available	SV-PokeDLC2	311		original-glb-sha1-cataloged
+312	Minun	missing	available	SV-PokeDLC2	312		original-glb-sha1-cataloged
+313	Volbeat	available	missing	sv			source-id-inventory-only
+314	Illumise	available	missing	sv			source-id-inventory-only
+315	Roselia	missing	available	ZA-Poke	315		original-glb-sha1-cataloged
+316	Gulpin	missing	available	ZA-PokeDLC	316		original-glb-sha1-cataloged
+317	Swalot	missing	available	ZA-PokeDLC	317		original-glb-sha1-cataloged
+318	Carvanha	missing	available	ZA-Poke	318		original-glb-sha1-cataloged
+319	Sharpedo	missing	available	ZA-Poke	319		original-glb-sha1-cataloged
+320	Wailmer	available	missing	swsh			source-id-inventory-only
+321	Wailord	available	missing	swsh			source-id-inventory-only
+322	Numel	missing	available	ZA-Poke	322		original-glb-sha1-cataloged
+323	Camerupt	missing	available	ZA-Poke	323		original-glb-sha1-cataloged
+324	Torkoal	missing	available	SV-Poke	324		original-glb-sha1-cataloged
+325	Spoink	missing	available	ZA-PokeDLC	325		original-glb-sha1-cataloged
+326	Grumpig	missing	available	ZA-PokeDLC	326		original-glb-sha1-cataloged
 327	Spinda	missing	missing				missing
-328	Trapinch	available	available	SV-PokeDLC2	328		original-glb-sha1-verified
-329	Vibrava	available	available	SV-PokeDLC2	329		original-glb-sha1-verified
-330	Flygon	available	available	SV-PokeDLC2	330		original-glb-sha1-verified
-331	Cacnea	available	available	SV-Poke	331		original-glb-sha1-verified
-332	Cacturne	available	available	SV-Poke	332		original-glb-sha1-verified
-333	Swablu	available	available	ZA-Poke	333		original-glb-sha1-verified
-334	Altaria	available	available	ZA-Poke	334		original-glb-sha1-verified
-335	Zangoose	available	available	ZA-PokeDLC	335		original-glb-sha1-verified
-336	Seviper	available	available	ZA-PokeDLC	336		original-glb-sha1-verified
-337	Lunatone	available	missing	swsh			model-present-provenance-unverified
-338	Solrock	available	missing	swsh			model-present-provenance-unverified
-339	Barboach	available	available	LA-Poke	339		original-glb-sha1-verified
-340	Whiscash	available	available	LA-Poke	340		original-glb-sha1-verified
-341	Corphish	available	missing	sv			model-present-provenance-unverified
-342	Crawdaunt	available	missing	sv			model-present-provenance-unverified
-343	Baltoy	available	missing	swsh			model-present-provenance-unverified
-344	Claydol	available	missing	swsh			model-present-provenance-unverified
-345	Lileep	available	missing	swsh			model-present-provenance-unverified
-346	Cradily	available	missing	swsh			model-present-provenance-unverified
-347	Anorith	available	missing	swsh			model-present-provenance-unverified
-348	Armaldo	available	missing	swsh			model-present-provenance-unverified
-349	Feebas	available	available	ZA-PokeDLC	349		original-glb-sha1-verified
-350	Milotic	available	available	ZA-PokeDLC	350		original-glb-sha1-verified
+328	Trapinch	missing	available	SV-PokeDLC2	328		original-glb-sha1-cataloged
+329	Vibrava	missing	available	SV-PokeDLC2	329		original-glb-sha1-cataloged
+330	Flygon	missing	available	SV-PokeDLC2	330		original-glb-sha1-cataloged
+331	Cacnea	missing	available	SV-Poke	331		original-glb-sha1-cataloged
+332	Cacturne	missing	available	SV-Poke	332		original-glb-sha1-cataloged
+333	Swablu	missing	available	ZA-Poke	333		original-glb-sha1-cataloged
+334	Altaria	missing	available	ZA-Poke	334		original-glb-sha1-cataloged
+335	Zangoose	missing	available	ZA-PokeDLC	335		original-glb-sha1-cataloged
+336	Seviper	missing	available	ZA-PokeDLC	336		original-glb-sha1-cataloged
+337	Lunatone	available	missing	swsh			source-id-inventory-only
+338	Solrock	available	missing	swsh			source-id-inventory-only
+339	Barboach	missing	available	LA-Poke	339		original-glb-sha1-cataloged
+340	Whiscash	missing	available	LA-Poke	340		original-glb-sha1-cataloged
+341	Corphish	available	missing	sv			source-id-inventory-only
+342	Crawdaunt	available	missing	sv			source-id-inventory-only
+343	Baltoy	available	missing	swsh			source-id-inventory-only
+344	Claydol	available	missing	swsh			source-id-inventory-only
+345	Lileep	available	missing	swsh			source-id-inventory-only
+346	Cradily	available	missing	swsh			source-id-inventory-only
+347	Anorith	available	missing	swsh			source-id-inventory-only
+348	Armaldo	available	missing	swsh			source-id-inventory-only
+349	Feebas	missing	available	ZA-PokeDLC	349		original-glb-sha1-cataloged
+350	Milotic	missing	available	ZA-PokeDLC	350		original-glb-sha1-cataloged
 351	Castform	missing	missing				missing
-352	Kecleon	available	available	ZA-PokeDLC	352		original-glb-sha1-verified
-353	Shuppet	available	available	ZA-Poke	353		original-glb-sha1-verified
-354	Banette	available	available	ZA-Poke	354		original-glb-sha1-verified
-355	Duskull	available	available	LA-Poke	355		original-glb-sha1-verified
-356	Dusclops	available	available	LA-Poke	356		original-glb-sha1-verified
-357	Tropius	available	available	SV-Poke	357		original-glb-sha1-verified
-358	Chimecho	available	available	ZA-PokeDLC	358		original-glb-sha1-verified
-359	Absol	available	available	ZA-Poke	359		original-glb-sha1-verified
-360	Wynaut	available	missing	swsh			model-present-provenance-unverified
-361	Snorunt	available	available	ZA-Poke	361		original-glb-sha1-verified
-362	Glalie	available	available	ZA-Poke	362		original-glb-sha1-verified
-363	Spheal	available	available	LA-Poke	363		original-glb-sha1-verified
-364	Sealeo	available	available	LA-Poke	364		original-glb-sha1-verified
-365	Walrein	available	available	LA-Poke	365		original-glb-sha1-verified
+352	Kecleon	missing	available	ZA-PokeDLC	352		original-glb-sha1-cataloged
+353	Shuppet	missing	available	ZA-Poke	353		original-glb-sha1-cataloged
+354	Banette	missing	available	ZA-Poke	354		original-glb-sha1-cataloged
+355	Duskull	missing	available	LA-Poke	355		original-glb-sha1-cataloged
+356	Dusclops	missing	available	LA-Poke	356		original-glb-sha1-cataloged
+357	Tropius	missing	available	SV-Poke	357		original-glb-sha1-cataloged
+358	Chimecho	missing	available	ZA-PokeDLC	358		original-glb-sha1-cataloged
+359	Absol	missing	available	ZA-Poke	359		original-glb-sha1-cataloged
+360	Wynaut	available	missing	swsh			source-id-inventory-only
+361	Snorunt	missing	available	ZA-Poke	361		original-glb-sha1-cataloged
+362	Glalie	missing	available	ZA-Poke	362		original-glb-sha1-cataloged
+363	Spheal	missing	available	LA-Poke	363		original-glb-sha1-cataloged
+364	Sealeo	missing	available	LA-Poke	364		original-glb-sha1-cataloged
+365	Walrein	missing	available	LA-Poke	365		original-glb-sha1-cataloged
 366	Clamperl	missing	missing				missing
 367	Huntail	missing	missing				missing
 368	Gorebyss	missing	missing				missing
-369	Relicanth	available	missing	swsh			model-present-provenance-unverified
-370	Luvdisc	available	available	SV-Poke	370		original-glb-sha1-verified
-371	Bagon	available	available	ZA-Poke	371		original-glb-sha1-verified
-372	Shelgon	available	available	ZA-Poke	372		original-glb-sha1-verified
-373	Salamence	available	available	ZA-Poke	373		original-glb-sha1-verified
-374	Beldum	available	available	ZA-Poke	374		original-glb-sha1-verified
-375	Metang	available	available	ZA-Poke	375		original-glb-sha1-verified
-376	Metagross	available	available	ZA-Poke	376		original-glb-sha1-verified
-377	Regirock	available	available	SV-PokeDLC2	377		original-glb-sha1-verified
-378	Regice	available	available	SV-PokeDLC2	378		original-glb-sha1-verified
-379	Registeel	available	available	SV-PokeDLC2	379		original-glb-sha1-verified
-380	Latias	available	available	ZA-PokeDLC	380		original-glb-sha1-verified
-381	Latios	available	available	ZA-PokeDLC	381		original-glb-sha1-verified
-382	Kyogre	available	available	ZA-PokeDLC	382		original-glb-sha1-verified
-383	Groudon	available	available	ZA-PokeDLC	383		original-glb-sha1-verified
-384	Rayquaza	available	available	ZA-PokeDLC	384		original-glb-sha1-verified
-385	Jirachi	available	missing	sv			model-present-provenance-unverified
+369	Relicanth	available	missing	swsh			source-id-inventory-only
+370	Luvdisc	missing	available	SV-Poke	370		original-glb-sha1-cataloged
+371	Bagon	missing	available	ZA-Poke	371		original-glb-sha1-cataloged
+372	Shelgon	missing	available	ZA-Poke	372		original-glb-sha1-cataloged
+373	Salamence	missing	available	ZA-Poke	373		original-glb-sha1-cataloged
+374	Beldum	missing	available	ZA-Poke	374		original-glb-sha1-cataloged
+375	Metang	missing	available	ZA-Poke	375		original-glb-sha1-cataloged
+376	Metagross	missing	available	ZA-Poke	376		original-glb-sha1-cataloged
+377	Regirock	missing	available	SV-PokeDLC2	377		original-glb-sha1-cataloged
+378	Regice	missing	available	SV-PokeDLC2	378		original-glb-sha1-cataloged
+379	Registeel	missing	available	SV-PokeDLC2	379		original-glb-sha1-cataloged
+380	Latias	missing	available	ZA-PokeDLC	380		original-glb-sha1-cataloged
+381	Latios	missing	available	ZA-PokeDLC	381		original-glb-sha1-cataloged
+382	Kyogre	missing	available	ZA-PokeDLC	382		original-glb-sha1-cataloged
+383	Groudon	missing	available	ZA-PokeDLC	383		original-glb-sha1-cataloged
+384	Rayquaza	missing	available	ZA-PokeDLC	384		original-glb-sha1-cataloged
+385	Jirachi	available	missing	sv			source-id-inventory-only
 386	Deoxys	missing	missing				missing
-387	Turtwig	available	available	LA-Poke	387		original-glb-sha1-verified
-388	Grotle	available	available	LA-Poke	388		original-glb-sha1-verified
-389	Torterra	available	available	LA-Poke	389		original-glb-sha1-verified
-390	Chimchar	available	available	LA-Poke	390		original-glb-sha1-verified
-391	Monferno	available	available	LA-Poke	391		original-glb-sha1-verified
-392	Infernape	available	available	LA-Poke	392		original-glb-sha1-verified
-393	Piplup	available	available	LA-Poke	393		original-glb-sha1-verified
-394	Prinplup	available	available	LA-Poke	394		original-glb-sha1-verified
-395	Empoleon	available	available	LA-Poke	395		original-glb-sha1-verified
-396	Starly	available	available	ZA-PokeDLC	396		original-glb-sha1-verified
-397	Staravia	available	available	ZA-PokeDLC	397		original-glb-sha1-verified
-398	Staraptor	available	available	ZA-PokeDLC	398		original-glb-sha1-verified
-399	Bidoof	available	available	LA-Poke	399		original-glb-sha1-verified
-400	Bibarel	available	available	LA-Poke	400		original-glb-sha1-verified
-401	Kricketot	available	available	LA-Poke	401		original-glb-sha1-verified
-402	Kricketune	available	available	LA-Poke	402		original-glb-sha1-verified
-403	Shinx	available	available	LA-Poke	403		original-glb-sha1-verified
-404	Luxio	available	available	LA-Poke	404		original-glb-sha1-verified
-405	Luxray	available	available	LA-Poke	405		original-glb-sha1-verified
-406	Budew	available	available	ZA-Poke	406		original-glb-sha1-verified
-407	Roserade	available	available	ZA-Poke	407		original-glb-sha1-verified
-408	Cranidos	available	available	LA-Poke	408		original-glb-sha1-verified
-409	Rampardos	available	available	LA-Poke	409		original-glb-sha1-verified
-410	Shieldon	available	available	LA-Poke	410		original-glb-sha1-verified
-411	Bastiodon	available	available	LA-Poke	411		original-glb-sha1-verified
+387	Turtwig	missing	available	LA-Poke	387		original-glb-sha1-cataloged
+388	Grotle	missing	available	LA-Poke	388		original-glb-sha1-cataloged
+389	Torterra	missing	available	LA-Poke	389		original-glb-sha1-cataloged
+390	Chimchar	missing	available	LA-Poke	390		original-glb-sha1-cataloged
+391	Monferno	missing	available	LA-Poke	391		original-glb-sha1-cataloged
+392	Infernape	missing	available	LA-Poke	392		original-glb-sha1-cataloged
+393	Piplup	missing	available	LA-Poke	393		original-glb-sha1-cataloged
+394	Prinplup	missing	available	LA-Poke	394		original-glb-sha1-cataloged
+395	Empoleon	missing	available	LA-Poke	395		original-glb-sha1-cataloged
+396	Starly	missing	available	ZA-PokeDLC	396		original-glb-sha1-cataloged
+397	Staravia	missing	available	ZA-PokeDLC	397		original-glb-sha1-cataloged
+398	Staraptor	missing	available	ZA-PokeDLC	398		original-glb-sha1-cataloged
+399	Bidoof	missing	available	LA-Poke	399		original-glb-sha1-cataloged
+400	Bibarel	missing	available	LA-Poke	400		original-glb-sha1-cataloged
+401	Kricketot	missing	available	LA-Poke	401		original-glb-sha1-cataloged
+402	Kricketune	missing	available	LA-Poke	402		original-glb-sha1-cataloged
+403	Shinx	missing	available	LA-Poke	403		original-glb-sha1-cataloged
+404	Luxio	missing	available	LA-Poke	404		original-glb-sha1-cataloged
+405	Luxray	missing	available	LA-Poke	405		original-glb-sha1-cataloged
+406	Budew	missing	available	ZA-Poke	406		original-glb-sha1-cataloged
+407	Roserade	missing	available	ZA-Poke	407		original-glb-sha1-cataloged
+408	Cranidos	missing	available	LA-Poke	408		original-glb-sha1-cataloged
+409	Rampardos	missing	available	LA-Poke	409		original-glb-sha1-cataloged
+410	Shieldon	missing	available	LA-Poke	410		original-glb-sha1-cataloged
+411	Bastiodon	missing	available	LA-Poke	411		original-glb-sha1-cataloged
 412	Burmy	missing	missing				missing
 413	Wormadam	missing	missing				missing
-414	Mothim	available	available	LA-Poke	414		original-glb-sha1-verified
-415	Combee	available	available	LA-Poke	415		original-glb-sha1-verified
-416	Vespiquen	available	available	LA-Poke	416		original-glb-sha1-verified
-417	Pachirisu	available	available	LA-Poke	417		original-glb-sha1-verified
-418	Buizel	available	available	LA-Poke	418		original-glb-sha1-verified
-419	Floatzel	available	available	LA-Poke	419		original-glb-sha1-verified
-420	Cherubi	available	available	LA-Poke	420		original-glb-sha1-verified
+414	Mothim	missing	available	LA-Poke	414		original-glb-sha1-cataloged
+415	Combee	missing	available	LA-Poke	415		original-glb-sha1-cataloged
+416	Vespiquen	missing	available	LA-Poke	416		original-glb-sha1-cataloged
+417	Pachirisu	missing	available	LA-Poke	417		original-glb-sha1-cataloged
+418	Buizel	missing	available	LA-Poke	418		original-glb-sha1-cataloged
+419	Floatzel	missing	available	LA-Poke	419		original-glb-sha1-cataloged
+420	Cherubi	missing	available	LA-Poke	420		original-glb-sha1-cataloged
 421	Cherrim	missing	missing				missing
 422	Shellos	missing	missing				missing
 423	Gastrodon	missing	missing				missing
-424	Ambipom	available	available	LA-Poke	424		original-glb-sha1-verified
-425	Drifloon	available	available	LA-Poke	425		original-glb-sha1-verified
-426	Drifblim	available	available	LA-Poke	426		original-glb-sha1-verified
-427	Buneary	available	available	ZA-Poke	427		original-glb-sha1-verified
-428	Lopunny	available	available	ZA-Poke	428		original-glb-sha1-verified
-429	Mismagius	available	available	LA-Poke	429		original-glb-sha1-verified
-430	Honchkrow	available	available	LA-Poke	430		original-glb-sha1-verified
-431	Glameow	available	available	LA-Poke	431		original-glb-sha1-verified
-432	Purugly	available	available	LA-Poke	432		original-glb-sha1-verified
-433	Chingling	available	available	ZA-PokeDLC	433		original-glb-sha1-verified
-434	Stunky	available	available	LA-Poke	434		original-glb-sha1-verified
-435	Skuntank	available	available	LA-Poke	435		original-glb-sha1-verified
-436	Bronzor	available	available	LA-Poke	436		original-glb-sha1-verified
-437	Bronzong	available	available	LA-Poke	437		original-glb-sha1-verified
-438	Bonsly	available	available	LA-Poke	438		original-glb-sha1-verified
-439	Mime Jr.	available	available	ZA-PokeDLC	439		original-glb-sha1-verified
-440	Happiny	available	available	LA-Poke	440		original-glb-sha1-verified
-441	Chatot	available	available	LA-Poke	441		original-glb-sha1-verified
-442	Spiritomb	available	available	LA-Poke	442		original-glb-sha1-verified
-443	Gible	available	available	ZA-Poke	443		original-glb-sha1-verified
-444	Gabite	available	available	ZA-Poke	444		original-glb-sha1-verified
-445	Garchomp	available	available	ZA-Poke	445		original-glb-sha1-verified
-446	Munchlax	available	available	LA-Poke	446		original-glb-sha1-verified
-447	Riolu	available	available	ZA-Poke	447		original-glb-sha1-verified
-448	Lucario	available	available	ZA-Poke	448		original-glb-sha1-verified
-449	Hippopotas	available	available	ZA-Poke	449		original-glb-sha1-verified
-450	Hippowdon	available	available	ZA-Poke	450		original-glb-sha1-verified
-451	Skorupi	available	available	LA-Poke	451		original-glb-sha1-verified
-452	Drapion	available	available	LA-Poke	452		original-glb-sha1-verified
-453	Croagunk	available	available	LA-Poke	453		original-glb-sha1-verified
-454	Toxicroak	available	available	LA-Poke	454		original-glb-sha1-verified
-455	Carnivine	available	available	LA-Poke	455		original-glb-sha1-verified
-456	Finneon	available	available	LA-Poke	456		original-glb-sha1-verified
-457	Lumineon	available	available	LA-Poke	457		original-glb-sha1-verified
-458	Mantyke	available	available	LA-Poke	458		original-glb-sha1-verified
-459	Snover	available	available	ZA-Poke	459		original-glb-sha1-verified
-460	Abomasnow	available	available	ZA-Poke	460		original-glb-sha1-verified
-461	Weavile	available	available	LA-Poke	461		original-glb-sha1-verified
-462	Magnezone	available	available	LA-Poke	462		original-glb-sha1-verified
-463	Lickilicky	available	available	LA-Poke	463		original-glb-sha1-verified
-464	Rhyperior	available	available	LA-Poke	464		original-glb-sha1-verified
-465	Tangrowth	available	available	LA-Poke	465		original-glb-sha1-verified
-466	Electivire	available	available	LA-Poke	466		original-glb-sha1-verified
-467	Magmortar	available	available	LA-Poke	467		original-glb-sha1-verified
-468	Togekiss	available	available	LA-Poke	468		original-glb-sha1-verified
-469	Yanmega	available	available	LA-Poke	469		original-glb-sha1-verified
-470	Leafeon	available	available	ZA-Poke	470		original-glb-sha1-verified
-471	Glaceon	available	available	ZA-Poke	471		original-glb-sha1-verified
-472	Gliscor	available	available	LA-Poke	472		original-glb-sha1-verified
-473	Mamoswine	available	available	LA-Poke	473		original-glb-sha1-verified
-474	Porygon-Z	available	available	ZA-PokeDLC	474		original-glb-sha1-verified
-475	Gallade	available	available	ZA-Poke	475		original-glb-sha1-verified
-476	Probopass	available	available	LA-Poke	476		original-glb-sha1-verified
-477	Dusknoir	available	available	LA-Poke	477		original-glb-sha1-verified
-478	Froslass	available	available	ZA-Poke	478		original-glb-sha1-verified
+424	Ambipom	missing	available	LA-Poke	424		original-glb-sha1-cataloged
+425	Drifloon	missing	available	LA-Poke	425		original-glb-sha1-cataloged
+426	Drifblim	missing	available	LA-Poke	426		original-glb-sha1-cataloged
+427	Buneary	missing	available	ZA-Poke	427		original-glb-sha1-cataloged
+428	Lopunny	missing	available	ZA-Poke	428		original-glb-sha1-cataloged
+429	Mismagius	missing	available	LA-Poke	429		original-glb-sha1-cataloged
+430	Honchkrow	missing	available	LA-Poke	430		original-glb-sha1-cataloged
+431	Glameow	missing	available	LA-Poke	431		original-glb-sha1-cataloged
+432	Purugly	missing	available	LA-Poke	432		original-glb-sha1-cataloged
+433	Chingling	missing	available	ZA-PokeDLC	433		original-glb-sha1-cataloged
+434	Stunky	missing	available	LA-Poke	434		original-glb-sha1-cataloged
+435	Skuntank	missing	available	LA-Poke	435		original-glb-sha1-cataloged
+436	Bronzor	missing	available	LA-Poke	436		original-glb-sha1-cataloged
+437	Bronzong	missing	available	LA-Poke	437		original-glb-sha1-cataloged
+438	Bonsly	missing	available	LA-Poke	438		original-glb-sha1-cataloged
+439	Mime Jr.	missing	available	ZA-PokeDLC	439		original-glb-sha1-cataloged
+440	Happiny	missing	available	LA-Poke	440		original-glb-sha1-cataloged
+441	Chatot	missing	available	LA-Poke	441		original-glb-sha1-cataloged
+442	Spiritomb	missing	available	LA-Poke	442		original-glb-sha1-cataloged
+443	Gible	missing	available	ZA-Poke	443		original-glb-sha1-cataloged
+444	Gabite	missing	available	ZA-Poke	444		original-glb-sha1-cataloged
+445	Garchomp	missing	available	ZA-Poke	445		original-glb-sha1-cataloged
+446	Munchlax	missing	available	LA-Poke	446		original-glb-sha1-cataloged
+447	Riolu	missing	available	ZA-Poke	447		original-glb-sha1-cataloged
+448	Lucario	missing	available	ZA-Poke	448		original-glb-sha1-cataloged
+449	Hippopotas	missing	available	ZA-Poke	449		original-glb-sha1-cataloged
+450	Hippowdon	missing	available	ZA-Poke	450		original-glb-sha1-cataloged
+451	Skorupi	missing	available	LA-Poke	451		original-glb-sha1-cataloged
+452	Drapion	missing	available	LA-Poke	452		original-glb-sha1-cataloged
+453	Croagunk	missing	available	LA-Poke	453		original-glb-sha1-cataloged
+454	Toxicroak	missing	available	LA-Poke	454		original-glb-sha1-cataloged
+455	Carnivine	missing	available	LA-Poke	455		original-glb-sha1-cataloged
+456	Finneon	missing	available	LA-Poke	456		original-glb-sha1-cataloged
+457	Lumineon	missing	available	LA-Poke	457		original-glb-sha1-cataloged
+458	Mantyke	missing	available	LA-Poke	458		original-glb-sha1-cataloged
+459	Snover	missing	available	ZA-Poke	459		original-glb-sha1-cataloged
+460	Abomasnow	missing	available	ZA-Poke	460		original-glb-sha1-cataloged
+461	Weavile	missing	available	LA-Poke	461		original-glb-sha1-cataloged
+462	Magnezone	missing	available	LA-Poke	462		original-glb-sha1-cataloged
+463	Lickilicky	missing	available	LA-Poke	463		original-glb-sha1-cataloged
+464	Rhyperior	missing	available	LA-Poke	464		original-glb-sha1-cataloged
+465	Tangrowth	missing	available	LA-Poke	465		original-glb-sha1-cataloged
+466	Electivire	missing	available	LA-Poke	466		original-glb-sha1-cataloged
+467	Magmortar	missing	available	LA-Poke	467		original-glb-sha1-cataloged
+468	Togekiss	missing	available	LA-Poke	468		original-glb-sha1-cataloged
+469	Yanmega	missing	available	LA-Poke	469		original-glb-sha1-cataloged
+470	Leafeon	missing	available	ZA-Poke	470		original-glb-sha1-cataloged
+471	Glaceon	missing	available	ZA-Poke	471		original-glb-sha1-cataloged
+472	Gliscor	missing	available	LA-Poke	472		original-glb-sha1-cataloged
+473	Mamoswine	missing	available	LA-Poke	473		original-glb-sha1-cataloged
+474	Porygon-Z	missing	available	ZA-PokeDLC	474		original-glb-sha1-cataloged
+475	Gallade	missing	available	ZA-Poke	475		original-glb-sha1-cataloged
+476	Probopass	missing	available	LA-Poke	476		original-glb-sha1-cataloged
+477	Dusknoir	missing	available	LA-Poke	477		original-glb-sha1-cataloged
+478	Froslass	missing	available	ZA-Poke	478		original-glb-sha1-cataloged
 479	Rotom	missing	missing				missing
-480	Uxie	available	available	LA-Poke	480		original-glb-sha1-verified
-481	Mesprit	available	available	LA-Poke	481		original-glb-sha1-verified
-482	Azelf	available	available	LA-Poke	482		original-glb-sha1-verified
-483	Dialga	available	available	SwSh-PokeGen4-5	483		original-glb-sha1-verified
-484	Palkia	available	available	SwSh-PokeGen4-5	484		original-glb-sha1-verified
-485	Heatran	available	available	ZA-PokeDLC	485		original-glb-sha1-verified
-486	Regigigas	available	available	LA-Poke	486		original-glb-sha1-verified
+480	Uxie	missing	available	LA-Poke	480		original-glb-sha1-cataloged
+481	Mesprit	missing	available	LA-Poke	481		original-glb-sha1-cataloged
+482	Azelf	missing	available	LA-Poke	482		original-glb-sha1-cataloged
+483	Dialga	missing	available	SwSh-PokeGen4-5	483		original-glb-sha1-cataloged
+484	Palkia	missing	available	SwSh-PokeGen4-5	484		original-glb-sha1-cataloged
+485	Heatran	missing	available	ZA-PokeDLC	485		original-glb-sha1-cataloged
+486	Regigigas	missing	available	LA-Poke	486		original-glb-sha1-cataloged
 487	Giratina	missing	missing				missing
-488	Cresselia	available	available	LA-Poke	488		original-glb-sha1-verified
-489	Phione	available	available	LA-Poke	489		original-glb-sha1-verified
-490	Manaphy	available	available	LA-Poke	490		original-glb-sha1-verified
-491	Darkrai	available	available	ZA-PokeDLC	491		original-glb-sha1-verified
+488	Cresselia	missing	available	LA-Poke	488		original-glb-sha1-cataloged
+489	Phione	missing	available	LA-Poke	489		original-glb-sha1-cataloged
+490	Manaphy	missing	available	LA-Poke	490		original-glb-sha1-cataloged
+491	Darkrai	missing	available	ZA-PokeDLC	491		original-glb-sha1-cataloged
 492	Shaymin	missing	missing				missing
 493	Arceus	missing	missing				missing
-494	Victini	available	available	SwSh-PokeGen4-5	494		original-glb-sha1-verified
-495	Snivy	available	available	SV-PokeDLC2	495		original-glb-sha1-verified
-496	Servine	available	available	SV-PokeDLC2	496		original-glb-sha1-verified
-497	Serperior	available	available	SV-PokeDLC2	497		original-glb-sha1-verified
-498	Tepig	available	available	ZA-Poke	498		original-glb-sha1-verified
-499	Pignite	available	available	ZA-Poke	499		original-glb-sha1-verified
-500	Emboar	available	available	ZA-Poke	500		original-glb-sha1-verified
-501	Oshawott	available	available	LA-Poke	501		original-glb-sha1-verified
-502	Dewott	available	available	LA-Poke	502		original-glb-sha1-verified
-503	Samurott	available	available	SV-Poke	503		original-glb-sha1-verified
-504	Patrat	available	available	ZA-Poke	504		original-glb-sha1-verified
-505	Watchog	available	available	ZA-Poke	505		original-glb-sha1-verified
-506	Lillipup	available	available	SwSh-PokeGen4-5	506		original-glb-sha1-verified
-507	Herdier	available	available	SwSh-PokeGen4-5	507		original-glb-sha1-verified
-508	Stoutland	available	available	SwSh-PokeGen4-5	508		original-glb-sha1-verified
-509	Purrloin	available	available	ZA-PokeDLC	509		original-glb-sha1-verified
-510	Liepard	available	available	ZA-PokeDLC	510		original-glb-sha1-verified
-511	Pansage	available	available	ZA-Poke	511		original-glb-sha1-verified
-512	Simisage	available	available	ZA-Poke	512		original-glb-sha1-verified
-513	Pansear	available	available	ZA-Poke	513		original-glb-sha1-verified
-514	Simisear	available	available	ZA-Poke	514		original-glb-sha1-verified
-515	Panpour	available	available	ZA-Poke	515		original-glb-sha1-verified
-516	Simipour	available	available	ZA-Poke	516		original-glb-sha1-verified
-517	Munna	available	available	ZA-PokeDLC	517		original-glb-sha1-verified
-518	Musharna	available	available	ZA-PokeDLC	518		original-glb-sha1-verified
-519	Pidove	available	available	SwSh-PokeGen4-5	519		original-glb-sha1-verified
-520	Tranquill	available	available	SwSh-PokeGen4-5	520		original-glb-sha1-verified
-521	Unfezant	available	available	SwSh-PokeGen4-5	521		original-glb-sha1-verified
-522	Blitzle	available	available	SV-PokeDLC2	522		original-glb-sha1-verified
-523	Zebstrika	available	available	SV-PokeDLC2	523		original-glb-sha1-verified
-524	Roggenrola	available	available	SwSh-PokeGen4-5	524		original-glb-sha1-verified
-525	Boldore	available	available	SwSh-PokeGen4-5	525		original-glb-sha1-verified
-526	Gigalith	available	available	SwSh-PokeGen4-5	526		original-glb-sha1-verified
-527	Woobat	available	available	SwSh-PokeGen4-5	527		original-glb-sha1-verified
-528	Swoobat	available	available	SwSh-PokeGen4-5	528		original-glb-sha1-verified
-529	Drilbur	available	available	ZA-Poke	529		original-glb-sha1-verified
-530	Excadrill	available	available	ZA-Poke	530		original-glb-sha1-verified
-531	Audino	available	available	ZA-Poke	531		original-glb-sha1-verified
-532	Timburr	available	available	SwSh-PokeGen4-5	532		original-glb-sha1-verified
-533	Gurdurr	available	available	SwSh-PokeGen4-5	533		original-glb-sha1-verified
-534	Conkeldurr	available	available	SwSh-PokeGen4-5	534		original-glb-sha1-verified
-535	Tympole	available	available	SwSh-PokeGen4-5	535		original-glb-sha1-verified
-536	Palpitoad	available	available	SwSh-PokeGen4-5	536		original-glb-sha1-verified
-537	Seismitoad	available	available	SwSh-PokeGen4-5	537		original-glb-sha1-verified
-538	Throh	available	available	ZA-PokeDLC	538		original-glb-sha1-verified
-539	Sawk	available	available	ZA-PokeDLC	539		original-glb-sha1-verified
-540	Sewaddle	available	missing	sv			model-present-provenance-unverified
-541	Swadloon	available	missing	sv			model-present-provenance-unverified
-542	Leavanny	available	missing	sv			model-present-provenance-unverified
-543	Venipede	available	available	ZA-Poke	543		original-glb-sha1-verified
-544	Whirlipede	available	available	ZA-Poke	544		original-glb-sha1-verified
-545	Scolipede	available	available	ZA-Poke	545		original-glb-sha1-verified
-546	Cottonee	available	available	SV-PokeDLC2	546		original-glb-sha1-verified
-547	Whimsicott	available	available	SV-PokeDLC2	547		original-glb-sha1-verified
-548	Petilil	available	available	LA-Poke	548		original-glb-sha1-verified
-549	Lilligant	available	available	SV-Poke	549		original-glb-sha1-verified
+494	Victini	missing	available	SwSh-PokeGen4-5	494		original-glb-sha1-cataloged
+495	Snivy	missing	available	SV-PokeDLC2	495		original-glb-sha1-cataloged
+496	Servine	missing	available	SV-PokeDLC2	496		original-glb-sha1-cataloged
+497	Serperior	missing	available	SV-PokeDLC2	497		original-glb-sha1-cataloged
+498	Tepig	missing	available	ZA-Poke	498		original-glb-sha1-cataloged
+499	Pignite	missing	available	ZA-Poke	499		original-glb-sha1-cataloged
+500	Emboar	missing	available	ZA-Poke	500		original-glb-sha1-cataloged
+501	Oshawott	missing	available	LA-Poke	501		original-glb-sha1-cataloged
+502	Dewott	missing	available	LA-Poke	502		original-glb-sha1-cataloged
+503	Samurott	missing	available	SV-Poke	503		original-glb-sha1-cataloged
+504	Patrat	missing	available	ZA-Poke	504		original-glb-sha1-cataloged
+505	Watchog	missing	available	ZA-Poke	505		original-glb-sha1-cataloged
+506	Lillipup	missing	available	SwSh-PokeGen4-5	506		original-glb-sha1-cataloged
+507	Herdier	missing	available	SwSh-PokeGen4-5	507		original-glb-sha1-cataloged
+508	Stoutland	missing	available	SwSh-PokeGen4-5	508		original-glb-sha1-cataloged
+509	Purrloin	missing	available	ZA-PokeDLC	509		original-glb-sha1-cataloged
+510	Liepard	missing	available	ZA-PokeDLC	510		original-glb-sha1-cataloged
+511	Pansage	missing	available	ZA-Poke	511		original-glb-sha1-cataloged
+512	Simisage	missing	available	ZA-Poke	512		original-glb-sha1-cataloged
+513	Pansear	missing	available	ZA-Poke	513		original-glb-sha1-cataloged
+514	Simisear	missing	available	ZA-Poke	514		original-glb-sha1-cataloged
+515	Panpour	missing	available	ZA-Poke	515		original-glb-sha1-cataloged
+516	Simipour	missing	available	ZA-Poke	516		original-glb-sha1-cataloged
+517	Munna	missing	available	ZA-PokeDLC	517		original-glb-sha1-cataloged
+518	Musharna	missing	available	ZA-PokeDLC	518		original-glb-sha1-cataloged
+519	Pidove	missing	available	SwSh-PokeGen4-5	519		original-glb-sha1-cataloged
+520	Tranquill	missing	available	SwSh-PokeGen4-5	520		original-glb-sha1-cataloged
+521	Unfezant	missing	available	SwSh-PokeGen4-5	521		original-glb-sha1-cataloged
+522	Blitzle	missing	available	SV-PokeDLC2	522		original-glb-sha1-cataloged
+523	Zebstrika	missing	available	SV-PokeDLC2	523		original-glb-sha1-cataloged
+524	Roggenrola	missing	available	SwSh-PokeGen4-5	524		original-glb-sha1-cataloged
+525	Boldore	missing	available	SwSh-PokeGen4-5	525		original-glb-sha1-cataloged
+526	Gigalith	missing	available	SwSh-PokeGen4-5	526		original-glb-sha1-cataloged
+527	Woobat	missing	available	SwSh-PokeGen4-5	527		original-glb-sha1-cataloged
+528	Swoobat	missing	available	SwSh-PokeGen4-5	528		original-glb-sha1-cataloged
+529	Drilbur	missing	available	ZA-Poke	529		original-glb-sha1-cataloged
+530	Excadrill	missing	available	ZA-Poke	530		original-glb-sha1-cataloged
+531	Audino	missing	available	ZA-Poke	531		original-glb-sha1-cataloged
+532	Timburr	missing	available	SwSh-PokeGen4-5	532		original-glb-sha1-cataloged
+533	Gurdurr	missing	available	SwSh-PokeGen4-5	533		original-glb-sha1-cataloged
+534	Conkeldurr	missing	available	SwSh-PokeGen4-5	534		original-glb-sha1-cataloged
+535	Tympole	missing	available	SwSh-PokeGen4-5	535		original-glb-sha1-cataloged
+536	Palpitoad	missing	available	SwSh-PokeGen4-5	536		original-glb-sha1-cataloged
+537	Seismitoad	missing	available	SwSh-PokeGen4-5	537		original-glb-sha1-cataloged
+538	Throh	missing	available	ZA-PokeDLC	538		original-glb-sha1-cataloged
+539	Sawk	missing	available	ZA-PokeDLC	539		original-glb-sha1-cataloged
+540	Sewaddle	available	missing	sv			source-id-inventory-only
+541	Swadloon	available	missing	sv			source-id-inventory-only
+542	Leavanny	available	missing	sv			source-id-inventory-only
+543	Venipede	missing	available	ZA-Poke	543		original-glb-sha1-cataloged
+544	Whirlipede	missing	available	ZA-Poke	544		original-glb-sha1-cataloged
+545	Scolipede	missing	available	ZA-Poke	545		original-glb-sha1-cataloged
+546	Cottonee	missing	available	SV-PokeDLC2	546		original-glb-sha1-cataloged
+547	Whimsicott	missing	available	SV-PokeDLC2	547		original-glb-sha1-cataloged
+548	Petilil	missing	available	LA-Poke	548		original-glb-sha1-cataloged
+549	Lilligant	missing	available	SV-Poke	549		original-glb-sha1-cataloged
 550	Basculin	missing	missing				missing
-551	Sandile	available	available	ZA-Poke	551		original-glb-sha1-verified
-552	Krokorok	available	available	ZA-Poke	552		original-glb-sha1-verified
-553	Krookodile	available	available	ZA-Poke	553		original-glb-sha1-verified
-554	Darumaka	available	available	SwSh-PokeGen4-5	554		original-glb-sha1-verified
+551	Sandile	missing	available	ZA-Poke	551		original-glb-sha1-cataloged
+552	Krokorok	missing	available	ZA-Poke	552		original-glb-sha1-cataloged
+553	Krookodile	missing	available	ZA-Poke	553		original-glb-sha1-cataloged
+554	Darumaka	missing	available	SwSh-PokeGen4-5	554		original-glb-sha1-cataloged
 555	Darmanitan	missing	missing				missing
-556	Maractus	available	available	SwSh-PokeGen4-5	556		original-glb-sha1-verified
-557	Dwebble	available	available	SwSh-PokeGen4-5	557		original-glb-sha1-verified
-558	Crustle	available	available	SwSh-PokeGen4-5	558		original-glb-sha1-verified
-559	Scraggy	available	available	ZA-Poke	559		original-glb-sha1-verified
-560	Scrafty	available	available	ZA-Poke	560		original-glb-sha1-verified
-561	Sigilyph	available	available	SwSh-PokeGen4-5	561		original-glb-sha1-verified
-562	Yamask	available	available	ZA-PokeDLC	562		original-glb-sha1-verified
-563	Cofagrigus	available	available	ZA-PokeDLC	563		original-glb-sha1-verified
-564	Tirtouga	available	available	SwSh-PokeGen4-5	564		original-glb-sha1-verified
-565	Carracosta	available	available	SwSh-PokeGen4-5	565		original-glb-sha1-verified
-566	Archen	available	available	SwSh-PokeGen4-5	566		original-glb-sha1-verified
-567	Archeops	available	available	SwSh-PokeGen4-5	567		original-glb-sha1-verified
-568	Trubbish	available	available	ZA-Poke	568		original-glb-sha1-verified
-569	Garbodor	available	available	ZA-Poke	569		original-glb-sha1-verified
-570	Zorua	available	available	SV-Poke	570		original-glb-sha1-verified
-571	Zoroark	available	available	SV-Poke	571		original-glb-sha1-verified
-572	Minccino	available	available	SV-PokeDLC2	572		original-glb-sha1-verified
-573	Cinccino	available	available	SV-PokeDLC2	573		original-glb-sha1-verified
-574	Gothita	available	available	SV-Poke	574		original-glb-sha1-verified
-575	Gothorita	available	available	SV-Poke	575		original-glb-sha1-verified
-576	Gothitelle	available	available	SV-Poke	576		original-glb-sha1-verified
-577	Solosis	available	available	SV-PokeDLC2	577		original-glb-sha1-verified
-578	Duosion	available	available	SV-PokeDLC2	578		original-glb-sha1-verified
-579	Reuniclus	available	available	SV-PokeDLC2	579		original-glb-sha1-verified
-580	Ducklett	available	missing	sv			model-present-provenance-unverified
-581	Swanna	available	missing	sv			model-present-provenance-unverified
-582	Vanillite	available	available	ZA-Poke	582		original-glb-sha1-verified
-583	Vanillish	available	available	ZA-Poke	583		original-glb-sha1-verified
-584	Vanilluxe	available	available	ZA-Poke	584		original-glb-sha1-verified
+556	Maractus	missing	available	SwSh-PokeGen4-5	556		original-glb-sha1-cataloged
+557	Dwebble	missing	available	SwSh-PokeGen4-5	557		original-glb-sha1-cataloged
+558	Crustle	missing	available	SwSh-PokeGen4-5	558		original-glb-sha1-cataloged
+559	Scraggy	missing	available	ZA-Poke	559		original-glb-sha1-cataloged
+560	Scrafty	missing	available	ZA-Poke	560		original-glb-sha1-cataloged
+561	Sigilyph	missing	available	SwSh-PokeGen4-5	561		original-glb-sha1-cataloged
+562	Yamask	missing	available	ZA-PokeDLC	562		original-glb-sha1-cataloged
+563	Cofagrigus	missing	available	ZA-PokeDLC	563		original-glb-sha1-cataloged
+564	Tirtouga	missing	available	SwSh-PokeGen4-5	564		original-glb-sha1-cataloged
+565	Carracosta	missing	available	SwSh-PokeGen4-5	565		original-glb-sha1-cataloged
+566	Archen	missing	available	SwSh-PokeGen4-5	566		original-glb-sha1-cataloged
+567	Archeops	missing	available	SwSh-PokeGen4-5	567		original-glb-sha1-cataloged
+568	Trubbish	missing	available	ZA-Poke	568		original-glb-sha1-cataloged
+569	Garbodor	missing	available	ZA-Poke	569		original-glb-sha1-cataloged
+570	Zorua	missing	available	SV-Poke	570		original-glb-sha1-cataloged
+571	Zoroark	missing	available	SV-Poke	571		original-glb-sha1-cataloged
+572	Minccino	missing	available	SV-PokeDLC2	572		original-glb-sha1-cataloged
+573	Cinccino	missing	available	SV-PokeDLC2	573		original-glb-sha1-cataloged
+574	Gothita	missing	available	SV-Poke	574		original-glb-sha1-cataloged
+575	Gothorita	missing	available	SV-Poke	575		original-glb-sha1-cataloged
+576	Gothitelle	missing	available	SV-Poke	576		original-glb-sha1-cataloged
+577	Solosis	missing	available	SV-PokeDLC2	577		original-glb-sha1-cataloged
+578	Duosion	missing	available	SV-PokeDLC2	578		original-glb-sha1-cataloged
+579	Reuniclus	missing	available	SV-PokeDLC2	579		original-glb-sha1-cataloged
+580	Ducklett	available	missing	sv			source-id-inventory-only
+581	Swanna	available	missing	sv			source-id-inventory-only
+582	Vanillite	missing	available	ZA-Poke	582		original-glb-sha1-cataloged
+583	Vanillish	missing	available	ZA-Poke	583		original-glb-sha1-cataloged
+584	Vanilluxe	missing	available	ZA-Poke	584		original-glb-sha1-cataloged
 585	Deerling	missing	missing				missing
 586	Sawsbuck	missing	missing				missing
-587	Emolga	available	available	ZA-Poke	587		original-glb-sha1-verified
-588	Karrablast	available	available	SwSh-PokeGen4-5	588		original-glb-sha1-verified
-589	Escavalier	available	available	SwSh-PokeGen4-5	589		original-glb-sha1-verified
-590	Foongus	available	available	ZA-PokeDLC	590		original-glb-sha1-verified
-591	Amoonguss	available	available	ZA-PokeDLC	591		original-glb-sha1-verified
-592	Frillish	available	available	SwSh-PokeGen4-5	592		original-glb-sha1-verified
-593	Jellicent	available	available	SwSh-PokeGen4-5	593		original-glb-sha1-verified
-594	Alomomola	available	available	SV-Poke	594		original-glb-sha1-verified
-595	Joltik	available	available	SV-PokeDLC2	595		original-glb-sha1-verified
-596	Galvantula	available	available	SV-PokeDLC2	596		original-glb-sha1-verified
-597	Ferroseed	available	available	SwSh-PokeGen4-5	597		original-glb-sha1-verified
-598	Ferrothorn	available	available	SwSh-PokeGen4-5	598		original-glb-sha1-verified
-599	Klink	available	available	SwSh-PokeGen4-5	599		original-glb-sha1-verified
-600	Klang	available	available	SwSh-PokeGen4-5	600		original-glb-sha1-verified
-601	Klinklang	available	available	SwSh-PokeGen4-5	601		original-glb-sha1-verified
-602	Tynamo	available	available	ZA-Poke	602		original-glb-sha1-verified
-603	Eelektrik	available	available	ZA-Poke	603		original-glb-sha1-verified
-604	Eelektross	available	available	ZA-Poke	604		original-glb-sha1-verified
-605	Elgyem	available	available	SwSh-PokeGen4-5	605		original-glb-sha1-verified
-606	Beheeyem	available	available	SwSh-PokeGen4-5	606		original-glb-sha1-verified
-607	Litwick	available	available	ZA-Poke	607		original-glb-sha1-verified
-608	Lampent	available	available	ZA-Poke	608		original-glb-sha1-verified
-609	Chandelure	available	available	ZA-Poke	609		original-glb-sha1-verified
-610	Axew	available	available	SV-Poke	610		original-glb-sha1-verified
-611	Fraxure	available	available	SV-Poke	611		original-glb-sha1-verified
-612	Haxorus	available	available	SV-Poke	612		original-glb-sha1-verified
-613	Cubchoo	available	available	SV-Poke	613		original-glb-sha1-verified
-614	Beartic	available	available	SV-Poke	614		original-glb-sha1-verified
-615	Cryogonal	available	available	ZA-PokeDLC	615		original-glb-sha1-verified
-616	Shelmet	available	available	SwSh-PokeGen4-5	616		original-glb-sha1-verified
-617	Accelgor	available	available	SwSh-PokeGen4-5	617		original-glb-sha1-verified
-618	Stunfisk	available	available	ZA-Poke	618		original-glb-sha1-verified
-619	Mienfoo	available	available	SwSh-PokeGen4-5	619		original-glb-sha1-verified
-620	Mienshao	available	available	SwSh-PokeGen4-5	620		original-glb-sha1-verified
-621	Druddigon	available	available	SwSh-PokeGen4-5	621		original-glb-sha1-verified
-622	Golett	available	available	ZA-PokeDLC	622		original-glb-sha1-verified
-623	Golurk	available	available	ZA-PokeDLC	623		original-glb-sha1-verified
-624	Pawniard	available	available	SV-Poke	624		original-glb-sha1-verified
-625	Bisharp	available	available	SV-Poke	625		original-glb-sha1-verified
-626	Bouffalant	available	available	SwSh-PokeGen4-5	626		original-glb-sha1-verified
-627	Rufflet	available	available	LA-Poke	627		original-glb-sha1-verified
-628	Braviary	available	available	SV-Poke	628		original-glb-sha1-verified
-629	Vullaby	available	available	SwSh-PokeGen4-5	629		original-glb-sha1-verified
-630	Mandibuzz	available	available	SwSh-PokeGen4-5	630		original-glb-sha1-verified
-631	Heatmor	available	available	SwSh-PokeGen4-5	631		original-glb-sha1-verified
-632	Durant	available	available	SwSh-PokeGen4-5	632		original-glb-sha1-verified
-633	Deino	available	available	SV-Poke	633		original-glb-sha1-verified
-634	Zweilous	available	available	SV-Poke	634		original-glb-sha1-verified
-635	Hydreigon	available	available	SV-Poke	635		original-glb-sha1-verified
-636	Larvesta	available	available	SV-Poke	636		original-glb-sha1-verified
-637	Volcarona	available	available	SV-Poke	637		original-glb-sha1-verified
-638	Cobalion	available	available	ZA-PokeDLC	638		original-glb-sha1-verified
-639	Terrakion	available	available	ZA-PokeDLC	639		original-glb-sha1-verified
-640	Virizion	available	available	ZA-PokeDLC	640		original-glb-sha1-verified
+587	Emolga	missing	available	ZA-Poke	587		original-glb-sha1-cataloged
+588	Karrablast	missing	available	SwSh-PokeGen4-5	588		original-glb-sha1-cataloged
+589	Escavalier	missing	available	SwSh-PokeGen4-5	589		original-glb-sha1-cataloged
+590	Foongus	missing	available	ZA-PokeDLC	590		original-glb-sha1-cataloged
+591	Amoonguss	missing	available	ZA-PokeDLC	591		original-glb-sha1-cataloged
+592	Frillish	missing	available	SwSh-PokeGen4-5	592		original-glb-sha1-cataloged
+593	Jellicent	missing	available	SwSh-PokeGen4-5	593		original-glb-sha1-cataloged
+594	Alomomola	missing	available	SV-Poke	594		original-glb-sha1-cataloged
+595	Joltik	missing	available	SV-PokeDLC2	595		original-glb-sha1-cataloged
+596	Galvantula	missing	available	SV-PokeDLC2	596		original-glb-sha1-cataloged
+597	Ferroseed	missing	available	SwSh-PokeGen4-5	597		original-glb-sha1-cataloged
+598	Ferrothorn	missing	available	SwSh-PokeGen4-5	598		original-glb-sha1-cataloged
+599	Klink	missing	available	SwSh-PokeGen4-5	599		original-glb-sha1-cataloged
+600	Klang	missing	available	SwSh-PokeGen4-5	600		original-glb-sha1-cataloged
+601	Klinklang	missing	available	SwSh-PokeGen4-5	601		original-glb-sha1-cataloged
+602	Tynamo	missing	available	ZA-Poke	602		original-glb-sha1-cataloged
+603	Eelektrik	missing	available	ZA-Poke	603		original-glb-sha1-cataloged
+604	Eelektross	missing	available	ZA-Poke	604		original-glb-sha1-cataloged
+605	Elgyem	missing	available	SwSh-PokeGen4-5	605		original-glb-sha1-cataloged
+606	Beheeyem	missing	available	SwSh-PokeGen4-5	606		original-glb-sha1-cataloged
+607	Litwick	missing	available	ZA-Poke	607		original-glb-sha1-cataloged
+608	Lampent	missing	available	ZA-Poke	608		original-glb-sha1-cataloged
+609	Chandelure	missing	available	ZA-Poke	609		original-glb-sha1-cataloged
+610	Axew	missing	available	SV-Poke	610		original-glb-sha1-cataloged
+611	Fraxure	missing	available	SV-Poke	611		original-glb-sha1-cataloged
+612	Haxorus	missing	available	SV-Poke	612		original-glb-sha1-cataloged
+613	Cubchoo	missing	available	SV-Poke	613		original-glb-sha1-cataloged
+614	Beartic	missing	available	SV-Poke	614		original-glb-sha1-cataloged
+615	Cryogonal	missing	available	ZA-PokeDLC	615		original-glb-sha1-cataloged
+616	Shelmet	missing	available	SwSh-PokeGen4-5	616		original-glb-sha1-cataloged
+617	Accelgor	missing	available	SwSh-PokeGen4-5	617		original-glb-sha1-cataloged
+618	Stunfisk	missing	available	ZA-Poke	618		original-glb-sha1-cataloged
+619	Mienfoo	missing	available	SwSh-PokeGen4-5	619		original-glb-sha1-cataloged
+620	Mienshao	missing	available	SwSh-PokeGen4-5	620		original-glb-sha1-cataloged
+621	Druddigon	missing	available	SwSh-PokeGen4-5	621		original-glb-sha1-cataloged
+622	Golett	missing	available	ZA-PokeDLC	622		original-glb-sha1-cataloged
+623	Golurk	missing	available	ZA-PokeDLC	623		original-glb-sha1-cataloged
+624	Pawniard	missing	available	SV-Poke	624		original-glb-sha1-cataloged
+625	Bisharp	missing	available	SV-Poke	625		original-glb-sha1-cataloged
+626	Bouffalant	missing	available	SwSh-PokeGen4-5	626		original-glb-sha1-cataloged
+627	Rufflet	missing	available	LA-Poke	627		original-glb-sha1-cataloged
+628	Braviary	missing	available	SV-Poke	628		original-glb-sha1-cataloged
+629	Vullaby	missing	available	SwSh-PokeGen4-5	629		original-glb-sha1-cataloged
+630	Mandibuzz	missing	available	SwSh-PokeGen4-5	630		original-glb-sha1-cataloged
+631	Heatmor	missing	available	SwSh-PokeGen4-5	631		original-glb-sha1-cataloged
+632	Durant	missing	available	SwSh-PokeGen4-5	632		original-glb-sha1-cataloged
+633	Deino	missing	available	SV-Poke	633		original-glb-sha1-cataloged
+634	Zweilous	missing	available	SV-Poke	634		original-glb-sha1-cataloged
+635	Hydreigon	missing	available	SV-Poke	635		original-glb-sha1-cataloged
+636	Larvesta	missing	available	SV-Poke	636		original-glb-sha1-cataloged
+637	Volcarona	missing	available	SV-Poke	637		original-glb-sha1-cataloged
+638	Cobalion	missing	available	ZA-PokeDLC	638		original-glb-sha1-cataloged
+639	Terrakion	missing	available	ZA-PokeDLC	639		original-glb-sha1-cataloged
+640	Virizion	missing	available	ZA-PokeDLC	640		original-glb-sha1-cataloged
 641	Tornadus	missing	missing				missing
 642	Thundurus	missing	missing				missing
-643	Reshiram	available	available	SV-PokeDLC2	643		original-glb-sha1-verified
-644	Zekrom	available	available	SV-PokeDLC2	644		original-glb-sha1-verified
+643	Reshiram	missing	available	SV-PokeDLC2	643		original-glb-sha1-cataloged
+644	Zekrom	missing	available	SV-PokeDLC2	644		original-glb-sha1-cataloged
 645	Landorus	missing	missing				missing
 646	Kyurem	missing	missing				missing
 647	Keldeo	missing	missing				missing
 648	Meloetta	missing	missing				missing
 649	Genesect	missing	missing				missing
-650	Chespin	missing	missing				missing
-651	Quilladin	missing	missing				missing
-652	Chesnaught	missing	missing				missing
-653	Fennekin	missing	missing				missing
-654	Braixen	missing	missing				missing
-655	Delphox	missing	missing				missing
-656	Froakie	missing	missing				missing
-657	Frogadier	missing	missing				missing
+650	Chespin	missing	available	ZA-Poke	720	720	reindexed-original-glb-sha1-cataloged
+651	Quilladin	missing	available	ZA-Poke	721	721	reindexed-original-glb-sha1-cataloged
+652	Chesnaught	missing	available	ZA-Poke	722	722	reindexed-original-glb-sha1-cataloged
+653	Fennekin	missing	available	ZA-Poke	717	717	reindexed-original-glb-sha1-cataloged
+654	Braixen	missing	available	ZA-Poke	718	718	reindexed-original-glb-sha1-cataloged
+655	Delphox	missing	available	ZA-Poke	719	719	reindexed-original-glb-sha1-cataloged
+656	Froakie	missing	available	ZA-Poke	723	723	reindexed-original-glb-sha1-cataloged
+657	Frogadier	missing	available	ZA-Poke	724	724	reindexed-original-glb-sha1-cataloged
 658	Greninja	missing	missing				missing
-659	Bunnelby	available	missing	swsh			model-present-provenance-unverified
-660	Diggersby	available	missing	swsh			model-present-provenance-unverified
-661	Fletchling	available	missing	swsh			model-present-provenance-unverified
-662	Fletchinder	available	missing	swsh			model-present-provenance-unverified
-663	Talonflame	available	missing	swsh			model-present-provenance-unverified
-664	Scatterbug	missing	missing				missing
-665	Spewpa	missing	missing				missing
+659	Bunnelby	available	available	swsh			source-id-inventory-only
+660	Diggersby	available	available	swsh			source-id-inventory-only
+661	Fletchling	available	available	swsh			source-id-inventory-only
+662	Fletchinder	available	available	swsh			source-id-inventory-only
+663	Talonflame	available	available	swsh			source-id-inventory-only
+664	Scatterbug	missing	available	ZA-Poke	706	706	reindexed-original-glb-sha1-cataloged
+665	Spewpa	missing	available	ZA-Poke	707	707	reindexed-original-glb-sha1-cataloged
 666	Vivillon	missing	missing				missing
-667	Litleo	missing	missing				missing
-668	Pyroar	missing	missing				missing
+667	Litleo	missing	available	ZA-Poke	704	704	reindexed-original-glb-sha1-cataloged
+668	Pyroar	missing	available	ZA-Poke	705	705	reindexed-original-glb-sha1-cataloged
 669	Flabébé	missing	missing				missing
 670	Floette	missing	missing				missing
 671	Florges	missing	missing				missing
-672	Skiddo	missing	missing				missing
-673	Gogoat	missing	missing				missing
-674	Pancham	available	missing	swsh			model-present-provenance-unverified
-675	Pangoro	available	missing	swsh			model-present-provenance-unverified
+672	Skiddo	missing	available	ZA-Poke	728	728	reindexed-original-glb-sha1-cataloged
+673	Gogoat	missing	available	ZA-Poke	729	729	reindexed-original-glb-sha1-cataloged
+674	Pancham	available	available	swsh			source-id-inventory-only
+675	Pangoro	available	available	swsh			source-id-inventory-only
 676	Furfrou	missing	missing				missing
-677	Espurr	available	missing	swsh			model-present-provenance-unverified
-678	Meowstic	available	missing	swsh			model-present-provenance-unverified
-679	Honedge	available	missing	swsh			model-present-provenance-unverified
-680	Doublade	available	missing	swsh			model-present-provenance-unverified
+677	Espurr	available	available	swsh			source-id-inventory-only
+678	Meowstic	available	available	swsh			source-id-inventory-only
+679	Honedge	available	available	swsh			source-id-inventory-only
+680	Doublade	available	available	swsh			source-id-inventory-only
 681	Aegislash	missing	missing				missing
-682	Spritzee	available	missing	swsh			model-present-provenance-unverified
-683	Aromatisse	available	missing	swsh			model-present-provenance-unverified
-684	Swirlix	available	missing	swsh			model-present-provenance-unverified
-685	Slurpuff	available	missing	swsh			model-present-provenance-unverified
-686	Inkay	available	missing	swsh			model-present-provenance-unverified
-687	Malamar	available	missing	swsh			model-present-provenance-unverified
-688	Binacle	available	missing	swsh			model-present-provenance-unverified
-689	Barbaracle	available	missing	swsh			model-present-provenance-unverified
-690	Skrelp	available	missing	swsh			model-present-provenance-unverified
-691	Dragalge	available	missing	swsh			model-present-provenance-unverified
-692	Clauncher	available	missing	swsh			model-present-provenance-unverified
-693	Clawitzer	available	missing	swsh			model-present-provenance-unverified
-694	Helioptile	available	missing	swsh			model-present-provenance-unverified
-695	Heliolisk	available	missing	swsh			model-present-provenance-unverified
-696	Tyrunt	available	missing	swsh			model-present-provenance-unverified
-697	Tyrantrum	available	missing	swsh			model-present-provenance-unverified
-698	Amaura	available	missing	swsh			model-present-provenance-unverified
-699	Aurorus	available	missing	swsh			model-present-provenance-unverified
-700	Sylveon	available	missing	swsh			model-present-provenance-unverified
-701	Hawlucha	available	missing	swsh			model-present-provenance-unverified
-702	Dedenne	available	available	ZA-Poke	702		original-glb-sha1-verified
-703	Carbink	available	available	ZA-Poke	703		original-glb-sha1-verified
-704	Goomy	available	available	ZA-Poke	704		original-glb-sha1-verified
-705	Sliggoo	available	available	ZA-Poke	705		original-glb-sha1-verified
-706	Goodra	available	available	ZA-Poke	706		original-glb-sha1-verified
-707	Klefki	available	available	ZA-Poke	707		original-glb-sha1-verified
-708	Phantump	available	missing	swsh			model-present-provenance-unverified
-709	Trevenant	available	available	ZA-Poke	709		original-glb-sha1-verified
-710	Pumpkaboo	available	available	ZA-Poke	710		original-glb-sha1-verified
-711	Gourgeist	available	available	ZA-Poke	711		original-glb-sha1-verified
-712	Bergmite	available	available	ZA-Poke	712		original-glb-sha1-verified
-713	Avalugg	available	missing	swsh			model-present-provenance-unverified
-714	Noibat	available	missing	swsh			model-present-provenance-unverified
-715	Noivern	available	missing	swsh			model-present-provenance-unverified
-716	Xerneas	available	available	ZA-Poke	716		original-glb-sha1-verified
-717	Yveltal	available	available	ZA-Poke	717		original-glb-sha1-verified
-718	Zygarde	available	available	ZA-Poke	718		original-glb-sha1-verified
-719	Diancie	available	available	ZA-Poke	719		original-glb-sha1-verified
-720	Hoopa	available	available	ZA-Poke	720		original-glb-sha1-verified
-721	Volcanion	available	available	ZA-Poke	721		original-glb-sha1-verified
-722	Rowlet	available	available	ZA-Poke	722		original-glb-sha1-verified
-723	Dartrix	available	available	ZA-Poke	723		original-glb-sha1-verified
-724	Decidueye	available	available	ZA-Poke	724		original-glb-sha1-verified
-725	Litten	available	available	swsh	844		model-present-provenance-unverified
-726	Torracat	available	available	ZA-Poke	726		original-glb-sha1-verified
-727	Incineroar	available	available	ZA-Poke	727		original-glb-sha1-verified
-728	Popplio	available	available	ZA-Poke	728		original-glb-sha1-verified
-729	Brionne	available	available	ZA-Poke	729		original-glb-sha1-verified
-730	Primarina	available	available	ZA-Poke	730		original-glb-sha1-verified
-731	Pikipek	available	available	ZA-Poke	731		original-glb-sha1-verified
-732	Trumbeak	available	available	ZA-Poke	732		original-glb-sha1-verified
-733	Toucannon	available	available	ZA-Poke	733		original-glb-sha1-verified
-734	Yungoos	available	available	ZA-Poke	734		original-glb-sha1-verified
-735	Gumshoos	available	available	SV-Poke	827		original-glb-sha1-verified
-736	Grubbin	available	missing	swsh			model-present-provenance-unverified
-737	Charjabug	available	available	ZA-Poke	737		original-glb-sha1-verified
-738	Vikavolt	available	available	ZA-Poke	738		original-glb-sha1-verified
-739	Crabrawler	available	available	ZA-Poke	739		original-glb-sha1-verified
-740	Crabominable	available	available	ZA-Poke	740		original-glb-sha1-verified
-741	Oricorio	available	available	ZA-Poke	741		original-glb-sha1-verified
-742	Cutiefly	available	available	ZA-Poke	742		original-glb-sha1-verified
-743	Ribombee	available	available	ZA-Poke	743		original-glb-sha1-verified
-744	Rockruff	available	available	ZA-Poke	744		original-glb-sha1-verified
-745	Lycanroc	available	available	ZA-Poke	745		original-glb-sha1-verified
+682	Spritzee	available	available	swsh			source-id-inventory-only
+683	Aromatisse	available	available	swsh			source-id-inventory-only
+684	Swirlix	available	available	swsh			source-id-inventory-only
+685	Slurpuff	available	available	swsh			source-id-inventory-only
+686	Inkay	available	available	swsh			source-id-inventory-only
+687	Malamar	available	available	swsh			source-id-inventory-only
+688	Binacle	available	available	swsh			source-id-inventory-only
+689	Barbaracle	available	available	swsh			source-id-inventory-only
+690	Skrelp	available	available	swsh			source-id-inventory-only
+691	Dragalge	available	available	swsh			source-id-inventory-only
+692	Clauncher	available	available	swsh			source-id-inventory-only
+693	Clawitzer	available	available	swsh			source-id-inventory-only
+694	Helioptile	available	available	swsh			source-id-inventory-only
+695	Heliolisk	available	available	swsh			source-id-inventory-only
+696	Tyrunt	available	available	swsh			source-id-inventory-only
+697	Tyrantrum	available	available	swsh			source-id-inventory-only
+698	Amaura	available	available	swsh			source-id-inventory-only
+699	Aurorus	available	available	swsh			source-id-inventory-only
+700	Sylveon	available	available	swsh			source-id-inventory-only
+701	Hawlucha	available	available	swsh			source-id-inventory-only
+702	Dedenne	missing	available	ZA-Poke	741	741	reindexed-original-glb-sha1-cataloged
+703	Carbink	missing	available	ZA-Poke	766	766	reindexed-original-glb-sha1-cataloged
+704	Goomy	missing	available	ZA-Poke	763	763	reindexed-original-glb-sha1-cataloged
+705	Sliggoo	missing	available	ZA-Poke	764	764	reindexed-original-glb-sha1-cataloged
+706	Goodra	missing	available	ZA-Poke	765	765	reindexed-original-glb-sha1-cataloged
+707	Klefki	missing	available	ZA-Poke	760	760	reindexed-original-glb-sha1-cataloged
+708	Phantump	available	available	swsh			source-id-inventory-only
+709	Trevenant	missing	available	ZA-Poke	703	703	reindexed-original-glb-sha1-cataloged
+710	Pumpkaboo	missing	missing				missing
+711	Gourgeist	missing	missing				missing
+712	Bergmite	missing	available	ZA-Poke	749	749	reindexed-original-glb-sha1-cataloged
+713	Avalugg	available	available	swsh			source-id-inventory-only
+714	Noibat	available	available	swsh			source-id-inventory-only
+715	Noivern	available	available	swsh			source-id-inventory-only
+716	Xerneas	missing	available	ZA-Poke	768	768	reindexed-original-glb-sha1-cataloged
+717	Yveltal	missing	available	ZA-Poke	769	769	reindexed-original-glb-sha1-cataloged
+718	Zygarde	missing	missing				missing
+719	Diancie	missing	available	ZA-Poke	772	772	reindexed-original-glb-sha1-cataloged
+720	Hoopa	missing	missing				missing
+721	Volcanion	missing	available	ZA-Poke	773	773	reindexed-original-glb-sha1-cataloged
+722	Rowlet	missing	missing				missing
+723	Dartrix	missing	missing				missing
+724	Decidueye	missing	missing				missing
+725	Litten	available	available	swsh			source-id-inventory-only
+726	Torracat	missing	missing				missing
+727	Incineroar	missing	missing				missing
+728	Popplio	missing	missing				missing
+729	Brionne	missing	missing				missing
+730	Primarina	missing	missing				missing
+731	Pikipek	missing	missing				missing
+732	Trumbeak	missing	missing				missing
+733	Toucannon	missing	missing				missing
+734	Yungoos	missing	missing				missing
+735	Gumshoos	missing	available	SV-Poke	827		original-glb-sha1-cataloged
+736	Grubbin	available	missing	swsh			source-id-inventory-only
+737	Charjabug	missing	missing				missing
+738	Vikavolt	missing	missing				missing
+739	Crabrawler	missing	available	ZA-PokeDLC	859	859	reindexed-original-glb-sha1-cataloged
+740	Crabominable	missing	available	ZA-PokeDLC	860	860	reindexed-original-glb-sha1-cataloged
+741	Oricorio	missing	missing				missing
+742	Cutiefly	missing	missing				missing
+743	Ribombee	missing	missing				missing
+744	Rockruff	missing	missing				missing
+745	Lycanroc	missing	missing				missing
 746	Wishiwashi	missing	missing				missing
-747	Mareanie	available	available	ZA-Poke	747		original-glb-sha1-verified
-748	Toxapex	available	available	ZA-Poke	748		original-glb-sha1-verified
-749	Mudbray	available	available	ZA-Poke	749		original-glb-sha1-verified
-750	Mudsdale	available	available	swsh	840		model-present-provenance-unverified
-751	Dewpider	available	available	ZA-Poke	751		original-glb-sha1-verified
-752	Araquanid	available	available	ZA-Poke	752		original-glb-sha1-verified
-753	Fomantis	available	available	ZA-Poke	753		original-glb-sha1-verified
-754	Lurantis	available	available	ZA-Poke	754		original-glb-sha1-verified
-755	Morelull	available	available	ZA-Poke	755		original-glb-sha1-verified
-756	Shiinotic	available	available	ZA-Poke	756		original-glb-sha1-verified
-757	Salandit	available	available	ZA-Poke	757		original-glb-sha1-verified
-758	Salazzle	available	available	ZA-Poke	758		original-glb-sha1-verified
-759	Stufful	available	available	ZA-Poke	759		original-glb-sha1-verified
-760	Bewear	available	available	ZA-Poke	760		original-glb-sha1-verified
-761	Bounsweet	available	available	ZA-Poke	761		original-glb-sha1-verified
-762	Steenee	available	available	ZA-Poke	762		original-glb-sha1-verified
-763	Tsareena	available	available	ZA-Poke	763		original-glb-sha1-verified
-764	Comfey	available	available	ZA-Poke	764		original-glb-sha1-verified
-765	Oranguru	available	available	ZA-Poke	765		original-glb-sha1-verified
-766	Passimian	available	available	ZA-Poke	766		original-glb-sha1-verified
-767	Wimpod	available	available	ZA-Poke	767		original-glb-sha1-verified
-768	Golisopod	available	available	ZA-Poke	768		original-glb-sha1-verified
-769	Sandygast	available	available	ZA-Poke	769		original-glb-sha1-verified
-770	Palossand	available	missing	swsh			model-present-provenance-unverified
-771	Pyukumuku	available	missing	swsh			model-present-provenance-unverified
-772	Type: Null	available	available	ZA-Poke	772		original-glb-sha1-verified
-773	Silvally	available	available	ZA-Poke	773		original-glb-sha1-verified
+747	Mareanie	missing	missing				missing
+748	Toxapex	missing	missing				missing
+749	Mudbray	missing	missing				missing
+750	Mudsdale	available	available	swsh			source-id-inventory-only
+751	Dewpider	missing	missing				missing
+752	Araquanid	missing	missing				missing
+753	Fomantis	missing	missing				missing
+754	Lurantis	missing	missing				missing
+755	Morelull	missing	missing				missing
+756	Shiinotic	missing	missing				missing
+757	Salandit	missing	missing				missing
+758	Salazzle	missing	missing				missing
+759	Stufful	missing	missing				missing
+760	Bewear	missing	missing				missing
+761	Bounsweet	missing	missing				missing
+762	Steenee	missing	missing				missing
+763	Tsareena	missing	missing				missing
+764	Comfey	missing	missing				missing
+765	Oranguru	missing	missing				missing
+766	Passimian	missing	missing				missing
+767	Wimpod	missing	available	ZA-PokeDLC	866	866	reindexed-original-glb-sha1-cataloged
+768	Golisopod	missing	available	ZA-PokeDLC	867	867	reindexed-original-glb-sha1-cataloged
+769	Sandygast	missing	available	ZA-PokeDLC	822	822	reindexed-original-glb-sha1-cataloged
+770	Palossand	available	available	swsh			source-id-inventory-only
+771	Pyukumuku	available	missing	swsh			source-id-inventory-only
+772	Type: Null	missing	missing				missing
+773	Silvally	missing	missing				missing
 774	Minior	missing	missing				missing
-775	Komala	available	available	SV-Poke	811		original-glb-sha1-verified
-776	Turtonator	available	missing	swsh			model-present-provenance-unverified
-777	Togedemaru	available	missing	swsh			model-present-provenance-unverified
+775	Komala	missing	available	SV-Poke	811		original-glb-sha1-cataloged
+776	Turtonator	available	missing	swsh			source-id-inventory-only
+777	Togedemaru	available	missing	swsh			source-id-inventory-only
 778	Mimikyu	missing	missing				missing
-779	Bruxish	available	available	SV-Poke	855		original-glb-sha1-verified
-780	Drampa	available	missing	swsh			model-present-provenance-unverified
-781	Dhelmise	available	missing	swsh			model-present-provenance-unverified
-782	Jangmo-o	available	missing	swsh			model-present-provenance-unverified
-783	Hakamo-o	available	missing	swsh			model-present-provenance-unverified
-784	Kommo-o	available	missing	swsh			model-present-provenance-unverified
-785	Tapu Koko	available	missing	swsh			model-present-provenance-unverified
-786	Tapu Lele	available	missing	swsh			model-present-provenance-unverified
-787	Tapu Bulu	available	missing	swsh			model-present-provenance-unverified
-788	Tapu Fini	available	missing	swsh			model-present-provenance-unverified
-789	Cosmog	available	available	swsh	871		model-present-provenance-unverified
-790	Cosmoem	available	available	swsh	872		model-present-provenance-unverified
-791	Solgaleo	available	available	swsh	873		model-present-provenance-unverified
-792	Lunala	available	available	swsh	874		model-present-provenance-unverified
-793	Nihilego	available	missing	swsh			model-present-provenance-unverified
-794	Buzzwole	available	missing	swsh			model-present-provenance-unverified
-795	Pheromosa	available	missing	swsh			model-present-provenance-unverified
-796	Xurkitree	available	missing	swsh			model-present-provenance-unverified
-797	Celesteela	available	missing	swsh			model-present-provenance-unverified
-798	Kartana	available	missing	swsh			model-present-provenance-unverified
-799	Guzzlord	available	missing	swsh			model-present-provenance-unverified
-800	Necrozma	available	missing	swsh			model-present-provenance-unverified
+779	Bruxish	missing	available	SV-Poke	855		original-glb-sha1-cataloged
+780	Drampa	available	available	swsh			source-id-inventory-only
+781	Dhelmise	available	missing	swsh			source-id-inventory-only
+782	Jangmo-o	available	missing	swsh			source-id-inventory-only
+783	Hakamo-o	available	missing	swsh			source-id-inventory-only
+784	Kommo-o	available	missing	swsh			source-id-inventory-only
+785	Tapu Koko	available	missing	swsh			source-id-inventory-only
+786	Tapu Lele	available	missing	swsh			source-id-inventory-only
+787	Tapu Bulu	available	missing	swsh			source-id-inventory-only
+788	Tapu Fini	available	missing	swsh			source-id-inventory-only
+789	Cosmog	available	available	swsh			source-id-inventory-only
+790	Cosmoem	available	available	swsh			source-id-inventory-only
+791	Solgaleo	available	available	swsh			source-id-inventory-only
+792	Lunala	available	available	swsh			source-id-inventory-only
+793	Nihilego	available	missing	swsh			source-id-inventory-only
+794	Buzzwole	available	missing	swsh			source-id-inventory-only
+795	Pheromosa	available	missing	swsh			source-id-inventory-only
+796	Xurkitree	available	missing	swsh			source-id-inventory-only
+797	Celesteela	available	missing	swsh			source-id-inventory-only
+798	Kartana	available	missing	swsh			source-id-inventory-only
+799	Guzzlord	available	missing	swsh			source-id-inventory-only
+800	Necrozma	available	missing	swsh			source-id-inventory-only
 801	Magearna	missing	missing				missing
-802	Marshadow	missing	missing				missing
-803	Poipole	available	missing	swsh			model-present-provenance-unverified
-804	Naganadel	available	missing	swsh			model-present-provenance-unverified
+802	Marshadow	missing	available	ZA-PokeDLC	883	883	reindexed-original-glb-sha1-cataloged
+803	Poipole	available	missing	swsh			source-id-inventory-only
+804	Naganadel	available	missing	swsh			source-id-inventory-only
 805	Stakataka	missing	missing				missing
 806	Blacephalon	missing	missing				missing
-807	Zeraora	missing	missing				missing
-808	Meltan	missing	missing				missing
-809	Melmetal	missing	missing				missing
-810	Grookey	available	available	SV-Poke	948		original-glb-sha1-verified
-811	Thwackey	available	available	SV-Poke	949		original-glb-sha1-verified
-812	Rillaboom	available	available	SV-Poke	950		original-glb-sha1-verified
-813	Scorbunny	available	available	SV-Poke	954		original-glb-sha1-verified
-814	Raboot	available	available	SV-Poke	955		original-glb-sha1-verified
-815	Cinderace	available	available	SV-Poke	956		original-glb-sha1-verified
-816	Sobble	available	available	SwSh-PokeGen8	951		original-glb-sha1-verified
-817	Drizzile	available	available	SwSh-PokeGen8	952		original-glb-sha1-verified
-818	Inteleon	available	available	SwSh-PokeGen8	953		original-glb-sha1-verified
-819	Skwovet	available	available	SwSh-PokeGen8	909		original-glb-sha1-verified
-820	Greedent	available	available	SwSh-PokeGen8	910		original-glb-sha1-verified
-821	Rookidee	available	available	SwSh-PokeGen8	918		original-glb-sha1-verified
-822	Corvisquire	available	available	ZA-PokeDLC	822		original-glb-sha1-verified
-823	Corviknight	available	available	ZA-PokeDLC	823		original-glb-sha1-verified
-824	Blipbug	available	available	SwSh-PokeGen8	930		original-glb-sha1-verified
-825	Dottler	available	available	SwSh-PokeGen8	931		original-glb-sha1-verified
+807	Zeraora	missing	available	ZA-PokeDLC	888	888	reindexed-original-glb-sha1-cataloged
+808	Meltan	missing	available	ZA-PokeDLC	891	891	reindexed-original-glb-sha1-cataloged
+809	Melmetal	missing	available	ZA-PokeDLC	892	892	reindexed-original-glb-sha1-cataloged
+810	Grookey	missing	available	SV-Poke	948		original-glb-sha1-cataloged
+811	Thwackey	missing	available	SV-Poke	949		original-glb-sha1-cataloged
+812	Rillaboom	missing	available	SV-Poke	950		original-glb-sha1-cataloged
+813	Scorbunny	missing	available	SV-Poke	954		original-glb-sha1-cataloged
+814	Raboot	missing	available	SV-Poke	955		original-glb-sha1-cataloged
+815	Cinderace	missing	available	SV-Poke	956		original-glb-sha1-cataloged
+816	Sobble	missing	available	SwSh-PokeGen8	951		original-glb-sha1-cataloged
+817	Drizzile	missing	available	SwSh-PokeGen8	952		original-glb-sha1-cataloged
+818	Inteleon	missing	available	SwSh-PokeGen8	953		original-glb-sha1-cataloged
+819	Skwovet	missing	available	SwSh-PokeGen8	909		original-glb-sha1-cataloged
+820	Greedent	missing	available	SwSh-PokeGen8	910		original-glb-sha1-cataloged
+821	Rookidee	available	available	ZA-PokeDLC	918	918	reindexed-original-glb-sha1-cataloged
+822	Corvisquire	available	available	ZA-PokeDLC	919	919	reindexed-original-glb-sha1-cataloged
+823	Corviknight	available	available	ZA-PokeDLC	920	920	reindexed-original-glb-sha1-cataloged
+824	Blipbug	missing	available	SwSh-PokeGen8	930		original-glb-sha1-cataloged
+825	Dottler	missing	available	SwSh-PokeGen8	931		original-glb-sha1-cataloged
 826	Orbeetle	missing	missing				missing
-827	Nickit	missing	missing				missing
-828	Thievul	missing	missing				missing
-829	Gossifleur	available	available	SwSh-PokeGen8	905		original-glb-sha1-verified
-830	Eldegoss	available	available	SwSh-PokeGen8	906		original-glb-sha1-verified
-831	Wooloo	available	available	SwSh-PokeGen8	911		original-glb-sha1-verified
-832	Dubwool	available	available	SwSh-PokeGen8	912		original-glb-sha1-verified
-833	Chewtle	available	available	SwSh-PokeGen8	903		original-glb-sha1-verified
-834	Drednaw	available	available	SwSh-PokeGen8	904		original-glb-sha1-verified
-835	Yamper	available	available	SwSh-PokeGen8	907		original-glb-sha1-verified
-836	Boltund	available	available	SwSh-PokeGen8	908		original-glb-sha1-verified
-837	Rolycoly	available	available	SwSh-PokeGen8	933		original-glb-sha1-verified
-838	Carkol	available	available	SwSh-PokeGen8	934		original-glb-sha1-verified
-839	Coalossal	available	available	SV-Poke	935		original-glb-sha1-verified
-840	Applin	available	available	SV-Poke	966		original-glb-sha1-verified
-841	Flapple	available	available	LA-Poke	841		original-glb-sha1-verified
-842	Appletun	available	available	LA-Poke	842		original-glb-sha1-verified
-843	Silicobra	available	available	SV-Poke	936		original-glb-sha1-verified
-844	Sandaconda	available	available	SV-Poke	937		original-glb-sha1-verified
+827	Nickit	missing	available	ZA-PokeDLC	901	901	reindexed-original-glb-sha1-cataloged
+828	Thievul	missing	available	ZA-PokeDLC	902	902	reindexed-original-glb-sha1-cataloged
+829	Gossifleur	missing	available	SwSh-PokeGen8	905		original-glb-sha1-cataloged
+830	Eldegoss	missing	available	SwSh-PokeGen8	906		original-glb-sha1-cataloged
+831	Wooloo	missing	available	SwSh-PokeGen8	911		original-glb-sha1-cataloged
+832	Dubwool	missing	available	SwSh-PokeGen8	912		original-glb-sha1-cataloged
+833	Chewtle	missing	available	SwSh-PokeGen8	903		original-glb-sha1-cataloged
+834	Drednaw	missing	available	SwSh-PokeGen8	904		original-glb-sha1-cataloged
+835	Yamper	missing	available	SwSh-PokeGen8	907		original-glb-sha1-cataloged
+836	Boltund	missing	available	SwSh-PokeGen8	908		original-glb-sha1-cataloged
+837	Rolycoly	missing	available	SwSh-PokeGen8	933		original-glb-sha1-cataloged
+838	Carkol	missing	available	SwSh-PokeGen8	934		original-glb-sha1-cataloged
+839	Coalossal	missing	available	SV-Poke	935		original-glb-sha1-cataloged
+840	Applin	missing	available	SV-Poke	966		original-glb-sha1-cataloged
+841	Flapple	missing	available	LA-Poke	841		original-glb-sha1-cataloged
+842	Appletun	missing	available	LA-Poke	842		original-glb-sha1-cataloged
+843	Silicobra	missing	available	SV-Poke	936		original-glb-sha1-cataloged
+844	Sandaconda	missing	available	SV-Poke	937		original-glb-sha1-cataloged
 845	Cramorant	missing	missing				missing
 846	Arrokuda	missing	missing				missing
 847	Barraskewda	missing	missing				missing
-848	Toxel	missing	missing				missing
+848	Toxel	missing	available	ZA-PokeDLC	921	921	reindexed-original-glb-sha1-cataloged
 849	Toxtricity	missing	missing				missing
 850	Sizzlipede	missing	missing				missing
 851	Centiskorch	missing	missing				missing
-852	Clobbopus	available	available	SwSh-PokeGen8	964		original-glb-sha1-verified
-853	Grapploct	available	available	SwSh-PokeGen8	965		original-glb-sha1-verified
+852	Clobbopus	missing	available	SwSh-PokeGen8	964		original-glb-sha1-cataloged
+853	Grapploct	missing	available	SwSh-PokeGen8	965		original-glb-sha1-cataloged
 854	Sinistea	missing	missing				missing
 855	Polteageist	missing	missing				missing
-856	Hatenna	available	available	ZA-Poke	856		original-glb-sha1-verified
-857	Hattrem	available	available	SwSh-PokeGen8	970		original-glb-sha1-verified
-858	Hatterene	available	available	SwSh-PokeGen8	971		original-glb-sha1-verified
-859	Impidimp	available	available	ZA-PokeDLC	859		original-glb-sha1-verified
-860	Morgrem	available	available	ZA-PokeDLC	860		original-glb-sha1-verified
-861	Grimmsnarl	available	available	SwSh-PokeGen8	959		original-glb-sha1-verified
+856	Hatenna	missing	missing				missing
+857	Hattrem	missing	available	SwSh-PokeGen8	970		original-glb-sha1-cataloged
+858	Hatterene	missing	available	SwSh-PokeGen8	971		original-glb-sha1-cataloged
+859	Impidimp	missing	missing				missing
+860	Morgrem	missing	missing				missing
+861	Grimmsnarl	missing	available	SwSh-PokeGen8	959		original-glb-sha1-cataloged
 862	Obstagoon	missing	missing				missing
 863	Perrserker	missing	missing				missing
 864	Cursola	missing	missing				missing
 865	Sirfetch’d	missing	missing				missing
-866	Mr. Rime	available	available	ZA-PokeDLC	866		original-glb-sha1-verified
-867	Runerigus	available	available	ZA-PokeDLC	867		original-glb-sha1-verified
-868	Milcery	available	available	SV-PokeDLC2	924		original-glb-sha1-verified
+866	Mr. Rime	missing	missing				missing
+867	Runerigus	missing	missing				missing
+868	Milcery	missing	available	SV-PokeDLC2	924		original-glb-sha1-cataloged
 869	Alcremie	missing	missing				missing
-870	Falinks	available	available	SwSh-PokeGen8	923		original-glb-sha1-verified
-871	Pincurchin	available	available	SV-Poke	944		original-glb-sha1-verified
-872	Snom	available	available	SV-Poke	945		original-glb-sha1-verified
-873	Frosmoth	available	available	SV-Poke	946		original-glb-sha1-verified
-874	Stonjourner	available	available	SV-Poke	974		original-glb-sha1-verified
+870	Falinks	missing	available	SwSh-PokeGen8	923		original-glb-sha1-cataloged
+871	Pincurchin	missing	available	SV-Poke	944		original-glb-sha1-cataloged
+872	Snom	missing	available	SV-Poke	945		original-glb-sha1-cataloged
+873	Frosmoth	missing	available	SV-Poke	946		original-glb-sha1-cataloged
+874	Stonjourner	missing	available	SV-Poke	974		original-glb-sha1-cataloged
 875	Eiscue	missing	missing				missing
-876	Indeedee	available	available	SwSh-PokeGen8	942		original-glb-sha1-verified
+876	Indeedee	missing	available	SwSh-PokeGen8	942		original-glb-sha1-cataloged
 877	Morpeko	missing	missing				missing
-878	Cufant	available	available	SwSh-PokeGen8	926		original-glb-sha1-verified
-879	Copperajah	available	available	SwSh-PokeGen8	927		original-glb-sha1-verified
-880	Dracozolt	available	available	SwSh-PokeGen8	960		original-glb-sha1-verified
-881	Arctozolt	available	available	SwSh-PokeGen8	961		original-glb-sha1-verified
-882	Dracovish	available	available	SwSh-PokeGen8	962		original-glb-sha1-verified
-883	Arctovish	available	available	ZA-PokeDLC	883		original-glb-sha1-verified
-884	Duraludon	available	available	SwSh-PokeGen8	929		original-glb-sha1-verified
-885	Dreepy	available	available	SwSh-PokeGen8	976		original-glb-sha1-verified
-886	Drakloak	available	available	SwSh-PokeGen8	977		original-glb-sha1-verified
-887	Dragapult	available	available	SwSh-PokeGen8	978		original-glb-sha1-verified
-888	Zacian	available	available	ZA-PokeDLC	888		original-glb-sha1-verified
+878	Cufant	missing	available	SwSh-PokeGen8	926		original-glb-sha1-cataloged
+879	Copperajah	missing	available	SwSh-PokeGen8	927		original-glb-sha1-cataloged
+880	Dracozolt	missing	available	SwSh-PokeGen8	960		original-glb-sha1-cataloged
+881	Arctozolt	missing	available	SwSh-PokeGen8	961		original-glb-sha1-cataloged
+882	Dracovish	missing	available	SwSh-PokeGen8	962		original-glb-sha1-cataloged
+883	Arctovish	missing	missing				missing
+884	Duraludon	missing	available	SwSh-PokeGen8	929		original-glb-sha1-cataloged
+885	Dreepy	missing	available	SwSh-PokeGen8	976		original-glb-sha1-cataloged
+886	Drakloak	missing	available	SwSh-PokeGen8	977		original-glb-sha1-cataloged
+887	Dragapult	missing	available	SwSh-PokeGen8	978		original-glb-sha1-cataloged
+888	Zacian	missing	missing				missing
 889	Zamazenta	missing	missing				missing
-890	Eternatus	available	available	SwSh-PokeGen8	940		original-glb-sha1-verified
-891	Kubfu	available	available	ZA-PokeDLC	891		original-glb-sha1-verified
-892	Urshifu	available	available	ZA-PokeDLC	892		original-glb-sha1-verified
+890	Eternatus	missing	available	SwSh-PokeGen8	940		original-glb-sha1-cataloged
+891	Kubfu	missing	missing				missing
+892	Urshifu	missing	missing				missing
 893	Zarude	missing	missing				missing
-894	Regieleki	available	available	SwSh-PokeGen8	989		original-glb-sha1-verified
-895	Regidrago	available	available	SwSh-PokeGen8	990		original-glb-sha1-verified
-896	Glastrier	available	available	SwSh-PokeGen8	984		original-glb-sha1-verified
-897	Spectrier	available	available	SwSh-PokeGen8	985		original-glb-sha1-verified
+894	Regieleki	missing	available	SwSh-PokeGen8	989		original-glb-sha1-cataloged
+895	Regidrago	missing	available	SwSh-PokeGen8	990		original-glb-sha1-cataloged
+896	Glastrier	missing	available	SwSh-PokeGen8	984		original-glb-sha1-cataloged
+897	Spectrier	missing	available	SwSh-PokeGen8	985		original-glb-sha1-cataloged
 898	Calyrex	missing	missing				missing
-899	Wyrdeer	available	available	LA-Poke	1001		original-glb-sha1-verified
-900	Kleavor	available	available	ZA-PokeDLC	1002		original-glb-sha1-verified
-901	Ursaluna	available	available	ZA-PokeDLC	901		original-glb-sha1-verified
-902	Basculegion	available	available	ZA-PokeDLC	902		original-glb-sha1-verified
+899	Wyrdeer	missing	available	LA-Poke	1001		original-glb-sha1-cataloged
+900	Kleavor	missing	available	ZA-PokeDLC	1002		original-glb-sha1-cataloged
+901	Ursaluna	missing	missing				missing
+902	Basculegion	missing	missing				missing
 903	Sneasler	missing	missing				missing
 904	Overqwil	missing	missing				missing
 905	Enamorus	missing	missing				missing
-906	Sprigatito	available	available	SV-Poke	1010		original-glb-sha1-verified
-907	Floragato	available	available	SV-Poke	1011		original-glb-sha1-verified
-908	Meowscarada	available	available	SV-Poke	1012		original-glb-sha1-verified
-909	Fuecoco	available	available	SV-Poke	1013		original-glb-sha1-verified
-910	Crocalor	available	available	SV-Poke	1014		original-glb-sha1-verified
-911	Skeledirge	available	available	SV-Poke	1015		original-glb-sha1-verified
-912	Quaxly	available	available	SV-Poke	1016		original-glb-sha1-verified
-913	Quaxwell	available	available	SV-Poke	1017		original-glb-sha1-verified
-914	Quaquaval	available	available	SV-Poke	1018		original-glb-sha1-verified
-915	Lechonk	available	available	SV-Poke	1019		original-glb-sha1-verified
-916	Oinkologne	available	available	SV-Poke	1020		original-glb-sha1-verified
-917	Tarountula	available	available	SV-Poke	1022		original-glb-sha1-verified
-918	Spidops	available	available	ZA-PokeDLC	918		original-glb-sha1-verified
-919	Nymble	available	available	ZA-PokeDLC	919		original-glb-sha1-verified
-920	Lokix	available	available	ZA-PokeDLC	920		original-glb-sha1-verified
-921	Pawmi	available	available	ZA-PokeDLC	921		original-glb-sha1-verified
+906	Sprigatito	available	available	SV-Poke	1010		original-glb-sha1-cataloged
+907	Floragato	available	available	SV-Poke	1011		original-glb-sha1-cataloged
+908	Meowscarada	available	available	SV-Poke	1012		original-glb-sha1-cataloged
+909	Fuecoco	available	available	SV-Poke	1013		original-glb-sha1-cataloged
+910	Crocalor	available	available	SV-Poke	1014		original-glb-sha1-cataloged
+911	Skeledirge	available	available	SV-Poke	1015		original-glb-sha1-cataloged
+912	Quaxly	available	available	SV-Poke	1016		original-glb-sha1-cataloged
+913	Quaxwell	available	available	SV-Poke	1017		original-glb-sha1-cataloged
+914	Quaquaval	available	available	SV-Poke	1018		original-glb-sha1-cataloged
+915	Lechonk	available	available	SV-Poke	1019		original-glb-sha1-cataloged
+916	Oinkologne	available	available	SV-Poke	1020		original-glb-sha1-cataloged
+917	Tarountula	available	available	SV-Poke	1022		original-glb-sha1-cataloged
+918	Spidops	missing	missing				missing
+919	Nymble	missing	missing				missing
+920	Lokix	missing	missing				missing
+921	Pawmi	missing	missing				missing
 922	Pawmo	missing	missing				missing
-923	Pawmot	available	available	ZA-Poke	923		original-glb-sha1-verified
+923	Pawmot	missing	missing				missing
 924	Tandemaus	missing	missing				missing
 925	Maushold	missing	missing				missing
 926	Fidough	missing	missing				missing
@@ -940,7 +940,7 @@ dex	name	local_model	public_model	source_game	source_model_id	original_catalog_d
 939	Bellibolt	missing	missing				missing
 940	Wattrel	missing	missing				missing
 941	Kilowattrel	missing	missing				missing
-942	Maschiff	available	available	ZA-PokeDLC	942		original-glb-sha1-verified
+942	Maschiff	missing	missing				missing
 943	Mabosstiff	missing	missing				missing
 944	Shroodle	missing	missing				missing
 945	Grafaiai	missing	missing				missing
@@ -962,8 +962,8 @@ dex	name	local_model	public_model	source_game	source_model_id	original_catalog_d
 961	Wugtrio	missing	missing				missing
 962	Bombirdier	missing	missing				missing
 963	Finizen	missing	missing				missing
-964	Palafin	available	available	ZA-PokeDLC	964		original-glb-sha1-verified
-965	Varoom	available	available	ZA-PokeDLC	965		original-glb-sha1-verified
+964	Palafin	missing	missing				missing
+965	Varoom	missing	missing				missing
 966	Revavroom	missing	missing				missing
 967	Cyclizar	missing	missing				missing
 968	Orthworm	missing	missing				missing

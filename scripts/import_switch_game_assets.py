@@ -81,18 +81,16 @@ SV_MODEL_DEX_MAP = read_swsh_model_dex(SV_MODEL_DEX)
 def national_dex_for_model_id(model_id: int, game: str) -> int:
     if game == "swsh":
         return SWSH_MODEL_DEX_MAP.get(model_id, model_id)
-    if game == "sv":
-        # RTB Scarlet/Violet archives continue the game-internal numbering
-        # from SwSh. Gen 9 begins with pm1001 (Wyrdeer), pm1010 is
-        # Sprigatito, pm1044 is Tadbulb and pm1096 is Iron Bundle.
-        # NEVER publish pm1010 as National #1010 Iron Leaves.
-        # Unknown high internal IDs are not National Dex identifiers.
+    if game in ("sv", "za"):
+        # SV and ZA retain Switch game-internal asset numbering, NOT the
+        # National Dex order. ZA pm0942 is Indeedee (#876), pm0964 is
+        # Clobbopus (#852), and pm0965 is Grapploct (#853).
+        # The >1000 IDs follow the expanded SV model index.
+        # NEVER publish pm1025 as Pecharunt (#1025): it is Lokix (#920).
         if model_id >= 1001:
             return SV_MODEL_DEX_MAP.get(model_id, 0)
         return SWSH_MODEL_DEX_MAP.get(model_id, model_id)
-    if game in ("la", "za") and 1001 <= model_id <= 1007:
-        # PLA / ZA game archives also contain the seven Hisuian species
-        # under pm1001–pm1007, not National Dex #1001–#1007.
+    if game == "la" and 1001 <= model_id <= 1007:
         return SV_MODEL_DEX_MAP.get(model_id, 0)
     return model_id
 
@@ -2335,6 +2333,21 @@ def run_blender(
             flush=True,
         )
         print(f"Failure report: {failure_path}", flush=True)
+        for source in sorted(failed_sources, key=lambda name: (
+            (payload_by_source.get(name) or {}).get("dex", 0), name
+        )):
+            job = payload_by_source.get(source) or {}
+            detail = failure_details.get(source) or {}
+            number = f"#{int(job['dex']):04d}" if job.get("dex") is not None else "unknown Dex"
+            game = job.get("game") or detail.get("game") or "unknown game"
+            form = job.get("form") or detail.get("form") or "regular"
+            reason = (detail.get("error") or detail.get("message")
+                      or detail.get("reason") or "Unspecified conversion error")
+            reason = " ".join(str(reason).split())[:500]
+            print(
+                f"  FAILED {number} ({game}, {form}): {Path(source).name}: {reason}",
+                flush=True,
+            )
 
 
 def choose_idle(names: list[str]) -> str | None:

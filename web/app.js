@@ -41,9 +41,26 @@ const finishedCoverageFillEl = document.querySelector("#finishedCoverageFill");
 // Keep every numbered National Dex species visible even without a model.
 // Externally hosted preview candidates only fill missing Switch entries and are
 // never written into the regular Switch catalog or marked Finished.
+function normalizeSwitchModel(model) {
+  if (!model || model.missingModel || model.communityCandidate) return model;
+  const internal = Number(model.sourceModelId ?? model.modelId);
+  const game = String(model.sourceGame || "");
+  // Correct misnumbered local imports as well as the public inventory.
+  // Keep the physical URL unchanged: it points at the actual existing GLB.
+  if (!Number.isInteger(internal) || internal <= 0 ||
+      !/^(?:sv|swsh|la|za)(?:-|$)/i.test(game)) return model;
+  const dex = window.POKEDEX3D_MODEL_IDENTITY.nationalDex(internal, game);
+  if (!Number.isInteger(dex) || dex < 1 || dex > 1025) return null;
+  if (dex === Number(model.dex)) return model;
+  return { ...model, dex, name: window.POKEDEX3D_NAMES?.[dex] ||
+    "#" + String(dex).padStart(4, "0"), originalCatalogDex: Number(model.dex) };
+}
+
 function withMissingSpeciesEntries(catalog, includeCommunity = true) {
   const entries = new Map();
-  for (const model of catalog) {
+  for (const original of catalog) {
+    const model = normalizeSwitchModel(original);
+    if (!model) continue;
     const dex = Number(model?.dex);
     if (!Number.isInteger(dex) || dex < 1 || dex > 1025) continue;
     if (!entries.has(dex) || (entries.get(dex).missingModel && !model.missingModel)) {
@@ -201,12 +218,17 @@ function catalogCoverageText(catalog) {
     (catalog.length - realSwitch - previews).toLocaleString() + " missing";
 }
 
-let models = withMissingSpeciesEntries((Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
+// Both the on-disk Switch manifest and the uploaded GitHub inventory are
+// available before this script runs. Seed the catalog immediately so that
+// #0001–#0009 (and other uploaded Pokémon) never appear falsely missing.
+const installedSwitchModels = (Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
   ? window.POKEDEX3D_SWITCH_MODELS
   : [])
   .filter(model => model?.valid !== false && model?.ready !== false)
   .filter(model => String(model?.form || "regular").toLowerCase() === "regular")
-  .filter(model => String(model?.url || "").replaceAll("\\", "/").includes("/switch/")));
+  .filter(model => String(model?.url || "").replaceAll("\\", "/").includes("/switch/"));
+const bundledSwitchModels = window.POKEDEX3D_REMOTE_SWITCH?.bundled?.() || [];
+let models = withMissingSpeciesEntries([...installedSwitchModels, ...bundledSwitchModels]);
 
 window.POKEDEX3D_MODELS = models;
 
@@ -830,12 +852,16 @@ if (isLocalIndexServer()) {
 // static page. The configured source is disabled while its GitHub repo remains
 // private; visitors are never asked for personal GitHub credentials.
 window.addEventListener("pokedex3d:remote-switch-catalog", event => {
-  if (localFolderActive || models.some(model => !model.remoteSwitch)) return;
+  if (localFolderActive) return;
   const incoming = Array.isArray(event.detail?.models) ? event.detail.models : [];
   if (!incoming.length) return;
-  const selectedDex = models[selectedIndex]?.dex;
+  const selectedDex = filtered[selectedIndex]?.dex;
   const currentQuery = searchEl.value.trim().toLowerCase().replace(/^#/, "");
-  models = withMissingSpeciesEntries(incoming);
+  // Never let an online refresh discard locally repaired, verified GLBs.
+  // Replace earlier remote revisions, and fill gaps left by local manifests.
+  const localModels = models.filter(model =>
+    !model.remoteSwitch && !model.missingModel && !model.communityCandidate);
+  models = withMissingSpeciesEntries([...localModels, ...incoming]);
   restoreAnimationCoverage();
   window.POKEDEX3D_MODELS = models;
   filtered = currentQuery ? models.filter(model =>

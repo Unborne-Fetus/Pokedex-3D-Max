@@ -79,6 +79,9 @@
           models.push({
             dex,
             name: window.POKEDEX3D_NAMES?.[dex] || saved?.name || '#' + String(dex).padStart(4, '0'),
+            sourceGame: saved?.sourceGame || null,
+            sourceModelId: Number(saved?.sourceModelId || saved?.modelId || 0) || null,
+            sourceBlobSha: saved?.sourceBlobSha || null,
             form: 'regular',
             url: 'web/models/switch/' + String(dex).padStart(4, '0') + '/regular.glb',
             file,
@@ -118,6 +121,9 @@
         animations,
         idleAnimation: model.idleAnimation,
         idleBreaks: Array.isArray(model.idleBreaks) ? model.idleBreaks : [],
+        ...(model.sourceGame ? { sourceGame: model.sourceGame } : {}),
+        ...(model.sourceModelId ? { sourceModelId: model.sourceModelId } : {}),
+        ...(model.sourceBlobSha ? { sourceBlobSha: model.sourceBlobSha } : {}),
         ready: true, valid: true
       });
     }

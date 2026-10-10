@@ -187,9 +187,15 @@ def restore(target: Path, repo: Path = ROOT) -> int:
                 print(f"Skipping damaged Switch GLB {path}: {error}")
                 continue
             if identity is None:
-                # Lack of source IDs is not evidence the folder is accurate.
-                # Keep these in the existing slot but never shift by a guess.
+                # S/V internal IDs overlap the modern National Dex. An old
+                # pm1012 GLB cannot claim Poltchageist's #1012 merely because
+                # an obsolete installation stored it in switch/1012/.
                 uncertain += 1
+                if slot >= 1001:
+                    print(f"Skipping unverified high-Dex model {path}: source species unknown")
+                    continue
+                # Only retain an unverified early slot when its number does
+                # not occupy the known high S/V internal-ID range.
                 dex, internal, game = slot, None, None
             else:
                 dex, internal, game = identity

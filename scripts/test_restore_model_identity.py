@@ -22,6 +22,10 @@ assert known_identity(801, model(801), {"sourceGame": "sv"}, {}) == (747, 801, "
 assert known_identity(906, model(1010), {"sourceGame": "sv",
                                          "sourceModelId": 1010}, {}) == (906, 1010, "sv")
 assert known_identity(1025, model(1131), {"sourceGame": "sv"}, {}) == (1025, 1131, "sv")
+assert known_identity(964, model(964), {"sourceGame": "ZA-PokeDLC"}, {}) == (852, 964, "za")
+assert known_identity(965, model(965), {"sourceGame": "ZA-PokeDLC"}, {}) == (853, 965, "za")
+assert known_identity(942, model(942), {"sourceGame": "ZA-PokeDLC"}, {}) == (876, 942, "za")
+assert known_identity(920, model(920), {"sourceGame": "ZA-PokeDLC"}, {}) == (823, 920, "za")
 assert known_identity(801, model(801), {}, {}) is None
 assert known_identity(701, model(701), {}, {}) is None
 assert glb_internal_id({"images": [{"name": "pm0801_a"}, {"name": "pm0802_b"}]}) is None

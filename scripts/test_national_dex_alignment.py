@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Verify every published National Dex slot against its original Switch ID."""
+"""Audit all 1,025 visible National Dex entries against their source-game IDs.
+
+Legacy upload folders are historical storage keys. They are not Pokémon IDs:
+the browser normalizes them before displaying them, and validates each GLB.
+"""
 from __future__ import annotations
 
 import csv
@@ -12,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def mapping(filename: str) -> dict[int, int]:
     with (ROOT / "data" / filename).open(encoding="utf-8", newline="") as f:
-        return {int(r["model_id"]): int(r["dex"]) for r in csv.DictReader(
+        return {int(row["model_id"]): int(row["dex"]) for row in csv.DictReader(
             (line for line in f if not line.startswith("#")), delimiter="\t")}
 
 
@@ -22,11 +26,11 @@ SV = mapping("sv_model_dex.tsv")
 
 def canonical(game: str, model_id: int) -> int:
     game = game.lower()
-    if game.startswith("sv"):
+    if game.startswith(("sv", "za")):
         return SV.get(model_id, 0) if model_id >= 1001 else SWSH.get(model_id, model_id)
     if game.startswith("swsh"):
         return SWSH.get(model_id, model_id)
-    if (game.startswith("la") or game.startswith("za")) and 1001 <= model_id <= 1007:
+    if game.startswith("la") and 1001 <= model_id <= 1007:
         return SV.get(model_id, 0)
     return model_id
 
@@ -36,47 +40,69 @@ def read_tsv(filename: str) -> list[dict[str, str]]:
         return list(csv.DictReader(f, delimiter="\t"))
 
 
+def visible(rows: list[dict]) -> dict[int, dict]:
+    """Mirror browser's source-ID normalization and first-available priority."""
+    selected = {}
+    for row in rows:
+        original = int(row["dex"])
+        source_id = int(row.get("sourceModelId") or row.get("modelId") or 0)
+        game = str(row.get("sourceGame") or "")
+        corrected = canonical(game, source_id) if source_id else original
+        if 1 <= corrected <= 1025:
+            selected.setdefault(corrected, row)
+    return selected
+
+
 names = {int(r["dex"]): r["name"] for r in read_tsv("data/species_names.tsv")}
-assert set(names) == set(range(1, 1026)), "National Dex names must include #1–#1025 exactly"
-models = json.loads((ROOT / "web/models/switch-manifest.json").read_text(encoding="utf-8"))
-by_dex = {int(r["dex"]): r for r in models}
-assert len(by_dex) == len(models), "Duplicate National Dex numbers"
+assert set(names) == set(range(1, 1026)), "National Dex must contain exactly #1–#1025"
+raw_local = json.loads((ROOT / "web/models/switch-manifest.json").read_text(encoding="utf-8"))
 inventory_js = (ROOT / "web/models/github-inventory.js").read_text(encoding="utf-8")
 match = re.search(r"window.POKEDEX3D_PUBLIC_INVENTORY = (\{.*\});", inventory_js)
 assert match, "Public inventory JavaScript is malformed"
 public = json.loads(match[1])
-public_by_dex = {int(r["dex"]): r for r in public["entries"]}
-assert len(public_by_dex) == len(public["entries"]) == public["count"], "Duplicate public model IDs"
+raw_public = public["entries"]
+assert len(raw_public) == public["count"]
+assert len({int(r["dex"]) for r in raw_local}) == len(raw_local)
+assert len({int(r["dex"]) for r in raw_public}) == len(raw_public)
 
-history = {int(r["dex"]): r for r in json.loads(
-    (ROOT / "data/switch-texture-repair-report.json").read_text(encoding="utf-8")
-)["repaired"]}
+local = visible(raw_local)
+remote = visible(raw_public)
 audit = read_tsv("data/national-dex-model-audit.tsv")
-assert len(audit) == 1025, "Audit must include every National Dex slot"
+assert len(audit) == 1025
+
 for dex, record in enumerate(audit, 1):
     assert int(record["dex"]) == dex
-    assert record["name"] == names[dex]
-    current = by_dex.get(dex)
-    online = public_by_dex.get(dex)
+    assert record["name"] == names[dex], dex
+    current = local.get(dex)
+    online = remote.get(dex)
     assert (record["local_model"] == "available") == (current is not None), dex
     assert (record["public_model"] == "available") == (online is not None), dex
-    if online:
-        assert online["path"] == f"{dex:04d}/regular.glb", (dex, online["path"])
-        if online.get("sourceModelId"):
-            assert canonical(str(online["sourceGame"]), int(online["sourceModelId"])) == dex, dex
-    if not current:
+    chosen = current or online
+    if not chosen:
+        assert record["verification"] == "missing", dex
         continue
-    assert current.get("name", names[dex]) == names[dex], (dex, current.get("name"))
-    assert "switch/" + f"{dex:04d}/regular.glb" in current["url"], dex
-    if current.get("sourceModelId"):
-        assert canonical(str(current["sourceGame"]), int(current["sourceModelId"])) == dex, dex
-    elif dex in history:
-        old = history[dex]
-        source_id = int(re.search(r"pm(\d{4})", old["source"])[1])
-        assert canonical(old["game"], source_id) == dex, (
-            dex, old["game"], source_id, canonical(old["game"], source_id))
-    # Entries without original source IDs are name-checked catalog records,
-    # not represented as binary/visual proof.
-assert 1025 not in by_dex and 1025 not in public_by_dex, "Pecharunt must never display Lokix"
-assert 920 in by_dex and 920 in public_by_dex, "Lokix belongs to #920"
-print(f"Audited 1,025 slots: {len(by_dex)} local models; {len(public_by_dex)} public models")
+    original = int(chosen["dex"])
+    internal = int(chosen.get("sourceModelId") or chosen.get("modelId") or 0)
+    game = str(chosen.get("sourceGame") or "")
+    assert int(record["original_catalog_dex"] or dex) == original, dex
+    assert record["source_game"] == game, dex
+    assert str(record["source_model_id"]) == (str(internal) if internal else ""), dex
+    if internal:
+        assert canonical(game, internal) == dex, (dex, game, internal)
+    if original != dex:
+        assert record["verification"].startswith("reindexed-"), dex
+
+# Regression: these Gen 8 game-internal IDs used to impersonate Gen 9 species.
+for internal, real_dex, wrong_dex in [
+    (942, 876, 942), (964, 852, 964), (965, 853, 965),
+    (920, 823, 920), (1025, 920, 1025),
+]:
+    game = "sv" if internal == 1025 else "za"
+    assert canonical(game, internal) == real_dex
+    if wrong_dex in (942, 964, 965, 1025):
+        assert wrong_dex not in remote, f"Wrong model still masquerades as #{wrong_dex}"
+assert 1025 not in local and 1025 not in remote, "Never show Lokix as Pecharunt"
+assert 852 in remote and 853 in remote and 876 in remote
+assert set(range(1, 1026)) == set(names), "Even missing models retain their correct Dex labels"
+print(f"Audited 1,025 slots: {len(local)} local, {len(remote)} public, "
+      f"{sum(1 for r in audit if r['verification'].startswith('reindexed-'))} reindexed")

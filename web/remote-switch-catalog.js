@@ -39,8 +39,17 @@
       if (!inventory && String(entry.form || "") !== "regular") continue;
       const match = String(entry.path || "").match(PATH);
       if (!match || Number(entry.dex) !== Number(match[1])) continue;
-      const dex = Number(entry.dex);
-      if (dex < 1 || dex > 1025 || seen.has(dex)) continue;
+      // The upload paths are historical storage slots, not evidence of
+      // species identity. ZA, just like SV, retains SwSh's internal IDs:
+      // /0964/ can therefore contain Clobbopus, not Palafin.
+      const recordedDex = Number(entry.dex);
+      const sourceId = Number(entry.sourceModelId);
+      const sourceGame = String(entry.sourceGame || "");
+      const recognized = /^(?:sv|swsh|la|za)(?:-|$)/i.test(sourceGame);
+      const dex = recognized && Number.isInteger(sourceId) && sourceId > 0
+        ? window.POKEDEX3D_MODEL_IDENTITY.nationalDex(sourceId, sourceGame)
+        : recordedDex;
+      if (!Number.isInteger(dex) || dex < 1 || dex > 1025 || seen.has(dex)) continue;
       const clips = Array.isArray(entry.animations) ? entry.animations : [];
       const idle = String(entry.idleAnimation || "");
       if (!inventory && (!idle || !clips.includes(idle))) continue;
@@ -53,8 +62,9 @@
           || !url.pathname.startsWith(basePath)) continue;
       seen.add(dex);
       results.push({
-        dex, form: "regular", name: window.POKEDEX3D_NAMES?.[dex]
-          || entry.name || "#" + String(dex).padStart(4, "0"),
+        dex, originalCatalogDex: recordedDex,
+        form: "regular", name: window.POKEDEX3D_NAMES?.[dex]
+          || "#" + String(dex).padStart(4, "0"),
         url: url.href, remoteSwitch: true, ready: true, valid: true,
         // An inventory is NOT evidence of texture correctness or animations.
         preflightRequired: inventory,
@@ -229,13 +239,16 @@
       const live = prepare(config, await response.json());
       if (!live.length) throw Error("Public repository inventory is empty");
       // An existing GLB may change without changing the total model count.
-      const snapshotEntries = new Map(
-        (snapshot?.entries || []).map(entry => [Number(entry.dex), entry]));
-      const changed = !snapshot || live.length !== snapshot.entries.length ||
+      // Compare normalized species, not raw upload slots. Older inventories
+      // can contain 695 storage paths but only 690 distinct National Dex IDs.
+      // Otherwise this republishes the same catalog on every page load.
+      const bundledModels = snapshot ? prepare(config, snapshot) : [];
+      const snapshotModels = new Map(bundledModels.map(model => [model.dex, model]));
+      const changed = !snapshot || live.length !== bundledModels.length ||
         live.some(model => {
-          const original = snapshotEntries.get(model.dex);
-          return !original || model.assetRevision !==
-            String(original.sha256 || original.sha || original.bytes || "");
+          const original = snapshotModels.get(model.dex);
+          return !original || model.assetRevision !== original.assetRevision ||
+            model.url !== original.url;
         });
       if (changed) publish(live);
     } catch (error) {
@@ -247,7 +260,16 @@
     }
   }
 
-  window.POKEDEX3D_REMOTE_SWITCH = Object.freeze({ prepare, inspect });
+  // Expose the bundled inventory synchronously. The app must not show
+  // committed GLBs as missing while waiting for an asynchronous catalog event.
+  function bundled() {
+    const snapshot = window.POKEDEX3D_PUBLIC_INVENTORY;
+    if (!snapshot) return [];
+    try { return prepare(defaults, snapshot); }
+    catch (_) { return []; }
+  }
+
+  window.POKEDEX3D_REMOTE_SWITCH = Object.freeze({ prepare, inspect, bundled });
   // Defer catalog notifications until the main viewer has registered handlers.
   if (typeof document !== "undefined" && document.readyState !== "complete") {
     document.addEventListener("DOMContentLoaded", load, { once: true });
