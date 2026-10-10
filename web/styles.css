@@ -12,11 +12,14 @@ html, body {
   overflow: hidden;
   background: #07101d;
 }
+body { display: flex; flex-direction: column; }
 button, input, select { font: inherit; }
 
 .topbar {
   min-height: 76px;
   display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -35,7 +38,8 @@ button, input, select { font: inherit; }
 .layout {
   display: grid;
   grid-template-columns: minmax(260px, 360px) 1fr;
-  height: calc(100vh - 76px);
+  height: auto;
+  flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
 }
@@ -197,10 +201,12 @@ model-viewer.fallback-active { visibility: hidden; }
 
 @media (max-width: 820px) {
   html, body { overflow: auto; height: auto; }
+  body { min-height: 100dvh; }
   .layout {
     grid-template-columns: 1fr;
     height: auto;
-    min-height: calc(100vh - 76px);
+    min-height: 0;
+    flex: none;
     overflow: visible;
   }
   .sidebar {
@@ -299,3 +305,47 @@ model-viewer.fallback-active { visibility: hidden; }
 /* No-billing manifest export, directly from the browser's inspected files. */
 #exportModelManifest { margin-top: 8px; border-color: #547d9f; width: 100%; }
 #exportModelManifest:disabled { opacity: .5; cursor: not-allowed; }
+
+
+/* National Dex coverage meters (distinct from model-viewer's loading bar). */
+.coverage-meters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: min(480px, 52vw);
+  margin-left: auto;
+}
+.coverage-meter { min-width: 0; }
+.coverage-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: .8rem;
+  color: #b9c9dd;
+}
+.coverage-heading strong { font-size: .83rem; color: #fff; white-space: nowrap; }
+.coverage-track {
+  width: 100%;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: #28354b;
+  overflow: hidden;
+}
+.coverage-fill { height: 100%; width: 0; border-radius: inherit; transition: width .35s ease; }
+.coverage-fill--models { background: #79bdff; }
+.coverage-fill--animations { background: #ad94ff; }
+.coverage-detail {
+  display: block;
+  margin-top: 4px;
+  color: #9caac0;
+  font-size: .72rem;
+  line-height: 1.35;
+}
+@media (max-width: 950px) {
+  .coverage-meters { order: 3; width: 100%; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .coverage-fill { transition: none; }
+}
