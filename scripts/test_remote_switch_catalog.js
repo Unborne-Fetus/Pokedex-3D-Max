@@ -21,6 +21,8 @@ const context = {
   fetch: async () => { throw Error("Automated test does not need network"); },
 };
 browser.dispatchEvent = event => events.push(event);
+vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../web/model-identity.js"), "utf8"), context,
+  { filename: "model-identity.js" });
 vm.runInNewContext(inventoryScript, context, { filename: "github-inventory.js" });
 vm.runInNewContext(source, context, { filename: "remote-switch-catalog.js" });
 const { prepare, inspect, bundled } = browser.POKEDEX3D_REMOTE_SWITCH;
