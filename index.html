@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin />
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-  <link rel="stylesheet" href="web/styles.css?v=7" />
+  <link rel="stylesheet" href="web/styles.css?v=8" />
   <script defer src="web/vendor/model-viewer.min.js"></script>
 </head>
 <body>
@@ -25,6 +25,14 @@
           <div class="coverage-fill coverage-fill--models" id="modelCoverageFill"></div>
         </div>
         <small class="coverage-detail" id="modelCoverageDetail">Checking model catalog…</small>
+      </div>
+      <div class="coverage-meter">
+        <div class="coverage-heading"><span>Finished Pokémon</span><strong id="finishedCoverageCount">9 / 1,025</strong></div>
+        <div class="coverage-track" id="finishedCoverageProgress" role="progressbar"
+             aria-label="Pokémon reviews finished" aria-valuemin="0" aria-valuemax="1025" aria-valuenow="9">
+          <div class="coverage-fill coverage-fill--finished" id="finishedCoverageFill"></div>
+        </div>
+        <small class="coverage-detail" id="finishedCoverageDetail">Reviewed through #0009 Blastoise</small>
       </div>
       <div class="coverage-meter">
         <div class="coverage-heading"><span>Idle animations</span><strong id="animationCoverageCount">— / 1,025</strong></div>
@@ -137,12 +145,13 @@
     }, 2500);
   </script>
   <script src="web/species-names.js"></script>
+  <script src="web/finished-pokemon.js?v=1"></script>
   <script src="web/models/switch-manifest.js?v=6" onerror="this.remove()"></script>
   <script defer src="web/local-switch-catalog.js?v=2"></script>
   <script defer src="web/models/github-inventory.js?v=1"></script>
   <script defer src="web/remote-switch-catalog.js?v=3"></script>
   <script defer src="web/species-texture-repairs.js?v=7"></script>
-  <script defer src="web/app.js?v=50"></script>
+  <script defer src="web/app.js?v=51"></script>
 </body>
 </html>
 
