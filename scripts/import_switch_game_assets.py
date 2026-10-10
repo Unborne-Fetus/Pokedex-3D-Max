@@ -90,7 +90,9 @@ def is_switch_pokemon_asset_archive(path: Path) -> bool:
         return False
 
     stem = path.stem.lower().replace("_", "-")
-    if "poke" not in stem:
+    # Support extracted-archive naming such as "SV-Models.zip" and
+    # "LA-Animations.7z" in addition to Poke/PokeAnim release names.
+    if not any(word in stem for word in ("poke", "model", "anim")):
         return False
 
     excluded = (
@@ -156,6 +158,33 @@ def discover_default_inputs() -> list[Path]:
             seen.add(resolved)
             found.append(resolved)
 
+    # Users may have extracted their own Switch archives already. Previous
+    # autodiscovery only visited ZIP/7z files and ignored these folders.
+    # Restrict the search to game-labelled roots; do not mix game skeletons
+    # or infer that an unknown directory contains compatible animations.
+    for base in (ROOT / "switch-assets", ROOT / ".cache" / "mega-switch-assets"):
+        if not base.is_dir():
+            continue
+        candidates = [base]
+        candidates.extend(child for child in base.iterdir() if child.is_dir())
+        for child in list(candidates[1:]):
+            if detect_game(child) == "unknown":
+                candidates.extend(sub for sub in child.iterdir() if sub.is_dir())
+        for folder in candidates:
+            if detect_game(folder) == "unknown":
+                continue
+            resolved = folder.resolve()
+            if resolved in seen:
+                continue
+            if not any(path.is_file() and path.suffix.lower() in MODEL_EXTS
+                       for path in folder.rglob("*")):
+                continue
+            # Prefer a game-labelled parent folder over its nested children.
+            if any(parent in resolved.parents for parent in seen if parent.is_dir()):
+                continue
+            seen.add(resolved)
+            found.append(resolved)
+
     return sorted(found, key=lambda p: (detect_game(p), p.name.lower(), str(p).lower()))
 
 
@@ -179,6 +208,22 @@ def detect_game(path: Path) -> str:
         return "lgpe"
     if any(x in text for x in ("brilliant-diamond", "shining-pearl", "bdsp")):
         return "bdsp"
+    # Extracted asset directories are often named simply SV, LA, ZA, etc.
+    # Recognize full path components, not arbitrary substrings (e.g. the
+    # letters "la" inside another directory name must not mean Legends).
+    by_folder = {
+        "sv": "sv",
+        "swsh": "swsh",
+        "la": "la",
+        "pla": "la",
+        "za": "za",
+        "lgpe": "lgpe",
+        "bdsp": "bdsp",
+    }
+    for component in reversed(path.parts):
+        game = by_folder.get(component.casefold().replace("_", "-"))
+        if game:
+            return game
     return "unknown"
 
 
@@ -2676,6 +2721,13 @@ def run_self_tests() -> None:
     assert is_switch_texture_archive(Path("Textures-SwSh.zip"))
     assert is_switch_texture_archive(Path("SwSh-TexPack.7z"))
     assert not is_switch_texture_archive(Path("SV-Poke.zip"))
+    assert detect_game(Path("switch-assets/SV/pm0906_00_00.trmdl")) == "sv"
+    assert detect_game(Path("switch-assets/LA/pm0899_00_00.trmdl")) == "la"
+    assert detect_game(Path("switch-assets/ZA/pm0650_00_00.trmdl")) == "za"
+    assert detect_game(Path("switch-assets/BDSP/pm0165_00_00.trmdl")) == "bdsp"
+    assert detect_game(Path("other/catalog/pm0906_00_00.trmdl")) == "unknown"
+    assert is_switch_pokemon_asset_archive(Path("switch-assets/SV/Models.zip"))
+    assert is_switch_pokemon_asset_archive(Path("switch-assets/LA/Animations.7z"))
 
     assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
     assert infer_form_key(Path("pm0479_16_00_20012_battleidle02.tranm")) == "16"
