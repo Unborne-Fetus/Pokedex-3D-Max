@@ -41,21 +41,26 @@ const finishedCoverageFillEl = document.querySelector("#finishedCoverageFill");
 // Keep every numbered National Dex species visible even without a model.
 // Externally hosted preview candidates only fill missing Switch entries and are
 // never written into the regular Switch catalog or marked Finished.
-function correctlyNumberedSwitchModel(model) {
-  if (!model || model.missingModel || model.communityCandidate) return true;
+function normalizeSwitchModel(model) {
+  if (!model || model.missingModel || model.communityCandidate) return model;
   const internal = Number(model.sourceModelId ?? model.modelId);
   const game = String(model.sourceGame || "");
-  // Reject known misnumbered local imports *before* they reach the viewer.
-  // Unknown sources still require per-file identity verification at load.
-  if (!Number.isInteger(internal) ||
-      !/^(?:sv|swsh|la|za)(?:-|$)/i.test(game)) return true;
-  return window.POKEDEX3D_MODEL_IDENTITY.nationalDex(internal, game) === Number(model.dex);
+  // Correct misnumbered local imports as well as the public inventory.
+  // Keep the physical URL unchanged: it points at the actual existing GLB.
+  if (!Number.isInteger(internal) || internal <= 0 ||
+      !/^(?:sv|swsh|la|za)(?:-|$)/i.test(game)) return model;
+  const dex = window.POKEDEX3D_MODEL_IDENTITY.nationalDex(internal, game);
+  if (!Number.isInteger(dex) || dex < 1 || dex > 1025) return null;
+  if (dex === Number(model.dex)) return model;
+  return { ...model, dex, name: window.POKEDEX3D_NAMES?.[dex] ||
+    "#" + String(dex).padStart(4, "0"), originalCatalogDex: Number(model.dex) };
 }
 
 function withMissingSpeciesEntries(catalog, includeCommunity = true) {
   const entries = new Map();
-  for (const model of catalog) {
-    if (!correctlyNumberedSwitchModel(model)) continue;
+  for (const original of catalog) {
+    const model = normalizeSwitchModel(original);
+    if (!model) continue;
     const dex = Number(model?.dex);
     if (!Number.isInteger(dex) || dex < 1 || dex > 1025) continue;
     if (!entries.has(dex) || (entries.get(dex).missingModel && !model.missingModel)) {
