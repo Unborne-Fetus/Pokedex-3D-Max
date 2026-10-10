@@ -186,81 +186,85 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 473164,
+    "bytes": 473168,
     "dex": 19,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0019/regular.glb",
-    "sha256": "cf38958a3383f536b37034273afe4dec2fd9c2a1b2b700fafeba84c98d8fc559",
+    "sha256": "3947431e1ebf39beb9e932e9ae8d9a474fde7c560b5629d78b53a3b70d963ace",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "lgpe",
     "name": "Rattata",
-    "url": "web/models/switch/0019/regular.glb",
+    "url": "web/models/switch/0019/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 560160,
+    "bytes": 560164,
     "dex": 20,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0020/regular.glb",
-    "sha256": "4f12bd32feabfff2335ebb9f092f0b67b268bbcde62e2e77b92565901bf06b2c",
+    "sha256": "7bd2af4648512b0f624a923c1e6feb34160909f3bfd23becd3d6194ce74d409c",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "lgpe",
     "name": "Raticate",
-    "url": "web/models/switch/0020/regular.glb",
+    "url": "web/models/switch/0020/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 734036,
+    "bytes": 734040,
     "dex": 21,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0021/regular.glb",
-    "sha256": "35cf42c17abdc82dc01fbaa7e5176cdaf017b448cae01fd5d400ce598e1a095e",
+    "sha256": "5273970182b7f275597f0e182343feb9d975f8b610e0626c90d258105cedd55c",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "lgpe",
     "name": "Spearow",
-    "url": "web/models/switch/0021/regular.glb",
+    "url": "web/models/switch/0021/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 849652,
+    "bytes": 849656,
     "dex": 22,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0022/regular.glb",
-    "sha256": "8d643da91d363fd8ecc1ba72483dc3bcf679d5107da8c10a789fef35e9740444",
+    "sha256": "ee123093f30510d4b8640b975092c1d2e411a4711f576a5a51c2750fba118297",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "lgpe",
     "name": "Fearow",
-    "url": "web/models/switch/0022/regular.glb",
+    "url": "web/models/switch/0022/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 23,
@@ -338,121 +342,127 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 342520,
+    "bytes": 342524,
     "dex": 29,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0029/regular.glb",
-    "sha256": "17a2feeaafb24eca8f7580e2c017595c3e493204335c8c85364a26b2814f826a",
+    "sha256": "c0455bb38e3adaeaf0af5856db2432137c08d1bdbde511ce194f41fd4a5ac6ca",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
-    "name": "Nidoran\u2640",
-    "url": "web/models/switch/0029/regular.glb",
+    "name": "Nidoran♀",
+    "url": "web/models/switch/0029/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 383272,
+    "bytes": 383276,
     "dex": 30,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0030/regular.glb",
-    "sha256": "56920f9b518335f3f82866bdc6248be5981923597c4dd06b0e3247aca3224809",
+    "sha256": "1064ecb69b06af4a99e416cf42ae518be3c2b56e60a09f63c9e6ac60e7d05365",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Nidorina",
-    "url": "web/models/switch/0030/regular.glb",
+    "url": "web/models/switch/0030/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 405664,
+    "bytes": 405668,
     "dex": 31,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0031/regular.glb",
-    "sha256": "372934f561ddcac238ce5caafa34b0540fc6d3e0ee66c251d7a3079b513a5037",
+    "sha256": "5d68f3240ce1177868cedf7081540ce46bc12c215028de39fa7b08185951c8d6",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Nidoqueen",
-    "url": "web/models/switch/0031/regular.glb",
+    "url": "web/models/switch/0031/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 362988,
+    "bytes": 362992,
     "dex": 32,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0032/regular.glb",
-    "sha256": "a049a9811811aa06c7d3174ba7bdaed3e4abd32d9ab7121307b3d7e9511c67b1",
+    "sha256": "f8eaee0504bea483254f6fad096b0c57b667d546470f4d70056248e507d4122d",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
-    "name": "Nidoran\u2642",
-    "url": "web/models/switch/0032/regular.glb",
+    "name": "Nidoran♂",
+    "url": "web/models/switch/0032/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 392656,
+    "bytes": 392660,
     "dex": 33,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0033/regular.glb",
-    "sha256": "0f81ab829819e1096dc9b2b0a26153c7bca34689c5fdad98bb4409c20cd81ea6",
+    "sha256": "0c8d8a3d208dd45c7a6225dc2b7832ba81d062288b8d5fcc7bcb7a9de194c328",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Nidorino",
-    "url": "web/models/switch/0033/regular.glb",
+    "url": "web/models/switch/0033/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 464480,
+    "bytes": 464484,
     "dex": 34,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0034/regular.glb",
-    "sha256": "5f83ac66da1f15166dc79103b5fdb2ee8d22729fb06d55b1716faf64f589588f",
+    "sha256": "a52bf83409722541f0bfb71305a3b0a8e18b91b3b4c3062c07984e1abb90db66",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Nidoking",
-    "url": "web/models/switch/0034/regular.glb",
+    "url": "web/models/switch/0034/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 35,
@@ -998,41 +1008,43 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 447780,
+    "bytes": 447784,
     "dex": 98,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0098/regular.glb",
-    "sha256": "cb8264cd1135d2329f6d708d33001bb8b504ecc5ef0db752a6ff1f8f4f55b7e8",
+    "sha256": "fcd332bbf07a019c47f626b5761c31900c8683269ed3daf1b4d499c8124d1135",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Krabby",
-    "url": "web/models/switch/0098/regular.glb",
+    "url": "web/models/switch/0098/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 481780,
+    "bytes": 481784,
     "dex": 99,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0099/regular.glb",
-    "sha256": "49e852ca158207baba3f7fb64462f5d10318a66bf88c8b9d79edd1b9e8cf3b9b",
+    "sha256": "ce91e4dfd764028e92760bbf51e05740bdf80fb9bacc3d627db10a761fbc4edf",
     "shard": "switch-models-0001-0100.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Kingler",
-    "url": "web/models/switch/0099/regular.glb",
+    "url": "web/models/switch/0099/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 100,
@@ -1206,41 +1218,43 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 381188,
+    "bytes": 381192,
     "dex": 118,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0118/regular.glb",
-    "sha256": "f3bba2c9da85945c07cf4df072ba926bc4062f5f5fc7e33d6890a874b244351b",
+    "sha256": "8cad59ca12c0fa9cca1c00ab41ba1d90176bdb0885bf835093c01c586714e71b",
     "shard": "switch-models-0101-0200.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Goldeen",
-    "url": "web/models/switch/0118/regular.glb",
+    "url": "web/models/switch/0118/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 350420,
+    "bytes": 350424,
     "dex": 119,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0119/regular.glb",
-    "sha256": "41fbc5914e5eb74bb657bcd3ae8691186adbc09864d8a81befadc3edef1256b6",
+    "sha256": "7c524998637d3937eece2b4a2eb96b4133b5e4fd7b425b2012cc5f63c1615d5c",
     "shard": "switch-models-0101-0200.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Seaking",
-    "url": "web/models/switch/0119/regular.glb",
+    "url": "web/models/switch/0119/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 120,
@@ -1278,21 +1292,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 606652,
+    "bytes": 606656,
     "dex": 124,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0124/regular.glb",
-    "sha256": "c1e89ee2e3dddea744ba4fd1e63753e89d3366372eb8638311f884c68aec6f9d",
+    "sha256": "cbeafd96b835568f80ef6f1702528203a5484f9e36010e4c292007f49a3603ae",
     "shard": "switch-models-0101-0200.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Jynx",
-    "url": "web/models/switch/0124/regular.glb",
+    "url": "web/models/switch/0124/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 125,
@@ -1402,81 +1417,85 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 360080,
+    "bytes": 360084,
     "dex": 138,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0138/regular.glb",
-    "sha256": "e1bbb92d8b0ee88d482b4025c74e0e0a0aa3c534d499014e1d2e14e551090412",
+    "sha256": "4bd2dfa718fd1fed187af3604a4b40e0646c28fe2e25d9d631d058a050f52f9a",
     "shard": "switch-models-0101-0200.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Omanyte",
-    "url": "web/models/switch/0138/regular.glb",
+    "url": "web/models/switch/0138/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 549216,
+    "bytes": 549220,
     "dex": 139,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0139/regular.glb",
-    "sha256": "68790c12a5e909293117ccba3fbd9a844ef05717d3cae0421ec272169a43f80b",
+    "sha256": "950982d154b8c17f1de92e246efbbffbc653bf7fdfe8196f296dffa2494a35d1",
     "shard": "switch-models-0101-0200.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Omastar",
-    "url": "web/models/switch/0139/regular.glb",
+    "url": "web/models/switch/0139/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 236376,
+    "bytes": 236380,
     "dex": 140,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0140/regular.glb",
-    "sha256": "15c6811107df22dee2e0ffa33a761ed72334e5847d5bc8fbf27ce9d396edbd7e",
+    "sha256": "85e341b7711ca1fc0b1e5813d4821f1a8507bf13d845856df8a32442c1fa7c23",
     "shard": "switch-models-0101-0200.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Kabuto",
-    "url": "web/models/switch/0140/regular.glb",
+    "url": "web/models/switch/0140/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 459964,
+    "bytes": 459968,
     "dex": 141,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0141/regular.glb",
-    "sha256": "05bdbb4a64408f8f46c6fd200073575660ad61cb595e3705ae09ebc9852d8c3c",
+    "sha256": "73550cdad39d0fec141533344aaffeb2cdd75f06c05fb88aee0560b6a1f7d806",
     "shard": "switch-models-0101-0200.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Kabutops",
-    "url": "web/models/switch/0141/regular.glb",
+    "url": "web/models/switch/0141/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 142,
@@ -1794,41 +1813,43 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 293632,
+    "bytes": 293636,
     "dex": 177,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0177/regular.glb",
-    "sha256": "7d5911b319a64c30e55e26ce07ee598101855e5505f77a744d84e44ef6cde950",
+    "sha256": "b4ff13254c035ec3502d1e43faeca63a3db3be583653e9b5777776abdeeac513",
     "shard": "switch-models-0101-0200.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Natu",
-    "url": "web/models/switch/0177/regular.glb",
+    "url": "web/models/switch/0177/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 407284,
+    "bytes": 407288,
     "dex": 178,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0178/regular.glb",
-    "sha256": "7739bb8b84eaf721fd7b6d4c98239209c6b97658a0e0efb75bf11205a023839a",
+    "sha256": "e02c5dbade1fa11b0a2395cf2f0dc8238a2712b2ff96de5a52c6299240aaa121",
     "shard": "switch-models-0101-0200.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Xatu",
-    "url": "web/models/switch/0178/regular.glb",
+    "url": "web/models/switch/0178/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 179,
@@ -2022,21 +2043,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 344284,
+    "bytes": 344288,
     "dex": 202,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0202/regular.glb",
-    "sha256": "be2b6ef480b697b99f20123e75946abfad50dca9be291d00a4cda2c7e89e4d51",
+    "sha256": "82dbe62d0d1c74ae3cbc4b557c8b12a9af5b18b9856d12abe7d17fba27846f10",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Wobbuffet",
-    "url": "web/models/switch/0202/regular.glb",
+    "url": "web/models/switch/0202/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 203,
@@ -2122,21 +2144,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 355168,
+    "bytes": 355172,
     "dex": 213,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0213/regular.glb",
-    "sha256": "3dc9b12343d034f0220b89877051aa67902f79abdf81aee4d2e11666443ef98c",
+    "sha256": "bdcc0ca1e8cf7f67ece1004aee4480993bf2ad7397645768c19508c9868c4134",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Shuckle",
-    "url": "web/models/switch/0213/regular.glb",
+    "url": "web/models/switch/0213/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 214,
@@ -2230,21 +2253,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 351152,
+    "bytes": 351156,
     "dex": 222,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0222/regular.glb",
-    "sha256": "eeaba718f5297387003dafdf6fcb030e9f45bd04f32557ca960a790a672b0b1d",
+    "sha256": "8aa0b772e6933fe1d2ed431def8d9a133e43dd867dced74a2ee12d1c065322d1",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Corsola",
-    "url": "web/models/switch/0222/regular.glb",
+    "url": "web/models/switch/0222/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 223,
@@ -2370,21 +2394,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 383760,
+    "bytes": 383764,
     "dex": 238,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0238/regular.glb",
-    "sha256": "9036170312484e58953c6668114f8a285de94c3b6e1b210fdf244876fcb65efa",
+    "sha256": "5ff1a3f7f3a5f0ccde29c4e9c0d5745a4cdb42f6d22e28d4b1b5ac9163500c3e",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Smoochum",
-    "url": "web/models/switch/0238/regular.glb",
+    "url": "web/models/switch/0238/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 239,
@@ -2406,21 +2431,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 468192,
+    "bytes": 468196,
     "dex": 241,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0241/regular.glb",
-    "sha256": "8588cc9bef8ea04763b7d5dc4c89690ca1bb8b5a8f4a4458fb6408b18d0b7306",
+    "sha256": "f768ae0e8a0c64ce0e0fd822b3573ee1917af3314a4642e3efa43293f62a0c5f",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Miltank",
-    "url": "web/models/switch/0241/regular.glb",
+    "url": "web/models/switch/0241/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 242,
@@ -2498,21 +2524,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 402940,
+    "bytes": 402944,
     "dex": 251,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0251/regular.glb",
-    "sha256": "cef0e9a36d5edfd695263c14bb3f6c17b5cebfcb59840ba7a82337ade1252c8a",
+    "sha256": "997aab033a87906d8acd0aa31af29ae4b8ffe952e94b686af2b6182a8059d5d9",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Celebi",
-    "url": "web/models/switch/0251/regular.glb",
+    "url": "web/models/switch/0251/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 252,
@@ -2630,41 +2657,43 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 500664,
+    "bytes": 500668,
     "dex": 263,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0263/regular.glb",
-    "sha256": "97441f0ff272054af614e9c41f7d73eb18974eb7559ee6349c5b271512e2018e",
+    "sha256": "8bc8bbeafa1a82be2904116d427ccda192e0c1da60c9f66f024c39ad352613dc",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Zigzagoon",
-    "url": "web/models/switch/0263/regular.glb",
+    "url": "web/models/switch/0263/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 476812,
+    "bytes": 476816,
     "dex": 264,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0264/regular.glb",
-    "sha256": "d6a4a25d2bfc00c6157b4da7ac3d5e2bbcfbbcdc187b90ae81caae790130583e",
+    "sha256": "8c90489e6006f465706b8860dea7540349621690d0a8533ace434a5d8317c6c2",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Linoone",
-    "url": "web/models/switch/0264/regular.glb",
+    "url": "web/models/switch/0264/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 265,
@@ -2926,121 +2955,127 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 378684,
+    "bytes": 378688,
     "dex": 290,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0290/regular.glb",
-    "sha256": "af7b15e2300889a39844501ca55a65d6a7218d653bd7302e94bd03ed6c20dd87",
+    "sha256": "031e8c27a6c2fda6e48076600c570c7ce64d47211f485ef592e9102a4181c1c1",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Nincada",
-    "url": "web/models/switch/0290/regular.glb",
+    "url": "web/models/switch/0290/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 545132,
+    "bytes": 545136,
     "dex": 291,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0291/regular.glb",
-    "sha256": "ac500d10571240a8e1a57a4d2f0e514bf0f35a7cd8bdc99a6723f93887473f2e",
+    "sha256": "4ab344a7deb7f4735183181086537f138c09ac42a108f8363edb2d0a8ea54497",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Ninjask",
-    "url": "web/models/switch/0291/regular.glb",
+    "url": "web/models/switch/0291/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 258600,
+    "bytes": 258604,
     "dex": 292,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0292/regular.glb",
-    "sha256": "267ce97d53b5693e53286713354d20a1fa5a2cd77f12f74f6093c6c8a9a00c3a",
+    "sha256": "a35fe0e9ca98fb17dd7c87d9fc63b73ebc8925c06b3736ec506c8d34aacbe688",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Shedinja",
-    "url": "web/models/switch/0292/regular.glb",
+    "url": "web/models/switch/0292/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 258956,
+    "bytes": 258960,
     "dex": 293,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0293/regular.glb",
-    "sha256": "1253ac42c5539fd5e40d98a452726b4447b32ad95bf3bc5d0a5bb7122f16f0e7",
+    "sha256": "f9ce5f6939ad7c11334483d7c02b45019a2df0b82fc3ef785131ce40b5b9a093",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Whismur",
-    "url": "web/models/switch/0293/regular.glb",
+    "url": "web/models/switch/0293/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 497892,
+    "bytes": 497896,
     "dex": 294,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0294/regular.glb",
-    "sha256": "529797ceea78c1c32f3fa68196a264efb772f0a87a453158e81d6ff2e3bdc4db",
+    "sha256": "7284e21464a3aff2e0ee86ae9d08fc513952bb5ce222051de5079f899cb8f77e",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Loudred",
-    "url": "web/models/switch/0294/regular.glb",
+    "url": "web/models/switch/0294/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 579788,
+    "bytes": 579792,
     "dex": 295,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0295/regular.glb",
-    "sha256": "abe1dfe8349ff89775d61055e9a0a7e334a47bd1ac0e5739f238555765ceb204",
+    "sha256": "fdaf0f60c10a684a5a34b369ebff57f39177cbf24daaf33653432d83859b6477",
     "shard": "switch-models-0201-0300.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Exploud",
-    "url": "web/models/switch/0295/regular.glb",
+    "url": "web/models/switch/0295/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 296,
@@ -3246,41 +3281,43 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 253036,
+    "bytes": 253040,
     "dex": 320,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0320/regular.glb",
-    "sha256": "0744b6f447c67ce7ade7a2e475ec998cfd99339d80615c5d3e4afd23f455dc88",
+    "sha256": "70665225b49d029ac84a750820e91d790d535dd560c8ba587a784b90200944cc",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Wailmer",
-    "url": "web/models/switch/0320/regular.glb",
+    "url": "web/models/switch/0320/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 494944,
+    "bytes": 494948,
     "dex": 321,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0321/regular.glb",
-    "sha256": "e22d64cd237adabfacf3d8565a85f08b0150872d4489c72576a83c0c88d90e70",
+    "sha256": "e00f6448b393f3ee5e2c568fe452289a4cd84b7e980f3312e69cbd9e83d9440e",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Wailord",
-    "url": "web/models/switch/0321/regular.glb",
+    "url": "web/models/switch/0321/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 322,
@@ -3398,41 +3435,43 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 256516,
+    "bytes": 256520,
     "dex": 337,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0337/regular.glb",
-    "sha256": "4a77f97b86528e75b634a94945b3729de72cc4baaf5746a50c9cb53cead236ab",
+    "sha256": "2d29249a69fc51f009e916ea2fa0e050730b0ef878527ee93864411363864e00",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Lunatone",
-    "url": "web/models/switch/0337/regular.glb",
+    "url": "web/models/switch/0337/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 421376,
+    "bytes": 421380,
     "dex": 338,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0338/regular.glb",
-    "sha256": "41393e597a4aa32fcd571efa4931ba32faea1508240afd89c39895b8f2d340d0",
+    "sha256": "bfab8f85812ea759cd6882e7dd4202eef9ffbc02cfd38494d638e1850d0f182a",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Solrock",
-    "url": "web/models/switch/0338/regular.glb",
+    "url": "web/models/switch/0338/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 339,
@@ -3494,121 +3533,127 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 294752,
+    "bytes": 294756,
     "dex": 343,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0343/regular.glb",
-    "sha256": "c60e3105295a008bbca16f651e410bf739465f1f02b24623c14579e1153c6409",
+    "sha256": "ade8634f8971df49a4eb011e1dcb05733181c2409123859c896732e197e1dd1f",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Baltoy",
-    "url": "web/models/switch/0343/regular.glb",
+    "url": "web/models/switch/0343/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 356660,
+    "bytes": 356664,
     "dex": 344,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0344/regular.glb",
-    "sha256": "9ee8fd3927fe71a4eca023b4501298861d0c515e5bae42254abcf71a1f40c75c",
+    "sha256": "32e192455a080bf38cfbad278f73ac9d5a8f26473cad3179756a93f6bddcd4d3",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Claydol",
-    "url": "web/models/switch/0344/regular.glb",
+    "url": "web/models/switch/0344/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 394108,
+    "bytes": 394112,
     "dex": 345,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0345/regular.glb",
-    "sha256": "91f0e1fc62734ecfac488b7b8d00b4d17aa22b123f70e1d57de1563f745c1739",
+    "sha256": "2d8d7249a410c651e7f5ed67913b1fa1abe2619e16fddd1b63aa185024c66a57",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Lileep",
-    "url": "web/models/switch/0345/regular.glb",
+    "url": "web/models/switch/0345/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 449616,
+    "bytes": 449620,
     "dex": 346,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0346/regular.glb",
-    "sha256": "bab95861b90969eb7759c0886dea0c69f68526bf5c9bc49a26406a54864ee91d",
+    "sha256": "7b896e08eec0741257b3ff466f6ca31321f681a6659c02ba5d09e49e80693334",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Cradily",
-    "url": "web/models/switch/0346/regular.glb",
+    "url": "web/models/switch/0346/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 562544,
+    "bytes": 562548,
     "dex": 347,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0347/regular.glb",
-    "sha256": "f1efcff772e1c1233bf560f9d33bcb74b14fca7ea2494e93dc31322d8263d4e1",
+    "sha256": "e4c2498e978233105b81d37851b60f714505e4f78bd7eb27399a674c83897434",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Anorith",
-    "url": "web/models/switch/0347/regular.glb",
+    "url": "web/models/switch/0347/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 593332,
+    "bytes": 593336,
     "dex": 348,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0348/regular.glb",
-    "sha256": "ed250fe69565516ebc765a9fb378c9a1067e9a7b3a9983e74b93ea0f288add6a",
+    "sha256": "3857e330638f7311ace15ae1d407a29b0971525ce267ad873ce69794894fe118",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Armaldo",
-    "url": "web/models/switch/0348/regular.glb",
+    "url": "web/models/switch/0348/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 349,
@@ -3694,21 +3739,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 342152,
+    "bytes": 342156,
     "dex": 360,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0360/regular.glb",
-    "sha256": "deb7a3785d4df15a6beaa57faaec250450c6eec4113dc1c35167c0d1a4e3adb4",
+    "sha256": "07ebd5ff2316e2bbf8c9c2b97ed613d25fd6c4f4203581649da482b1181564bb",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Wynaut",
-    "url": "web/models/switch/0360/regular.glb",
+    "url": "web/models/switch/0360/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 361,
@@ -3754,21 +3800,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 359348,
+    "bytes": 359352,
     "dex": 369,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0369/regular.glb",
-    "sha256": "1f1fd622611d2616e3fd5be23f46fc2d5dd7ae85393fd88b0fd829e1c5c98150",
+    "sha256": "ba118850c176e3d0a1a9a0f3e540d6a97443d69b5f906d6e60f9cf2e48b8e91b",
     "shard": "switch-models-0301-0400.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Relicanth",
-    "url": "web/models/switch/0369/regular.glb",
+    "url": "web/models/switch/0369/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 370,
@@ -5918,621 +5965,652 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 487112,
+    "bytes": 487116,
     "dex": 659,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0659/regular.glb",
-    "sha256": "01252ac41f48fbea22a471378d6c0e6be2a31cc138d8e152780591939f66e54b",
+    "sha256": "272635ef059e214f2563a486e3fc2fe1b627bf9859ab718ab60a67238c59a7a3",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Bunnelby",
-    "url": "web/models/switch/0659/regular.glb",
+    "url": "web/models/switch/0659/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 797772,
+    "bytes": 797776,
     "dex": 660,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0660/regular.glb",
-    "sha256": "61ea65ff757f65bcb44e280a5ba8910123c1f7767547d0552f28525905d9a35a",
+    "sha256": "cf285ab45da14d23d4e777dd443680320a2373ff2d03853153c3004eade56b52",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Diggersby",
-    "url": "web/models/switch/0660/regular.glb",
+    "url": "web/models/switch/0660/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 457636,
+    "bytes": 457640,
     "dex": 661,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0661/regular.glb",
-    "sha256": "6a194aa389a384c0c89dcda6d47d9f39035e3ec8c935203dbfda00387a8583c2",
+    "sha256": "f60b2667d99683632544de4ba33584082d5f111bbd4b7a740d55804ca918520d",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Fletchling",
-    "url": "web/models/switch/0661/regular.glb",
+    "url": "web/models/switch/0661/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 560912,
+    "bytes": 560916,
     "dex": 662,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0662/regular.glb",
-    "sha256": "bbcc865fc4208efa3180bd5d5397c78230a4cb4d2ddbe504bd831267e2e23c36",
+    "sha256": "4e866ade6c622f4d926409cc42c14c6cd103dc9e4690fc4f7a2fa66ae20a3429",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Fletchinder",
-    "url": "web/models/switch/0662/regular.glb",
+    "url": "web/models/switch/0662/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 718452,
+    "bytes": 718456,
     "dex": 663,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0663/regular.glb",
-    "sha256": "e08441ff15b9c8ff4063074f3d2ab95fc17c3006e8a6fbe1a99b29b23a54664c",
+    "sha256": "9a3bf8976ee2b43f3bbe1afd57a27252a156cadd135acf38ae7895cf21ac94d0",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Talonflame",
-    "url": "web/models/switch/0663/regular.glb",
+    "url": "web/models/switch/0663/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 502912,
+    "bytes": 502916,
     "dex": 674,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0674/regular.glb",
-    "sha256": "cf78c16a8145bfffdd04da4835e9e7fe3cc212b6b0365370de8f8f2957fc4590",
+    "sha256": "268bbe956b3acf4200c720a7f51289bfd5de61562421ba8d03a078993e16dda5",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Pancham",
-    "url": "web/models/switch/0674/regular.glb",
+    "url": "web/models/switch/0674/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 750712,
+    "bytes": 750716,
     "dex": 675,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0675/regular.glb",
-    "sha256": "d730496f08f12199b8b2a0029951c1732a68e1648f906535c150c80b99155239",
+    "sha256": "3e6847e3880a0715a39558e3ac1ccda621b4e1b33e266ef556c414fc9b76f3cd",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Pangoro",
-    "url": "web/models/switch/0675/regular.glb",
+    "url": "web/models/switch/0675/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 492680,
+    "bytes": 492684,
     "dex": 677,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0677/regular.glb",
-    "sha256": "6aef964159c55a69983cb33b0801d091bc7337b1cbb4020bfcfe974b6c2157cc",
+    "sha256": "530188fd87c1a3fc051dec5cc7c466620112efef6a4213cba63b948c39cfd1ed",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Espurr",
-    "url": "web/models/switch/0677/regular.glb",
+    "url": "web/models/switch/0677/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 687592,
+    "bytes": 687596,
     "dex": 678,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0678/regular.glb",
-    "sha256": "94b0f620ddd9d993cc3908dde9ab3b0dd85a4cd3a0533ffead00aa4c73013e79",
+    "sha256": "1f977175edb7b4a6f8a0c51ae7bbab23457bc4e594e57d8ab71bf0005e266f52",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Meowstic",
-    "url": "web/models/switch/0678/regular.glb",
+    "url": "web/models/switch/0678/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 353512,
+    "bytes": 353516,
     "dex": 679,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0679/regular.glb",
-    "sha256": "ba93e3d439421991430a6df389e87f13e7c360cbfefeffb30d380c3720a15d50",
+    "sha256": "e2a5fc44dcf01c9e5fa433c8ebd6e1837c1b56d55a6ea3bf4a35f87977a67fca",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Honedge",
-    "url": "web/models/switch/0679/regular.glb",
+    "url": "web/models/switch/0679/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 696256,
+    "bytes": 696260,
     "dex": 680,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0680/regular.glb",
-    "sha256": "06157941a57ba09a58122d036f507f4195706828fc3a731fb00e6a624eb7736a",
+    "sha256": "3d3d72d0e493ecfc736ecff14dde97f70a14d9427a6ec02a2d8104228832ee46",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Doublade",
-    "url": "web/models/switch/0680/regular.glb",
+    "url": "web/models/switch/0680/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 552404,
+    "bytes": 552408,
     "dex": 682,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0682/regular.glb",
-    "sha256": "8913636ea5019d892efa63a61a54dcb3113c796da0e59e30453c4a35ffc042e8",
+    "sha256": "e50619ef5ee200be6dd1dd838c0f4fa3a41024190559c9536ee9815e5d264f68",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Spritzee",
-    "url": "web/models/switch/0682/regular.glb",
+    "url": "web/models/switch/0682/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 980272,
+    "bytes": 980276,
     "dex": 683,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0683/regular.glb",
-    "sha256": "b6950a5e7068d9c0c0be3a89acfc4a3d05bdfd97543c50b793360daa163f00a0",
+    "sha256": "1f9c13bc9118fc91d5622738458ce3344222acc841825431a8993131bf86bd83",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Aromatisse",
-    "url": "web/models/switch/0683/regular.glb",
+    "url": "web/models/switch/0683/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 447844,
+    "bytes": 447848,
     "dex": 684,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0684/regular.glb",
-    "sha256": "be8fc0624f545e616bbc58c5b4405de338402d6c5d9e5a50472ef68909b41224",
+    "sha256": "ce28b8ef9a2c6255d644552c415f984ffa0f23cf7bc5c6b3c7b097f0df590deb",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Swirlix",
-    "url": "web/models/switch/0684/regular.glb",
+    "url": "web/models/switch/0684/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 490732,
+    "bytes": 490736,
     "dex": 685,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0685/regular.glb",
-    "sha256": "a018202e19bc81d8c6943d6fcfb74694a132c5b9d242529551fb1a95e7da7e69",
+    "sha256": "a1e8390eca5f778c15fc03d6608f40faf3c404a595cdecde3f897ec1fd5e58f7",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Slurpuff",
-    "url": "web/models/switch/0685/regular.glb",
+    "url": "web/models/switch/0685/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 495456,
+    "bytes": 495460,
     "dex": 686,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0686/regular.glb",
-    "sha256": "7505d7945a73e03ac9234d05aa082c67ab31f82691f40265aa7f317a0d01e95d",
+    "sha256": "95e8e6b0c0c2f75ca226ff50ee6f25bc6b986012d15f6864322af1013c8b7d3d",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Inkay",
-    "url": "web/models/switch/0686/regular.glb",
+    "url": "web/models/switch/0686/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 712316,
+    "bytes": 712320,
     "dex": 687,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0687/regular.glb",
-    "sha256": "a5a21661002cf54b91b4b24dcee7fffd0888df72cb4be15e8b38c144f9ac4ed0",
+    "sha256": "6683ee447eba508e81f31bb62f504a7953b99f8c3a82fb48fbe09868a6caad44",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Malamar",
-    "url": "web/models/switch/0687/regular.glb",
+    "url": "web/models/switch/0687/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 571108,
+    "bytes": 571112,
     "dex": 688,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0688/regular.glb",
-    "sha256": "c6d9a298d863dd46b42854ef6c357552996fc0c05593d3d2d40f2b7b752377de",
+    "sha256": "e54e4b9401e2efecd75f7d5093bbd36181f60b0b4d75db68f514f865e4824a3c",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Binacle",
-    "url": "web/models/switch/0688/regular.glb",
+    "url": "web/models/switch/0688/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 856912,
+    "bytes": 856916,
     "dex": 689,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0689/regular.glb",
-    "sha256": "92fc223b22b7cd5d47a90cfe9b09b3053624bc5b3be39908de4cd914facd1875",
+    "sha256": "53f92e83a0adc75e0ac8ab4094e66abe59bdadb01b31e0eff870b33177962ea8",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Barbaracle",
-    "url": "web/models/switch/0689/regular.glb",
+    "url": "web/models/switch/0689/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 412756,
+    "bytes": 412760,
     "dex": 690,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0690/regular.glb",
-    "sha256": "28c05b92351a37557c267a4c099d3091401be9a3cea97e1f2bb62a17ed87f3ab",
+    "sha256": "9cf49b9d16a024bbe7a3c6a5b621d72123c05e98aa42515006b3e9646f658148",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Skrelp",
-    "url": "web/models/switch/0690/regular.glb",
+    "url": "web/models/switch/0690/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 690572,
+    "bytes": 690576,
     "dex": 691,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0691/regular.glb",
-    "sha256": "4377c539f1d4530ae9e0c2bb90818373894f74e850cf845acfe82e3c36b3b4f1",
+    "sha256": "2fddb0f490a60d59747337d949b1d2f50797420dafd537ffaa2bfcef7619073f",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Dragalge",
-    "url": "web/models/switch/0691/regular.glb",
+    "url": "web/models/switch/0691/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 450872,
+    "bytes": 450876,
     "dex": 692,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0692/regular.glb",
-    "sha256": "8716c42591e6abb7a582cdd3c00db17e1f791b20bf676d8a39ca199d2dd1bcbd",
+    "sha256": "d5b197bd9869e292edaca8c3f56967e4fe44c89b5e8456b81ec8671ce490c382",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Clauncher",
-    "url": "web/models/switch/0692/regular.glb",
+    "url": "web/models/switch/0692/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 653660,
+    "bytes": 653664,
     "dex": 693,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0693/regular.glb",
-    "sha256": "66ef6bb3909e4c022ee1c29f9d7eba4452170ba87485d21800579c698b1f7c71",
+    "sha256": "fc29072550fda8c355a7c6625d5eaf99f6d4a75daa503d3b14cfabf019890832",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Clawitzer",
-    "url": "web/models/switch/0693/regular.glb",
+    "url": "web/models/switch/0693/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 509444,
+    "bytes": 509448,
     "dex": 694,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0694/regular.glb",
-    "sha256": "21f9863cfc0eca9fbab2b1f169bd7b280152b182c17ca86cc8448e33d1f56ff0",
+    "sha256": "af3e77e486a285974b08ce418c88ae3003b85b8ac5404e361173acf8a74296bf",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Helioptile",
-    "url": "web/models/switch/0694/regular.glb",
+    "url": "web/models/switch/0694/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 533920,
+    "bytes": 533924,
     "dex": 695,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0695/regular.glb",
-    "sha256": "8133027e4616a59e6143f5b4386984c978f0840fcfeb16647bf23b6fa5e63181",
+    "sha256": "d00cb67a9f5681a3aa1eae9962d08418c119bfcb447fe1fe105592a3d63ebf05",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Heliolisk",
-    "url": "web/models/switch/0695/regular.glb",
+    "url": "web/models/switch/0695/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 591988,
+    "bytes": 591992,
     "dex": 696,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0696/regular.glb",
-    "sha256": "8d6ef6b5b7f9f36c1d0f966016655d526fff519655271e97cad417b0a35b415f",
+    "sha256": "c26d84a5ececdc61894ebe829fcd630000b4955d2c17a5149b12b7bbc0d268ee",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Tyrunt",
-    "url": "web/models/switch/0696/regular.glb",
+    "url": "web/models/switch/0696/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 716016,
+    "bytes": 716020,
     "dex": 697,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0697/regular.glb",
-    "sha256": "7989e24b752dbe1f28d21c487990d823064d96237e2a5996af7a93ad075997f5",
+    "sha256": "d25f0e36308ccd9b18a849334ac6aa96358732374bdf545ca72273d8e9a0adf8",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Tyrantrum",
-    "url": "web/models/switch/0697/regular.glb",
+    "url": "web/models/switch/0697/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 567480,
+    "bytes": 567484,
     "dex": 698,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0698/regular.glb",
-    "sha256": "61e6cf12abf3d98fa081353dd2764c1132bdc76a008d92cbef1c69e26ae7aaf1",
+    "sha256": "53b32b8389cef34ac1e44689ed3f7758fe8778708ec418ec8531e1b01b59bcb9",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Amaura",
-    "url": "web/models/switch/0698/regular.glb",
+    "url": "web/models/switch/0698/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 802284,
+    "bytes": 802288,
     "dex": 699,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0699/regular.glb",
-    "sha256": "84a03229c29e6f3e5e2b156b512c7864359cc3177cea0732a397c8965ca99618",
+    "sha256": "db5483ce5d9bcda4b29cc6e74ab42abc70f76c7c0f68eb9c1cb5d2755c5b2611",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Aurorus",
-    "url": "web/models/switch/0699/regular.glb",
+    "url": "web/models/switch/0699/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 681052,
+    "bytes": 681056,
     "dex": 700,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0700/regular.glb",
-    "sha256": "66722db3e35aca907737739ae5134b45eed1e43600464b95666f6c09201cf5a5",
+    "sha256": "3534ca9ef0862e6939f25e856762df797fe3d492af5a1b2a6fe775718edd0b98",
     "shard": "switch-models-0601-0700.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Sylveon",
-    "url": "web/models/switch/0700/regular.glb",
+    "url": "web/models/switch/0700/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 589200,
+    "bytes": 589204,
     "dex": 701,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0701/regular.glb",
-    "sha256": "8a4d4ad7813850e50905af2a9261b7676387363e910b78050cfdf4dc1eee6027",
+    "sha256": "b1fa072531079174da682bb6eb45e4a7cf86c6154f1b561685909645cb52cd87",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Hawlucha",
-    "url": "web/models/switch/0701/regular.glb",
+    "url": "web/models/switch/0701/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 702,
@@ -6586,21 +6664,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 516904,
+    "bytes": 516908,
     "dex": 708,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0708/regular.glb",
-    "sha256": "dcc2adc938c6af8d14604c916baf1e1b43304c9dfb5a9f7d46627319d4ce1b4c",
+    "sha256": "065170b55a446a07a29e1043636942a538616bed9c992ec93e071d59d80dbaed",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Phantump",
-    "url": "web/models/switch/0708/regular.glb",
+    "url": "web/models/switch/0708/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 709,
@@ -6638,61 +6717,64 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 517756,
+    "bytes": 517760,
     "dex": 713,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0713/regular.glb",
-    "sha256": "db74f7b6f893e32cba64c9ba831112a7f948a2f8f8666c7c18e7fd5a2300b866",
+    "sha256": "c26b5fa85971201c36f46982bed3e5b9f4f5d67dfea04794a9c055a53768fbdc",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Avalugg",
-    "url": "web/models/switch/0713/regular.glb",
+    "url": "web/models/switch/0713/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 587124,
+    "bytes": 587128,
     "dex": 714,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0714/regular.glb",
-    "sha256": "2bccb6a814c787a5db3b67097ade11d05c84aa2e70344170a68e97b0d1b5f639",
+    "sha256": "49145e3ed109a287dd26374abb9845df57a05d0912349e1f29141197737612e1",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Noibat",
-    "url": "web/models/switch/0714/regular.glb",
+    "url": "web/models/switch/0714/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 791340,
+    "bytes": 791344,
     "dex": 715,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0715/regular.glb",
-    "sha256": "751de25ddcc823ee780d30bc23314bd1b8145580acbce90ed2c2617a1919177c",
+    "sha256": "498a0e1830e29e196d8ef429010e82fc593ecff190d54f3cde68733b51e77f45",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Noivern",
-    "url": "web/models/switch/0715/regular.glb",
+    "url": "web/models/switch/0715/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 716,
@@ -6770,21 +6852,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 501052,
+    "bytes": 501056,
     "dex": 725,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0725/regular.glb",
-    "sha256": "fbbdbfd1e3659dd506e302cbf34fb8563e3cb21be1a2647072ea802b3c2bfb98",
+    "sha256": "138cee012bbced1ac83d42d8425b79cd6bec32d9ebc902e2f4b6bd6e2869ed4c",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Litten",
-    "url": "web/models/switch/0725/regular.glb",
+    "url": "web/models/switch/0725/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 726,
@@ -6862,21 +6945,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 316940,
+    "bytes": 316944,
     "dex": 736,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0736/regular.glb",
-    "sha256": "8e46f72e6e868afcda303d5568352506a6f2df5b64a0a57eb99c4924e5d6da13",
+    "sha256": "5d499bddf300e7d63355a6f43f4c1156245096e6898dc1d16448290b48569e3e",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Grubbin",
-    "url": "web/models/switch/0736/regular.glb",
+    "url": "web/models/switch/0736/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 737,
@@ -6978,21 +7062,22 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 786872,
+    "bytes": 786876,
     "dex": 750,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0750/regular.glb",
-    "sha256": "23592df9e60fe7727800405c6a7b1bd0b1d2e1dfa69154ebd657e264beaca23c",
+    "sha256": "5cdf37a3dfa4e32f1066b26cc414d9fdf033185ee692b59fc3b27ba3e9048812",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Mudsdale",
-    "url": "web/models/switch/0750/regular.glb",
+    "url": "web/models/switch/0750/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 751,
@@ -7150,41 +7235,43 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 962112,
+    "bytes": 962116,
     "dex": 770,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0770/regular.glb",
-    "sha256": "ade5dce6368a6e62b057cf7f150e1149c5678443065cc36210f1d3045a8b9195",
+    "sha256": "ae7b34500392db94d6562230a659bc36c1c827838d443d8644fba1dd3596b178",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Palossand",
-    "url": "web/models/switch/0770/regular.glb",
+    "url": "web/models/switch/0770/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 488372,
+    "bytes": 488376,
     "dex": 771,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0771/regular.glb",
-    "sha256": "af07a7666c1248cbf753b0bd7c15f7d7e17dfe0265a621d3c2a1082c777b439a",
+    "sha256": "90212c50de38a18b67a946106d5b0281dd21217ca012f901394df7544ac7e22e",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Pyukumuku",
-    "url": "web/models/switch/0771/regular.glb",
+    "url": "web/models/switch/0771/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 772,
@@ -7206,461 +7293,484 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 782140,
+    "bytes": 782144,
     "dex": 776,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0776/regular.glb",
-    "sha256": "4e0b18acbd4fd10bec7eb229b34a589c9e7f65c7588dc3d8c4b593b361f3119e",
+    "sha256": "56b26be288d4011c2d6969f30787bb6b3a265180328a22a779287da225d16ff6",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Turtonator",
-    "url": "web/models/switch/0776/regular.glb",
+    "url": "web/models/switch/0776/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 869076,
+    "bytes": 869080,
     "dex": 777,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0777/regular.glb",
-    "sha256": "23854242133c898ad1d8abddbef0feebc91ec750b52bab83a1792b4f1fe7bd11",
+    "sha256": "b44f41ac23c38d3c7c45ad110e906b2cb3ddae32dad3003a2fcdb291456eb252",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Togedemaru",
-    "url": "web/models/switch/0777/regular.glb",
+    "url": "web/models/switch/0777/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 998980,
+    "bytes": 998984,
     "dex": 780,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0780/regular.glb",
-    "sha256": "c9656b1948d41d14e66024c66e61c5cd6786c812e404c10fc3e027c556b8f516",
+    "sha256": "f9b80bdebc2f3d92432b28ad888aa3239afdec32b1a400a82ee57de4691a5ed4",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Drampa",
-    "url": "web/models/switch/0780/regular.glb",
+    "url": "web/models/switch/0780/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 1084836,
+    "bytes": 1084840,
     "dex": 781,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0781/regular.glb",
-    "sha256": "972825ea04103c5632f6da86d9f6c1ec93c7d40944a426cc877b5d7f8e7c2a0a",
+    "sha256": "2e202c0abfabf3436bac76993208aca764697df3e54e021b4e3ad9bcef5a7c59",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Dhelmise",
-    "url": "web/models/switch/0781/regular.glb",
+    "url": "web/models/switch/0781/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 563680,
+    "bytes": 563684,
     "dex": 782,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0782/regular.glb",
-    "sha256": "4074bccb6c76ec65fd15955c799198a162e4a43c3f26460d8f3c21441bca3611",
+    "sha256": "d483da669211da56b775b9f8c3341f8fc19d77f37c2294264ebdb9651f45c2fb",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Jangmo-o",
-    "url": "web/models/switch/0782/regular.glb",
+    "url": "web/models/switch/0782/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 700160,
+    "bytes": 700164,
     "dex": 783,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0783/regular.glb",
-    "sha256": "d7d8a48716b2496b9fe93c1bb78521f7c7ade1ac7a21462d7a3485da0cdeb16b",
+    "sha256": "b9ad7676995e7f1fc48d5a9d220777860907fb6a27f74fc5f4a0c7d0b21dc5cf",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Hakamo-o",
-    "url": "web/models/switch/0783/regular.glb",
+    "url": "web/models/switch/0783/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 1030212,
+    "bytes": 1030216,
     "dex": 784,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0784/regular.glb",
-    "sha256": "30546e705b9ea78d0e25da6fe8dc43bdd806da93c9dfd92c5991cee146384285",
+    "sha256": "ab22f0b001a774cfa81f3bb00bcedaa1c7303a8ad674fea423efc29bb119a1de",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Kommo-o",
-    "url": "web/models/switch/0784/regular.glb",
+    "url": "web/models/switch/0784/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 655336,
+    "bytes": 655340,
     "dex": 785,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0785/regular.glb",
-    "sha256": "075124d008ed523d4b20059e01b5f962a735fb2effa76394f4dc6ecc42715a8b",
+    "sha256": "ed4610ae7a8d8068c22be52ef1dda305616e8aca26c89f393f6d7d11e0c9463c",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Tapu Koko",
-    "url": "web/models/switch/0785/regular.glb",
+    "url": "web/models/switch/0785/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 743696,
+    "bytes": 743700,
     "dex": 786,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0786/regular.glb",
-    "sha256": "384c2465676c2884fd2aef5619cd4bdca8498028be44277019e122e3b04fa8e5",
+    "sha256": "d4f0fe599dd785b616b745db777fb1cb2f47834b550fb0a3b8eee286530705ca",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Tapu Lele",
-    "url": "web/models/switch/0786/regular.glb",
+    "url": "web/models/switch/0786/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 615816,
+    "bytes": 615820,
     "dex": 787,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0787/regular.glb",
-    "sha256": "cb6cc324bed54c72b7f7334a3edc843aba43d746fcc4394202d5c3949ae096c4",
+    "sha256": "43159c296ce49052b30be842b7c0a25cba213e8c1b1d0ea5c49b7a59b0baa655",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Tapu Bulu",
-    "url": "web/models/switch/0787/regular.glb",
+    "url": "web/models/switch/0787/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 812020,
+    "bytes": 812024,
     "dex": 788,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0788/regular.glb",
-    "sha256": "c648b3e33b7e5416016c56f6b6be0d86bf6434bd101c30941fb46ce1e926c425",
+    "sha256": "2c833f1b415fe968820b3aa1cafa879b74923d72b41421c648516b8a12a9bae3",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Tapu Fini",
-    "url": "web/models/switch/0788/regular.glb",
+    "url": "web/models/switch/0788/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 558064,
+    "bytes": 558068,
     "dex": 789,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0789/regular.glb",
-    "sha256": "1ed98f4f3e89b9380f141a60e36accf65cbc4a4b61de11d0483ab95de431c1fc",
+    "sha256": "5d1805dff4d677a6c79d9c5d554ce20914864fcf011bcc2be2188ec510bb36bd",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Cosmog",
-    "url": "web/models/switch/0789/regular.glb",
+    "url": "web/models/switch/0789/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 573604,
+    "bytes": 573608,
     "dex": 790,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0790/regular.glb",
-    "sha256": "8d85b23395070095a9f97486be5ee70c68fe721dd1bebfb55ce5eed6583b8ec5",
+    "sha256": "17edf9959a58535a2b79afd63552501bce995f613945ba5a93f4be1bccd07054",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Cosmoem",
-    "url": "web/models/switch/0790/regular.glb",
+    "url": "web/models/switch/0790/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 984112,
+    "bytes": 984116,
     "dex": 791,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0791/regular.glb",
-    "sha256": "4f6d3e3ed7fc9db76930db3cf30ba2497592f95309e88313913c3be6decc683f",
+    "sha256": "8bfa2eb57ddaa9ac0ba9785b80e67bb756c7347db76254eb1b9fa3398895a767",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Solgaleo",
-    "url": "web/models/switch/0791/regular.glb",
+    "url": "web/models/switch/0791/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 1109560,
+    "bytes": 1109564,
     "dex": 792,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0792/regular.glb",
-    "sha256": "b9e57af3f2a331185a7a4245fb2750a1b4ec3efbe45a66306c76f3d6ac3063e2",
+    "sha256": "4753d8efd6155c7848b9c89c8c72f8a1c981418e705fd72dcb0e5503b6eeb853",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Lunala",
-    "url": "web/models/switch/0792/regular.glb",
+    "url": "web/models/switch/0792/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 981920,
+    "bytes": 981924,
     "dex": 793,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0793/regular.glb",
-    "sha256": "c3499bbb3aeec62e08cc2615963b1686008ba62eb23be80b57564875554c5513",
+    "sha256": "2fd111741741f0db024f9d7ace8fb94208713311ed4f89d988d1b5877032be3d",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Nihilego",
-    "url": "web/models/switch/0793/regular.glb",
+    "url": "web/models/switch/0793/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 1163620,
+    "bytes": 1163624,
     "dex": 794,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0794/regular.glb",
-    "sha256": "961af6bc3e5b3bf503d96a90329b8debf025a4c133673127d5ecf479c01e2179",
+    "sha256": "0365c7f4af638e5f0efd12b4362c14302172b443f61ce61527ab11eef9ee0c7c",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Buzzwole",
-    "url": "web/models/switch/0794/regular.glb",
+    "url": "web/models/switch/0794/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 962612,
+    "bytes": 962616,
     "dex": 795,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0795/regular.glb",
-    "sha256": "01e330e43e0326c83d13ef4c7bcf0b5d4b497fbf57fc88ea24a084d6603c9fad",
+    "sha256": "c8e486ffc2a59f87e35c1f12e68c986f105ce2ee1890140e06876b5277a12274",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Pheromosa",
-    "url": "web/models/switch/0795/regular.glb",
+    "url": "web/models/switch/0795/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 997364,
+    "bytes": 997368,
     "dex": 796,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0796/regular.glb",
-    "sha256": "699a0a90c703bbaf608b7f1c21159fb415a96f3a4562b5139b3020dee07331d5",
+    "sha256": "9c73073d8ee855b0a01f9f3a99dc8dd268ff1e4875e56d760a5949d27c6831e3",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Xurkitree",
-    "url": "web/models/switch/0796/regular.glb",
+    "url": "web/models/switch/0796/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 1154908,
+    "bytes": 1154912,
     "dex": 797,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0797/regular.glb",
-    "sha256": "58b27ef65b83453639ad159e462ba4367e553d5e6fd9bb2535334b136e536f81",
+    "sha256": "25784cb74daa30d1999537a6117789635ef1e6d7eb481242dbf11a5b6cbfb463",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Celesteela",
-    "url": "web/models/switch/0797/regular.glb",
+    "url": "web/models/switch/0797/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 606764,
+    "bytes": 606768,
     "dex": 798,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0798/regular.glb",
-    "sha256": "49aa788a4b68373ff9df9eb8969bf9104ab01d70ccea71bbb51e2f84a82479cb",
+    "sha256": "a08b57c9f82df415170f4c5486b3dd85e3b541155397956bbede25e1315ef950",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Kartana",
-    "url": "web/models/switch/0798/regular.glb",
+    "url": "web/models/switch/0798/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 1164092,
+    "bytes": 1164096,
     "dex": 799,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0799/regular.glb",
-    "sha256": "cbcb4c3483fba6f2409ab825a5be3bedcc0d8923b1db67aef6501b0fe91b63d6",
+    "sha256": "fa289ab56be8fc2cdcb6ab3ae6bd4f07b84c6cfb3954dfd905a72fcff131ce31",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Guzzlord",
-    "url": "web/models/switch/0799/regular.glb",
+    "url": "web/models/switch/0799/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 828004,
+    "bytes": 828008,
     "dex": 800,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0800/regular.glb",
-    "sha256": "8215eb24976ea14cb395270dabffa4406dd4d679e3b4bf92eec61b9efbaae5bf",
+    "sha256": "3f6ea5db29bb08275aefbb2706e644a3e843109943ed1d8abfd52a598b8fda26",
     "shard": "switch-models-0701-0800.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Necrozma",
-    "url": "web/models/switch/0800/regular.glb",
+    "url": "web/models/switch/0800/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 801,
@@ -7682,41 +7792,43 @@
     "animations": [
       "Animation"
     ],
-    "bytes": 421260,
+    "bytes": 421264,
     "dex": 803,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0803/regular.glb",
-    "sha256": "38758b462c5d1c5f6cc636d43e5927044ffe8415e52f46bb113b776b8402c61c",
+    "sha256": "69fa616c59644005cacf11c177acd8392e554b2b1ab683532157574b8692de2c",
     "shard": "switch-models-0801-0900.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Poipole",
-    "url": "web/models/switch/0803/regular.glb",
+    "url": "web/models/switch/0803/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "animations": [
       "Animation"
     ],
-    "bytes": 930244,
+    "bytes": 930248,
     "dex": 804,
     "form": "regular",
     "idleAnimation": "Animation",
     "path": "switch/0804/regular.glb",
-    "sha256": "662eb12059a1e6b042749085ea46f9da99b2c4d07224b2a993ded60d5208f0b4",
+    "sha256": "86e13faf6c4bf00d28e7ce0af7faa64b4fa63b451a1e8bcb99c641b7b7515293",
     "shard": "switch-models-0801-0900.zip",
     "source": "Switch game assets",
     "sourceGame": "swsh",
     "name": "Naganadel",
-    "url": "web/models/switch/0804/regular.glb",
+    "url": "web/models/switch/0804/regular.glb?v=recovered-root-1",
     "local": true,
     "ready": true,
     "valid": true,
-    "idleBreaks": []
+    "idleBreaks": [],
+    "assetRevision": "recovered-root-1"
   },
   {
     "dex": 805,
