@@ -8,7 +8,7 @@ New-Item -ItemType Directory -Path $toolsDir, $reportDir -Force | Out-Null
 # Loading System.IO.Compression alone does not make that type available.
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-Write-Host '[Blender setup v5] Checking existing portable installation and cached ZIP files.'
+Write-Host '[Blender setup v6] Checking existing portable installation and cached ZIP files.'
 
 function Find-Blender {
     $cmd = Get-Command blender -ErrorAction SilentlyContinue
@@ -44,42 +44,20 @@ if (-not $blender) {
             return $false
         }
 
-        # Python's zipfile understands ZIP64 and reliably checks the central
-        # directory of large Blender archives on older Windows PowerShell.
-        # The setup pipeline already requires Python; support py.exe for
-        # recovery scripts invoked outside setup-all as well.
-        $python = Get-Command python.exe -ErrorAction SilentlyContinue
-        $pyLauncher = if (-not $python) { Get-Command py.exe -ErrorAction SilentlyContinue } else { $null }
-        if ($python -or $pyLauncher) {
-            $probe = 'import zipfile,sys; z=zipfile.ZipFile(sys.argv[1]); paths=z.namelist(); hits=[p for p in paths if p.replace(chr(92),"/").lower().endswith("/blender.exe") or p.lower()=="blender.exe"]; print("ZIP entries:",len(paths),"Blender executables:",len(hits),"First entries:",paths[:3]); sys.exit(0 if hits else 2)'
-            $previous = $ErrorActionPreference
-            $ErrorActionPreference = 'Continue'
-            try {
-                if ($python) {
-                    & $python.Source -c $probe $ArchivePath | Out-Host
-                } else {
-                    & $pyLauncher.Source -3 -c $probe $ArchivePath | Out-Host
-                }
-                $probeExit = $LASTEXITCODE
-            } finally {
-                $ErrorActionPreference = $previous
-            }
-            if ($probeExit -eq 0) {
-                Write-Host "Blender ZIP contents verified."
-                return $true
-            }
-            Write-Warning "ZIP validation failed (Python exit code $probeExit). The archive may be incomplete or not contain blender.exe."
-            return $false
-        }
-
+        # Use .NET directly to avoid Windows PowerShell 5.1 mangling
+        # quotation marks passed to Python via -c. The FileSystem assembly
+        # above exposes ZipFile on Windows PowerShell 5.1.
         try {
             $archive = [IO.Compression.ZipFile]::OpenRead($ArchivePath)
             try {
                 $exe = $archive.Entries | Where-Object {
                     $_.FullName -match '(^|[\\/])blender[.]exe$'
                 } | Select-Object -First 1
-                if ($exe) { return $true }
-                Write-Warning "ZIP readable, but blender.exe not found."
+                if ($exe) {
+                    Write-Host "Blender ZIP verified: $($archive.Entries.Count) entries; blender.exe at $($exe.FullName)"
+                    return $true
+                }
+                Write-Warning "ZIP readable ($($archive.Entries.Count) entries), but blender.exe was not found."
             } finally { $archive.Dispose() }
         } catch {
             Write-Warning "ZIP cannot be opened: $($_.Exception.Message)"
