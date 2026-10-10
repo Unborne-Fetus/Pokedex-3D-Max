@@ -12,10 +12,16 @@ by_dex = {int(model["dex"]): model for model in models}
 assert len(models) == len(by_dex), "Duplicate National Dex slots"
 for source_id in [*range(1010, 1021), *range(1022, 1026)]:
     target = national[source_id]
+    # A misplaced GLB must never be republished just because the old
+    # source-game asset number happens to be a real National Dex number.
+    assert not (ROOT / "web/models/switch" / f"{source_id:04d}" / "regular.glb").exists(), (
+        "Misnumbered Switch GLB remains in the repository", source_id)
     assert target != source_id, f"Bad internal ID table: {source_id}"
     destination = by_dex.get(target)
     assert destination is not None, f"Missing restored model at #{target}"
     assert int(destination["dex"]) == target
+    assert (ROOT / "web/models/switch" / f"{target:04d}" / "regular.glb").is_file(), (
+        "Correctly numbered original GLB missing", source_id, target)
     if target <= 917:
         assert int(destination.get("sourceModelId", -1)) == source_id, (source_id, target)
     # A high Dex number may be legitimate once sourced from the *correct* model ID,
