@@ -66,5 +66,25 @@ class SyncTests(unittest.TestCase):
             self.assertFalse((repo / "web/models/switch/0001/regular.glb").exists())
 
 
+    def test_stale_source_metadata_is_not_reused_for_new_glb(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); pack = root / "pack"; repo = root / "repo"
+            glb(pack / "switch/0001/regular.glb", ["idle"])
+            (pack / "model_catalog.tsv").write_text(
+                "dex\tname\tform\tpath\n1\tBulbasaur\tregular\tswitch/0001/regular.glb\n")
+            (pack / "switch-model-metadata.json").write_text(json.dumps([{
+                "dex": 1, "form": "regular", "idleAnimation": "idle",
+                "sourceBlobSha": "0" * 40, "sourceGame": "sv",
+                "sourceModelId": 1025, "modelId": 1025,
+            }]))
+            self.assertEqual(sync_pack(pack, repo), 1)
+            model = json.loads((repo / "web/models/switch-manifest.json").read_text())[0]
+            self.assertNotIn("sourceGame", model)
+            self.assertNotIn("sourceModelId", model)
+            self.assertNotIn("modelId", model)
+            self.assertNotIn("sourceEvidence", model)
+            self.assertNotEqual(model["sourceBlobSha"], "0" * 40)
+
+
 if __name__ == "__main__":
     unittest.main()

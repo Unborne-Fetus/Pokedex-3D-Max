@@ -84,6 +84,14 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             return game_map["sv_model_dex.tsv"].get(internal, 0)
         return internal
 
+    canonical_names = {}
+    names_file = repo / "data/species_names.tsv"
+    if names_file.is_file():
+        for line in names_file.read_text(encoding="utf-8").splitlines():
+            cols = line.split("\t")
+            if len(cols) >= 2 and cols[0].isdigit():
+                canonical_names[int(cols[0])] = cols[1]
+
     entries = []
     for line in catalog.read_text(encoding="utf-8").splitlines()[1:]:
         cells = line.split("\t")
@@ -122,8 +130,8 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
         elif entry.get("sourceBlobSha") != fingerprint:
             # It is not safe to carry species provenance between different
             # binaries just because their directory numbers happen to match.
-            entry.pop("sourceEvidence", None)
-            entry.pop("sourceModelId", None)
+            for stale in ("sourceEvidence", "sourceModelId", "modelId", "sourceGame"):
+                entry.pop(stale, None)
         entry["sourceBlobSha"] = fingerprint
         idle = entry.get("idleAnimation")
         if idle not in names:
@@ -148,7 +156,8 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             except OSError:
                 shutil.copy2(source, temp)
             temp.replace(destination)
-        entry.update(dex=dex, name=name, form=form, url="web/models/" + relative.as_posix(),
+        entry.update(dex=dex, name=canonical_names.get(dex, name), form=form,
+                     url="web/models/" + relative.as_posix(),
                      local=True, ready=True, valid=True, animations=names, idleAnimation=idle,
                      idleBreaks=[n for n in entry.get("idleBreaks", []) if n in names and n != idle],
                      source="Switch game assets")
@@ -160,8 +169,27 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             form = str(previous.get("form", ""))
             if dex in selected_dexes or form != "regular" or previous.get("ready") is False:
                 continue
-            if (repo / "web/models/switch" / f"{dex:04d}" / "regular.glb").is_file():
-                entries.append(previous)
+            model_path = repo / "web/models/switch" / f"{dex:04d}" / "regular.glb"
+            if not model_path.is_file():
+                continue
+            sha = git_blob_sha(model_path)
+            proof = known_blobs.get(sha)
+            if proof and source_species(proof) != dex:
+                print(f"Excluding previously published wrong species #{dex:04d}")
+                continue
+            old_sha = previous.get("sourceBlobSha")
+            if old_sha and old_sha != sha:
+                # Never carry obsolete integrity metadata across changed binaries.
+                print(f"Excluding stale manifest entry #{dex:04d} (binary changed)")
+                continue
+            kept = dict(previous)
+            kept["name"] = canonical_names.get(dex, kept.get("name", f"#{dex:04d}"))
+            kept["sourceBlobSha"] = sha
+            if proof:
+                kept.update(sourceGame=proof["sourceGame"],
+                            sourceModelId=int(proof["sourceModelId"]),
+                            sourceEvidence="original-asset-sha1")
+            entries.append(kept)
     policy_path = target / "model_source_policy.json"
     policy = json.loads(policy_path.read_text(encoding="utf-8")) if policy_path.is_file() else {}
     policy.update({"switchOnly": True, "regularOnly": True, "allowBrokenTextures": False})
