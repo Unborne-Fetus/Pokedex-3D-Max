@@ -96,6 +96,9 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
         if not source.is_relative_to(target) or not source.is_file():
             continue
         dex, name, form = int(cells[0]), cells[1], cells[2]
+        if not 1 <= dex <= 1025 or relative.as_posix() != f"switch/{dex:04d}/regular.glb":
+            print(f"Skipping misnumbered model catalog path: {relative}")
+            continue
         if selected_dexes is not None and dex not in selected_dexes:
             continue
         if form.lower() != "regular":
@@ -130,10 +133,12 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             continue
         destination = repo / "web/models" / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
+        # Equal size and modified time do not prove equal content. This was
+        # leaving previously mislabeled models untouched after a correction.
         current = destination.is_file() and (
             os.path.samefile(source, destination) or
             (source.stat().st_size == destination.stat().st_size and
-             source.stat().st_mtime_ns == destination.stat().st_mtime_ns)
+             git_blob_sha(destination) == fingerprint)
         )
         if not current:
             temp = destination.with_suffix(".glb.tmp")

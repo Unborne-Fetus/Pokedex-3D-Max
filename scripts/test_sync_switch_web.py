@@ -1,4 +1,5 @@
 import json
+import os
 import struct
 import tempfile
 import unittest
@@ -31,6 +32,38 @@ class SyncTests(unittest.TestCase):
             glb(pack / "switch/0001/regular.glb", ["wait", "wave"])
             sync_pack(pack, repo)
             self.assertEqual(json.loads((repo / "web/models/switch-manifest.json").read_text())[0]["idleAnimation"], "wait")
+
+
+    def test_same_size_and_timestamp_different_model_must_be_replaced(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); pack = root / "pack"; repo = root / "repo"
+            installed = pack / "switch/0001/regular.glb"
+            published = repo / "web/models/switch/0001/regular.glb"
+            glb(installed, ["idle"])
+            glb(published, ["wait"])
+            self.assertEqual(installed.stat().st_size, published.stat().st_size)
+            os.utime(published, ns=(installed.stat().st_atime_ns, installed.stat().st_mtime_ns))
+            self.assertEqual(installed.stat().st_mtime_ns, published.stat().st_mtime_ns)
+            (pack / "model_catalog.tsv").write_text(
+                "dex\tname\tform\tpath\n1\tBulbasaur\tregular\tswitch/0001/regular.glb\n"
+            )
+            (pack / "switch-model-metadata.json").write_text(json.dumps([
+                {"dex": 1, "form": "regular", "idleAnimation": "idle"}
+            ]))
+            self.assertEqual(sync_pack(pack, repo), 1)
+            self.assertEqual(published.read_bytes(), installed.read_bytes())
+
+    def test_reject_catalog_entry_with_another_pokemons_path(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); pack = root / "pack"; repo = root / "repo"
+            glb(pack / "switch/0002/regular.glb", ["idle"])
+            (pack / "model_catalog.tsv").write_text(
+                "dex\tname\tform\tpath\n1\tBulbasaur\tregular\tswitch/0002/regular.glb\n"
+            )
+            self.assertEqual(sync_pack(pack, repo), 0)
+            models = json.loads((repo / "web/models/switch-manifest.json").read_text())
+            self.assertEqual(models, [])
+            self.assertFalse((repo / "web/models/switch/0001/regular.glb").exists())
 
 
 if __name__ == "__main__":
