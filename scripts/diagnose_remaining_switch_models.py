@@ -156,6 +156,7 @@ def analyze(paths: list[Path], requested: dict[int, str]) -> dict:
                 "Use the converter and verify original textures, poses and idle animations.",
         "reportedCount": len(rows),
         "sourcesScanned": discovered,
+        "sourceSearchHint": "Original sources: project switch-assets, Downloads, Desktop, MEGA cached archives, or .cache/switch-game-assets/extracted. Published GLBs are not original source archives.",
         "sourceCountsByGame": dict(sources_by_game),
         "countsByStatus": counts,
         "scanErrors": errors,
@@ -171,7 +172,21 @@ def main() -> int:
     requested = read_reported()
     sources = source_files(args.sources)
     print(f"Diagnosing {len(requested)} user-reported missing regular Switch models.")
-    print(f"Available source archives/folders: {len(sources)}", flush=True)
+    print(f"Available original source archives/folders: {len(sources)}", flush=True)
+    if sources:
+        for source in sources:
+            print(f"  FOUND {source}", flush=True)
+    else:
+        print("\\nNo original model, animation, or texture sources were found.")
+        print("This does NOT mean these 122 Pokemon are impossible to recover.")
+        print("Checked the project switch-assets folder, Downloads, Desktop,")
+        print("the MEGA archive cache, and earlier extracted importer caches.")
+        print("To continue, place archives extracted from your own Switch games")
+        print("under switch-assets in a clearly named game folder (SV, SwSh,")
+        print("LA, ZA, BDSP or LGPE), or drag the source folder onto this BAT.")
+        print("Then run the matching recovery batches again.")
+        print("The already-published GLB models cannot supply missing original")
+        print("model/animation source files.", flush=True)
     result = analyze(sources, requested)
     REPORT_ROOT.mkdir(parents=True, exist_ok=True)
     path = REPORT_ROOT / "report.json"
