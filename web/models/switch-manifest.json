@@ -72,6 +72,66 @@
     "ready": true
   },
   {
+    "animations": [
+      "Animation"
+    ],
+    "bytes": 307028,
+    "dex": 10,
+    "form": "regular",
+    "idleAnimation": "Animation",
+    "path": "switch/0010/regular.glb",
+    "sha256": "1bb203098a6b510efc85c8dfacb23d250c2f6aab018b772c68bcc28a1a996c84",
+    "shard": "switch-models-0001-0100.zip",
+    "source": "Switch game assets",
+    "sourceGame": "swsh",
+    "name": "Caterpie",
+    "url": "web/models/switch/0010/regular.glb",
+    "local": true,
+    "ready": true,
+    "valid": true,
+    "idleBreaks": []
+  },
+  {
+    "animations": [
+      "Animation"
+    ],
+    "bytes": 235844,
+    "dex": 11,
+    "form": "regular",
+    "idleAnimation": "Animation",
+    "path": "switch/0011/regular.glb",
+    "sha256": "27ee70c90e5798d91be9c1e2efc806f16562b8520f63f74c0860bedf587fcdc4",
+    "shard": "switch-models-0001-0100.zip",
+    "source": "Switch game assets",
+    "sourceGame": "swsh",
+    "name": "Metapod",
+    "url": "web/models/switch/0011/regular.glb",
+    "local": true,
+    "ready": true,
+    "valid": true,
+    "idleBreaks": []
+  },
+  {
+    "animations": [
+      "Animation"
+    ],
+    "bytes": 510556,
+    "dex": 12,
+    "form": "regular",
+    "idleAnimation": "Animation",
+    "path": "switch/0012/regular.glb",
+    "sha256": "df1a269eea19bbad9fd494b05eb6a0342cb1422817e59775291f89433303c924",
+    "shard": "switch-models-0001-0100.zip",
+    "source": "Switch game assets",
+    "sourceGame": "swsh",
+    "name": "Butterfree",
+    "url": "web/models/switch/0012/regular.glb",
+    "local": true,
+    "ready": true,
+    "valid": true,
+    "idleBreaks": []
+  },
+  {
     "dex": 13,
     "form": "regular",
     "url": "web/models/switch/0013/regular.glb",
