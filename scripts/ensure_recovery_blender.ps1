@@ -4,7 +4,10 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $toolsDir = Join-Path $repoRoot '.tools'
 $reportDir = Join-Path $repoRoot '.cache\remaining-model-diagnosis'
 New-Item -ItemType Directory -Path $toolsDir, $reportDir -Force | Out-Null
+# Windows PowerShell 5.1 requires FileSystem to expose [IO.Compression.ZipFile].
+# Loading System.IO.Compression alone does not make that type available.
 Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 Write-Host '[Blender setup v5] Checking existing portable installation and cached ZIP files.'
 
 function Find-Blender {
