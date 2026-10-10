@@ -8543,36 +8543,160 @@
     "ready": true
   },
   {
-    "dex": 909,
+    "dex": 906,
     "form": "regular",
-    "url": "web/models/switch/0909/regular.glb",
+    "url": "web/models/switch/0906/regular.glb?v=sv-dex-rekey-1",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Sprigatito",
+    "modelId": 1010,
+    "sourceModelId": 1010,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
+  },
+  {
+    "dex": 907,
+    "form": "regular",
+    "url": "web/models/switch/0907/regular.glb?v=sv-dex-rekey-1",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Floragato",
+    "modelId": 1011,
+    "sourceModelId": 1011,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
+  },
+  {
+    "dex": 908,
+    "form": "regular",
+    "url": "web/models/switch/0908/regular.glb?v=sv-dex-rekey-1",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Meowscarada",
+    "modelId": 1012,
+    "sourceModelId": 1012,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
+  },
+  {
+    "dex": 909,
+    "form": "regular",
+    "url": "web/models/switch/0909/regular.glb?v=sv-dex-rekey-1",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Fuecoco",
+    "modelId": 1013,
+    "sourceModelId": 1013,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
   },
   {
     "dex": 910,
     "form": "regular",
-    "url": "web/models/switch/0910/regular.glb",
+    "url": "web/models/switch/0910/regular.glb?v=sv-dex-rekey-1",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Crocalor",
+    "modelId": 1014,
+    "sourceModelId": 1014,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
+  },
+  {
+    "dex": 911,
+    "form": "regular",
+    "url": "web/models/switch/0911/regular.glb?v=sv-dex-rekey-1",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Skeledirge",
+    "modelId": 1015,
+    "sourceModelId": 1015,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
+  },
+  {
+    "dex": 912,
+    "form": "regular",
+    "url": "web/models/switch/0912/regular.glb?v=sv-dex-rekey-1",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Quaxly",
+    "modelId": 1016,
+    "sourceModelId": 1016,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
   },
   {
     "dex": 913,
     "form": "regular",
-    "url": "web/models/switch/0913/regular.glb",
+    "url": "web/models/switch/0913/regular.glb?v=sv-dex-rekey-1",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Quaxwell",
+    "modelId": 1017,
+    "sourceModelId": 1017,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
   },
   {
     "dex": 914,
     "form": "regular",
-    "url": "web/models/switch/0914/regular.glb",
+    "url": "web/models/switch/0914/regular.glb?v=sv-dex-rekey-1",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Quaquaval",
+    "modelId": 1018,
+    "sourceModelId": 1018,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
+  },
+  {
+    "dex": 915,
+    "form": "regular",
+    "url": "web/models/switch/0915/regular.glb?v=sv-dex-rekey-1",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Lechonk",
+    "modelId": 1019,
+    "sourceModelId": 1019,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
+  },
+  {
+    "dex": 916,
+    "form": "regular",
+    "url": "web/models/switch/0916/regular.glb?v=sv-dex-rekey-1",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Oinkologne",
+    "modelId": 1020,
+    "sourceModelId": 1020,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
+  },
+  {
+    "dex": 917,
+    "form": "regular",
+    "url": "web/models/switch/0917/regular.glb?v=sv-dex-rekey-1",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Tarountula",
+    "modelId": 1022,
+    "sourceModelId": 1022,
+    "sourceGame": "sv",
+    "assetRevision": "sv-dex-rekey-1"
   },
   {
     "dex": 918,
@@ -8978,126 +9102,6 @@
     "dex": 1007,
     "form": "regular",
     "url": "web/models/switch/1007/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1010,
-    "form": "regular",
-    "url": "web/models/switch/1010/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1011,
-    "form": "regular",
-    "url": "web/models/switch/1011/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1012,
-    "form": "regular",
-    "url": "web/models/switch/1012/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1013,
-    "form": "regular",
-    "url": "web/models/switch/1013/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1014,
-    "form": "regular",
-    "url": "web/models/switch/1014/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1015,
-    "form": "regular",
-    "url": "web/models/switch/1015/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1016,
-    "form": "regular",
-    "url": "web/models/switch/1016/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1017,
-    "form": "regular",
-    "url": "web/models/switch/1017/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1018,
-    "form": "regular",
-    "url": "web/models/switch/1018/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1019,
-    "form": "regular",
-    "url": "web/models/switch/1019/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1020,
-    "form": "regular",
-    "url": "web/models/switch/1020/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1022,
-    "form": "regular",
-    "url": "web/models/switch/1022/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1023,
-    "form": "regular",
-    "url": "web/models/switch/1023/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1024,
-    "form": "regular",
-    "url": "web/models/switch/1024/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1025,
-    "form": "regular",
-    "url": "web/models/switch/1025/regular.glb",
     "source": "original-switch-local-merge",
     "valid": true,
     "ready": true
