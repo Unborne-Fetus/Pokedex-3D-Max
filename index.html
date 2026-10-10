@@ -68,6 +68,8 @@
           <div id="dexNumber" class="dex-number">#0001</div>
           <h2 id="pokemonName">Bulbasaur</h2>
           <div id="formName" class="form-name">Regular</div>
+          <a id="externalModelSource" class="candidate-source-link" href="#" target="_blank"
+             rel="noopener noreferrer" hidden>External community preview · Source and credits ↗</a>
         </div>
         <select id="formSelect" aria-label="Form"></select>
       </div>
@@ -117,7 +119,7 @@
         <button id="repairTextures" type="button">Repair textures</button>
       </div>
 
-      <p class="hint">Drag to rotate · Scroll/pinch to zoom · Switch models preferred · nearby Pokémon are prefetched</p>
+      <p class="hint">Drag to rotate · Scroll/pinch to zoom · Original Switch models preferred · external candidates are previews, not finished Pokémon</p>
     </section>
   </main>
 
@@ -149,9 +151,10 @@
   <script src="web/models/switch-manifest.js?v=6" onerror="this.remove()"></script>
   <script defer src="web/local-switch-catalog.js?v=2"></script>
   <script defer src="web/models/github-inventory.js?v=1"></script>
+  <script defer src="web/community-candidate-catalog.js?v=1"></script>
   <script defer src="web/remote-switch-catalog.js?v=4"></script>
   <script defer src="web/species-texture-repairs.js?v=7"></script>
-  <script defer src="web/app.js?v=52"></script>
+  <script defer src="web/app.js?v=53"></script>
 </body>
 </html>
 
