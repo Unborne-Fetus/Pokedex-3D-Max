@@ -34,8 +34,12 @@ def request(url: str, *, timeout: int = 75) -> bytes:
     last = None
     for attempt in range(3):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT,
-                                                      "Accept": "application/octet-stream"})
+            req = urllib.request.Request(url, headers={
+                "User-Agent": USER_AGENT,
+                "Accept": "application/vnd.github+json" if url.startswith("https://api.github.com/")
+                          else "application/octet-stream",
+                "X-GitHub-Api-Version": "2022-11-28",
+            })
             with urllib.request.urlopen(req, timeout=timeout) as reply:
                 return reply.read()
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
