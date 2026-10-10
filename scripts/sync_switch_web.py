@@ -119,6 +119,21 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
         entry = dict(metadata_by_key.get((dex, form), {}))
         fingerprint = git_blob_sha(source)
         proof = known_blobs.get(fingerprint)
+        # A stale installed manifest may still call pm1012 Poltchageist.
+        # Refuse the row instead of copying it and hiding its original ID.
+        recorded_id = entry.get("sourceModelId", entry.get("modelId"))
+        recorded_game = str(entry.get("sourceGame", ""))
+        if recorded_id is not None and recorded_game:
+            try:
+                recorded_dex = source_species({
+                    "sourceModelId": int(recorded_id), "sourceGame": recorded_game
+                })
+            except (TypeError, ValueError):
+                recorded_dex = 0
+            if recorded_dex != dex:
+                print(f"Skipping mislabeled installed model #{dex:04d}: "
+                      f"{recorded_game} pm{recorded_id} maps to #{recorded_dex:04d}")
+                continue
         if proof and source_species(proof) != dex:
             print(f"Skipping mislabeled model #{dex:04d}: the GLB fingerprint "
                   f"belongs to #{source_species(proof):04d}")
@@ -132,6 +147,13 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             # binaries just because their directory numbers happen to match.
             for stale in ("sourceEvidence", "sourceModelId", "modelId", "sourceGame"):
                 entry.pop(stale, None)
+        # Do not regenerate false availability at #1001–#1025 from an
+        # old unnamed game-internal ID, even after metadata was invalidated.
+        if dex >= 1001 and not proof and not (
+            entry.get("sourceModelId") and entry.get("sourceGame")
+        ):
+            print(f"Skipping unverified late National Dex slot #{dex:04d}")
+            continue
         entry["sourceBlobSha"] = fingerprint
         idle = entry.get("idleAnimation")
         if idle not in names:
