@@ -32,6 +32,10 @@ const animationCoverageCountEl = document.querySelector("#animationCoverageCount
 const animationCoverageDetailEl = document.querySelector("#animationCoverageDetail");
 const animationCoverageProgressEl = document.querySelector("#animationCoverageProgress");
 const animationCoverageFillEl = document.querySelector("#animationCoverageFill");
+const finishedCoverageCountEl = document.querySelector("#finishedCoverageCount");
+const finishedCoverageDetailEl = document.querySelector("#finishedCoverageDetail");
+const finishedCoverageProgressEl = document.querySelector("#finishedCoverageProgress");
+const finishedCoverageFillEl = document.querySelector("#finishedCoverageFill");
 
 
 // Keep every numbered National Dex species visible even without a model.
@@ -56,6 +60,9 @@ function withMissingSpeciesEntries(catalog) {
 // The uploaded-file catalog does not contain trustworthy animation totals.
 // Confirm idle-clip availability only after each model actually loads.
 const NATIONAL_DEX_TOTAL = 1025;
+const finishedReview = window.POKEDEX3D_FINISHED || { finishedDex: [], lastReviewedDex: 0 };
+const finishedDex = new Set((finishedReview.finishedDex || [])
+  .map(Number).filter(dex => Number.isInteger(dex) && dex >= 1 && dex <= NATIONAL_DEX_TOTAL));
 const inspectedIdleDex = new Set();
 const confirmedIdleDex = new Set();
 
@@ -68,6 +75,7 @@ function coverageStatistics(catalog, inspected = inspectedIdleDex, confirmed = c
     models: available.size,
     inspected: [...inspected].filter(dex => available.has(dex)).length,
     animated: [...confirmed].filter(dex => available.has(dex)).length,
+    finished: finishedDex.size,
   };
 }
 
@@ -88,6 +96,12 @@ function renderCoverage() {
   updateMeter(stats.animated, animationCoverageCountEl, animationCoverageDetailEl,
     animationCoverageProgressEl, animationCoverageFillEl,
     stats.inspected.toLocaleString() + " inspected; others not yet verified");
+  const next = Math.min(NATIONAL_DEX_TOTAL, Number(finishedReview.lastReviewedDex || 0) + 1);
+  updateMeter(stats.finished, finishedCoverageCountEl, finishedCoverageDetailEl,
+    finishedCoverageProgressEl, finishedCoverageFillEl,
+    "through #" + String(finishedReview.lastReviewedDex || 0).padStart(4, "0") +
+    (next <= NATIONAL_DEX_TOTAL && next > Number(finishedReview.lastReviewedDex || 0)
+      ? " · next #" + String(next).padStart(4, "0") : " · all reviewed"));
 }
 
 function noteAnimationInspection(model, hasIdle) {
@@ -363,7 +377,8 @@ function renderList() {
     button.innerHTML =
       '<span class="dex">#' + String(model.dex).padStart(4, "0") + '</span>' +
       '<span><span class="name">' + escapeHtml(prettyName(model)) + "</span>" +
-      (model.missingModel ? '<span class="form"> · Model missing</span>' : '') + "</span>";
+      (model.missingModel ? '<span class="form"> · Model missing</span>' : '') +
+      (finishedDex.has(Number(model.dex)) ? '<span class="form"> · ✓ Finished</span>' : '') + "</span>";
     button.addEventListener("click", () => selectModel(index));
     fragment.appendChild(button);
   });
@@ -484,7 +499,8 @@ function selectModel(index) {
 
   dexEl.textContent = "#" + String(model.dex).padStart(4, "0");
   nameEl.textContent = prettyName(model);
-  formEl.textContent = model.missingModel ? "Model not uploaded" : "Regular";
+  formEl.textContent = (model.missingModel ? "Model not uploaded" : "Regular") +
+    (finishedDex.has(Number(model.dex)) ? " · Finished" : "");
   populateFormSelect(model);
   loadModel(model);
   updateSelectedRow();
