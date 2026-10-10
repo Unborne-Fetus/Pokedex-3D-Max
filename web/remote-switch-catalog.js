@@ -39,8 +39,17 @@
       if (!inventory && String(entry.form || "") !== "regular") continue;
       const match = String(entry.path || "").match(PATH);
       if (!match || Number(entry.dex) !== Number(match[1])) continue;
-      const dex = Number(entry.dex);
-      if (dex < 1 || dex > 1025 || seen.has(dex)) continue;
+      // The upload paths are historical storage slots, not evidence of
+      // species identity. ZA, just like SV, retains SwSh's internal IDs:
+      // /0964/ can therefore contain Clobbopus, not Palafin.
+      const recordedDex = Number(entry.dex);
+      const sourceId = Number(entry.sourceModelId);
+      const sourceGame = String(entry.sourceGame || "");
+      const recognized = /^(?:sv|swsh|la|za)(?:-|$)/i.test(sourceGame);
+      const dex = recognized && Number.isInteger(sourceId) && sourceId > 0
+        ? window.POKEDEX3D_MODEL_IDENTITY.nationalDex(sourceId, sourceGame)
+        : recordedDex;
+      if (!Number.isInteger(dex) || dex < 1 || dex > 1025 || seen.has(dex)) continue;
       const clips = Array.isArray(entry.animations) ? entry.animations : [];
       const idle = String(entry.idleAnimation || "");
       if (!inventory && (!idle || !clips.includes(idle))) continue;
@@ -53,8 +62,9 @@
           || !url.pathname.startsWith(basePath)) continue;
       seen.add(dex);
       results.push({
-        dex, form: "regular", name: window.POKEDEX3D_NAMES?.[dex]
-          || entry.name || "#" + String(dex).padStart(4, "0"),
+        dex, originalCatalogDex: recordedDex,
+        form: "regular", name: window.POKEDEX3D_NAMES?.[dex]
+          || "#" + String(dex).padStart(4, "0"),
         url: url.href, remoteSwitch: true, ready: true, valid: true,
         // An inventory is NOT evidence of texture correctness or animations.
         preflightRequired: inventory,
