@@ -35,7 +35,7 @@ compose.desktop {
             modules("jdk.unsupported", "java.management", "java.logging", "java.prefs")
             targetFormats(TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Pokedex 3D Max"
-            packageVersion = "0.2.7"
+            packageVersion = "0.2.8"
 
             windows {
                 menuGroup = "Pokedex 3D Max"
@@ -50,6 +50,9 @@ compose.desktop {
 // Embed only the tiny shared review checkpoint, never the giant model directory.
 tasks.named<ProcessResources>("processResources") {
     from(rootProject.file("web/finished-pokemon.js"))
+    from(rootProject.file("data/verified_switch_glb_dex.tsv"))
+    from(rootProject.file("data/swsh_model_dex.tsv"))
+    from(rootProject.file("data/sv_model_dex.tsv"))
 }
 
 tasks.register<JavaExec>("verifyDesktop") {
