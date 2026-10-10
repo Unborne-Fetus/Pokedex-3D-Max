@@ -27,6 +27,14 @@ if not errorlevel 1 (
   set "PYTHON_LAUNCHER=python"
   set "PYTHON_ARG="
 )
+echo Checking Blender...
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$ErrorActionPreference='Stop'; $c=Get-Command blender -ErrorAction SilentlyContinue; $exe=if($c){$c.Source}else{$null}; if(-not $exe){$exe=Get-ChildItem -Path '.tools' -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName}; if(-not $exe){$root=Join-Path $env:ProgramFiles 'Blender Foundation'; $exe=Get-ChildItem -Path $root -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName}; if(-not $exe){$v='4.5.14'; $url='https://mirror.blender.org/release/Blender4.5/blender-4.5.14-windows-x64.zip'; $dir=Join-Path (Get-Location) ('.tools\blender-'+$v); $zip=Join-Path (Get-Location) ('.tools\blender-'+$v+'.zip'); New-Item -ItemType Directory -Force -Path '.tools' | Out-Null; if(-not (Test-Path $zip) -or (Get-Item $zip).Length -lt 100MB){Write-Host 'Downloading official portable Blender 4.5.14 (large download)...'; Invoke-WebRequest -Uri $url -OutFile $zip}; if((Get-Item $zip).Length -lt 100MB){throw 'Blender download incomplete'}; New-Item -ItemType Directory -Force -Path $dir | Out-Null; Write-Host 'Extracting portable Blender...'; Expand-Archive -LiteralPath $zip -DestinationPath $dir -Force; $exe=Get-ChildItem -Path $dir -Filter blender.exe -File -Recurse | Select-Object -First 1 -ExpandProperty FullName}; if(-not $exe){throw 'Blender executable not found'}; Set-Content -LiteralPath '.cache\remaining-model-diagnosis\blender-path.txt' -Value $exe; Write-Host ('Using Blender: '+$exe)"
+if errorlevel 1 (
+  echo ERROR: Could not prepare Blender. Check your internet connection and disk space.
+  goto :failed
+)
+set /p "BLENDER=" < ".cache\remaining-model-diagnosis\blender-path.txt"
 echo Reading the latest diagnosis and converting only regular model candidates...
 echo Existing valid models will not be force-reconverted.
 echo.
