@@ -34,6 +34,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +65,7 @@ import org.json.JSONObject
 import org.json.JSONArray
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -71,6 +73,8 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.security.MessageDigest
+import java.util.prefs.Preferences
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.exp
@@ -114,6 +118,49 @@ private fun readReviewCheckpoint(): ReviewCheckpoint = runCatching {
     )
 }.getOrElse { ReviewCheckpoint(emptySet(), emptySet(), 0) }
 
+// Saved separately from the installed application so a rebuild does not erase
+// checked animation progress. Model path, size and modification time are
+// fingerprinted; a replaced GLB is not assumed to keep its old idle animation.
+private fun animationFingerprint(model: DesktopModel): String? = runCatching {
+    val path = model.path.toAbsolutePath().normalize()
+    val signature = path.toString() + "|" + Files.size(path) + "|" +
+        Files.getLastModifiedTime(path).toMillis()
+    MessageDigest.getInstance("SHA-256")
+        .digest(signature.toByteArray(StandardCharsets.UTF_8))
+        .joinToString("") { "%02x".format(it) }
+}.getOrNull()
+
+private fun animationPreferences(): Preferences =
+    Preferences.userRoot().node("/com/unbornefetus/pokedex3dmax/animation-coverage-v1")
+
+private fun loadSavedAnimationCoverage(models: List<DesktopModel>): Pair<Set<Int>, Set<Int>> {
+    val prefs = runCatching { animationPreferences() }.getOrNull()
+        ?: return emptySet<Int>() to emptySet()
+    val inspected = mutableSetOf<Int>()
+    val confirmed = mutableSetOf<Int>()
+    for (model in models) {
+        val fingerprint = animationFingerprint(model) ?: continue
+        val state = runCatching { prefs.get("dex-" + model.dex, "") }.getOrNull()
+        when (state) {
+            "$fingerprint:1" -> {
+                inspected += model.dex
+                confirmed += model.dex
+            }
+            "$fingerprint:0" -> inspected += model.dex
+        }
+    }
+    return inspected to confirmed
+}
+
+private fun persistAnimationInspection(model: DesktopModel, hasIdle: Boolean) {
+    val fingerprint = animationFingerprint(model) ?: return
+    runCatching {
+        val prefs = animationPreferences()
+        prefs.put("dex-" + model.dex, "$fingerprint:" + if (hasIdle) "1" else "0")
+        prefs.flush()
+    }
+}
+
 private data class ModelBounds(
     val center: Float3,
     val radius: Float,
@@ -149,8 +196,10 @@ private fun DesktopApp() {
     // Models are counted from actual local files. Idle clips count only after a model
     // has been instantiated and its animation list checked.
     val modelDexes = remember(models) { models.map { it.dex }.filter { it in 1..1025 }.toSet() }
-    var inspectedAnimationDex by remember(models) { mutableStateOf(emptySet<Int>()) }
-    var confirmedAnimationDex by remember(models) { mutableStateOf(emptySet<Int>()) }
+    val savedAnimationCoverage = remember(models) { loadSavedAnimationCoverage(models) }
+    var inspectedAnimationDex by remember(models) { mutableStateOf(savedAnimationCoverage.first) }
+    var confirmedAnimationDex by remember(models) { mutableStateOf(savedAnimationCoverage.second) }
+    val animationSaveScope = rememberCoroutineScope()
     val modelCount = modelDexes.size
     val checkedCount = inspectedAnimationDex.count { it in modelDexes }
     val animationCount = confirmedAnimationDex.count { it in modelDexes }
@@ -341,9 +390,14 @@ private fun DesktopApp() {
                             Box(Modifier.weight(1f).fillMaxWidth()) {
                                 bytes?.let {
                                     PokemonViewport(current, it, rotate, breaks, reset) { dex, hasIdle ->
-                                        inspectedAnimationDex = inspectedAnimationDex + dex
-                                        if (hasIdle) confirmedAnimationDex = confirmedAnimationDex + dex
-                                        else confirmedAnimationDex = confirmedAnimationDex - dex
+                                        if (dex == current.dex) {
+                                            inspectedAnimationDex = inspectedAnimationDex + dex
+                                            if (hasIdle) confirmedAnimationDex = confirmedAnimationDex + dex
+                                            else confirmedAnimationDex = confirmedAnimationDex - dex
+                                            animationSaveScope.launch(Dispatchers.IO) {
+                                                persistAnimationInspection(current, hasIdle)
+                                            }
+                                        }
                                     }
                                 } ?: Text("Loading " + current.name + "…")
                             }
@@ -908,6 +962,9 @@ private fun verifyDesktop() {
         check(models.single().dex == 6)
         check(models.single().form.equals("regular", ignoreCase = true))
         check(models.single().path == root.resolve("switch/0006/regular.glb"))
+        val firstFingerprint = animationFingerprint(models.single())
+        Files.write(models.single().path, byteArrayOf(1, 2))
+        check(animationFingerprint(models.single()) != firstFingerprint)
         val review = readReviewCheckpoint()
         check(review.finishedDex == (1..9).toSet())
         check(review.reviewedAsFine == setOf(2, 5))
