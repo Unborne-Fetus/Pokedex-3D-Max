@@ -4,6 +4,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $toolsDir = Join-Path $repoRoot '.tools'
 $reportDir = Join-Path $repoRoot '.cache\remaining-model-diagnosis'
 New-Item -ItemType Directory -Path $toolsDir, $reportDir -Force | Out-Null
+Add-Type -AssemblyName System.IO.Compression
 
 function Find-Blender {
     $cmd = Get-Command blender -ErrorAction SilentlyContinue
