@@ -1,0 +1,131 @@
+# Game-internal Scarlet/Violet model IDs from the Pokémon Model Ripping Project (RTB; thread-25872, 2023-12-20).
+# These are NOT National Dex IDs. Omitted gaps (1008-1009, 1115-1119) are unused.
+# See https://archive.vg-resource.com/thread-25872.html ; verify archive contents before publishing models.
+model_id	dex	name
+1001	899	Wyrdeer
+1002	900	Kleavor
+1003	903	Sneasler
+1004	905	Enamorus
+1005	904	Overqwil
+1006	902	Basculegion
+1007	901	Ursaluna
+1010	906	Sprigatito
+1011	907	Floragato
+1012	908	Meowscarada
+1013	909	Fuecoco
+1014	910	Crocalor
+1015	911	Skeledirge
+1016	912	Quaxly
+1017	913	Quaxwell
+1018	914	Quaquaval
+1019	915	Lechonk
+1020	916	Oinkologne
+1021	982	Dudunsparce
+1022	917	Tarountula
+1023	918	Spidops
+1024	919	Nymble
+1025	920	Lokix
+1026	953	Rellor
+1027	954	Rabsca
+1028	971	Greavard
+1029	972	Houndstone
+1030	955	Flittle
+1031	956	Espathra
+1032	981	Farigiraf
+1033	960	Wiglett
+1034	961	Wugtrio
+1035	977	Dondozo
+1036	976	Veluza
+1037	963	Finizen
+1038	964	Palafin
+1039	928	Smoliv
+1040	929	Dolliv
+1041	930	Arboliva
+1042	951	Capsakid
+1043	952	Scovillain
+1044	938	Tadbulb
+1045	939	Bellibolt
+1046	965	Varoom
+1047	966	Revavroom
+1048	968	Orthworm
+1049	924	Tandemaus
+1050	925	Maushold
+1051	974	Cetoddle
+1052	975	Cetitan
+1053	996	Frigibax
+1054	997	Arctibax
+1055	998	Baxcalibur
+1056	978	Tatsugiri
+1057	967	Cyclizar
+1058	921	Pawmi
+1059	922	Pawmo
+1060	923	Pawmot
+1061	940	Wattrel
+1062	941	Kilowattrel
+1063	962	Bombirdier
+1064	931	Squawkabilly
+1065	973	Flamigo
+1066	950	Klawf
+1067	932	Nacli
+1068	933	Naclstack
+1069	934	Garganacl
+1070	969	Glimmet
+1071	970	Glimmora
+1072	944	Shroodle
+1073	945	Grafaiai
+1074	926	Fidough
+1075	927	Dachsbun
+1076	942	Maschiff
+1077	943	Mabosstiff
+1078	946	Bramblin
+1079	947	Brambleghast
+1080	999	Gimmighoul
+1081	1000	Gholdengo
+1082	984	Great Tusk
+1083	986	Brute Bonnet
+1084	1009	Walking Wake
+1085	989	Sandy Shocks
+1086	985	Scream Tail
+1087	987	Flutter Mane
+1088	988	Slither Wing
+1089	1005	Roaring Moon
+1090	990	Iron Treads
+1091	1010	Iron Leaves
+1092	994	Iron Moth
+1093	992	Iron Hands
+1094	993	Iron Jugulis
+1095	995	Iron Thorns
+1096	991	Iron Bundle
+1097	1006	Iron Valiant
+1098	1003	Ting-Lu
+1099	1002	Chien-Pao
+1100	1001	Wo-Chien
+1101	1004	Chi-Yu
+1102	1007	Koraidon
+1103	1008	Miraidon
+1104	957	Tinkatink
+1105	958	Tinkatuff
+1106	959	Tinkaton
+1107	935	Charcadet
+1108	936	Armarouge
+1109	937	Ceruledge
+1110	948	Toedscool
+1111	949	Toedscruel
+1112	983	Kingambit
+1113	980	Clodsire
+1114	979	Annihilape
+1120	1017	Ogerpon
+1121	1011	Dipplin
+1122	1019	Hydrapple
+1123	1014	Okidogi
+1124	1015	Munkidori
+1125	1016	Fezandipiti
+1126	1020	Gouging Fire
+1127	1021	Raging Bolt
+1128	1023	Iron Crown
+1129	1022	Iron Boulder
+1130	1024	Terapagos
+1131	1025	Pecharunt
+1132	1018	Archaludon
+1133	1012	Poltchageist
+1134	1013	Sinistcha
