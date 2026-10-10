@@ -39,14 +39,23 @@ const finishedCoverageFillEl = document.querySelector("#finishedCoverageFill");
 
 
 // Keep every numbered National Dex species visible even without a model.
-// Only real entries from the Switch asset catalog may display a 3D model.
-function withMissingSpeciesEntries(catalog) {
+// Externally hosted preview candidates only fill missing Switch entries and are
+// never written into the regular Switch catalog or marked Finished.
+function withMissingSpeciesEntries(catalog, includeCommunity = true) {
   const entries = new Map();
   for (const model of catalog) {
     const dex = Number(model?.dex);
     if (!Number.isInteger(dex) || dex < 1 || dex > 1025) continue;
     if (!entries.has(dex) || (entries.get(dex).missingModel && !model.missingModel)) {
       entries.set(dex, model);
+    }
+  }
+  if (includeCommunity) {
+    for (const candidate of (window.POKEDEX3D_COMMUNITY_CANDIDATES?.models || [])) {
+      const dex = Number(candidate.dex);
+      if (!Number.isInteger(dex) || dex < 1 || dex > 1025) continue;
+      const current = entries.get(dex);
+      if (!current || current.missingModel) entries.set(dex, { ...candidate });
     }
   }
   for (const [number, name] of Object.entries(window.POKEDEX3D_NAMES || {})) {
@@ -126,6 +135,7 @@ function coverageStatistics(catalog, inspected = inspectedIdleDex, confirmed = c
     .filter(dex => dex >= 1 && dex <= NATIONAL_DEX_TOTAL));
   return {
     models: available.size,
+    previews: catalog.filter(model => model.communityCandidate && !model.missingModel).length,
     inspected: [...inspected].filter(dex => available.has(dex)).length,
     animated: [...confirmed].filter(dex => available.has(dex)).length,
     finished: finishedDex.size,
@@ -145,7 +155,8 @@ function renderCoverage() {
   };
   updateMeter(stats.models, modelCoverageCountEl, modelCoverageDetailEl,
     modelCoverageProgressEl, modelCoverageFillEl,
-    (NATIONAL_DEX_TOTAL - stats.models).toLocaleString() + " model files missing");
+    stats.previews.toLocaleString() + " community previews (not visually reviewed); " +
+    (NATIONAL_DEX_TOTAL - stats.models).toLocaleString() + " still missing");
   updateMeter(stats.animated, animationCoverageCountEl, animationCoverageDetailEl,
     animationCoverageProgressEl, animationCoverageFillEl,
     stats.inspected.toLocaleString() + " inspected; others not yet verified");
@@ -176,10 +187,12 @@ window.addEventListener("storage", event => {
 });
 
 function catalogCoverageText(catalog) {
-  const available = catalog.filter(model => !model.missingModel).length;
+  const realSwitch = catalog.filter(model => !model.missingModel && !model.communityCandidate).length;
+  const previews = catalog.filter(model => model.communityCandidate && !model.missingModel).length;
   return catalog.length.toLocaleString() + " Pokémon · " +
-    available.toLocaleString() + " models listed · " +
-    (catalog.length - available).toLocaleString() + " missing models";
+    realSwitch.toLocaleString() + " Switch models · " +
+    previews.toLocaleString() + " external previews · " +
+    (catalog.length - realSwitch - previews).toLocaleString() + " missing";
 }
 
 let models = withMissingSpeciesEntries((Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
@@ -281,7 +294,9 @@ function startIdle() {
   playingBreak = false;
 
   if (!idleAnimation) {
-    messageEl.textContent = "Switch model loaded, but no verified idle animation is available.";
+    messageEl.textContent = currentModel?.communityCandidate ?
+      "This external preview did not expose a valid idle animation." :
+      "Switch model loaded, but no verified idle animation is available.";
     messageEl.classList.remove("hidden");
     return;
   }
@@ -411,13 +426,38 @@ function scheduleCameraFit() {
 
 function populateFormSelect(model) {
   formSelect.replaceChildren();
-  const option = document.createElement("option");
-  option.value = model.url || "";
-  option.textContent = model.missingModel ? "Switch model unavailable" : "Regular";
-  option.selected = true;
-  formSelect.appendChild(option);
-  formSelect.disabled = true;
+  const variants = model.communityCandidate ? model.variants || [] : [];
+  if (variants.length) {
+    for (const variant of variants) {
+      const option = document.createElement("option");
+      option.value = variant.url;
+      option.textContent = variant.label + " · External preview";
+      option.selected = variant.url === model.url;
+      formSelect.appendChild(option);
+    }
+    formSelect.disabled = variants.length < 2;
+  } else {
+    const option = document.createElement("option");
+    option.value = model.url || "";
+    option.textContent = model.missingModel ? "Switch model unavailable" : "Regular";
+    option.selected = true;
+    formSelect.appendChild(option);
+    formSelect.disabled = true;
+  }
 }
+
+formSelect.addEventListener("change", () => {
+  if (!currentModel?.communityCandidate) return;
+  const chosen = (currentModel.variants || []).find(v => v.url === formSelect.value);
+  if (!chosen) return;
+  currentModel.url = chosen.url;
+  currentModel.assetRevision = chosen.revision;
+  currentModel.sourcePage = chosen.sourcePage;
+  currentModel.variantLabel = chosen.label;
+  formEl.textContent = "External community preview · " + chosen.label + " · Not finished";
+  updateCandidateSourceLink(currentModel);
+  loadModel(currentModel);
+});
 
 function updateSelectedRow() {
   listEl.querySelectorAll(".entry").forEach((node, index) => {
@@ -438,7 +478,8 @@ function renderList() {
     button.innerHTML =
       '<span class="dex">#' + String(model.dex).padStart(4, "0") + '</span>' +
       '<span><span class="name">' + escapeHtml(prettyName(model)) + "</span>" +
-      (model.missingModel ? '<span class="form"> · Model missing</span>' : '') +
+      (model.missingModel ? '<span class="form"> · Model missing</span>' :
+        model.communityCandidate ? '<span class="form"> · External preview</span>' : '') +
       (finishedDex.has(Number(model.dex)) ? '<span class="form"> · ✓ Finished</span>' : '') + "</span>";
     button.addEventListener("click", () => selectModel(index));
     fragment.appendChild(button);
@@ -479,31 +520,38 @@ function loadModel(model) {
   const fromLocalFolder = typeof File !== "undefined" && model?.file instanceof File;
   const fromRemoteManifest = model?.remoteSwitch === true
     && /^https:\/\/[^/]+\/(?:.*\/)?\d{4}\/regular\.glb$/.test(catalogUrl);
-  if (!catalogUrl || (!catalogUrl.replaceAll("\\", "/").includes("/switch/") && !fromRemoteManifest)) {
-    messageEl.textContent = "Blocked non-Switch model source.";
+  const fromCommunity = model?.communityCandidate === true &&
+    window.POKEDEX3D_COMMUNITY_CANDIDATES?.isCandidateURL(model.dex, catalogUrl) === true;
+  if (!catalogUrl || (!catalogUrl.replaceAll("\\", "/").includes("/switch/") &&
+      !fromRemoteManifest && !fromCommunity)) {
+    messageEl.textContent = "Blocked unapproved model source.";
     messageEl.classList.remove("hidden");
     viewer.removeAttribute("src");
     return;
   }
 
-  messageEl.textContent = "Loading original Switch model…";
+  messageEl.textContent = fromCommunity ?
+    "Loading external community preview (not a verified Switch original)…" :
+    "Loading original Switch model…";
   messageEl.classList.remove("hidden");
   viewer.removeAttribute("src");
   if (activeObjectUrl) {
     URL.revokeObjectURL(activeObjectUrl);
     activeObjectUrl = null;
   }
-  viewer.alt = "3D Switch model of " + prettyName(model);
+  viewer.alt = (fromCommunity ? "Community preview 3D model of " : "3D Switch model of ") +
+    prettyName(model);
   loadTimer = setTimeout(() => {
     if (selectedSequence !== loadSequence) return;
-    messageEl.textContent = "Switch model is taking longer than expected to load. Check your connection or try another Pokémon.";
+    messageEl.textContent = (fromCommunity ? "External community preview" : "Switch model") +
+      " is taking longer than expected to load. Check your connection or try another Pokémon.";
     messageEl.classList.remove("hidden");
-  }, fromRemoteManifest ? 30000 : 15000);
+  }, (fromRemoteManifest || fromCommunity) ? 30000 : 15000);
 
   if (fromLocalFolder) {
     activeObjectUrl = URL.createObjectURL(model.file);
     viewer.src = activeObjectUrl;
-  } else if (fromRemoteManifest || model.source === "original-switch-local-merge") {
+  } else if (fromCommunity || fromRemoteManifest || model.source === "original-switch-local-merge") {
     // GitHub inventories and merged local catalogs omit idle metadata.
     // Download once, inspect the real GLB for embedded color and a valid
     // idle, then render that exact same downloaded data through a blob URL.
@@ -514,12 +562,14 @@ function loadModel(model) {
         const reply = await fetch(catalogUrl, { mode: "cors", signal: abort.signal });
         if (!reply.ok) throw Error("GitHub returned HTTP " + reply.status);
         const downloaded = await reply.arrayBuffer();
-        const data = typeof window.POKEDEX3D_REPAIR_SWITCH_MODEL === "function"
+        // Never modify third-party GLBs with Switch-only shader/UV repairs.
+        const data = !fromCommunity && typeof window.POKEDEX3D_REPAIR_SWITCH_MODEL === "function"
           ? await window.POKEDEX3D_REPAIR_SWITCH_MODEL(downloaded, Number(model.dex))
           : downloaded;
         if (abort.signal.aborted || selectedSequence !== loadSequence) return;
-        const checked = fromRemoteManifest
-          ? window.POKEDEX3D_REMOTE_SWITCH.inspect(data)
+        const checked = fromCommunity
+          ? window.POKEDEX3D_COMMUNITY_CANDIDATES.inspect(data)
+          : fromRemoteManifest ? window.POKEDEX3D_REMOTE_SWITCH.inspect(data)
           : (() => {
               const view = new DataView(data);
               const doc = JSON.parse(new TextDecoder().decode(
@@ -541,8 +591,10 @@ function loadModel(model) {
       } catch (error) {
         if (abort.signal.aborted || selectedSequence !== loadSequence) return;
         clearLoadTimer();
-        messageEl.textContent = "Could not load verified Switch GLB from GitHub: " +
-          String(error.message || error) + ". Try a different Pokémon.";
+        messageEl.textContent = (fromCommunity ?
+          "Could not load the external community preview: " :
+          "Could not load verified Switch GLB from GitHub: ") +
+          String(error.message || error) + ". Existing Switch models were not changed.";
         messageEl.classList.remove("hidden");
       } finally {
         if (remoteAbort === abort) remoteAbort = null;
@@ -553,6 +605,15 @@ function loadModel(model) {
   }
 }
 
+function updateCandidateSourceLink(model) {
+  const link = document.querySelector("#externalModelSource");
+  if (!link) return;
+  const external = model?.communityCandidate === true;
+  link.hidden = !external;
+  if (external) link.href = model.sourcePage;
+  else link.removeAttribute("href");
+}
+
 function selectModel(index) {
   if (!filtered.length) return;
   selectedIndex = Math.max(0, Math.min(index, filtered.length - 1));
@@ -560,8 +621,11 @@ function selectModel(index) {
 
   dexEl.textContent = "#" + String(model.dex).padStart(4, "0");
   nameEl.textContent = prettyName(model);
-  formEl.textContent = (model.missingModel ? "Model not uploaded" : "Regular") +
-    (finishedDex.has(Number(model.dex)) ? " · Finished" : "");
+  formEl.textContent = model.communityCandidate ?
+    "External community preview · " + model.variantLabel + " · Not finished" :
+    (model.missingModel ? "Model not uploaded" : "Regular") +
+      (finishedDex.has(Number(model.dex)) ? " · Finished" : "");
+  updateCandidateSourceLink(model);
   populateFormSelect(model);
   loadModel(model);
   updateSelectedRow();
@@ -595,7 +659,9 @@ viewer.addEventListener("load", () => {
 viewer.addEventListener("error", () => {
   clearLoadTimer();
   clearBreakTimer();
-  messageEl.textContent = "Switch model could not be rendered. No alternate model source was used.";
+  messageEl.textContent = currentModel?.communityCandidate ?
+    "The external community preview could not render. The existing Switch catalog is untouched." :
+    "Switch model could not be rendered. No alternate model source was used.";
   messageEl.classList.remove("hidden");
 });
 
@@ -816,7 +882,7 @@ localModelsFolder.addEventListener("change", async () => {
     localFolderActive = true;
     localModelsForExport = outcome.models;
     exportModelManifestBtn.disabled = false;
-    models = withMissingSpeciesEntries(outcome.models);
+    models = withMissingSpeciesEntries(outcome.models, false);
     restoreAnimationCoverage();
     window.POKEDEX3D_MODELS = models;
     folderStatus.textContent = outcome.models.length + " verified Switch models loaded locally. None were uploaded.";
