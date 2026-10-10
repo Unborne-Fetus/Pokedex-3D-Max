@@ -153,16 +153,11 @@
         changes.push([2, (ctx, w, h) => shineEye(ctx, w, h, "wartortle")]);
       }
       if (dex === 9) {
-        // Both shell sections have V coordinates in -2..-1.
-        // The front plastron must share the shell atlas, not the blue
-        // skin atlas accidentally assigned by the Switch export.
-        const rear = material(doc, "body_b_00");
-        const front = material(doc, "body_b_01");
-        const shellAtlas = rear?.pbrMetallicRoughness?.baseColorTexture?.index;
-        if (Number.isInteger(shellAtlas))
-          setTexture(doc, "body_b_01", shellAtlas);
-        if (front?.pbrMetallicRoughness)
-          front.pbrMetallicRoughness.baseColorFactor = [1, 1, 1, 1];
+        // The body_a atlas already contains the beige plastron. Its UVs
+        // run from V=-1..0; CLAMP_TO_EDGE samples the blue top row and
+        // paints the belly blue. Shift into the original atlas instead.
+        // The separate shell/cannon UVs run from V=-2..-1.
+        offsetTextureV(doc, "body_a", 1);
         offsetTextureV(doc, "body_b_00", 2);
         offsetTextureV(doc, "body_b_01", 2);
       }
