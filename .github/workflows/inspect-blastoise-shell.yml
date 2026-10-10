@@ -20,6 +20,18 @@ jobs:
               h.seek(12)
               n, chunk = struct.unpack('<II', h.read(8))
               doc = json.loads(h.read(n))
+          bin_start = 28+n
+          binary = p.read_bytes()
+          def uv_bounds(accessor_id):
+              a = doc['accessors'][accessor_id]
+              bv = doc['bufferViews'][a['bufferView']]
+              start = bin_start + bv.get('byteOffset', 0) + a.get('byteOffset', 0)
+              stride = bv.get('byteStride', 8)
+              if a.get('componentType') != 5126 or a.get('type') != 'VEC2': return None
+              values = [struct.unpack_from('<ff', binary, start+stride*i)
+                        for i in range(a['count'])]
+              return [list(map(lambda v:round(v,5), (min(t[0] for t in values), min(t[1] for t in values)))),
+                      list(map(lambda v:round(v,5), (max(t[0] for t in values), max(t[1] for t in values))))]
           rows = []
           for mi, mesh in enumerate(doc.get('meshes', [])):
               for pi, part in enumerate(mesh.get('primitives', [])):
@@ -33,12 +45,19 @@ jobs:
                     materialColor=material.get('pbrMetallicRoughness', {}).get('baseColorFactor'),
                     tex=texture, positionCount=pos.get('count'),
                     positionMin=pos.get('min'), positionMax=pos.get('max'),
-                    uvCount=uv.get('count')))
+                    uvCount=uv.get('count'), uvRange=uv_bounds(part['attributes']['TEXCOORD_0']) if 'TEXCOORD_0' in part['attributes'] else None))
           data=dict(meshes=rows, materialCount=len(doc.get('materials', [])),
             materials=[dict(name=x.get('name'), base=x.get('pbrMetallicRoughness', {}).get('baseColorTexture')) for x in doc.get('materials', [])])
           path = pathlib.Path('diagnostics/blastoise-shell-report.json')
           path.parent.mkdir(exist_ok=True)
           path.write_text(json.dumps(data, indent=2)+'\n')
+          for idx in [1, 2]:
+              img = doc['images'][idx]
+              view = doc['bufferViews'][img['bufferView']]
+              suffix = '.png' if img.get('mimeType') == 'image/png' else '.jpg'
+              imgfile = pathlib.Path('diagnostics/blastoise-texture-%s%s' % (idx, suffix))
+              imgfile.write_bytes(binary[bin_start+view.get('byteOffset',0): bin_start+view.get('byteOffset',0)+view['byteLength']])
+              print('Wrote texture:', imgfile, imgfile.stat().st_size)
           print(json.dumps(data, indent=2))
           PY
       - name: Commit diagnostic report
@@ -46,5 +65,5 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add diagnostics/blastoise-shell-report.json
+          git add diagnostics/blastoise-shell-report.json diagnostics/blastoise-texture-*
           git diff --cached --quiet || (git commit -m 'Inspect Blastoise shell mesh layout' && git push)
