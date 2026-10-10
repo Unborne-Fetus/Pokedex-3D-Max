@@ -209,7 +209,7 @@ const installedSwitchModels = (Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
   : [])
   .filter(model => model?.valid !== false && model?.ready !== false)
   .filter(model => String(model?.form || "regular").toLowerCase() === "regular")
-  .filter(model => String(model?.url || "").replaceAll("\\", "/").includes("/switch/")));
+  .filter(model => String(model?.url || "").replaceAll("\\", "/").includes("/switch/"));
 const bundledSwitchModels = window.POKEDEX3D_REMOTE_SWITCH?.bundled?.() || [];
 let models = withMissingSpeciesEntries([...installedSwitchModels, ...bundledSwitchModels]);
 
