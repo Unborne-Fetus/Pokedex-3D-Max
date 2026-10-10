@@ -106,7 +106,43 @@
     return { embeddedModelId: embedded, sourceGame: game, sourceModelId: id || null };
   }
 
+  async function loadVerified(model, url, signal) {
+    // Cache only GLBs that passed exact National Dex and source-binary checks.
+    // Each URL includes an asset revision so fixes never replay stale models.
+    let cache = null;
+    if (globalThis.caches?.open) {
+      try { cache = await globalThis.caches.open("pokedex3d-verified-switch-v2"); }
+      catch (_) { /* Private-browsing and restrictive WebViews can disable caching. */ }
+    }
+    if (cache) {
+      try {
+        const saved = await cache.match(url);
+        if (saved) {
+          const bytes = await saved.arrayBuffer();
+          try {
+            await verify(model, bytes);
+            return bytes;
+          } catch (_) {
+            await cache.delete(url);
+          }
+        }
+      } catch (_) { /* A broken cache must not prevent a normal network fetch. */ }
+    }
+    const response = await fetch(url, { mode: "cors", signal });
+    if (!response.ok) throw Error("Model download failed (HTTP " + response.status + ")");
+    const bytes = await response.arrayBuffer();
+    await verify(model, bytes);
+    if (cache && typeof Response !== "undefined") {
+      try {
+        await cache.put(url, new Response(bytes, {
+          headers: { "Content-Type": "model/gltf-binary" },
+        }));
+      } catch (_) { /* Quota limits are fine: models still render. */ }
+    }
+    return bytes;
+  }
+
   window.POKEDEX3D_MODEL_IDENTITY = Object.freeze({
-    verify, embeddedModelId, glbDocument, nationalDex,
+    verify, embeddedModelId, glbDocument, nationalDex, loadVerified,
   });
 })();

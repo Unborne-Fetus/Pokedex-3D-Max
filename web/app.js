@@ -573,10 +573,8 @@ function loadModel(model) {
     remoteAbort = abort;
     (async () => {
       try {
-        const reply = await fetch(catalogUrl, { mode: "cors", signal: abort.signal });
-        if (!reply.ok) throw Error("GitHub returned HTTP " + reply.status);
-        const downloaded = await reply.arrayBuffer();
-        await window.POKEDEX3D_MODEL_IDENTITY.verify(model, downloaded);
+        const downloaded = await window.POKEDEX3D_MODEL_IDENTITY.loadVerified(
+          model, catalogUrl, abort.signal);
         // Never modify third-party GLBs with Switch-only shader/UV repairs.
         const data = !fromCommunity && typeof window.POKEDEX3D_REPAIR_SWITCH_MODEL === "function"
           ? await window.POKEDEX3D_REPAIR_SWITCH_MODEL(downloaded, Number(model.dex))

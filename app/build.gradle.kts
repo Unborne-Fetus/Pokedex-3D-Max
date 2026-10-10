@@ -44,6 +44,10 @@ val syncCanonicalWebAssets by tasks.registering(Sync::class) {
     from(rootProject.file("index.html"))
     from(rootProject.file("web")) {
         into("web")
+        // The APK deliberately does not bundle multi-GB GLBs. Also omit
+        // their local-only catalog so the public inventory is actually used
+        // instead of 836 broken https://pokedex3d.local/switch/... URLs.
+        exclude("models/switch-manifest.js", "models/switch-manifest.json")
         // Do not accidentally turn generated multi-GB model packs into the APK.
         // The same web runtime still uses its online/fallback sources and manifests.
         exclude("**/*.glb", "**/*.gltf", "**/*.fbx", "**/*.bin")

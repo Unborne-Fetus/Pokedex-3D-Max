@@ -54,5 +54,29 @@ const hash = bytes => crypto.createHash("sha1").update(
   browser.POKEDEX3D_SOURCE_PROVENANCE[hash(lokix)] = [1025, "SV-Poke"];
   await assert.rejects(validator.verify({dex:1025},lokix),/Wrong Pokémon/);
   assert.equal((await validator.verify({dex:920},lokix)).sourceGame,"sv");
+  // A validated model must load without network on subsequent visits.
+  const saved = new Map();
+  let downloads = 0;
+  context.Response = class {
+    constructor(buffer) { this.buffer = buffer; }
+    async arrayBuffer() { return this.buffer; }
+  };
+  context.caches = { open: async () => ({
+    match: async key => saved.get(key),
+    put: async (key, response) => { saved.set(key, response); },
+    delete: async key => saved.delete(key),
+  }) };
+  context.fetch = async () => {
+    downloads++;
+    return { ok: true, status: 200, arrayBuffer: async () => lokix };
+  };
+  const model = { dex: 920, sourceBlobSha: hash(lokix), sourceGame: "SV-Poke",
+    sourceModelId: 1025 };
+  const url = "https://assets.test/switch/0920/regular.glb?rev=" + hash(lokix);
+  await validator.loadVerified(model, url);
+  await validator.loadVerified(model, url);
+  assert.equal(downloads, 1, "Second validated model load must use offline cache");
+  await assert.rejects(validator.loadVerified({ dex: 1025 }, url), /Wrong Pokémon/);
+  assert.equal(downloads, 2, "A cached wrong Pokémon must not be displayed");
   console.log("Actual GLB source-ID checks and cache/fingerprint validation passed");
 })().catch(error => { console.error(error); process.exitCode = 1; });
