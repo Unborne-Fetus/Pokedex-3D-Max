@@ -16,6 +16,11 @@ assert.equal(validator.nationalDex(1025, "sv"), 920);
 assert.equal(validator.nationalDex(1010, "sv"), 906);
 assert.equal(validator.nationalDex(801, "sv"), 747);
 assert.equal(validator.nationalDex(1002, "la"), 900);
+assert.equal(validator.nationalDex(942, "ZA-PokeDLC"), 876); // Indeedee, not Maschiff
+assert.equal(validator.nationalDex(964, "ZA-PokeDLC"), 852); // Clobbopus, not Palafin
+assert.equal(validator.nationalDex(965, "ZA-PokeDLC"), 853); // Grapploct, not Varoom
+assert.equal(validator.nationalDex(920, "ZA-PokeDLC"), 823); // Corviknight, not Lokix
+assert.equal(validator.nationalDex(1131, "za"), 1025); // Pecharunt
 
 function fixture(internal) {
   const doc = {
@@ -44,6 +49,15 @@ const hash = bytes => crypto.createHash("sha1").update(
   assert.equal((await validator.verify({dex:920,sourceGame:"SV-Poke",sourceModelId:1025}, lokix)).sourceModelId,1025);
   await assert.rejects(validator.verify({dex:1025,sourceGame:"SV-Poke",sourceModelId:1025},lokix),/Wrong Pokémon/);
   await assert.rejects(validator.verify({dex:801,sourceGame:"SV-Poke",sourceModelId:801},fixture(801)),/Wrong Pokémon/);
+  for (const [wrong, right] of [[942, 876], [964, 852], [965, 853], [920, 823]]) {
+    await assert.rejects(
+      validator.verify({dex:wrong,sourceGame:"ZA-PokeDLC",sourceModelId:wrong},fixture(wrong)),
+      /Wrong Pokémon/);
+    assert.equal((await validator.verify(
+      {dex:right,sourceGame:"ZA-PokeDLC",sourceModelId:wrong},fixture(wrong)
+    )).sourceModelId,wrong);
+    await assert.rejects(validator.verify({dex:wrong},fixture(wrong)),/Ambiguous/);
+  }
   await assert.rejects(validator.verify({dex:909,sourceGame:"SV-Poke",sourceModelId:909},fuecoco),/disagrees|catalog/);
   assert.equal((await validator.verify({dex:909,sourceGame:"SV-Poke",sourceModelId:1013},fuecoco)).sourceModelId,1013);
   assert.equal((await validator.verify({dex:10,sourceGame:"swsh"},caterpie)).sourceModelId,10);
