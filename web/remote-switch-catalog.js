@@ -239,13 +239,16 @@
       const live = prepare(config, await response.json());
       if (!live.length) throw Error("Public repository inventory is empty");
       // An existing GLB may change without changing the total model count.
-      const snapshotEntries = new Map(
-        (snapshot?.entries || []).map(entry => [Number(entry.dex), entry]));
-      const changed = !snapshot || live.length !== snapshot.entries.length ||
+      // Compare normalized species, not raw upload slots. Older inventories
+      // can contain 695 storage paths but only 690 distinct National Dex IDs.
+      // Otherwise this republishes the same catalog on every page load.
+      const bundledModels = snapshot ? prepare(config, snapshot) : [];
+      const snapshotModels = new Map(bundledModels.map(model => [model.dex, model]));
+      const changed = !snapshot || live.length !== bundledModels.length ||
         live.some(model => {
-          const original = snapshotEntries.get(model.dex);
-          return !original || model.assetRevision !==
-            String(original.sha256 || original.sha || original.bytes || "");
+          const original = snapshotModels.get(model.dex);
+          return !original || model.assetRevision !== original.assetRevision ||
+            model.url !== original.url;
         });
       if (changed) publish(live);
     } catch (error) {
