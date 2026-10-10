@@ -61,7 +61,7 @@ if (-not $blender) {
                     $archive = [IO.Compression.ZipFile]::OpenRead($zip)
                     try {
                         $validZip = ((Get-Item -LiteralPath $zip).Length -gt 350MB -and
-                            (($archive.Entries | Where-Object { $_.FullName -match '(^|/)blender\\.exe$' } | Select-Object -First 1) -ne $null))
+                            (($archive.Entries | Where-Object { $_.FullName -match '(^|/)blender\.exe$' } | Select-Object -First 1) -ne $null))
                     } finally { $archive.Dispose() }
                 } catch { $validZip = $false }
                 if ($validZip) { break }
@@ -78,7 +78,7 @@ if (-not $blender) {
                 $archive = [IO.Compression.ZipFile]::OpenRead($fresh)
                 try {
                     $validZip = ((Get-Item -LiteralPath $fresh).Length -gt 350MB -and
-                        (($archive.Entries | Where-Object { $_.FullName -match '(^|/)blender\\.exe$' } | Select-Object -First 1) -ne $null))
+                        (($archive.Entries | Where-Object { $_.FullName -match '(^|/)blender\.exe$' } | Select-Object -First 1) -ne $null))
                 } finally { $archive.Dispose() }
             } catch {
                 Write-Warning "Clean Blender ZIP failed validation: $($_.Exception.Message)"
