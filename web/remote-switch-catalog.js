@@ -247,7 +247,16 @@
     }
   }
 
-  window.POKEDEX3D_REMOTE_SWITCH = Object.freeze({ prepare, inspect });
+  // Expose the bundled inventory synchronously. The app must not show
+  // committed GLBs as missing while waiting for an asynchronous catalog event.
+  function bundled() {
+    const snapshot = window.POKEDEX3D_PUBLIC_INVENTORY;
+    if (!snapshot) return [];
+    try { return prepare(defaults, snapshot); }
+    catch (_) { return []; }
+  }
+
+  window.POKEDEX3D_REMOTE_SWITCH = Object.freeze({ prepare, inspect, bundled });
   // Defer catalog notifications until the main viewer has registered handlers.
   if (typeof document !== "undefined" && document.readyState !== "complete") {
     document.addEventListener("DOMContentLoaded", load, { once: true });
