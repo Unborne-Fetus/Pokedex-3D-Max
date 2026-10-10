@@ -2687,6 +2687,7 @@ def run_self_tests() -> None:
     assert national_dex_for_model_id(940, "swsh") == 890
     assert national_dex_for_model_id(983, "swsh") == 892
     assert national_dex_for_model_id(6, "swsh") == 6
+    assert all(national_dex_for_model_id(dex, "swsh") == dex for dex in (10, 11, 12))
     assert national_dex_for_model_id(917, "sv") == 917
 
     legacy_model = {
@@ -2877,6 +2878,8 @@ def main() -> int:
     parser.add_argument("--blender", help="path to blender executable")
     parser.add_argument("--limit", type=int, default=0, help="convert only the first N deduplicated models")
     parser.add_argument("--dex", type=int, action="append", default=[], help="only convert selected National Dex number; repeatable")
+    parser.add_argument("--game", choices=sorted(SOURCE_PRIORITY),
+                        help="scan only this game; use swsh for original Sword/Shield assets")
     parser.add_argument("--inventory-only", action="store_true", help="scan sources without running Blender")
     parser.add_argument("--self-test", action="store_true", help="run importer matching/cache self-tests and exit")
     parser.add_argument("--no-desktop-install", action="store_true")
@@ -2921,6 +2924,12 @@ def main() -> int:
         print(f"Auto-discovered {len(args.inputs)} Switch archive(s).", flush=True)
         for source in args.inputs:
             print(f"  {source.name}", flush=True)
+
+    if args.game:
+        args.inputs = [source for source in args.inputs if detect_game(source) == args.game]
+        if not args.inputs:
+            print(f"No source archives found for game={args.game}.", file=sys.stderr)
+            return 2
 
     all_jobs: list[dict] = []
     all_animations: list[dict] = []
