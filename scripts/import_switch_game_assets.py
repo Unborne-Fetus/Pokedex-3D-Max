@@ -221,7 +221,12 @@ def detect_game(path: Path) -> str:
         "bdsp": "bdsp",
     }
     for component in reversed(path.parts):
-        game = by_folder.get(component.casefold().replace("_", "-"))
+        label = component.casefold().replace("_", "-")
+        game = by_folder.get(label)
+        if not game:
+            # Extractions such as SV-Models/ and archives such as
+            # LA-Animations.7z should resolve from their leading game token.
+            game = by_folder.get(label.split("-", 1)[0])
         if game:
             return game
     return "unknown"
@@ -2722,6 +2727,8 @@ def run_self_tests() -> None:
     assert is_switch_texture_archive(Path("SwSh-TexPack.7z"))
     assert not is_switch_texture_archive(Path("SV-Poke.zip"))
     assert detect_game(Path("switch-assets/SV/pm0906_00_00.trmdl")) == "sv"
+    assert detect_game(Path("switch-assets/SV-Models/pm0906_00_00.trmdl")) == "sv"
+    assert detect_game(Path("Downloads/SV-Models.zip")) == "sv"
     assert detect_game(Path("switch-assets/LA/pm0899_00_00.trmdl")) == "la"
     assert detect_game(Path("switch-assets/ZA/pm0650_00_00.trmdl")) == "za"
     assert detect_game(Path("switch-assets/BDSP/pm0165_00_00.trmdl")) == "bdsp"
