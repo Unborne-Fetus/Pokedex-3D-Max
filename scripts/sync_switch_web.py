@@ -74,13 +74,13 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
     def source_species(proof):
         game = str(proof["sourceGame"]).lower()
         internal = int(proof["sourceModelId"])
-        if game.startswith("sv"):
+        if game.startswith(("sv", "za")):
             return (game_map["sv_model_dex.tsv"].get(internal, 0)
                     if internal >= 1001
                     else game_map["swsh_model_dex.tsv"].get(internal, internal))
         if game.startswith("swsh"):
             return game_map["swsh_model_dex.tsv"].get(internal, internal)
-        if game.startswith(("la", "za")) and 1001 <= internal <= 1007:
+        if game.startswith("la") and 1001 <= internal <= 1007:
             return game_map["sv_model_dex.tsv"].get(internal, 0)
         return internal
 
@@ -119,6 +119,15 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
         entry = dict(metadata_by_key.get((dex, form), {}))
         fingerprint = git_blob_sha(source)
         proof = known_blobs.get(fingerprint)
+        # Source identity only follows matching GLB bytes, not a previous
+        # occupant of this folder. Clear any stale metadata before validation.
+        if proof:
+            entry.update(sourceGame=proof["sourceGame"],
+                         sourceModelId=int(proof["sourceModelId"]),
+                         sourceEvidence="original-asset-sha1")
+        elif entry.get("sourceBlobSha") != fingerprint:
+            for stale in ("sourceEvidence", "sourceModelId", "modelId", "sourceGame"):
+                entry.pop(stale, None)
         # A stale installed manifest may still call pm1012 Poltchageist.
         # Refuse the row instead of copying it and hiding its original ID.
         recorded_id = entry.get("sourceModelId", entry.get("modelId"))
@@ -138,15 +147,6 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             print(f"Skipping mislabeled model #{dex:04d}: the GLB fingerprint "
                   f"belongs to #{source_species(proof):04d}")
             continue
-        if proof:
-            entry.update(sourceGame=proof["sourceGame"],
-                         sourceModelId=int(proof["sourceModelId"]),
-                         sourceEvidence="original-asset-sha1")
-        elif entry.get("sourceBlobSha") != fingerprint:
-            # It is not safe to carry species provenance between different
-            # binaries just because their directory numbers happen to match.
-            for stale in ("sourceEvidence", "sourceModelId", "modelId", "sourceGame"):
-                entry.pop(stale, None)
         # Do not regenerate false availability at #1001–#1025 from an
         # old unnamed game-internal ID, even after metadata was invalidated.
         if dex >= 1001 and not proof and not (
