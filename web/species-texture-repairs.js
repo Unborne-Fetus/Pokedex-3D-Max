@@ -105,8 +105,60 @@
       entry.pbrMetallicRoughness.baseColorTexture.index = index;
   }
 
+  // Blastoise (#009): the exported rear carapace is near-white. Override only
+  // the shell surface's material, not the blue body, cream plastron, pale rim,
+  // or metallic cannons. Clone the material so any shared material stays intact.
+  function repairBlastoiseShell(doc, binBytes, binStart) {
+    const shell = doc.meshes?.find(mesh => /shell.*mesh|carapace/i.test(mesh.name || ""));
+    if (!shell?.primitives?.length) {
+      console.warn("Blastoise shell material was not found; no recolor applied");
+      return;
+    }
+    // The shell's first (body_b_00) primitive is the carapace surface; any
+    // additional primitives represent different panels or rim materials.
+    const rear = shell.primitives.find(primitive =>
+      /body_b_00|shell_back|carapace/i.test(
+        doc.materials?.[primitive.material]?.name || "")) || shell.primitives[0];
+    const source = doc.materials?.[rear.material];
+    if (!source) return;
+    const brown = JSON.parse(JSON.stringify(source));
+    brown.name = "blastoise_dark_brown_rear_shell";
+    const pbr = brown.pbrMetallicRoughness || (brown.pbrMetallicRoughness = {});
+    // Brown shell plates; preserve the existing textured plate outlines.
+    pbr.baseColorFactor = [0.49, 0.32, 0.22, 1];
+
+    // Some converted Switch secondary atlases use V=-1..0 instead of 0..1.
+    // Shift only the cloned shell texture if the actual UV data requires it.
+    const tex = pbr.baseColorTexture;
+    const acc = doc.accessors?.[rear.attributes?.TEXCOORD_0];
+    const section = doc.bufferViews?.[acc?.bufferView];
+    if (tex && acc?.componentType === 5126 && acc?.type === "VEC2" && section) {
+      const data = new DataView(binBytes.buffer, binBytes.byteOffset, binBytes.byteLength);
+      const byteStart = binStart + (section.byteOffset || 0) + (acc.byteOffset || 0);
+      const stride = section.byteStride || 8;
+      let lowestV = Infinity, highestV = -Infinity;
+      for (let i = 0; i < acc.count; i++) {
+        const address = byteStart + i * stride + 4;
+        if (address + 4 > data.byteLength) break;
+        const v = data.getFloat32(address, true);
+        lowestV = Math.min(lowestV, v);
+        highestV = Math.max(highestV, v);
+      }
+      if (lowestV < -0.01 && highestV <= 0.05) {
+        const extension = tex.extensions || (tex.extensions = {});
+        const transform = extension.KHR_texture_transform ||
+          (extension.KHR_texture_transform = {});
+        const previous = transform.offset || [0, 0];
+        transform.offset = [previous[0], 1];
+        const used = doc.extensionsUsed || (doc.extensionsUsed = []);
+        if (!used.includes("KHR_texture_transform")) used.push("KHR_texture_transform");
+      }
+    }
+    rear.material = doc.materials.push(brown) - 1;
+  }
+
   async function apply(buffer, dex) {
-    if (![4, 6, 7, 8].includes(dex)) return buffer;
+    if (![4, 6, 7, 8, 9].includes(dex)) return buffer;
     try {
       const bytes = new Uint8Array(buffer);
       const head = new DataView(buffer);
@@ -152,6 +204,7 @@
         changes.push([1, blueWartortleAppendages]);
         changes.push([2, (ctx, w, h) => shineEye(ctx, w, h, "wartortle")]);
       }
+      if (dex === 9) repairBlastoiseShell(doc, bytes, binStart);
       let newBinSize = oldBinLength;
       const extra = [];
       for (const [imageIndex, painter] of changes) {
