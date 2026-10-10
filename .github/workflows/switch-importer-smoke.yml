@@ -12,6 +12,7 @@ on:
       - "scripts/test_sync_switch_web.py"
       - "scripts/test_restore_model_identity.py"
       - "scripts/test_national_dex_alignment.py"
+      - "scripts/audit_embedded_model_ids.py"
       - "scripts/test_model_identity.js"
       - "web/model-identity.js"
       - "web/models/source-provenance.js"
@@ -82,6 +83,8 @@ jobs:
           python scripts/test_restore_switch_models.py
           python scripts/test_restore_model_identity.py
           python scripts/test_national_dex_alignment.py
+          python scripts/audit_embedded_model_ids.py --self-test
+          python scripts/audit_embedded_model_ids.py --strict
           node scripts/test_model_identity.js
           node scripts/test_remote_switch_catalog.js
           node scripts/test_static_switch_catalog.js
@@ -140,3 +143,11 @@ jobs:
           print("No unsafe by-Dex animation fallback found.")
           PY
 
+
+      - name: Upload exhaustive GLB source-identity audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-switch-glb-identity-audit
+          path: .cache/national-dex-embedded-audit.json
+          if-no-files-found: ignore
