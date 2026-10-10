@@ -31,7 +31,7 @@ def animation_names(path: Path) -> list[str]:
     return [entry.get("name") or f"animation_{i}" for i, entry in enumerate(doc.get("animations", []))]
 
 
-def sync_pack(target: Path, repo: Path = ROOT) -> int:
+def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None = None) -> int:
     target = target.resolve()
     catalog = target / "model_catalog.tsv"
     if not catalog.is_file():
@@ -56,6 +56,8 @@ def sync_pack(target: Path, repo: Path = ROOT) -> int:
         if not source.is_relative_to(target) or not source.is_file():
             continue
         dex, name, form = int(cells[0]), cells[1], cells[2]
+        if selected_dexes is not None and dex not in selected_dexes:
+            continue
         if form.lower() != "regular":
             continue
         try:
@@ -90,6 +92,15 @@ def sync_pack(target: Path, repo: Path = ROOT) -> int:
                      idleBreaks=[n for n in entry.get("idleBreaks", []) if n in names and n != idle],
                      source="Switch game assets")
         entries.append(entry)
+    if selected_dexes is not None and old_manifest.is_file():
+        # Targeted recovery must never replace or recopy unrelated reviewed models.
+        for previous in json.loads(old_manifest.read_text(encoding="utf-8")):
+            dex = int(previous.get("dex", 0))
+            form = str(previous.get("form", ""))
+            if dex in selected_dexes or form != "regular" or previous.get("ready") is False:
+                continue
+            if (repo / "web/models/switch" / f"{dex:04d}" / "regular.glb").is_file():
+                entries.append(previous)
     policy_path = target / "model_source_policy.json"
     policy = json.loads(policy_path.read_text(encoding="utf-8")) if policy_path.is_file() else {}
     policy.update({"switchOnly": True, "regularOnly": True, "allowBrokenTextures": False})
