@@ -2333,6 +2333,21 @@ def run_blender(
             flush=True,
         )
         print(f"Failure report: {failure_path}", flush=True)
+        for source in sorted(failed_sources, key=lambda name: (
+            (payload_by_source.get(name) or {}).get("dex", 0), name
+        )):
+            job = payload_by_source.get(source) or {}
+            detail = failure_details.get(source) or {}
+            number = f"#{int(job['dex']):04d}" if job.get("dex") is not None else "unknown Dex"
+            game = job.get("game") or detail.get("game") or "unknown game"
+            form = job.get("form") or detail.get("form") or "regular"
+            reason = (detail.get("error") or detail.get("message")
+                      or detail.get("reason") or "Unspecified conversion error")
+            reason = " ".join(str(reason).split())[:500]
+            print(
+                f"  FAILED {number} ({game}, {form}): {Path(source).name}: {reason}",
+                flush=True,
+            )
 
 
 def choose_idle(names: list[str]) -> str | None:
