@@ -32,7 +32,7 @@ compose.desktop {
         jvmArgs += "--enable-native-access=ALL-UNNAMED"
 
         nativeDistributions {
-            modules("jdk.unsupported", "java.management", "java.logging")
+            modules("jdk.unsupported", "java.management", "java.logging", "java.prefs")
             targetFormats(TargetFormat.Msi, TargetFormat.Exe)
             packageName = "Pokedex 3D Max"
             packageVersion = "0.2.7"
