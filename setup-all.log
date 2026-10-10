@@ -1,12 +1,12 @@
 ﻿**********************
 Windows PowerShell transcript start
-Start time: 20261010004816
+Start time: 20261010094218
 Username: SPENCERCOMPUTER\Spencer
 RunAs User: SPENCERCOMPUTER\Spencer
 Configuration Name: 
 Machine: SPENCERCOMPUTER (Microsoft Windows NT 10.0.26200.0)
 Host Application: powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File C:\ROM Hacks\Pokedex-3D-Max\scripts\setup_all.ps1 -SwitchAssetsOnly -SkipInstall
-Process ID: 25324
+Process ID: 30352
 PSVersion: 5.1.26100.9549
 PSEdition: Desktop
 PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9549
@@ -19,45 +19,125 @@ SerializationVersion: 1.1.0.1
 ============================================================
         Pokedex 3D Max - Windows Setup
 ============================================================
-[00:48:16] One-click mode: tools, strict Switch model import, and Windows build are automatic.
-[00:48:16] Nothing is frozen if timestamps keep appearing or a download/build counter changes.
-[00:48:16] Log file: C:\ROM Hacks\Pokedex-3D-Max\setup-all.log
-[00:48:16] Switch-assets-only mode: skipping JDK, Gradle, and Windows packaging.
+[09:42:18] One-click mode: tools, strict Switch model import, and Windows build are automatic.
+[09:42:18] Nothing is frozen if timestamps keep appearing or a download/build counter changes.
+[09:42:18] Log file: C:\ROM Hacks\Pokedex-3D-Max\setup-all.log
+[09:42:18] Switch-assets-only mode: skipping JDK, Gradle, and Windows packaging.
 
 ============================================================
-[00:48:16] STEP 3/6 - Checking Python
+[09:42:18] STEP 3/6 - Checking Python
 ============================================================
-[00:48:16] Found Python 3.14.8
-[00:48:16] Checking Pillow for WebP-to-PNG model conversion...
-[00:48:16] Pillow is already installed.
-[00:48:16] Pillow is ready.
+[09:42:18] Found Python 3.14.8
+[09:42:18] Checking Pillow for WebP-to-PNG model conversion...
+[09:42:18] Pillow is already installed.
+[09:42:18] Pillow is ready.
 
 ============================================================
-[00:48:16] PRECHECK - Validating Switch importer
+[09:42:18] PRECHECK - Validating Switch importer
 ============================================================
-[00:48:16] Compiling Python importer scripts...
+[09:42:18] Compiling Python importer scripts...
 
-[00:48:16] Running Switch importer matching/cache self-tests...
+[09:42:18] Running Switch importer matching/cache self-tests...
 
-[00:48:16] Switch importer preflight passed.
-[00:48:16] Restoring animated Switch GLBs with valid embedded textures.
+[09:42:19] Switch importer preflight passed.
+[09:42:19] Restoring animated Switch GLBs with valid embedded textures.
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1010\regular.glb: internal pm1010 (sv) -> National #0906
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1011\regular.glb: internal pm1011 (sv) -> National #0907
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1012\regular.glb: internal pm1012 (sv) -> National #0908
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1013\regular.glb: internal pm1013 (sv) -> National #0909
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1014\regular.glb: internal pm1014 (sv) -> National #0910
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1015\regular.glb: internal pm1015 (sv) -> National #0911
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1016\regular.glb: internal pm1016 (sv) -> National #0912
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1017\regular.glb: internal pm1017 (sv) -> National #0913
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1018\regular.glb: internal pm1018 (sv) -> National #0914
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1019\regular.glb: internal pm1019 (sv) -> National #0915
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1020\regular.glb: internal pm1020 (sv) -> National #0916
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1022\regular.glb: internal pm1022 (sv) -> National #0917
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1023\regular.glb: internal pm1023 (sv) -> National #0918
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1024\regular.glb: internal pm1024 (sv) -> National #0919
+Correcting C:\Users\Spencer\AppData\Local\Pokedex3DMax\offline-models\switch\1025\regular.glb: internal pm1025 (sv) -> National #0920
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1010\regular.glb: internal pm1010 (sv) -> National #0906
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1011\regular.glb: internal pm1011 (sv) -> National #0907
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1012\regular.glb: internal pm1012 (sv) -> National #0908
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1013\regular.glb: internal pm1013 (sv) -> National #0909
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1014\regular.glb: internal pm1014 (sv) -> National #0910
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1015\regular.glb: internal pm1015 (sv) -> National #0911
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1016\regular.glb: internal pm1016 (sv) -> National #0912
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1017\regular.glb: internal pm1017 (sv) -> National #0913
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1018\regular.glb: internal pm1018 (sv) -> National #0914
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1019\regular.glb: internal pm1019 (sv) -> National #0915
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1020\regular.glb: internal pm1020 (sv) -> National #0916
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1022\regular.glb: internal pm1022 (sv) -> National #0917
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1023\regular.glb: internal pm1023 (sv) -> National #0918
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1024\regular.glb: internal pm1024 (sv) -> National #0919
+Correcting C:\ROM Hacks\Pokedex-3D-Max\web\models\switch\1025\regular.glb: internal pm1025 (sv) -> National #0920
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1010\regular.glb: internal pm1010 (sv) -> National #0906
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1011\regular.glb: internal pm1011 (sv) -> National #0907
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1012\regular.glb: internal pm1012 (sv) -> National #0908
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1013\regular.glb: internal pm1013 (sv) -> National #0909
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1014\regular.glb: internal pm1014 (sv) -> National #0910
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1015\regular.glb: internal pm1015 (sv) -> National #0911
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1016\regular.glb: internal pm1016 (sv) -> National #0912
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1017\regular.glb: internal pm1017 (sv) -> National #0913
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1018\regular.glb: internal pm1018 (sv) -> National #0914
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1019\regular.glb: internal pm1019 (sv) -> National #0915
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1020\regular.glb: internal pm1020 (sv) -> National #0916
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1022\regular.glb: internal pm1022 (sv) -> National #0917
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1023\regular.glb: internal pm1023 (sv) -> National #0918
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1024\regular.glb: internal pm1024 (sv) -> National #0919
+Correcting C:\ROM Hacks\Pokedex-3D-Max\.cache\switch-game-assets\original-glbs\1025\regular.glb: internal pm1025 (sv) -> National #0920
 Browser index synced: 162 regular animated Switch model(s).
-Restored 162 regular animated Switch models with embedded textures.
+Restored 162 Switch models; corrected 45 misfiled sources, 0 entries without conclusive embedded IDs.
 
 ============================================================
-[00:48:28] STEP 4/6 - Checking Blender
+[09:42:42] STEP 4/6 - Checking Blender
 ============================================================
-[00:48:28] Blender helper version v4: checking valid cached ZIPs before any download.
-PS>TerminatingError(): "Portable Blender setup failed (exit 1). See [Blender setup v4] warnings above or run scripts\\ensure_recovery_blender.ps1 directly for details."
->> TerminatingError(): "Portable Blender setup failed (exit 1). See [Blender setup v4] warnings above or run scripts\\ensure_recovery_blender.ps1 directly for details."
+[09:42:42] Blender helper version v6: checking valid cached ZIPs before any download.
+[Blender setup v6] Checking existing portable installation and cached ZIP files.
+Downloading a clean Blender archive from https://mirror.blender.org/release/Blender4.5/blender-4.5.14-windows-x64.zip
+Inspecting cached Blender file: C:\ROM Hacks\Pokedex-3D-Max\.tools\blender-4.5.14.zip.fresh (398661046 bytes)
+Blender ZIP verified: 6312 entries; blender.exe at blender-4.5.14-windows-x64/blender.exe
+Blender archive verified. Extracting...
+Using Blender: C:\ROM Hacks\Pokedex-3D-Max\.tools\blender-4.5.14\blender-4.5.14-windows-x64\blender.exe
+[09:46:03] Blender = C:\ROM Hacks\Pokedex-3D-Max\.tools\blender-4.5.14\blender-4.5.14-windows-x64\blender.exe
 
 ============================================================
-[00:49:29] SETUP FAILED
+[09:46:03] STEP 5/6 - Importing Switch-game Pokemon models
 ============================================================
-Portable Blender setup failed (exit 1). See [Blender setup v4] warnings above or run scripts\\ensure_recovery_blender.ps1 directly for details.
+[09:46:05] Recovered 20 local original Switch source tree(s) without MEGA.
+[09:46:05] Recovered 20 local original Switch source tree(s) without MEGA.
+[09:46:05] Found 12 Switch model archive(s), 8 animation archive(s), and 0 texture archive(s).
+[09:46:05]   model: la-poke-a850f3de3305
+[09:46:05]   model: lgpe-poke-c551afc5fc67
+[09:46:05]   model: sv-poke-55efdb331589
+[09:46:05]   model: sv-pokedlc1-c37741e6ca47
+[09:46:05]   model: sv-pokedlc2-94c007b86eb8
+[09:46:05]   model: swsh-pokegen1-623962e3e4d3
+[09:46:05]   model: swsh-pokegen2-3-0a9eb882632e
+[09:46:05]   model: swsh-pokegen4-5-756695f06480
+[09:46:05]   model: swsh-pokegen6-7-b5426818bc06
+[09:46:05]   model: swsh-pokegen8-7ca72c930105
+[09:46:05]   model: za-poke-50cebb970e03
+[09:46:05]   model: za-pokedlc-2d474d84e5ec
+[09:46:05]   anim:  la-pokeanim-5c55ca801d7f
+[09:46:05]   anim:  lgpe-pokeanim-12ceb233dc70
+[09:46:05]   anim:  sv-pokeanim-62c0b4542e5f
+[09:46:05]   anim:  sv-pokeanimdlc1-e4c5bcd502f3
+[09:46:05]   anim:  sv-pokeanimdlc2-9211044c7ee0
+[09:46:05]   anim:  swsh-pokeanim-c704187d9a76
+[09:46:05]   anim:  za-pokeanim-f24bb91bcfd1
+[09:46:05]   anim:  za-pokeanimdlc-299a3e4aae20
+
+PS>TerminatingError(): "Strict Switch import is incomplete (exit 2). Check the conversion/failure reports; no partial baseline is accepted."
+>> TerminatingError(): "Strict Switch import is incomplete (exit 2). Check the conversion/failure reports; no partial baseline is accepted."
+
+============================================================
+[10:39:33] SETUP FAILED
+============================================================
+Strict Switch import is incomplete (exit 2). Check the conversion/failure reports; no partial baseline is accepted.
 
 Full log: C:\ROM Hacks\Pokedex-3D-Max\setup-all.log
 **********************
 Windows PowerShell transcript end
-End time: 20261010004929
+End time: 20261010103933
 **********************
