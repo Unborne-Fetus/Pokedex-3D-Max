@@ -346,7 +346,7 @@ def self_test() -> None:
     assert candidate_names(668, {"668-M.glb": {}, "668-F.glb": {}}) == ["668-F.glb", "668-M.glb"]
     assert candidate_names(650, {"650.glb": {}}) == ["650.glb"]
     assert candidate_names(854, {}) == []
-    header = struct.pack("<III", 0x46546C67, 2, 20 + 8 + 4) + struct.pack("<II", 4, 0x4E4F534A)
+    header = struct.pack("<III", 0x46546C67, 2, 12 + 8 + 4) + struct.pack("<II", 4, 0x4E4F534A)
     doc, data = glb_doc(header + b"{}  ")
     assert doc == {} and data == b""
     print("Auditor self-test passed.")
