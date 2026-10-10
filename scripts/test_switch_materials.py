@@ -29,7 +29,7 @@ class MaterialTests(unittest.TestCase):
     def test_blastoise_belly_restores_original_uvs(self):
         source = (Path(__file__).resolve().parents[1] /
                   "web/species-texture-repairs.js").read_text()
-        block = source.split("if (dex === 9) {", 1)[1].split("\\n      }", 1)[0]
+        block = source.split("if (dex === 9) {", 1)[1].split("      let newBinSize", 1)[0]
         self.assertIn('offsetTextureV(doc, "body_a", 1);', block)
         self.assertIn('offsetTextureV(doc, "body_b_00", 2);', block)
         self.assertIn('offsetTextureV(doc, "body_b_01", 2);', block)
