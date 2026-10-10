@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.application") version "9.4.1"
-    id("org.jetbrains.kotlin.plugin.compose")
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -11,12 +11,11 @@ android {
         applicationId = "com.unbornefetus.pokedex3dmax"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.8"
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 
@@ -45,6 +44,10 @@ val syncCanonicalWebAssets by tasks.registering(Sync::class) {
     from(rootProject.file("index.html"))
     from(rootProject.file("web")) {
         into("web")
+        // The APK deliberately does not bundle multi-GB GLBs. Also omit
+        // their local-only catalog so the public inventory is actually used
+        // instead of 836 broken https://pokedex3d.local/switch/... URLs.
+        exclude("models/switch-manifest.js", "models/switch-manifest.json")
         // Do not accidentally turn generated multi-GB model packs into the APK.
         // The same web runtime still uses its online/fallback sources and manifests.
         exclude("**/*.glb", "**/*.gltf", "**/*.fbx", "**/*.bin")
@@ -56,19 +59,6 @@ tasks.named("preBuild").configure {
     dependsOn(syncCanonicalWebAssets)
 }
 
-dependencies {
-    // Kept temporarily because the retired native Compose/SceneView implementation
-    // still exists in source. MainActivity no longer enters that code path.
-    val composeBom = platform("androidx.compose:compose-bom:2026.09.00")
-    implementation(composeBom)
-    implementation("androidx.core:core-ktx:1.19.1")
-    implementation("androidx.activity:activity-compose:1.14.0")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.12.0")
-    implementation("io.github.sceneview:sceneview:4.34.0")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-}
-
+// MainActivity renders the shared web experience using Android's WebView.
+// Legacy Compose/SceneView sources are retained in legacy/android-compose,
+// rather than shipping a duplicate scene engine and unavailable dependencies.

@@ -1,6 +1,7 @@
 """Expose already-installed Switch GLBs to the browser index without downloading."""
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -9,6 +10,16 @@ import struct
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def git_blob_sha(path: Path) -> str:
+    digest = hashlib.sha1()
+    digest.update(f"blob {path.stat().st_size}".encode() + bytes((0,)))
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
 
 
 def default_pack() -> Path:
@@ -44,6 +55,43 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
     if old_manifest.is_file():
         for entry in json.loads(old_manifest.read_text(encoding="utf-8")):
             metadata_by_key.setdefault((int(entry["dex"]), entry["form"]), entry)
+    provenance_file = repo / "data/verified_switch_glb_provenance.json"
+    known_blobs = (
+        json.loads(provenance_file.read_text(encoding="utf-8")).get("models", {})
+        if provenance_file.is_file() else {}
+    )
+    game_map = {}
+    for filename in ("swsh_model_dex.tsv", "sv_model_dex.tsv"):
+        table = {}
+        path = repo / "data" / filename
+        if path.is_file():
+            for line in path.read_text(encoding="utf-8").splitlines():
+                cells = line.split("\t")
+                if len(cells) >= 2 and cells[0].isdigit() and cells[1].isdigit():
+                    table[int(cells[0])] = int(cells[1])
+        game_map[filename] = table
+
+    def source_species(proof):
+        game = str(proof["sourceGame"]).lower()
+        internal = int(proof["sourceModelId"])
+        if game.startswith("sv"):
+            return (game_map["sv_model_dex.tsv"].get(internal, 0)
+                    if internal >= 1001
+                    else game_map["swsh_model_dex.tsv"].get(internal, internal))
+        if game.startswith("swsh"):
+            return game_map["swsh_model_dex.tsv"].get(internal, internal)
+        if game.startswith(("la", "za")) and 1001 <= internal <= 1007:
+            return game_map["sv_model_dex.tsv"].get(internal, 0)
+        return internal
+
+    canonical_names = {}
+    names_file = repo / "data/species_names.tsv"
+    if names_file.is_file():
+        for line in names_file.read_text(encoding="utf-8").splitlines():
+            cols = line.split("\t")
+            if len(cols) >= 2 and cols[0].isdigit():
+                canonical_names[int(cols[0])] = cols[1]
+
     entries = []
     for line in catalog.read_text(encoding="utf-8").splitlines()[1:]:
         cells = line.split("\t")
@@ -56,6 +104,9 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
         if not source.is_relative_to(target) or not source.is_file():
             continue
         dex, name, form = int(cells[0]), cells[1], cells[2]
+        if not 1 <= dex <= 1025 or relative.as_posix() != f"switch/{dex:04d}/regular.glb":
+            print(f"Skipping misnumbered model catalog path: {relative}")
+            continue
         if selected_dexes is not None and dex not in selected_dexes:
             continue
         if form.lower() != "regular":
@@ -66,6 +117,22 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             print(f"Skipping invalid Switch model {source}: {error}")
             continue
         entry = dict(metadata_by_key.get((dex, form), {}))
+        fingerprint = git_blob_sha(source)
+        proof = known_blobs.get(fingerprint)
+        if proof and source_species(proof) != dex:
+            print(f"Skipping mislabeled model #{dex:04d}: the GLB fingerprint "
+                  f"belongs to #{source_species(proof):04d}")
+            continue
+        if proof:
+            entry.update(sourceGame=proof["sourceGame"],
+                         sourceModelId=int(proof["sourceModelId"]),
+                         sourceEvidence="original-asset-sha1")
+        elif entry.get("sourceBlobSha") != fingerprint:
+            # It is not safe to carry species provenance between different
+            # binaries just because their directory numbers happen to match.
+            for stale in ("sourceEvidence", "sourceModelId", "modelId", "sourceGame"):
+                entry.pop(stale, None)
+        entry["sourceBlobSha"] = fingerprint
         idle = entry.get("idleAnimation")
         if idle not in names:
             idle = next((n for n in names if re.search(r"idle|wait|stand|breath|fight[_ -]?a", n, re.I)
@@ -74,10 +141,12 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             continue
         destination = repo / "web/models" / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
+        # Equal size and modified time do not prove equal content. This was
+        # leaving previously mislabeled models untouched after a correction.
         current = destination.is_file() and (
             os.path.samefile(source, destination) or
             (source.stat().st_size == destination.stat().st_size and
-             source.stat().st_mtime_ns == destination.stat().st_mtime_ns)
+             git_blob_sha(destination) == fingerprint)
         )
         if not current:
             temp = destination.with_suffix(".glb.tmp")
@@ -87,7 +156,8 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             except OSError:
                 shutil.copy2(source, temp)
             temp.replace(destination)
-        entry.update(dex=dex, name=name, form=form, url="web/models/" + relative.as_posix(),
+        entry.update(dex=dex, name=canonical_names.get(dex, name), form=form,
+                     url="web/models/" + relative.as_posix(),
                      local=True, ready=True, valid=True, animations=names, idleAnimation=idle,
                      idleBreaks=[n for n in entry.get("idleBreaks", []) if n in names and n != idle],
                      source="Switch game assets")
@@ -99,8 +169,27 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             form = str(previous.get("form", ""))
             if dex in selected_dexes or form != "regular" or previous.get("ready") is False:
                 continue
-            if (repo / "web/models/switch" / f"{dex:04d}" / "regular.glb").is_file():
-                entries.append(previous)
+            model_path = repo / "web/models/switch" / f"{dex:04d}" / "regular.glb"
+            if not model_path.is_file():
+                continue
+            sha = git_blob_sha(model_path)
+            proof = known_blobs.get(sha)
+            if proof and source_species(proof) != dex:
+                print(f"Excluding previously published wrong species #{dex:04d}")
+                continue
+            old_sha = previous.get("sourceBlobSha")
+            if old_sha and old_sha != sha:
+                # Never carry obsolete integrity metadata across changed binaries.
+                print(f"Excluding stale manifest entry #{dex:04d} (binary changed)")
+                continue
+            kept = dict(previous)
+            kept["name"] = canonical_names.get(dex, kept.get("name", f"#{dex:04d}"))
+            kept["sourceBlobSha"] = sha
+            if proof:
+                kept.update(sourceGame=proof["sourceGame"],
+                            sourceModelId=int(proof["sourceModelId"]),
+                            sourceEvidence="original-asset-sha1")
+            entries.append(kept)
     policy_path = target / "model_source_policy.json"
     policy = json.loads(policy_path.read_text(encoding="utf-8")) if policy_path.is_file() else {}
     policy.update({"switchOnly": True, "regularOnly": True, "allowBrokenTextures": False})

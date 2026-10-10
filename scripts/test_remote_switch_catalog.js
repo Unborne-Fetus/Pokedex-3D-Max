@@ -33,8 +33,14 @@ assert.equal(selected.length, browser.POKEDEX3D_PUBLIC_INVENTORY.count);
 assert.equal(selected[0].dex, 1);
 assert.equal(selected[0].name, "Bulbasaur");
 assert.equal(selected[0].preflightRequired, true);
-assert.equal(selected[0].url,
-  "https://raw.githubusercontent.com/Unborne-Fetus/Pokedex-3D-Models-Animations/main/0001/regular.glb");
+assert.equal(new URL(selected[0].url).pathname,
+  "/Unborne-Fetus/Pokedex-3D-Models-Animations/main/0001/regular.glb");
+assert.equal(new URL(selected[0].url).searchParams.get("rev"),
+  browser.POKEDEX3D_PUBLIC_INVENTORY.entries[0].sha);
+assert.equal(selected[0].sourceBlobSha,
+  browser.POKEDEX3D_PUBLIC_INVENTORY.entries[0].sha);
+assert.equal(selected[0].sourceModelId,
+  browser.POKEDEX3D_PUBLIC_INVENTORY.entries[0].sourceModelId);
 assert.equal(prepare({ ...sourceConfig, enabled: false }, browser.POKEDEX3D_PUBLIC_INVENTORY).length, 0);
 
 const unsafe = {

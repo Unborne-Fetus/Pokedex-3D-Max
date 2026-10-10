@@ -88,6 +88,8 @@ private data class DesktopModel(
     val path: Path,
     val idleAnimation: String? = null,
     val idleBreaks: List<String> = emptyList(),
+    val sourceGame: String? = null,
+    val sourceModelId: Int? = null,
 ) {
     val stableKey: String
         get() = "%04d|%s|%s".format(dex, form.lowercase(), path.toAbsolutePath().normalize())
@@ -178,7 +180,7 @@ fun main(args: Array<String>) {
 private fun launchDesktop() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Pokedex 3D Max v0.2.7",
+        title = "Pokedex 3D Max v0.2.8",
         state = rememberWindowState(width = 1280.dp, height = 820.dp),
     ) {
         MaterialTheme(colorScheme = darkColorScheme()) {
@@ -369,8 +371,14 @@ private fun DesktopApp() {
                     Text("Choose a Pokémon")
                 } else {
                     key(current.stableKey) {
-                        val bytes by produceState<ByteArray?>(null, current.stableKey) {
-                            value = withContext(Dispatchers.IO) { runCatching { Files.readAllBytes(current.path) }.getOrNull() }
+                        val loaded by produceState<Result<ByteArray>?>(null, current.stableKey) {
+                            value = withContext(Dispatchers.IO) {
+                                runCatching {
+                                    val contents = Files.readAllBytes(current.path)
+                                    ModelIdentity.validate(current.dex, current.sourceGame, current.sourceModelId, contents)
+                                    contents
+                                }
+                            }
                         }
 
                         Column(Modifier.fillMaxSize()) {
@@ -388,8 +396,9 @@ private fun DesktopApp() {
                                 }
                             }
                             Box(Modifier.weight(1f).fillMaxWidth()) {
-                                bytes?.let {
-                                    PokemonViewport(current, it, rotate, breaks, reset) { dex, hasIdle ->
+                                val contents = loaded?.getOrNull()
+                                if (contents != null) {
+                                    PokemonViewport(current, contents, rotate, breaks, reset) { dex, hasIdle ->
                                         if (dex == current.dex) {
                                             inspectedAnimationDex = inspectedAnimationDex + dex
                                             if (hasIdle) confirmedAnimationDex = confirmedAnimationDex + dex
@@ -399,7 +408,12 @@ private fun DesktopApp() {
                                             }
                                         }
                                     }
-                                } ?: Text("Loading " + current.name + "…")
+                                } else if (loaded?.isFailure == true) {
+                                    Text("This model was rejected: " +
+                                        (loaded?.exceptionOrNull()?.message ?: "invalid file"))
+                                } else {
+                                    Text("Loading " + current.name + "…")
+                                }
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Button(onClick = { reset++ }) { Text("Reset camera") }
@@ -932,6 +946,9 @@ private fun loadManifest(root: Path): List<DesktopModel> {
                 idleBreaks = if (isSwitch) entry?.optJSONArray("idleBreaks")?.let { clips ->
                     List(clips.length()) { clips.getString(it) }
                 }.orEmpty() else emptyList(),
+                sourceGame = entry?.optString("sourceGame")?.takeIf { it.isNotBlank() },
+                sourceModelId = entry?.optInt("sourceModelId", 0)?.takeIf { it > 0 }
+                    ?: entry?.optInt("modelId", 0)?.takeIf { it > 0 },
             )
         }
         .filter {
@@ -957,6 +974,7 @@ private fun verifyDesktop() {
             "6\tCharizard\tregular\tswitch/0006/regular.glb\n" +
             "6\tCharizard\tform-51-00\tswitch/0006/form-51-00.glb\n" +
             "7\tOutside\tregular\t../outside.glb\n")
+        ModelIdentity.selfTest()
         val models = loadManifest(root)
         check(models.size == 1)
         check(models.single().dex == 6)
