@@ -83,9 +83,15 @@ function modelCacheIdentity(model) {
   const dex = Number(model.dex);
   if (!Number.isInteger(dex) || dex < 1 || dex > NATIONAL_DEX_TOTAL) return null;
   const file = model.file;
+  // A content fingerprint is stable across page URLs, CDN cache-busters and
+  // index re-deployments. Only discard a saved animation check when the model
+  // bytes actually change, not when the URL or GitHub Pages build changes.
+  const fingerprint = String(model.sourceBlobSha || model.sha || model.sha256 || "").toLowerCase();
   const identity = file && typeof file.size === "number"
     ? ["local", file.webkitRelativePath || file.name, file.size, file.lastModified]
-    : ["catalog", String(model.url || ""), String(model.assetRevision || model.bytes || "")];
+    : /^[a-f0-9]{40}(?:[a-f0-9]{24})?$/.test(fingerprint)
+      ? ["verified-asset", fingerprint]
+      : ["catalog", String(model.url || ""), String(model.assetRevision || model.bytes || "")];
   return JSON.stringify([dex, ...identity]);
 }
 
