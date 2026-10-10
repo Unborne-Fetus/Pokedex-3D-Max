@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -12,12 +11,11 @@ android {
         applicationId = "com.unbornefetus.pokedex3dmax"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.8"
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 
@@ -57,19 +55,6 @@ tasks.named("preBuild").configure {
     dependsOn(syncCanonicalWebAssets)
 }
 
-dependencies {
-    // Kept temporarily because the retired native Compose/SceneView implementation
-    // still exists in source. MainActivity no longer enters that code path.
-    val composeBom = platform("androidx.compose:compose-bom:2026.09.00")
-    implementation(composeBom)
-    implementation("androidx.core:core-ktx:1.19.1")
-    implementation("androidx.activity:activity-compose:1.14.0")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.12.0")
-    implementation("io.github.sceneview:sceneview:4.34.0")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-}
-
+// MainActivity renders the shared web experience using Android's WebView.
+// Legacy Compose/SceneView sources are retained in legacy/android-compose,
+// rather than shipping a duplicate scene engine and unavailable dependencies.
