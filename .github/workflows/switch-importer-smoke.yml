@@ -10,6 +10,13 @@ on:
       - "scripts/verify_switch_baseline.py"
       - "scripts/sync_switch_web.py"
       - "scripts/test_sync_switch_web.py"
+      - "scripts/test_restore_model_identity.py"
+      - "scripts/test_national_dex_alignment.py"
+      - "scripts/test_model_identity.js"
+      - "web/model-identity.js"
+      - "web/models/source-provenance.js"
+      - "web/remote-switch-catalog.js"
+      - "data/verified_switch_glb_provenance.json"
       - "scripts/setup_all.ps1"
       - "setup-all.bat"
       - "import-switch-models.bat"
@@ -72,6 +79,15 @@ jobs:
           python scripts/test_switch_materials.py
           python scripts/verify_switch_baseline.py --self-test
           python scripts/test_sync_switch_web.py
+          python scripts/test_restore_switch_models.py
+          python scripts/test_restore_model_identity.py
+          python scripts/test_national_dex_alignment.py
+          node scripts/test_model_identity.js
+          node scripts/test_remote_switch_catalog.js
+          node scripts/test_static_switch_catalog.js
+          node --check web/app.js
+          node --check web/model-identity.js
+          node --check web/remote-switch-catalog.js
 
       - name: Verify community preview GLB metadata and safe Switch priority
         run: |

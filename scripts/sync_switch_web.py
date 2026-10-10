@@ -1,6 +1,7 @@
 """Expose already-installed Switch GLBs to the browser index without downloading."""
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -9,6 +10,16 @@ import struct
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def git_blob_sha(path: Path) -> str:
+    digest = hashlib.sha1()
+    digest.update(f"blob {path.stat().st_size}".encode() + bytes((0,)))
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
 
 
 def default_pack() -> Path:
@@ -44,6 +55,35 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
     if old_manifest.is_file():
         for entry in json.loads(old_manifest.read_text(encoding="utf-8")):
             metadata_by_key.setdefault((int(entry["dex"]), entry["form"]), entry)
+    provenance_file = repo / "data/verified_switch_glb_provenance.json"
+    known_blobs = (
+        json.loads(provenance_file.read_text(encoding="utf-8")).get("models", {})
+        if provenance_file.is_file() else {}
+    )
+    game_map = {}
+    for filename in ("swsh_model_dex.tsv", "sv_model_dex.tsv"):
+        table = {}
+        path = repo / "data" / filename
+        if path.is_file():
+            for line in path.read_text(encoding="utf-8").splitlines():
+                cells = line.split("\t")
+                if len(cells) >= 2 and cells[0].isdigit() and cells[1].isdigit():
+                    table[int(cells[0])] = int(cells[1])
+        game_map[filename] = table
+
+    def source_species(proof):
+        game = str(proof["sourceGame"]).lower()
+        internal = int(proof["sourceModelId"])
+        if game.startswith("sv"):
+            return (game_map["sv_model_dex.tsv"].get(internal, 0)
+                    if internal >= 1001
+                    else game_map["swsh_model_dex.tsv"].get(internal, internal))
+        if game.startswith("swsh"):
+            return game_map["swsh_model_dex.tsv"].get(internal, internal)
+        if game.startswith(("la", "za")) and 1001 <= internal <= 1007:
+            return game_map["sv_model_dex.tsv"].get(internal, 0)
+        return internal
+
     entries = []
     for line in catalog.read_text(encoding="utf-8").splitlines()[1:]:
         cells = line.split("\t")
@@ -66,6 +106,22 @@ def sync_pack(target: Path, repo: Path = ROOT, selected_dexes: set[int] | None =
             print(f"Skipping invalid Switch model {source}: {error}")
             continue
         entry = dict(metadata_by_key.get((dex, form), {}))
+        fingerprint = git_blob_sha(source)
+        proof = known_blobs.get(fingerprint)
+        if proof and source_species(proof) != dex:
+            print(f"Skipping mislabeled model #{dex:04d}: the GLB fingerprint "
+                  f"belongs to #{source_species(proof):04d}")
+            continue
+        if proof:
+            entry.update(sourceGame=proof["sourceGame"],
+                         sourceModelId=int(proof["sourceModelId"]),
+                         sourceEvidence="original-asset-sha1")
+        elif entry.get("sourceBlobSha") != fingerprint:
+            # It is not safe to carry species provenance between different
+            # binaries just because their directory numbers happen to match.
+            entry.pop("sourceEvidence", None)
+            entry.pop("sourceModelId", None)
+        entry["sourceBlobSha"] = fingerprint
         idle = entry.get("idleAnimation")
         if idle not in names:
             idle = next((n for n in names if re.search(r"idle|wait|stand|breath|fight[_ -]?a", n, re.I)

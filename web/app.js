@@ -239,7 +239,7 @@ function escapeHtml(value) {
 }
 
 function prettyName(model) {
-  const known = String(model?.name || window.POKEDEX3D_NAMES?.[model?.dex] || "").trim();
+  const known = String(window.POKEDEX3D_NAMES?.[model?.dex] || model?.name || "").trim();
   return known || ("#" + String(model?.dex || 0).padStart(4, "0"));
 }
 
@@ -519,7 +519,7 @@ function loadModel(model) {
   const catalogUrl = String(model?.url || "");
   const fromLocalFolder = typeof File !== "undefined" && model?.file instanceof File;
   const fromRemoteManifest = model?.remoteSwitch === true
-    && /^https:\/\/[^/]+\/(?:.*\/)?\d{4}\/regular\.glb$/.test(catalogUrl);
+    && /^https:\/\/[^/]+\/(?:.*\/)?\d{4}\/regular\.glb(?:\?[^#]*)?$/.test(catalogUrl);
   const fromCommunity = model?.communityCandidate === true &&
     window.POKEDEX3D_COMMUNITY_CANDIDATES?.isCandidateURL(model.dex, catalogUrl) === true;
   if (!catalogUrl || (!catalogUrl.replaceAll("\\", "/").includes("/switch/") &&
@@ -549,9 +549,23 @@ function loadModel(model) {
   }, (fromRemoteManifest || fromCommunity) ? 30000 : 15000);
 
   if (fromLocalFolder) {
-    activeObjectUrl = URL.createObjectURL(model.file);
-    viewer.src = activeObjectUrl;
-  } else if (fromCommunity || fromRemoteManifest || model.source === "original-switch-local-merge") {
+    // A selected local file is untrusted until its embedded species ID is checked.
+    (async () => {
+      try {
+        const bytes = await model.file.arrayBuffer();
+        await window.POKEDEX3D_MODEL_IDENTITY.verify(model, bytes);
+        if (selectedSequence !== loadSequence) return;
+        activeObjectUrl = URL.createObjectURL(model.file);
+        viewer.src = activeObjectUrl;
+      } catch (error) {
+        if (selectedSequence !== loadSequence) return;
+        clearLoadTimer();
+        messageEl.textContent = "Model identity check failed: " +
+          String(error.message || error);
+        messageEl.classList.remove("hidden");
+      }
+    })();
+  } else if ((fromCommunity || fromRemoteManifest || model.source === "original-switch-local-merge") || catalogUrl.replaceAll("\\", "/").includes("/switch/")) {
     // GitHub inventories and merged local catalogs omit idle metadata.
     // Download once, inspect the real GLB for embedded color and a valid
     // idle, then render that exact same downloaded data through a blob URL.
@@ -562,6 +576,7 @@ function loadModel(model) {
         const reply = await fetch(catalogUrl, { mode: "cors", signal: abort.signal });
         if (!reply.ok) throw Error("GitHub returned HTTP " + reply.status);
         const downloaded = await reply.arrayBuffer();
+        await window.POKEDEX3D_MODEL_IDENTITY.verify(model, downloaded);
         // Never modify third-party GLBs with Switch-only shader/UV repairs.
         const data = !fromCommunity && typeof window.POKEDEX3D_REPAIR_SWITCH_MODEL === "function"
           ? await window.POKEDEX3D_REPAIR_SWITCH_MODEL(downloaded, Number(model.dex))

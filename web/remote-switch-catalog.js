@@ -45,6 +45,10 @@
       const idle = String(entry.idleAnimation || "");
       if (!inventory && (!idle || !clips.includes(idle))) continue;
       const url = new URL(entry.path, base);
+      // GitHub raw/CDN caches otherwise continue serving a previously
+      // misnumbered model after the files are corrected in the repository.
+      const revision = String(entry.sha256 || entry.sha || entry.bytes || "");
+      if (revision) url.searchParams.set("rev", revision);
       if (url.protocol !== "https:" || url.origin !== base.origin
           || !url.pathname.startsWith(basePath)) continue;
       seen.add(dex);
@@ -55,7 +59,10 @@
         // An inventory is NOT evidence of texture correctness or animations.
         preflightRequired: inventory,
         // Use the uploaded file revision to restore only matching animation checks.
-        assetRevision: String(entry.sha256 || entry.sha || entry.bytes || ""),
+        assetRevision: revision,
+        sourceBlobSha: String(entry.sourceBlobSha || entry.sha || ""),
+        sourceGame: entry.sourceGame || null,
+        sourceModelId: Number(entry.sourceModelId || 0) || null,
         idleAnimation: inventory ? null : idle,
         idleBreaks: inventory ? [] : (Array.isArray(entry.idleBreaks) ? entry.idleBreaks : [])
           .filter(name => name !== idle && clips.includes(name)),
