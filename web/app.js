@@ -65,6 +65,59 @@ const finishedDex = new Set((finishedReview.finishedDex || [])
   .map(Number).filter(dex => Number.isInteger(dex) && dex >= 1 && dex <= NATIONAL_DEX_TOTAL));
 const inspectedIdleDex = new Set();
 const confirmedIdleDex = new Set();
+const ANIMATION_CACHE_KEY = "pokedex3d-confirmed-idle-v1";
+
+// Remember inspected assets on this device, but never assume a different
+// revision of a model has the same animation support.
+function modelCacheIdentity(model) {
+  if (!model || model.missingModel) return null;
+  const dex = Number(model.dex);
+  if (!Number.isInteger(dex) || dex < 1 || dex > NATIONAL_DEX_TOTAL) return null;
+  const file = model.file;
+  const identity = file && typeof file.size === "number"
+    ? ["local", file.webkitRelativePath || file.name, file.size, file.lastModified]
+    : ["catalog", String(model.url || ""), String(model.assetRevision || model.bytes || "")];
+  return JSON.stringify([dex, ...identity]);
+}
+
+function readSavedIdleChecks() {
+  try {
+    const record = JSON.parse(window.localStorage.getItem(ANIMATION_CACHE_KEY) || "null");
+    return record?.version === 1 && record.results && typeof record.results === "object"
+      && !Array.isArray(record.results) ? record.results : {};
+  } catch (_) {
+    // File-based browsers and privacy modes may block persistent storage.
+    return {};
+  }
+}
+
+let savedIdleChecks = readSavedIdleChecks();
+
+function restoreAnimationCoverage() {
+  inspectedIdleDex.clear();
+  confirmedIdleDex.clear();
+  for (const model of models) {
+    const key = modelCacheIdentity(model);
+    if (!key) continue;
+    const result = savedIdleChecks[key];
+    if (result !== 0 && result !== 1) continue;
+    const dex = Number(model.dex);
+    inspectedIdleDex.add(dex);
+    if (result === 1) confirmedIdleDex.add(dex);
+  }
+}
+
+function saveIdleCheck(model, hasIdle) {
+  const key = modelCacheIdentity(model);
+  if (!key) return;
+  savedIdleChecks[key] = hasIdle ? 1 : 0;
+  try {
+    window.localStorage.setItem(ANIMATION_CACHE_KEY,
+      JSON.stringify({ version: 1, results: savedIdleChecks }));
+  } catch (_) {
+    // Continue to track progress for this session even without storage access.
+  }
+}
 
 function coverageStatistics(catalog, inspected = inspectedIdleDex, confirmed = confirmedIdleDex) {
   const available = new Set(catalog
@@ -111,8 +164,16 @@ function noteAnimationInspection(model, hasIdle) {
   inspectedIdleDex.add(dex);
   if (hasIdle) confirmedIdleDex.add(dex);
   else confirmedIdleDex.delete(dex);
+  saveIdleCheck(model, hasIdle);
   renderCoverage();
 }
+
+window.addEventListener("storage", event => {
+  if (event.key !== ANIMATION_CACHE_KEY) return;
+  savedIdleChecks = readSavedIdleChecks();
+  restoreAnimationCoverage();
+  renderCoverage();
+});
 
 function catalogCoverageText(catalog) {
   const available = catalog.filter(model => !model.missingModel).length;
@@ -690,6 +751,7 @@ window.addEventListener("pokedex3d:remote-switch-catalog", event => {
   const selectedDex = models[selectedIndex]?.dex;
   const currentQuery = searchEl.value.trim().toLowerCase().replace(/^#/, "");
   models = withMissingSpeciesEntries(incoming);
+  restoreAnimationCoverage();
   window.POKEDEX3D_MODELS = models;
   filtered = currentQuery ? models.filter(model =>
     String(model.dex) === currentQuery || prettyName(model).toLowerCase().includes(currentQuery)
@@ -755,8 +817,7 @@ localModelsFolder.addEventListener("change", async () => {
     localModelsForExport = outcome.models;
     exportModelManifestBtn.disabled = false;
     models = withMissingSpeciesEntries(outcome.models);
-    inspectedIdleDex.clear();
-    confirmedIdleDex.clear();
+    restoreAnimationCoverage();
     window.POKEDEX3D_MODELS = models;
     folderStatus.textContent = outcome.models.length + " verified Switch models loaded locally. None were uploaded.";
     statusEl.textContent = catalogCoverageText(models);
@@ -807,6 +868,7 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
   if (idleBreaksEnabled) scheduleIdleBreak();
 });
 
+restoreAnimationCoverage();
 statusEl.textContent = catalogCoverageText(models);
 renderCoverage();
 
