@@ -201,12 +201,17 @@ function catalogCoverageText(catalog) {
     (catalog.length - realSwitch - previews).toLocaleString() + " missing";
 }
 
-let models = withMissingSpeciesEntries((Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
+// Both the on-disk Switch manifest and the uploaded GitHub inventory are
+// available before this script runs. Seed the catalog immediately so that
+// #0001–#0009 (and other uploaded Pokémon) never appear falsely missing.
+const installedSwitchModels = (Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
   ? window.POKEDEX3D_SWITCH_MODELS
   : [])
   .filter(model => model?.valid !== false && model?.ready !== false)
   .filter(model => String(model?.form || "regular").toLowerCase() === "regular")
   .filter(model => String(model?.url || "").replaceAll("\\", "/").includes("/switch/")));
+const bundledSwitchModels = window.POKEDEX3D_REMOTE_SWITCH?.bundled?.() || [];
+let models = withMissingSpeciesEntries([...installedSwitchModels, ...bundledSwitchModels]);
 
 window.POKEDEX3D_MODELS = models;
 
@@ -830,12 +835,16 @@ if (isLocalIndexServer()) {
 // static page. The configured source is disabled while its GitHub repo remains
 // private; visitors are never asked for personal GitHub credentials.
 window.addEventListener("pokedex3d:remote-switch-catalog", event => {
-  if (localFolderActive || models.some(model => !model.remoteSwitch)) return;
+  if (localFolderActive) return;
   const incoming = Array.isArray(event.detail?.models) ? event.detail.models : [];
   if (!incoming.length) return;
-  const selectedDex = models[selectedIndex]?.dex;
+  const selectedDex = filtered[selectedIndex]?.dex;
   const currentQuery = searchEl.value.trim().toLowerCase().replace(/^#/, "");
-  models = withMissingSpeciesEntries(incoming);
+  // Never let an online refresh discard locally repaired, verified GLBs.
+  // Replace earlier remote revisions, and fill gaps left by local manifests.
+  const localModels = models.filter(model =>
+    !model.remoteSwitch && !model.missingModel && !model.communityCandidate);
+  models = withMissingSpeciesEntries([...localModels, ...incoming]);
   restoreAnimationCoverage();
   window.POKEDEX3D_MODELS = models;
   filtered = currentQuery ? models.filter(model =>
