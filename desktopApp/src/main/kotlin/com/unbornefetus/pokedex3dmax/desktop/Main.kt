@@ -89,6 +89,31 @@ private data class DesktopModel(
         get() = "%04d|%s|%s".format(dex, form.lowercase(), path.toAbsolutePath().normalize())
 }
 
+private data class ReviewCheckpoint(
+    val finishedDex: Set<Int>,
+    val reviewedAsFine: Set<Int>,
+    val lastReviewedDex: Int,
+)
+
+private fun readReviewCheckpoint(): ReviewCheckpoint = runCatching {
+    val checkpoint = DesktopModel::class.java.getResourceAsStream("/finished-pokemon.js")
+        ?.bufferedReader(StandardCharsets.UTF_8)?.use { it.readText() }
+        ?: error("Finished Pokémon checkpoint resource not bundled")
+    val json = checkpoint.substringAfter("window.POKEDEX3D_FINISHED = ", "").trim().removeSuffix(";")
+    require(json.startsWith("{")) { "Finished Pokémon checkpoint is invalid" }
+    val record = JSONObject(json)
+    fun numbers(field: String): Set<Int> {
+        val array = record.getJSONArray(field)
+        return (0 until array.length()).map { array.getInt(it) }
+            .filter { it in 1..1025 }.toSet()
+    }
+    ReviewCheckpoint(
+        finishedDex = numbers("finishedDex"),
+        reviewedAsFine = numbers("reviewedAsFine"),
+        lastReviewedDex = record.getInt("lastReviewedDex"),
+    )
+}.getOrElse { ReviewCheckpoint(emptySet(), emptySet(), 0) }
+
 private data class ModelBounds(
     val center: Float3,
     val radius: Float,
@@ -119,6 +144,8 @@ private fun launchDesktop() = application {
 private fun DesktopApp() {
     val packRoot = remember { findModelPack() }
     val models = remember(packRoot) { packRoot?.let(::loadManifest).orEmpty() }
+    val reviewCheckpoint = remember { readReviewCheckpoint() }
+    val finishedCount = reviewCheckpoint.finishedDex.size
     // Models are counted from actual local files. Idle clips count only after a model
     // has been instantiated and its animation list checked.
     val modelDexes = remember(models) { models.map { it.dex }.filter { it in 1..1025 }.toSet() }
@@ -216,6 +243,25 @@ private fun DesktopApp() {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
+                Spacer(Modifier.height(10.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Finished Pokémon", fontWeight = FontWeight.SemiBold)
+                    Text("$finishedCount / 1,025")
+                }
+                LinearProgressIndicator(
+                    progress = { finishedCount / 1025f },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+                Text(
+                    "%.1f%% · through #%04d · next #%04d".format(
+                        finishedCount * 100.0 / 1025, reviewCheckpoint.lastReviewedDex,
+                        (reviewCheckpoint.lastReviewedDex + 1).coerceAtMost(1025),
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
                 Spacer(Modifier.height(12.dp))
 
                 OutlinedTextField(
@@ -252,7 +298,11 @@ private fun DesktopApp() {
                                     "#%04d  %s".format(model.dex, model.name),
                                     fontWeight = FontWeight.SemiBold,
                                 )
-                                Text(prettyFormName(model.form, model.dex), style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    if (model.dex in reviewCheckpoint.finishedDex) "✓ Finished"
+                                    else prettyFormName(model.form, model.dex),
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
                             }
                         }
                     }
@@ -858,6 +908,10 @@ private fun verifyDesktop() {
         check(models.single().dex == 6)
         check(models.single().form.equals("regular", ignoreCase = true))
         check(models.single().path == root.resolve("switch/0006/regular.glb"))
+        val review = readReviewCheckpoint()
+        check(review.finishedDex == (1..9).toSet())
+        check(review.reviewedAsFine == setOf(2, 5))
+        check(review.lastReviewedDex == 9)
         check(chooseIdleAnimationIndex(listOf("attack", "defaultwait", "damage")) == 1)
         check(chooseIdleAnimationIndex(listOf("attack", "damage")) == null)
         Files.writeString(root.resolve("switch-model-metadata.json"),
