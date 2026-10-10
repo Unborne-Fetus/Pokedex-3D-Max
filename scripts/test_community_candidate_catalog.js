@@ -64,7 +64,7 @@ assert.throws(()=>inspect(makeGlb("defaultidle01",{missingTexture:true})),/textu
 const bad=makeGlb();new DataView(bad).setUint32(8,2,true);
 assert.throws(()=>inspect(bad), /GLB metadata/);
 
-const start=app.indexOf("function withMissingSpeciesEntries(");
+const start=app.indexOf("function normalizeSwitchModel(");
 const end=app.indexOf("// The uploaded-file catalog",start);
 assert.ok(start>=0 && end>start);
 const sandbox={window:context.window,Map,Number,Object};
