@@ -26,13 +26,27 @@ const localModelsFolder = document.querySelector("#localModelsFolder");
 const folderStatus = document.querySelector("#folderStatus");
 
 
-let models = (Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
+// These three species are known, but their Switch GLBs were not uploaded.
+// Show the Pokédex entries without inventing or borrowing substitute models.
+// A later verified local or remote GLB replaces its placeholder automatically.
+const CATERPIE_LINE = Object.freeze([
+  { dex: 10, name: "Caterpie" },
+  { dex: 11, name: "Metapod" },
+  { dex: 12, name: "Butterfree" },
+]);
+function withMissingCaterpieLine(catalog) {
+  const existing = new Set(catalog.map(model => Number(model.dex)));
+  const missing = CATERPIE_LINE.filter(species => !existing.has(species.dex))
+    .map(species => ({ ...species, form: "regular", missingModel: true, remoteSwitch: true }));
+  return [...catalog, ...missing].sort((a, b) => Number(a.dex) - Number(b.dex));
+}
+
+let models = withMissingCaterpieLine((Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
   ? window.POKEDEX3D_SWITCH_MODELS
   : [])
   .filter(model => model?.valid !== false && model?.ready !== false)
   .filter(model => String(model?.form || "regular").toLowerCase() === "regular")
-  .filter(model => String(model?.url || "").replaceAll("\\", "/").includes("/switch/"))
-  .sort((a, b) => Number(a.dex) - Number(b.dex));
+  .filter(model => String(model?.url || "").replaceAll("\\", "/").includes("/switch/")));
 
 window.POKEDEX3D_MODELS = models;
 
@@ -257,8 +271,8 @@ function scheduleCameraFit() {
 function populateFormSelect(model) {
   formSelect.replaceChildren();
   const option = document.createElement("option");
-  option.value = model.url;
-  option.textContent = "Regular";
+  option.value = model.url || "";
+  option.textContent = model.missingModel ? "Switch model unavailable" : "Regular";
   option.selected = true;
   formSelect.appendChild(option);
   formSelect.disabled = true;
@@ -279,9 +293,11 @@ function renderList() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "entry";
+    if (model.missingModel) button.title = "Original Switch model not uploaded yet";
     button.innerHTML =
       '<span class="dex">#' + String(model.dex).padStart(4, "0") + '</span>' +
-      '<span><span class="name">' + escapeHtml(prettyName(model)) + "</span></span>";
+      '<span><span class="name">' + escapeHtml(prettyName(model)) + "</span>" +
+      (model.missingModel ? '<span class="form"> · Model missing</span>' : '') + "</span>";
     button.addEventListener("click", () => selectModel(index));
     fragment.appendChild(button);
   });
@@ -303,6 +319,19 @@ function loadModel(model) {
     remoteAbort = null;
   }
   const selectedSequence = loadSequence;
+
+  if (model.missingModel) {
+    viewer.removeAttribute("src");
+    if (activeObjectUrl) {
+      URL.revokeObjectURL(activeObjectUrl);
+      activeObjectUrl = null;
+    }
+    messageEl.textContent = prettyName(model) + " (#" +
+      String(model.dex).padStart(4, "0") +
+      ") is in the Pokédex, but its original animated Switch GLB has not been uploaded. No substitute model is shown.";
+    messageEl.classList.remove("hidden");
+    return;
+  }
 
   const catalogUrl = String(model?.url || "");
   const fromLocalFolder = typeof File !== "undefined" && model?.file instanceof File;
@@ -389,7 +418,7 @@ function selectModel(index) {
 
   dexEl.textContent = "#" + String(model.dex).padStart(4, "0");
   nameEl.textContent = prettyName(model);
-  formEl.textContent = "Regular";
+  formEl.textContent = model.missingModel ? "Model not uploaded" : "Regular";
   populateFormSelect(model);
   loadModel(model);
   updateSelectedRow();
@@ -577,21 +606,23 @@ window.addEventListener("pokedex3d:remote-switch-catalog", event => {
   if (!incoming.length) return;
   const selectedDex = models[selectedIndex]?.dex;
   const currentQuery = searchEl.value.trim().toLowerCase().replace(/^#/, "");
-  models = incoming;
+  models = withMissingCaterpieLine(incoming);
   window.POKEDEX3D_MODELS = models;
   filtered = currentQuery ? models.filter(model =>
     String(model.dex) === currentQuery || prettyName(model).toLowerCase().includes(currentQuery)
   ) : [...models];
   selectedIndex = Math.max(0, filtered.findIndex(model => model.dex === selectedDex));
   folderStatus.textContent = "Models stream from the public GitHub repository. Individual textures and idles are checked when opened.";
-  statusEl.textContent = models.length.toLocaleString() + " uploaded Switch models on GitHub";
+  statusEl.textContent = incoming.length.toLocaleString() + " uploaded Switch models on GitHub";
   renderList();
-  if (filtered.length && (!currentModel || !models.some(model => model.dex === currentModel.dex))) {
+  if (filtered.length && (!currentModel || !models.some(model => model.dex === currentModel.dex) ||
+      (currentModel.missingModel && models.some(model =>
+        model.dex === currentModel.dex && !model.missingModel)))) {
     selectModel(selectedIndex);
   }
 });
 window.addEventListener("pokedex3d:remote-switch-error", event => {
-  if (models.length || localFolderActive) return;
+  if (localFolderActive || models.some(model => !model.missingModel)) return;
   folderStatus.textContent = "Hosted model catalog unavailable: " +
     String(event.detail?.message || "unknown error") + ". You can still open a local folder.";
 });
@@ -639,10 +670,10 @@ localModelsFolder.addEventListener("change", async () => {
     localFolderActive = true;
     localModelsForExport = outcome.models;
     exportModelManifestBtn.disabled = false;
-    models = outcome.models;
+    models = withMissingCaterpieLine(outcome.models);
     window.POKEDEX3D_MODELS = models;
-    folderStatus.textContent = models.length + " verified Switch models loaded locally. None were uploaded.";
-    statusEl.textContent = models.length.toLocaleString() + " local regular Switch models ready";
+    folderStatus.textContent = outcome.models.length + " verified Switch models loaded locally. None were uploaded.";
+    statusEl.textContent = outcome.models.length.toLocaleString() + " local regular Switch models ready";
     searchEl.value = "";
     filtered = [...models];
     selectedIndex = 0;
@@ -689,12 +720,13 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
   if (idleBreaksEnabled) scheduleIdleBreak();
 });
 
-statusEl.textContent = models.length
-  ? models.length.toLocaleString() + " regular animated Switch models ready"
+const availableModelCount = models.filter(model => !model.missingModel).length;
+statusEl.textContent = availableModelCount
+  ? availableModelCount.toLocaleString() + " regular animated Switch models ready"
   : "Choose a Switch model folder to start (no installation needed)";
 
 renderList();
-if (models.length) {
+if (availableModelCount) {
   selectModel(0);
 } else {
   formSelect.replaceChildren();
