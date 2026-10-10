@@ -220,7 +220,13 @@ def write_catalog(path: Path, rows: dict[tuple[int, str], list[str]]) -> None:
     temp.replace(path)
 
 
-def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
+def install_pack(
+    manifest_url: str,
+    target: Path,
+    force: bool = False,
+    selected_dexes: set[int] | None = None,
+    required_game: str | None = None,
+) -> int:
     print(f"Checking remote Switch model pack: {manifest_url}")
     try:
         manifest = download_json(manifest_url)
@@ -239,6 +245,18 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
     if not isinstance(entries, list) or not isinstance(shards, list) or not entries:
         print("Remote Switch model pack manifest is incomplete.")
         return 3
+
+    if selected_dexes is not None:
+        entries = [entry for entry in entries if int(entry.get("dex", 0)) in selected_dexes]
+        if required_game:
+            entries = [entry for entry in entries if str(entry.get("sourceGame", "")).casefold() == required_game.casefold()]
+        available = {int(entry["dex"]) for entry in entries}
+        if selected_dexes - available:
+            print("Release does not contain the requested models: " +
+                  ", ".join(f"#{dex:04d}" for dex in sorted(selected_dexes - available)))
+            return 4
+        wanted_shards = {str(entry["shard"]) for entry in entries}
+        shards = [shard for shard in shards if shard.get("name") in wanted_shards]
 
     target.mkdir(parents=True, exist_ok=True)
     CACHE_ROOT.mkdir(parents=True, exist_ok=True)
@@ -291,6 +309,24 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
 
         installed_shards[name] = expected
 
+    if selected_dexes is not None:
+        # Check everything before touching the installed catalog or web assets.
+        from import_switch_game_assets import parse_glb_doc, glb_textures_complete, choose_idle
+        for entry in entries:
+            src = extracted / str(entry["shard"]).removesuffix(".zip") / str(entry["path"])
+            if not src.is_file() or not glb_textures_complete(src):
+                print(f"Recovery rejected missing/incomplete textures: {entry['path']}")
+                return 4
+            doc = parse_glb_doc(src)
+            if not isinstance(doc, dict) or not doc.get("meshes") or not doc.get("scenes"):
+                print(f"Recovery rejected invalid geometry: {entry['path']}")
+                return 4
+            clips = [a.get("name") for a in doc.get("animations", []) if a.get("channels") and a.get("samplers")]
+            idle = entry.get("idleAnimation")
+            if idle not in clips and not choose_idle(clips):
+                print(f"Recovery rejected model without a verified idle: {entry['path']}")
+                return 4
+
     switch_root = target / "switch"
     switch_root.mkdir(parents=True, exist_ok=True)
     expected_switch_paths: set[Path] = set()
@@ -317,9 +353,10 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
     # Remove obsolete remote/local Switch overrides that are not part of the
     # current validated online pack. Original downloaded game archives remain
     # untouched in .cache/mega-switch-assets and continue to serve as backup.
-    for path in switch_root.rglob("*.glb"):
-        if path.resolve() not in expected_switch_paths:
-            path.unlink()
+    if selected_dexes is None:
+        for path in switch_root.rglob("*.glb"):
+            if path.resolve() not in expected_switch_paths:
+                path.unlink()
 
     catalog_path = target / "model_catalog.tsv"
     runtime_species_names = target / "species_names.tsv"
@@ -341,8 +378,9 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
             if len(row) >= 2 and row[1] and not row[1].startswith("#"):
                 names_by_dex.setdefault(dex, row[1])
 
-    # Rebuild the runtime catalog from validated regular Switch entries only.
-    catalog = {}
+    # A selected-Dex recovery adds only those species; full install still resets the pack.
+    if selected_dexes is None:
+        catalog = {}
     remote_keys: set[tuple[int, str]] = set()
     for entry in entries:
         dex = int(entry["dex"])
@@ -354,9 +392,15 @@ def install_pack(manifest_url: str, target: Path, force: bool = False) -> int:
 
 
     write_catalog(catalog_path, catalog)
-    atomic_json(target / "switch-model-metadata.json", entries)
+    metadata_file = target / "switch-model-metadata.json"
+    if selected_dexes is None:
+        merged_metadata = entries
+    else:
+        old_metadata = read_json(metadata_file, [])
+        merged_metadata = [e for e in old_metadata if int(e.get("dex", 0)) not in selected_dexes] + entries
+    atomic_json(metadata_file, merged_metadata)
     from sync_switch_web import sync_pack
-    sync_pack(target)
+    sync_pack(target, selected_dexes=selected_dexes)
 
     state = {
         "format": 1,
@@ -409,6 +453,10 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     install.add_argument("--force", action="store_true")
+    install.add_argument("--dex", type=int, action="append",
+                         help="restore only this National Dex number; may be repeated")
+    install.add_argument("--source-game",
+                         help="require this source game, e.g. swsh, for selected species")
 
     return parser.parse_args()
 
@@ -420,7 +468,8 @@ def main() -> int:
             raise SystemExit("--shard-size must be positive")
         return build_pack(args.output.resolve(), args.base_url, args.shard_size)
     if args.command == "install":
-        return install_pack(args.manifest_url, args.target.resolve(), args.force)
+        return install_pack(args.manifest_url, args.target.resolve(), args.force,
+                            set(args.dex) if args.dex else None, args.source_game)
     return 2
 
 
