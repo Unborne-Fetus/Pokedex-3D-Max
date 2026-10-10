@@ -1,0 +1,30 @@
+name: Repair recovered model orientations
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/repair_recovered_model_roots.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  correct-model-roots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Normalize recovered GLB root transforms without changing animations
+        run: python3 scripts/repair_recovered_model_roots.py
+      - name: Commit corrected models and updated manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/models/switch/ web/models/switch-manifest.json web/models/switch-manifest.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Fix recovered Pokemon model root orientations [skip ci]"
+            git push
+          fi
