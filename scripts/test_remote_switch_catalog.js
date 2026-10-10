@@ -29,7 +29,19 @@ assert.equal(sourceConfig.enabled, true);
 assert.equal(sourceConfig.repositoryVisibility, "public");
 assert.equal(sourceConfig.allowUnverifiedInventory, true);
 const selected = prepare(sourceConfig, browser.POKEDEX3D_PUBLIC_INVENTORY);
-assert.equal(selected.length, browser.POKEDEX3D_PUBLIC_INVENTORY.count);
+// The physical inventory has legacy folder slots. A few remap to the
+// same real species, so the visible National Dex catalog is deduplicated.
+assert.ok(selected.length <= browser.POKEDEX3D_PUBLIC_INVENTORY.count);
+assert.equal(new Set(selected.map(model => model.dex)).size, selected.length);
+assert.equal(selected.some(model => model.dex === 964), false,
+  "The pm0964 Z-A GLB must not masquerade as Palafin (#964)");
+assert.equal(selected.some(model => model.dex === 965), false,
+  "The pm0965 Z-A GLB must not masquerade as Varoom (#965)");
+assert.equal(selected.some(model => model.dex === 942), false,
+  "The pm0942 Z-A GLB must not masquerade as Maschiff (#942)");
+const grapploct = selected.find(model => model.dex === 853);
+assert.equal(grapploct.sourceModelId, 965);
+assert.equal(grapploct.sourceGame, "SwSh-PokeGen8");
 const preloaded = bundled();
 assert.equal(preloaded.length, selected.length, "The initial page catalog must already include uploaded GLBs");
 for (let dex = 1; dex <= 9; dex++) {
