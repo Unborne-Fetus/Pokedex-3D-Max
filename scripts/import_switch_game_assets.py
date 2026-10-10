@@ -20,6 +20,7 @@ MANIFEST_JSON = ROOT / "web" / "models" / "switch-manifest.json"
 MANIFEST_JS = ROOT / "web" / "models" / "switch-manifest.js"
 SPECIES_NAMES = ROOT / "data" / "species_names.tsv"
 SWSH_MODEL_DEX = ROOT / "data" / "swsh_model_dex.tsv"
+SV_MODEL_DEX = ROOT / "data" / "sv_model_dex.tsv"
 ADDON_DIR = TOOLS / "pokemon_switch_model_importer"
 ADDON_REPO = "https://github.com/ChicoEevee/Pokemon-Switch-Model-Importer-Blender.git"
 ADDON_REV = "b0c98d9fcaab85a04ad35e2d111bae4cad6c1e04"
@@ -74,10 +75,20 @@ def read_swsh_model_dex(path: Path = SWSH_MODEL_DEX) -> dict[int, int]:
 
 
 SWSH_MODEL_DEX_MAP = read_swsh_model_dex()
+SV_MODEL_DEX_MAP = read_swsh_model_dex(SV_MODEL_DEX)
 
 
 def national_dex_for_model_id(model_id: int, game: str) -> int:
     if game == "swsh":
+        return SWSH_MODEL_DEX_MAP.get(model_id, model_id)
+    if game == "sv":
+        # RTB Scarlet/Violet archives continue the game-internal numbering
+        # from SwSh. Gen 9 begins with pm1001 (Wyrdeer), pm1010 is
+        # Sprigatito, pm1044 is Tadbulb and pm1096 is Iron Bundle.
+        # NEVER publish pm1010 as National #1010 Iron Leaves.
+        # Unknown high internal IDs are not National Dex identifiers.
+        if model_id >= 1001:
+            return SV_MODEL_DEX_MAP.get(model_id, 0)
         return SWSH_MODEL_DEX_MAP.get(model_id, model_id)
     return model_id
 
@@ -2804,7 +2815,35 @@ def run_self_tests() -> None:
     assert national_dex_for_model_id(983, "swsh") == 892
     assert national_dex_for_model_id(6, "swsh") == 6
     assert all(national_dex_for_model_id(dex, "swsh") == dex for dex in (10, 11, 12))
-    assert national_dex_for_model_id(917, "sv") == 917
+    assert national_dex_for_model_id(917, "sv") == 845
+    assert national_dex_for_model_id(1001, "sv") == 899
+    assert national_dex_for_model_id(1010, "sv") == 906
+    assert national_dex_for_model_id(1029, "sv") == 972
+    assert national_dex_for_model_id(1034, "sv") == 961
+    assert national_dex_for_model_id(1037, "sv") == 963
+    assert national_dex_for_model_id(1044, "sv") == 938
+    assert national_dex_for_model_id(1045, "sv") == 939
+    assert national_dex_for_model_id(1064, "sv") == 931
+    assert national_dex_for_model_id(1083, "sv") == 986
+    assert national_dex_for_model_id(1088, "sv") == 988
+    assert national_dex_for_model_id(1093, "sv") == 992
+    assert national_dex_for_model_id(1094, "sv") == 993
+    assert national_dex_for_model_id(1096, "sv") == 991
+    assert national_dex_for_model_id(1134, "sv") == 1013
+    assert national_dex_for_model_id(1008, "sv") == 0
+    assert national_dex_for_model_id(1115, "sv") == 0
+    # Both geometry and same-game animation scans must remap the same
+    # internal ID while preserving its original source modelId.
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        sample_root = Path(tmp_dir)
+        model = sample_root / "pm1044_00_00.trmdl"
+        animation = sample_root / "pm1044_00_00_battleidle.tranm"
+        model.write_bytes(b"test")
+        animation.write_bytes(b"test")
+        assert len(scan_models(sample_root, "sv")) == 1
+        assert scan_models(sample_root, "sv")[0]["dex"] == 938
+        assert scan_models(sample_root, "sv")[0]["modelId"] == 1044
+        assert scan_animations(sample_root, "sv")[0]["dex"] == 938
 
     legacy_model = {
         "dex": 479,
