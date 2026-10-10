@@ -6942,6 +6942,19 @@
     "ready": true
   },
   {
+    "dex": 735,
+    "form": "regular",
+    "url": "web/models/switch/0735/regular.glb?v=dex-audit-v2",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Gumshoos",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 827,
+    "originalCatalogDex": 827,
+    "assetRevision": "dex-audit-v2"
+  },
+  {
     "animations": [
       "Animation"
     ],
@@ -7290,6 +7303,19 @@
     "ready": true
   },
   {
+    "dex": 775,
+    "form": "regular",
+    "url": "web/models/switch/0775/regular.glb?v=dex-audit-v2",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Komala",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 811,
+    "originalCatalogDex": 811,
+    "assetRevision": "dex-audit-v2"
+  },
+  {
     "animations": [
       "Animation"
     ],
@@ -7330,6 +7356,19 @@
     "valid": true,
     "idleBreaks": [],
     "assetRevision": "recovered-root-1"
+  },
+  {
+    "dex": 779,
+    "form": "regular",
+    "url": "web/models/switch/0779/regular.glb?v=dex-audit-v2",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Bruxish",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 855,
+    "originalCatalogDex": 855,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "animations": [
@@ -7773,22 +7812,6 @@
     "assetRevision": "recovered-root-1"
   },
   {
-    "dex": 801,
-    "form": "regular",
-    "url": "web/models/switch/0801/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 802,
-    "form": "regular",
-    "url": "web/models/switch/0802/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
     "animations": [
       "Animation"
     ],
@@ -7831,92 +7854,82 @@
     "assetRevision": "recovered-root-1"
   },
   {
-    "dex": 805,
-    "form": "regular",
-    "url": "web/models/switch/0805/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 806,
-    "form": "regular",
-    "url": "web/models/switch/0806/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 807,
-    "form": "regular",
-    "url": "web/models/switch/0807/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 808,
-    "form": "regular",
-    "url": "web/models/switch/0808/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 809,
-    "form": "regular",
-    "url": "web/models/switch/0809/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
     "dex": 810,
     "form": "regular",
-    "url": "web/models/switch/0810/regular.glb",
+    "url": "web/models/switch/0810/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Grookey",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 948,
+    "originalCatalogDex": 948,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 811,
     "form": "regular",
-    "url": "web/models/switch/0811/regular.glb",
+    "url": "web/models/switch/0811/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Thwackey",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 949,
+    "originalCatalogDex": 949,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 812,
     "form": "regular",
-    "url": "web/models/switch/0812/regular.glb",
+    "url": "web/models/switch/0812/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Rillaboom",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 950,
+    "originalCatalogDex": 950,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 813,
     "form": "regular",
-    "url": "web/models/switch/0813/regular.glb",
+    "url": "web/models/switch/0813/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Scorbunny",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 954,
+    "originalCatalogDex": 954,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 814,
     "form": "regular",
-    "url": "web/models/switch/0814/regular.glb",
+    "url": "web/models/switch/0814/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Raboot",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 955,
+    "originalCatalogDex": 955,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 815,
     "form": "regular",
-    "url": "web/models/switch/0815/regular.glb",
+    "url": "web/models/switch/0815/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Cinderace",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 956,
+    "originalCatalogDex": 956,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 816,
@@ -7994,30 +8007,6 @@
     "dex": 825,
     "form": "regular",
     "url": "web/models/switch/0825/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 826,
-    "form": "regular",
-    "url": "web/models/switch/0826/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 827,
-    "form": "regular",
-    "url": "web/models/switch/0827/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 828,
-    "form": "regular",
-    "url": "web/models/switch/0828/regular.glb",
     "source": "original-switch-local-merge",
     "valid": true,
     "ready": true
@@ -8105,18 +8094,28 @@
   {
     "dex": 839,
     "form": "regular",
-    "url": "web/models/switch/0839/regular.glb",
+    "url": "web/models/switch/0839/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Coalossal",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 935,
+    "originalCatalogDex": 935,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 840,
     "form": "regular",
-    "url": "web/models/switch/0840/regular.glb",
+    "url": "web/models/switch/0840/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Applin",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 966,
+    "originalCatalogDex": 966,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 841,
@@ -8137,74 +8136,28 @@
   {
     "dex": 843,
     "form": "regular",
-    "url": "web/models/switch/0843/regular.glb",
+    "url": "web/models/switch/0843/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Silicobra",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 936,
+    "originalCatalogDex": 936,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 844,
     "form": "regular",
-    "url": "web/models/switch/0844/regular.glb",
+    "url": "web/models/switch/0844/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 845,
-    "form": "regular",
-    "url": "web/models/switch/0845/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 846,
-    "form": "regular",
-    "url": "web/models/switch/0846/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 847,
-    "form": "regular",
-    "url": "web/models/switch/0847/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 848,
-    "form": "regular",
-    "url": "web/models/switch/0848/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 849,
-    "form": "regular",
-    "url": "web/models/switch/0849/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 850,
-    "form": "regular",
-    "url": "web/models/switch/0850/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 851,
-    "form": "regular",
-    "url": "web/models/switch/0851/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Sandaconda",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 937,
+    "originalCatalogDex": 937,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 852,
@@ -8218,14 +8171,6 @@
     "dex": 853,
     "form": "regular",
     "url": "web/models/switch/0853/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 855,
-    "form": "regular",
-    "url": "web/models/switch/0855/regular.glb",
     "source": "original-switch-local-merge",
     "valid": true,
     "ready": true
@@ -8279,14 +8224,6 @@
     "ready": true
   },
   {
-    "dex": 863,
-    "form": "regular",
-    "url": "web/models/switch/0863/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
     "dex": 866,
     "form": "regular",
     "url": "web/models/switch/0866/regular.glb",
@@ -8305,18 +8242,15 @@
   {
     "dex": 868,
     "form": "regular",
-    "url": "web/models/switch/0868/regular.glb",
+    "url": "web/models/switch/0868/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 869,
-    "form": "regular",
-    "url": "web/models/switch/0869/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Milcery",
+    "sourceGame": "SV-PokeDLC2",
+    "sourceModelId": 924,
+    "originalCatalogDex": 924,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 870,
@@ -8329,34 +8263,54 @@
   {
     "dex": 871,
     "form": "regular",
-    "url": "web/models/switch/0871/regular.glb",
+    "url": "web/models/switch/0871/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Pincurchin",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 944,
+    "originalCatalogDex": 944,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 872,
     "form": "regular",
-    "url": "web/models/switch/0872/regular.glb",
+    "url": "web/models/switch/0872/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Snom",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 945,
+    "originalCatalogDex": 945,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 873,
     "form": "regular",
-    "url": "web/models/switch/0873/regular.glb",
+    "url": "web/models/switch/0873/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Frosmoth",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 946,
+    "originalCatalogDex": 946,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 874,
     "form": "regular",
-    "url": "web/models/switch/0874/regular.glb",
+    "url": "web/models/switch/0874/regular.glb?v=dex-audit-v2",
     "source": "original-switch-local-merge",
     "valid": true,
-    "ready": true
+    "ready": true,
+    "name": "Stonjourner",
+    "sourceGame": "SV-Poke",
+    "sourceModelId": 974,
+    "originalCatalogDex": 974,
+    "assetRevision": "dex-audit-v2"
   },
   {
     "dex": 876,
@@ -8511,6 +8465,32 @@
     "ready": true
   },
   {
+    "dex": 899,
+    "form": "regular",
+    "url": "web/models/switch/0899/regular.glb?v=dex-audit-v2",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Wyrdeer",
+    "sourceGame": "LA-Poke",
+    "sourceModelId": 1001,
+    "originalCatalogDex": 1001,
+    "assetRevision": "dex-audit-v2"
+  },
+  {
+    "dex": 900,
+    "form": "regular",
+    "url": "web/models/switch/0900/regular.glb?v=dex-audit-v2",
+    "source": "original-switch-local-merge",
+    "valid": true,
+    "ready": true,
+    "name": "Kleavor",
+    "sourceGame": "ZA-PokeDLC",
+    "sourceModelId": 1002,
+    "originalCatalogDex": 1002,
+    "assetRevision": "dex-audit-v2"
+  },
+  {
     "dex": 901,
     "form": "regular",
     "url": "web/models/switch/0901/regular.glb",
@@ -8522,22 +8502,6 @@
     "dex": 902,
     "form": "regular",
     "url": "web/models/switch/0902/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 903,
-    "form": "regular",
-    "url": "web/models/switch/0903/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 904,
-    "form": "regular",
-    "url": "web/models/switch/0904/regular.glb",
     "source": "original-switch-local-merge",
     "valid": true,
     "ready": true
@@ -8739,209 +8703,9 @@
     "ready": true
   },
   {
-    "dex": 924,
-    "form": "regular",
-    "url": "web/models/switch/0924/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 926,
-    "form": "regular",
-    "url": "web/models/switch/0926/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 927,
-    "form": "regular",
-    "url": "web/models/switch/0927/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 929,
-    "form": "regular",
-    "url": "web/models/switch/0929/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 933,
-    "form": "regular",
-    "url": "web/models/switch/0933/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 934,
-    "form": "regular",
-    "url": "web/models/switch/0934/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 935,
-    "form": "regular",
-    "url": "web/models/switch/0935/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 936,
-    "form": "regular",
-    "url": "web/models/switch/0936/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 937,
-    "form": "regular",
-    "url": "web/models/switch/0937/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 940,
-    "form": "regular",
-    "url": "web/models/switch/0940/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
     "dex": 942,
     "form": "regular",
     "url": "web/models/switch/0942/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 944,
-    "form": "regular",
-    "url": "web/models/switch/0944/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 945,
-    "form": "regular",
-    "url": "web/models/switch/0945/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 946,
-    "form": "regular",
-    "url": "web/models/switch/0946/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 948,
-    "form": "regular",
-    "url": "web/models/switch/0948/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 949,
-    "form": "regular",
-    "url": "web/models/switch/0949/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 950,
-    "form": "regular",
-    "url": "web/models/switch/0950/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 951,
-    "form": "regular",
-    "url": "web/models/switch/0951/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 952,
-    "form": "regular",
-    "url": "web/models/switch/0952/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 953,
-    "form": "regular",
-    "url": "web/models/switch/0953/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 954,
-    "form": "regular",
-    "url": "web/models/switch/0954/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 955,
-    "form": "regular",
-    "url": "web/models/switch/0955/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 956,
-    "form": "regular",
-    "url": "web/models/switch/0956/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 957,
-    "form": "regular",
-    "url": "web/models/switch/0957/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 958,
-    "form": "regular",
-    "url": "web/models/switch/0958/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 959,
-    "form": "regular",
-    "url": "web/models/switch/0959/regular.glb",
     "source": "original-switch-local-merge",
     "valid": true,
     "ready": true
@@ -8958,150 +8722,6 @@
     "dex": 965,
     "form": "regular",
     "url": "web/models/switch/0965/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 966,
-    "form": "regular",
-    "url": "web/models/switch/0966/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 967,
-    "form": "regular",
-    "url": "web/models/switch/0967/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 968,
-    "form": "regular",
-    "url": "web/models/switch/0968/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 969,
-    "form": "regular",
-    "url": "web/models/switch/0969/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 970,
-    "form": "regular",
-    "url": "web/models/switch/0970/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 971,
-    "form": "regular",
-    "url": "web/models/switch/0971/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 974,
-    "form": "regular",
-    "url": "web/models/switch/0974/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 976,
-    "form": "regular",
-    "url": "web/models/switch/0976/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 977,
-    "form": "regular",
-    "url": "web/models/switch/0977/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 978,
-    "form": "regular",
-    "url": "web/models/switch/0978/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 982,
-    "form": "regular",
-    "url": "web/models/switch/0982/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 984,
-    "form": "regular",
-    "url": "web/models/switch/0984/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 985,
-    "form": "regular",
-    "url": "web/models/switch/0985/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 989,
-    "form": "regular",
-    "url": "web/models/switch/0989/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 990,
-    "form": "regular",
-    "url": "web/models/switch/0990/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1001,
-    "form": "regular",
-    "url": "web/models/switch/1001/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1002,
-    "form": "regular",
-    "url": "web/models/switch/1002/regular.glb",
-    "source": "original-switch-local-merge",
-    "valid": true,
-    "ready": true
-  },
-  {
-    "dex": 1007,
-    "form": "regular",
-    "url": "web/models/switch/1007/regular.glb",
     "source": "original-switch-local-merge",
     "valid": true,
     "ready": true

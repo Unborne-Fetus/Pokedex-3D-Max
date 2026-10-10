@@ -90,6 +90,10 @@ def national_dex_for_model_id(model_id: int, game: str) -> int:
         if model_id >= 1001:
             return SV_MODEL_DEX_MAP.get(model_id, 0)
         return SWSH_MODEL_DEX_MAP.get(model_id, model_id)
+    if game in ("la", "za") and 1001 <= model_id <= 1007:
+        # PLA / ZA game archives also contain the seven Hisuian species
+        # under pm1001–pm1007, not National Dex #1001–#1007.
+        return SV_MODEL_DEX_MAP.get(model_id, 0)
     return model_id
 
 
@@ -2867,6 +2871,9 @@ def run_self_tests() -> None:
     assert national_dex_for_model_id(6, "swsh") == 6
     assert all(national_dex_for_model_id(dex, "swsh") == dex for dex in (10, 11, 12))
     assert national_dex_for_model_id(917, "sv") == 845
+    assert national_dex_for_model_id(1001, "la") == 899
+    assert national_dex_for_model_id(1002, "za") == 900
+    assert national_dex_for_model_id(1007, "la") == 901
     assert national_dex_for_model_id(1001, "sv") == 899
     assert national_dex_for_model_id(1010, "sv") == 906
     assert national_dex_for_model_id(1029, "sv") == 972

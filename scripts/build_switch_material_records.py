@@ -156,30 +156,56 @@ for p in root.rglob("*.gfbmdl"):
         )
     except Exception as e:
         print("error", p, e)
-mapping = {}
-for line in (
-    (Path(__file__).resolve().parents[1] / "data/swsh_model_dex.tsv")
-    .read_text()
-    .splitlines()[1:]
-):
-    a, b, *_ = line.split("\t")
-    mapping[int(a)] = int(b)
-for r in records:
-    match = re.search(r"pm(\d{4})", r["model"])
-    r["dex"] = int(match[1]) if match else -1
-    if "swsh" in r["path"].casefold():
-        r["dex"] = mapping.get(r["dex"], r["dex"])
-    r["priority"] = next(
+# A source filename is a GAME MODEL ID, not always a National Dex number.
+# Keep source shader records on the same mapping as the geometry importer.
+root_data = Path(__file__).resolve().parents[1] / "data"
+
+
+def read_mapping(filename):
+    mapping = {}
+    for line in (root_data / filename).read_text(encoding="utf-8").splitlines():
+        parts = line.split("\t")
+        if len(parts) >= 2 and parts[0].isdigit() and parts[1].isdigit():
+            mapping[int(parts[0])] = int(parts[1])
+    return mapping
+
+
+swsh_mapping = read_mapping("swsh_model_dex.tsv")
+sv_mapping = read_mapping("sv_model_dex.tsv")
+
+
+def national_dex_id(path, model_id):
+    # Archive names such as sv-poke*, swsh-pokegen*, la-poke* and za-poke*
+    # distinguish sources whose internal IDs overlap with National Dex IDs.
+    roots = [part.casefold() for part in Path(path).parts]
+    is_sv = any(part.startswith(("sv-", "sv_")) or part == "sv" for part in roots)
+    is_swsh = any(part.startswith(("swsh-", "swsh_")) or part == "swsh" for part in roots)
+    is_hisui = any(part.startswith(("la-", "la_", "za-", "za_")) for part in roots)
+    if is_sv:
+        return sv_mapping.get(model_id, 0) if model_id >= 1001 else swsh_mapping.get(model_id, model_id)
+    if is_swsh:
+        return swsh_mapping.get(model_id, model_id)
+    if is_hisui and 1001 <= model_id <= 1007:
+        return sv_mapping.get(model_id, 0)
+    return model_id
+
+
+for record in records:
+    match = re.search(r"pm(\d{4})", record["model"])
+    internal_id = int(match[1]) if match else 0
+    record["modelId"] = internal_id
+    record["dex"] = national_dex_id(record["path"], internal_id) if internal_id else -1
+    record["priority"] = next(
         (
-            v
-            for k, v in [
+            value
+            for prefix, value in [
                 ("ZA-", 600),
                 ("SV-", 500),
                 ("LA-", 400),
                 ("SwSh-", 300),
                 ("LGPE-", 200),
             ]
-            if k.casefold().rstrip("-") in r["path"].casefold()
+            if prefix.casefold().rstrip("-") in record["path"].casefold()
         ),
         0,
     )
