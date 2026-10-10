@@ -19,6 +19,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -118,6 +119,14 @@ private fun launchDesktop() = application {
 private fun DesktopApp() {
     val packRoot = remember { findModelPack() }
     val models = remember(packRoot) { packRoot?.let(::loadManifest).orEmpty() }
+    // Models are counted from actual local files. Idle clips count only after a model
+    // has been instantiated and its animation list checked.
+    val modelDexes = remember(models) { models.map { it.dex }.filter { it in 1..1025 }.toSet() }
+    var inspectedAnimationDex by remember(models) { mutableStateOf(emptySet<Int>()) }
+    var confirmedAnimationDex by remember(models) { mutableStateOf(emptySet<Int>()) }
+    val modelCount = modelDexes.size
+    val checkedCount = inspectedAnimationDex.count { it in modelDexes }
+    val animationCount = confirmedAnimationDex.count { it in modelDexes }
     var rotate by remember { mutableStateOf(false) }
     var breaks by remember { mutableStateOf(true) }
     var reset by remember { mutableStateOf(0) }
@@ -170,6 +179,40 @@ private fun DesktopApp() {
                 Text(
                     models.size.toString() + " models · " + models.count { it.path.toString().replace('\\', '/').contains("/switch/") } + " Switch",
                     style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Spacer(Modifier.height(12.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("3D models", fontWeight = FontWeight.SemiBold)
+                    Text("$modelCount / 1,025")
+                }
+                LinearProgressIndicator(
+                    progress = { modelCount / 1025f },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    "%.1f%% · %d model files missing".format(modelCount * 100.0 / 1025, 1025 - modelCount),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Spacer(Modifier.height(10.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Idle animations", fontWeight = FontWeight.SemiBold)
+                    Text("$animationCount / 1,025")
+                }
+                LinearProgressIndicator(
+                    progress = { animationCount / 1025f },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+                Text(
+                    "%.1f%% · %d inspected; others not yet verified".format(
+                        animationCount * 100.0 / 1025, checkedCount,
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
@@ -247,7 +290,11 @@ private fun DesktopApp() {
                             }
                             Box(Modifier.weight(1f).fillMaxWidth()) {
                                 bytes?.let {
-                                    PokemonViewport(current, it, rotate, breaks, reset)
+                                    PokemonViewport(current, it, rotate, breaks, reset) { dex, hasIdle ->
+                                        inspectedAnimationDex = inspectedAnimationDex + dex
+                                        if (hasIdle) confirmedAnimationDex = confirmedAnimationDex + dex
+                                        else confirmedAnimationDex = confirmedAnimationDex - dex
+                                    }
                                 } ?: Text("Loading " + current.name + "…")
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -265,7 +312,10 @@ private fun DesktopApp() {
 }
 
 @Composable
-private fun PokemonViewport(model: DesktopModel, bytes: ByteArray, rotate: Boolean, breaks: Boolean, reset: Int) {
+private fun PokemonViewport(
+    model: DesktopModel, bytes: ByteArray, rotate: Boolean, breaks: Boolean, reset: Int,
+    onAnimationInspected: (Int, Boolean) -> Unit,
+) {
     key(model.path.toString()) {
         val bounds = remember(bytes) { readModelBounds(bytes) }
         // Match the web index/model-viewer framing: center the real mesh bounds,
@@ -335,6 +385,7 @@ private fun PokemonViewport(model: DesktopModel, bytes: ByteArray, rotate: Boole
             modifier = Modifier.fillMaxSize().then(controls),
             orbitCamera = camera,
             breaksEnabled = breaks,
+            onAnimationInspected = onAnimationInspected,
         )
     }
 }
@@ -346,6 +397,7 @@ private fun AnimatedFilamentViewer(
     modifier: Modifier,
     orbitCamera: CameraState,
     breaksEnabled: Boolean,
+    onAnimationInspected: (Int, Boolean) -> Unit,
 ) {
     val engine = rememberFilamentEngine()
     var loadError by remember { mutableStateOf<Throwable?>(null) }
@@ -467,6 +519,7 @@ private fun AnimatedFilamentViewer(
                         25f,
                     )
                 }
+                onAnimationInspected(model.dex, preferredAnimation != null)
             },
         )
     }
