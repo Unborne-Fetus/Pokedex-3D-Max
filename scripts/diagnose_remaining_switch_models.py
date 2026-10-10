@@ -18,6 +18,7 @@ from import_switch_game_assets import (
     IMAGE_EXTS,
     MODEL_EXTS,
     attach_animations,
+    canonical_regular_form,
     dedupe_jobs,
     detect_game,
     discover_default_inputs,
@@ -91,8 +92,10 @@ def analyze(paths: list[Path], requested: dict[int, str]) -> dict:
                 if not match:
                     continue
                 dex = national_dex_for_model_id(int(match.group(1)), game)
-                if dex in requested and infer_form(file) != "regular":
-                    other_forms[dex].add(infer_form(file))
+                if dex in requested:
+                    catalog_form, _ = canonical_regular_form(file, dex, game)
+                    if catalog_form != "regular":
+                        other_forms[dex].add(catalog_form)
             texture_possible[game] |= texture_available
             sources_by_game[game] += 1
             jobs.extend(source_models)
