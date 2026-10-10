@@ -2990,6 +2990,10 @@ def main() -> int:
     for source in args.inputs:
         root, game = extract_input(source)
         if is_switch_texture_archive(source):
+            # Texture-only archives were previously registered without
+            # decoding BNTX companions, leaving the Blender importer with
+            # no PNG base-color maps even when the original textures existed.
+            decode_bntx_textures(root)
             add_texture_root(texture_roots, texture_roots_by_game, root, game)
             image = first_image_asset(root)
             detail = f"; sample={image.name}" if image is not None else "; no supported image files found"
