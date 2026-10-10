@@ -24,6 +24,14 @@ const chooseLocalModelsBtn = document.querySelector("#chooseLocalModels");
 const exportModelManifestBtn = document.querySelector("#exportModelManifest");
 const localModelsFolder = document.querySelector("#localModelsFolder");
 const folderStatus = document.querySelector("#folderStatus");
+const modelCoverageCountEl = document.querySelector("#modelCoverageCount");
+const modelCoverageDetailEl = document.querySelector("#modelCoverageDetail");
+const modelCoverageProgressEl = document.querySelector("#modelCoverageProgress");
+const modelCoverageFillEl = document.querySelector("#modelCoverageFill");
+const animationCoverageCountEl = document.querySelector("#animationCoverageCount");
+const animationCoverageDetailEl = document.querySelector("#animationCoverageDetail");
+const animationCoverageProgressEl = document.querySelector("#animationCoverageProgress");
+const animationCoverageFillEl = document.querySelector("#animationCoverageFill");
 
 
 // Keep every numbered National Dex species visible even without a model.
@@ -43,6 +51,53 @@ function withMissingSpeciesEntries(catalog) {
     entries.set(dex, { dex, name, form: "regular", missingModel: true, remoteSwitch: true });
   }
   return [...entries.values()].sort((a, b) => Number(a.dex) - Number(b.dex));
+}
+
+// The uploaded-file catalog does not contain trustworthy animation totals.
+// Confirm idle-clip availability only after each model actually loads.
+const NATIONAL_DEX_TOTAL = 1025;
+const inspectedIdleDex = new Set();
+const confirmedIdleDex = new Set();
+
+function coverageStatistics(catalog, inspected = inspectedIdleDex, confirmed = confirmedIdleDex) {
+  const available = new Set(catalog
+    .filter(model => !model.missingModel && Number.isInteger(Number(model.dex)))
+    .map(model => Number(model.dex))
+    .filter(dex => dex >= 1 && dex <= NATIONAL_DEX_TOTAL));
+  return {
+    models: available.size,
+    inspected: [...inspected].filter(dex => available.has(dex)).length,
+    animated: [...confirmed].filter(dex => available.has(dex)).length,
+  };
+}
+
+function renderCoverage() {
+  const stats = coverageStatistics(models);
+  const updateMeter = (count, countEl, detailEl, progressEl, fillEl, detail) => {
+    const percent = count / NATIONAL_DEX_TOTAL * 100;
+    countEl.textContent = count.toLocaleString() + " / " + NATIONAL_DEX_TOTAL.toLocaleString();
+    detailEl.textContent = percent.toFixed(1) + "% · " + detail;
+    fillEl.style.width = percent.toFixed(3) + "%";
+    progressEl.setAttribute("aria-valuenow", String(count));
+    progressEl.setAttribute("aria-valuetext",
+      count + " of " + NATIONAL_DEX_TOTAL + ". " + detail);
+  };
+  updateMeter(stats.models, modelCoverageCountEl, modelCoverageDetailEl,
+    modelCoverageProgressEl, modelCoverageFillEl,
+    (NATIONAL_DEX_TOTAL - stats.models).toLocaleString() + " model files missing");
+  updateMeter(stats.animated, animationCoverageCountEl, animationCoverageDetailEl,
+    animationCoverageProgressEl, animationCoverageFillEl,
+    stats.inspected.toLocaleString() + " inspected; others not yet verified");
+}
+
+function noteAnimationInspection(model, hasIdle) {
+  if (!model || model.missingModel) return;
+  const dex = Number(model.dex);
+  if (!Number.isInteger(dex) || dex < 1 || dex > NATIONAL_DEX_TOTAL) return;
+  inspectedIdleDex.add(dex);
+  if (hasIdle) confirmedIdleDex.add(dex);
+  else confirmedIdleDex.delete(dex);
+  renderCoverage();
 }
 
 function catalogCoverageText(catalog) {
@@ -452,6 +507,7 @@ function applyFilter(loadFirst = true) {
 viewer.addEventListener("load", () => {
   clearLoadTimer();
   startIdle();
+  noteAnimationInspection(currentModel, Boolean(idleAnimation));
   scheduleCameraFit();
   if (idleAnimation) {
     messageEl.classList.add("hidden");
@@ -625,6 +681,7 @@ window.addEventListener("pokedex3d:remote-switch-catalog", event => {
   selectedIndex = Math.max(0, filtered.findIndex(model => model.dex === selectedDex));
   folderStatus.textContent = "Models stream from the public GitHub repository. Individual textures and idles are checked when opened.";
   statusEl.textContent = catalogCoverageText(models);
+  renderCoverage();
   renderList();
   if (filtered.length && (!currentModel || !models.some(model => model.dex === currentModel.dex) ||
       (currentModel.missingModel && models.some(model =>
@@ -682,9 +739,12 @@ localModelsFolder.addEventListener("change", async () => {
     localModelsForExport = outcome.models;
     exportModelManifestBtn.disabled = false;
     models = withMissingSpeciesEntries(outcome.models);
+    inspectedIdleDex.clear();
+    confirmedIdleDex.clear();
     window.POKEDEX3D_MODELS = models;
     folderStatus.textContent = outcome.models.length + " verified Switch models loaded locally. None were uploaded.";
     statusEl.textContent = catalogCoverageText(models);
+    renderCoverage();
     searchEl.value = "";
     filtered = [...models];
     selectedIndex = 0;
@@ -732,6 +792,7 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
 });
 
 statusEl.textContent = catalogCoverageText(models);
+renderCoverage();
 
 renderList();
 if (models.length) {
