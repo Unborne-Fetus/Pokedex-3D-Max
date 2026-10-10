@@ -13,6 +13,9 @@ on:
       - "scripts/setup_all.ps1"
       - "setup-all.bat"
       - "import-switch-models.bat"
+      - "scripts/recover_final_13.py"
+      - "recover-final-13.bat"
+      - "data/sv_model_dex.tsv"
       - "index.html"
       - "web/app.js"
       - "web/community-candidate-catalog.js"
@@ -30,6 +33,9 @@ on:
       - "scripts/setup_all.ps1"
       - "setup-all.bat"
       - "import-switch-models.bat"
+      - "scripts/recover_final_13.py"
+      - "recover-final-13.bat"
+      - "data/sv_model_dex.tsv"
       - "index.html"
       - "web/app.js"
       - "web/community-candidate-catalog.js"
@@ -55,8 +61,11 @@ jobs:
         run: |
           python -m py_compile             scripts/import_switch_game_assets.py             scripts/blender_import_switch_game_model.py             scripts/verify_switch_baseline.py
 
-      - name: Run Switch importer self-tests
-        run: python scripts/import_switch_game_assets.py --self-test
+      - name: Run Switch importer self-tests and final-13 ID checks
+        run: |
+          python scripts/import_switch_game_assets.py --self-test
+          python -m py_compile scripts/recover_final_13.py
+          python scripts/recover_final_13.py --self-test
 
       - name: Test material selection and browser synchronization
         run: |
