@@ -26,22 +26,33 @@ const localModelsFolder = document.querySelector("#localModelsFolder");
 const folderStatus = document.querySelector("#folderStatus");
 
 
-// These three species are known, but their Switch GLBs were not uploaded.
-// Show the Pokédex entries without inventing or borrowing substitute models.
-// A later verified local or remote GLB replaces its placeholder automatically.
-const CATERPIE_LINE = Object.freeze([
-  { dex: 10, name: "Caterpie" },
-  { dex: 11, name: "Metapod" },
-  { dex: 12, name: "Butterfree" },
-]);
-function withMissingCaterpieLine(catalog) {
-  const existing = new Set(catalog.map(model => Number(model.dex)));
-  const missing = CATERPIE_LINE.filter(species => !existing.has(species.dex))
-    .map(species => ({ ...species, form: "regular", missingModel: true, remoteSwitch: true }));
-  return [...catalog, ...missing].sort((a, b) => Number(a.dex) - Number(b.dex));
+// Keep every numbered National Dex species visible even without a model.
+// Only real entries from the Switch asset catalog may display a 3D model.
+function withMissingSpeciesEntries(catalog) {
+  const entries = new Map();
+  for (const model of catalog) {
+    const dex = Number(model?.dex);
+    if (!Number.isInteger(dex) || dex < 1 || dex > 1025) continue;
+    if (!entries.has(dex) || (entries.get(dex).missingModel && !model.missingModel)) {
+      entries.set(dex, model);
+    }
+  }
+  for (const [number, name] of Object.entries(window.POKEDEX3D_NAMES || {})) {
+    const dex = Number(number);
+    if (!Number.isInteger(dex) || dex < 1 || dex > 1025 || entries.has(dex)) continue;
+    entries.set(dex, { dex, name, form: "regular", missingModel: true, remoteSwitch: true });
+  }
+  return [...entries.values()].sort((a, b) => Number(a.dex) - Number(b.dex));
 }
 
-let models = withMissingCaterpieLine((Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
+function catalogCoverageText(catalog) {
+  const available = catalog.filter(model => !model.missingModel).length;
+  return catalog.length.toLocaleString() + " Pokémon · " +
+    available.toLocaleString() + " models listed · " +
+    (catalog.length - available).toLocaleString() + " missing models";
+}
+
+let models = withMissingSpeciesEntries((Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
   ? window.POKEDEX3D_SWITCH_MODELS
   : [])
   .filter(model => model?.valid !== false && model?.ready !== false)
@@ -85,7 +96,7 @@ function escapeHtml(value) {
 }
 
 function prettyName(model) {
-  const known = String(model?.name || "").trim();
+  const known = String(model?.name || window.POKEDEX3D_NAMES?.[model?.dex] || "").trim();
   return known || ("#" + String(model?.dex || 0).padStart(4, "0"));
 }
 
@@ -293,7 +304,7 @@ function renderList() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "entry";
-    if (model.missingModel) button.title = "Original Switch model not uploaded yet";
+    if (model.missingModel) button.title = "Original Switch model unavailable in this catalog";
     button.innerHTML =
       '<span class="dex">#' + String(model.dex).padStart(4, "0") + '</span>' +
       '<span><span class="name">' + escapeHtml(prettyName(model)) + "</span>" +
@@ -328,7 +339,7 @@ function loadModel(model) {
     }
     messageEl.textContent = prettyName(model) + " (#" +
       String(model.dex).padStart(4, "0") +
-      ") is in the Pokédex, but its original animated Switch GLB has not been uploaded. No substitute model is shown.";
+      ") is in the Pokédex, but its original animated Switch GLB is not available in this catalog. No substitute model is shown.";
     messageEl.classList.remove("hidden");
     return;
   }
@@ -606,14 +617,14 @@ window.addEventListener("pokedex3d:remote-switch-catalog", event => {
   if (!incoming.length) return;
   const selectedDex = models[selectedIndex]?.dex;
   const currentQuery = searchEl.value.trim().toLowerCase().replace(/^#/, "");
-  models = withMissingCaterpieLine(incoming);
+  models = withMissingSpeciesEntries(incoming);
   window.POKEDEX3D_MODELS = models;
   filtered = currentQuery ? models.filter(model =>
     String(model.dex) === currentQuery || prettyName(model).toLowerCase().includes(currentQuery)
   ) : [...models];
   selectedIndex = Math.max(0, filtered.findIndex(model => model.dex === selectedDex));
   folderStatus.textContent = "Models stream from the public GitHub repository. Individual textures and idles are checked when opened.";
-  statusEl.textContent = incoming.length.toLocaleString() + " uploaded Switch models on GitHub";
+  statusEl.textContent = catalogCoverageText(models);
   renderList();
   if (filtered.length && (!currentModel || !models.some(model => model.dex === currentModel.dex) ||
       (currentModel.missingModel && models.some(model =>
@@ -670,10 +681,10 @@ localModelsFolder.addEventListener("change", async () => {
     localFolderActive = true;
     localModelsForExport = outcome.models;
     exportModelManifestBtn.disabled = false;
-    models = withMissingCaterpieLine(outcome.models);
+    models = withMissingSpeciesEntries(outcome.models);
     window.POKEDEX3D_MODELS = models;
     folderStatus.textContent = outcome.models.length + " verified Switch models loaded locally. None were uploaded.";
-    statusEl.textContent = outcome.models.length.toLocaleString() + " local regular Switch models ready";
+    statusEl.textContent = catalogCoverageText(models);
     searchEl.value = "";
     filtered = [...models];
     selectedIndex = 0;
@@ -720,13 +731,10 @@ toggleIdleBreaksBtn.addEventListener("click", () => {
   if (idleBreaksEnabled) scheduleIdleBreak();
 });
 
-const availableModelCount = models.filter(model => !model.missingModel).length;
-statusEl.textContent = availableModelCount
-  ? availableModelCount.toLocaleString() + " regular animated Switch models ready"
-  : "Choose a Switch model folder to start (no installation needed)";
+statusEl.textContent = catalogCoverageText(models);
 
 renderList();
-if (availableModelCount) {
+if (models.length) {
   selectModel(0);
 } else {
   formSelect.replaceChildren();
