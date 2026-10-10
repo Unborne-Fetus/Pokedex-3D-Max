@@ -128,8 +128,39 @@ def is_switch_texture_archive(path: Path) -> bool:
     )
 
 
+def find_cached_original_source_dirs(cache_root: Path) -> list[Path]:
+    """Reuse original source files already extracted by prior import runs.
+
+    These folders contain TRMDL/GFBMDL and animation/texture sources, not GLB
+    exports. A stale .complete.json marker is acceptable because we are not
+    re-extracting an archive whose original ZIP may have been deleted.
+    """
+    results: list[Path] = []
+    seen: set[Path] = set()
+    for parent in (cache_root / "extracted", cache_root):
+        if not parent.is_dir():
+            continue
+        for folder in sorted(parent.iterdir()):
+            if not folder.is_dir() or folder.name.lower() == "extracted":
+                continue
+            if detect_game(folder) == "unknown":
+                continue
+            resolved = folder.resolve()
+            if resolved in seen or any(existing in resolved.parents for existing in seen):
+                continue
+            # Include model, animation, and texture-only extractions: importing
+            # models without their matching game textures produces bad renders.
+            if not any(file.is_file() and file.suffix.lower() in
+                       (MODEL_EXTS | ANIM_EXTS | IMAGE_EXTS | {".bntx"})
+                       for file in folder.rglob("*")):
+                continue
+            seen.add(resolved)
+            results.append(resolved)
+    return results
+
+
 def discover_default_inputs() -> list[Path]:
-    """Find Switch archives without recursively walking the toolchain cache."""
+    """Find original archives and prior extractions; never search published GLBs."""
     plans = [
         (ROOT, False),
         (ROOT / "switch-assets", True),
@@ -184,6 +215,15 @@ def discover_default_inputs() -> list[Path]:
                 continue
             seen.add(resolved)
             found.append(resolved)
+
+    # Batch recovery previously claimed there were no sources even after a
+    # successful earlier import, because the source ZIPs had been removed and
+    # the extracted importer's cache wasn't included in default discovery.
+    # These are original assets, not model-pack GLB fallbacks.
+    for cached in find_cached_original_source_dirs(CACHE):
+        if cached not in seen:
+            seen.add(cached)
+            found.append(cached)
 
     return sorted(found, key=lambda p: (detect_game(p), p.name.lower(), str(p).lower()))
 
@@ -2735,6 +2775,23 @@ def run_self_tests() -> None:
     assert detect_game(Path("other/catalog/pm0906_00_00.trmdl")) == "unknown"
     assert is_switch_pokemon_asset_archive(Path("switch-assets/SV/Models.zip"))
     assert is_switch_pokemon_asset_archive(Path("switch-assets/LA/Animations.7z"))
+    # Check that original extracted caches remain discoverable without their
+    # vanished source ZIPs, but published GLBs are never considered sources.
+    import tempfile
+    with tempfile.TemporaryDirectory() as directory:
+        cache = Path(directory) / "switch-game-assets"
+        model_cache = cache / "extracted" / "sv-poke-012345"
+        anim_cache = cache / "extracted" / "sv-pokeanim-012345"
+        glb_cache = cache / "extracted" / "sv-poke-ignored"
+        model_cache.mkdir(parents=True)
+        anim_cache.mkdir(parents=True)
+        glb_cache.mkdir(parents=True)
+        (model_cache / "pm0906_00.trmdl").write_bytes(b"source")
+        (anim_cache / "pm0906_00_idle.tranm").write_bytes(b"source")
+        (glb_cache / "regular.glb").write_bytes(b"glb")
+        found = find_cached_original_source_dirs(cache)
+        assert model_cache in found and anim_cache in found
+        assert glb_cache not in found
 
     assert infer_form_key(Path("pm0479_16.gfbmdl")) == "16"
     assert infer_form_key(Path("pm0479_16_00_20012_battleidle02.tranm")) == "16"
