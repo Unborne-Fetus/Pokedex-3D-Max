@@ -14,6 +14,9 @@ if /I "%~1"=="full" (
 ) else if /I "%~1"=="switch" (
   set "MODE=SWITCH"
   set "SETUP_ARGS=-SwitchAssetsOnly -SkipInstall"
+) else if /I "%~1"=="final13" (
+  set "MODE=FINAL13"
+  set "SETUP_ARGS=-Final13Only -SkipInstall"
 ) else if /I "%~1"=="fast" (
   set "MODE=FAST"
   set "SETUP_ARGS=-SkipSwitchAssets"
@@ -44,6 +47,14 @@ if "%MODE%"=="FULL" (
   echo      and automatically installs or updates the existing app
   echo.
   echo Existing downloads and conversions are reused whenever possible.
+) else if "%MODE%"=="FINAL13" (
+  echo FINAL 13 RECOVERY MODE:
+  echo   Checks for Scarlet/Violet and Sword/Shield originals.
+  echo   Selectively downloads relevant model, texture and animation packs
+  echo   from the configured public source when local packs are missing.
+  echo   Imports ONLY the 13 unfinished target species.
+  echo   Never overwrites unrelated Pokemon or builds an EXE.
+  echo   Reports missing compatible originals rather than using stand-ins.
 ) else if "%MODE%"=="SWITCH" (
   echo SWITCH ASSET MODE:
   echo   Restores regular original Switch exports only when textures and animations are valid.
@@ -88,6 +99,10 @@ if "%EXITCODE%"=="0" (
   if "%MODE%"=="TEXTURES" (
     echo Updated baked Switch assets were synced into:
     echo   %LOCALAPPDATA%\Pokedex3DMax\offline-models
+  ) else if "%MODE%"=="FINAL13" (
+    echo Final 13 structural report:
+    echo   %~dp0.cache\final-13-recovery\report.tsv
+    echo Visually check the imported Pokemon before marking them finished.
   ) else if "%MODE%"=="SWITCH" (
     echo Switch assets were synced and imported into:
     echo   %LOCALAPPDATA%\Pokedex3DMax\offline-models
