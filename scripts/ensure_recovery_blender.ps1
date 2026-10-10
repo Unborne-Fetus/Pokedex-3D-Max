@@ -43,26 +43,52 @@ if (-not $blender) {
     }
 
     if (-not $validZip) {
+        # A partial ZIP can belong to a different server response or version.
+        # Never append to it after a 403 / failed resume; try a clean temporary
+        # download without risking the user's existing partial archive.
         foreach ($url in $urls) {
-            Write-Host "Downloading Blender $version (resuming any partial download): $url"
-            # -C - resumes the existing ZIP instead of restarting when the server supports ranges.
-            # --retry-all-errors also retries abrupt EOF/disconnect failures.
-            & $curl.Source --location --fail --retry 8 --retry-delay 5 --retry-all-errors --connect-timeout 30 --continue-at - --output $zip $url
-            $result = $LASTEXITCODE
-            if ($result -ne 0) {
-                Write-Warning "Blender download ended with curl code $result; trying another source."
+            $fresh = "$zip.fresh"
+            Write-Host "Downloading Blender $version from $url"
+            if (Test-Path -LiteralPath $fresh) { Remove-Item -LiteralPath $fresh -Force }
+            $resumed = $false
+            if ((Test-Path -LiteralPath $zip) -and ((Get-Item -LiteralPath $zip).Length -gt 0)) {
+                Write-Host "Attempting to resume the existing download..."
+                & $curl.Source --location --fail --retry 2 --retry-delay 2 --connect-timeout 30 --continue-at - --output $zip $url
+                $resumed = ($LASTEXITCODE -eq 0)
+            }
+            if ($resumed) {
+                try {
+                    $archive = [IO.Compression.ZipFile]::OpenRead($zip)
+                    try {
+                        $validZip = ((Get-Item -LiteralPath $zip).Length -gt 350MB -and
+                            (($archive.Entries | Where-Object { $_.FullName -match '(^|/)blender\\.exe$' } | Select-Object -First 1) -ne $null))
+                    } finally { $archive.Dispose() }
+                } catch { $validZip = $false }
+                if ($validZip) { break }
+                Write-Warning "Resumed Blender ZIP failed validation; trying clean download."
+            }
+            Write-Host "Downloading a clean ZIP (no range request)..."
+            & $curl.Source --location --fail --retry 2 --retry-delay 2 --connect-timeout 30 --output $fresh $url
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "Clean download failed at $url; trying the next source."
+                if (Test-Path -LiteralPath $fresh) { Remove-Item -LiteralPath $fresh -Force }
                 continue
             }
             try {
-                $archive = [IO.Compression.ZipFile]::OpenRead($zip)
+                $archive = [IO.Compression.ZipFile]::OpenRead($fresh)
                 try {
-                    $validZip = (($archive.Entries | Where-Object { $_.FullName -match '(^|/)blender\.exe$' } | Select-Object -First 1) -ne $null)
+                    $validZip = ((Get-Item -LiteralPath $fresh).Length -gt 350MB -and
+                        (($archive.Entries | Where-Object { $_.FullName -match '(^|/)blender\\.exe$' } | Select-Object -First 1) -ne $null))
                 } finally { $archive.Dispose() }
             } catch {
-                Write-Warning "Downloaded archive is incomplete: $($_.Exception.Message)"
+                Write-Warning "Clean Blender ZIP failed validation: $($_.Exception.Message)"
                 $validZip = $false
             }
-            if ($validZip) { break }
+            if ($validZip) {
+                Move-Item -LiteralPath $fresh -Destination $zip -Force
+                break
+            }
+            if (Test-Path -LiteralPath $fresh) { Remove-Item -LiteralPath $fresh -Force }
         }
     }
     if (-not $validZip) {
