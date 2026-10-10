@@ -96,7 +96,7 @@ def cobblemon_tools(species: str) -> dict:
             r'https?[^"\\<> ]+\\.(?:glb|gltf)(?:\\?[^"\\<> ]*)?',
             r'[^"\\<> ]{0,160}\\.(?:glb|gltf)(?:\\?[^"\\<> ]*)?',
             r'[^"\\<> ]{0,160}\\.geo\\.json[^"\\<> ]*',
-            r'["\\'](?:modelUrl|gltfUrl|modelPath|model_url|model_src)["\\']\\s*:\\s*["\\'][^"\\']+',
+            r'modelUrl.{0,200}(?:glb|gltf)',
         ]
         hits=[]
         for p in patterns:
