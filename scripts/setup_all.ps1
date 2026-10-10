@@ -2,7 +2,8 @@ param(
     [switch]$SkipSwitchAssets,
     [switch]$SkipInstall,
     [switch]$SwitchAssetsOnly,
-    [switch]$BakeSwitchMaterials
+    [switch]$BakeSwitchMaterials,
+    [switch]$Final13Only
 )
 
 $ErrorActionPreference = "Stop"
@@ -596,6 +597,65 @@ function DownloadMegaSwitchAssets {
     Stamp "Selective MEGA model/animation/texture download finished."
 }
 
+function SyncFinal13MegaArchives {
+    # The RTB archive is huge; only request original Scarlet/Violet and
+    # Sword/Shield Gen-8 model, idle, and texture packs for the final 13.
+    # Archive enumeration is metadata only; no full-folder mega-get is issued.
+    $Local = @(FindSwitchAssetArchives)
+    $SvModel = @($Local | Where-Object {
+        $Name = Split-Path $_ -Leaf
+        $Name -match '(?i)^SV[-_ ]*Poke' -and
+        $Name -notmatch '(?i)(Anim|Texture|TexPack|PokeTex)'
+    }).Count -gt 0
+    $SwShModel = @($Local | Where-Object {
+        $Name = Split-Path $_ -Leaf
+        $Name -match '(?i)^SwSh[-_ ]*Poke' -and
+        $Name -notmatch '(?i)(Anim|Texture|TexPack|PokeTex)'
+    }).Count -gt 0
+    $SvAnim = @($Local | Where-Object {
+        (Split-Path $_ -Leaf) -match '(?i)^SV[-_ ]*PokeAnim'
+    }).Count -gt 0
+    $SwShAnim = @($Local | Where-Object {
+        (Split-Path $_ -Leaf) -match '(?i)^SwSh[-_ ]*PokeAnim'
+    }).Count -gt 0
+    if ($SvModel -and $SwShModel -and $SvAnim -and $SwShAnim) {
+        Stamp "Both game model archives and animation packs are already cached."
+        Stamp "Using the local original archives; no MEGA download needed."
+        return
+    }
+    Stamp "Locating only Scarlet/Violet and Sword/Shield model/animation/texture packs."
+    try {
+        $Remote = @(GetMegaDesiredRemoteArchives)
+    } catch {
+        Stamp ("Shared MEGA folder unavailable: " + $_.Exception.Message)
+        Stamp "Recovery will continue using local sources only."
+        return
+    }
+    $Wanted = @($Remote | Where-Object {
+        $Leaf = Split-Path $_ -Leaf
+        if ($Leaf -match '(?i)^SV[-_ ]*Poke') { return $true }
+        if ($Leaf -match '(?i)^SwSh[-_ ]*Poke') {
+            # Only Gen8 or same-game companions, not every Gens 1-7 pack.
+            return $Leaf -match '(?i)(Gen8|PokeAnim|PokeTex|Texture|TexPack|DLC)'
+        }
+        $HasTargetGame = $Leaf -match '(?i)(^|[-_ .])(SV|SwSh)([-_ .]|$)'
+        return $HasTargetGame -and $Leaf -match '(?i)(Texture|PokeTex|TexPack)'
+    })
+    if ($Wanted.Count -eq 0) {
+        Stamp "No matching Gen8/SV model archives were found in the MEGA folder metadata."
+        return
+    }
+    Stamp ("Found " + $Wanted.Count + " matching packs. Only these will be downloaded; the full share will not.")
+    foreach ($RemotePath in $Wanted) {
+        try {
+            DownloadMegaArchiveWithWatchdog $RemotePath
+        } catch {
+            Stamp ("Could not download " + (Split-Path $RemotePath -Leaf) + ": " + $_.Exception.Message)
+            Stamp "Other packs and already-cached original data remain preserved."
+        }
+    }
+}
+
 function FindSwitchAssetArchives {
     $Plans = @(
         @{ Root = $RepoRoot; Recurse = $false },
@@ -1088,6 +1148,37 @@ try {
     Stamp "One-click mode: tools, strict Switch model import, and Windows build are automatic."
     Stamp "Nothing is frozen if timestamps keep appearing or a download/build counter changes."
     Stamp ("Log file: " + $LogFile)
+
+    if ($Final13Only) {
+        Stamp "Final 13 original-model recovery: no Windows build, no existing model reset."
+        $Python = EnsurePython
+        PreflightSwitchImporter $Python
+        SyncFinal13MegaArchives
+        $LocalSources = @(FindSwitchAssetArchives | Where-Object {
+            (Split-Path $_ -Leaf) -match '(?i)^(SV|SwSh)[-_ ]'
+        })
+        if ($LocalSources | Where-Object { $_.ToLowerInvariant().EndsWith(".7z") }) {
+            [void](EnsureSevenZip)
+        }
+        if ($LocalSources.Count -gt 0) {
+            [void](EnsureBlender)
+        }
+        $Final13 = Join-Path $RepoRoot "scripts\recover_final_13.py"
+        Push-Location $RepoRoot
+        try {
+            if ($Python -eq "py") { & py -3 -u $Final13 }
+            else { & python -u $Final13 }
+            $Final13Exit = $LASTEXITCODE
+        } finally {
+            Pop-Location
+        }
+        if ($Final13Exit -ne 0) {
+            throw ("Final 13 recovery incomplete (exit " + $Final13Exit +
+                "). Review .cache\final-13-recovery\report.tsv and the source log.")
+        }
+        Stamp "Final 13 structural validation passed; manually review poses, textures, and idle animations."
+        return
+    }
 
     if ($SwitchAssetsOnly) {
         Stamp "Switch-assets-only mode: skipping JDK, Gradle, and Windows packaging."
