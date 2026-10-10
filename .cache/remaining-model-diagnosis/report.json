@@ -1,0 +1,1881 @@
+{
+  "note": "Candidate detection is not proof of a visually correct GLB. Use the converter and verify original textures, poses and idle animations.",
+  "reportedCount": 122,
+  "sourcesScanned": [
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\la-poke-a850f3de3305",
+      "game": "la",
+      "modelCandidates": 209,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\la-pokeanim-5c55ca801d7f",
+      "game": "la",
+      "modelCandidates": 0,
+      "animationCandidates": 11999,
+      "hasPotentialTextures": false
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\lgpe-poke-c551afc5fc67",
+      "game": "lgpe",
+      "modelCandidates": 153,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\lgpe-pokeanim-12ceb233dc70",
+      "game": "lgpe",
+      "modelCandidates": 0,
+      "animationCandidates": 3707,
+      "hasPotentialTextures": false
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\sv-poke-55efdb331589",
+      "game": "sv",
+      "modelCandidates": 350,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\sv-pokeanim-62c0b4542e5f",
+      "game": "sv",
+      "modelCandidates": 0,
+      "animationCandidates": 18446,
+      "hasPotentialTextures": false
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\sv-pokeanimdlc1-e4c5bcd502f3",
+      "game": "sv",
+      "modelCandidates": 0,
+      "animationCandidates": 5292,
+      "hasPotentialTextures": false
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\sv-pokeanimdlc2-9211044c7ee0",
+      "game": "sv",
+      "modelCandidates": 0,
+      "animationCandidates": 7237,
+      "hasPotentialTextures": false
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\sv-pokedlc1-c37741e6ca47",
+      "game": "sv",
+      "modelCandidates": 99,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\sv-pokedlc2-94c007b86eb8",
+      "game": "sv",
+      "modelCandidates": 133,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\swsh-pokeanim-c704187d9a76",
+      "game": "swsh",
+      "modelCandidates": 0,
+      "animationCandidates": 16171,
+      "hasPotentialTextures": false
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\swsh-pokegen1-623962e3e4d3",
+      "game": "swsh",
+      "modelCandidates": 117,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\swsh-pokegen2-3-0a9eb882632e",
+      "game": "swsh",
+      "modelCandidates": 142,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\swsh-pokegen4-5-756695f06480",
+      "game": "swsh",
+      "modelCandidates": 175,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\swsh-pokegen6-7-b5426818bc06",
+      "game": "swsh",
+      "modelCandidates": 120,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\swsh-pokegen8-7ca72c930105",
+      "game": "swsh",
+      "modelCandidates": 71,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\za-poke-50cebb970e03",
+      "game": "za",
+      "modelCandidates": 223,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\za-pokeanim-f24bb91bcfd1",
+      "game": "za",
+      "modelCandidates": 0,
+      "animationCandidates": 17810,
+      "hasPotentialTextures": false
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\za-pokeanimdlc-299a3e4aae20",
+      "game": "za",
+      "modelCandidates": 0,
+      "animationCandidates": 6037,
+      "hasPotentialTextures": false
+    },
+    {
+      "input": "C:\\ROM Hacks\\Pokedex-3D-Max\\.cache\\switch-game-assets\\extracted\\za-pokedlc-2d474d84e5ec",
+      "game": "za",
+      "modelCandidates": 85,
+      "animationCandidates": 0,
+      "hasPotentialTextures": true
+    }
+  ],
+  "sourceSearchHint": "Original sources: project switch-assets, Downloads, Desktop, MEGA cached archives, or .cache/switch-game-assets/extracted. Published GLBs are not original source archives.",
+  "sourceCountsByGame": {
+    "la": 2,
+    "lgpe": 2,
+    "sv": 6,
+    "swsh": 6,
+    "za": 4
+  },
+  "countsByStatus": {
+    "only_other_forms_found": 57,
+    "regular_model_not_found_in_sources": 65
+  },
+  "scanErrors": [],
+  "pokemon": [
+    {
+      "dex": 165,
+      "name": "Ledyba",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 166,
+      "name": "Ledian",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 201,
+      "name": "Unown",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00",
+        "form-14-00",
+        "form-15-00",
+        "form-16-00",
+        "form-17-00",
+        "form-18-00",
+        "form-19-00",
+        "form-20-00",
+        "form-21-00",
+        "form-22-00",
+        "form-23-00",
+        "form-24-00",
+        "form-25-00",
+        "form-26-00",
+        "form-27-00",
+        "form-28-00",
+        "form-29-00",
+        "form-30-00",
+        "form-31-00",
+        "form-32-00",
+        "form-33-00",
+        "form-34-00",
+        "form-35-00",
+        "form-36-00",
+        "form-37-00",
+        "form-38-00"
+      ]
+    },
+    {
+      "dex": 276,
+      "name": "Taillow",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 277,
+      "name": "Swellow",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 300,
+      "name": "Skitty",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 301,
+      "name": "Delcatty",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 327,
+      "name": "Spinda",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 351,
+      "name": "Castform",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 366,
+      "name": "Clamperl",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 367,
+      "name": "Huntail",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 368,
+      "name": "Gorebyss",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 386,
+      "name": "Deoxys",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00",
+        "form-14-00"
+      ]
+    },
+    {
+      "dex": 412,
+      "name": "Burmy",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00"
+      ]
+    },
+    {
+      "dex": 413,
+      "name": "Wormadam",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00"
+      ]
+    },
+    {
+      "dex": 421,
+      "name": "Cherrim",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 422,
+      "name": "Shellos",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 423,
+      "name": "Gastrodon",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 479,
+      "name": "Rotom",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00",
+        "form-13",
+        "form-13-00",
+        "form-14",
+        "form-14-00",
+        "form-15",
+        "form-15-00",
+        "form-16",
+        "form-16-00"
+      ]
+    },
+    {
+      "dex": 487,
+      "name": "Giratina",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 492,
+      "name": "Shaymin",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 493,
+      "name": "Arceus",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00"
+      ]
+    },
+    {
+      "dex": 550,
+      "name": "Basculin",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-41",
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00",
+        "form-13-41"
+      ]
+    },
+    {
+      "dex": 555,
+      "name": "Darmanitan",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-31",
+        "form-12",
+        "form-12-31"
+      ]
+    },
+    {
+      "dex": 585,
+      "name": "Deerling",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00",
+        "form-14-00"
+      ]
+    },
+    {
+      "dex": 586,
+      "name": "Sawsbuck",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00",
+        "form-14-00"
+      ]
+    },
+    {
+      "dex": 641,
+      "name": "Tornadus",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 642,
+      "name": "Thundurus",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 645,
+      "name": "Landorus",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 646,
+      "name": "Kyurem",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00",
+        "form-13",
+        "form-13-00"
+      ]
+    },
+    {
+      "dex": 647,
+      "name": "Keldeo",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 648,
+      "name": "Meloetta",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 649,
+      "name": "Genesect",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00",
+        "form-13",
+        "form-13-00",
+        "form-14",
+        "form-14-00",
+        "form-15",
+        "form-15-00"
+      ]
+    },
+    {
+      "dex": 650,
+      "name": "Chespin",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 651,
+      "name": "Quilladin",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 652,
+      "name": "Chesnaught",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 653,
+      "name": "Fennekin",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 654,
+      "name": "Braixen",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 655,
+      "name": "Delphox",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 656,
+      "name": "Froakie",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 657,
+      "name": "Frogadier",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 658,
+      "name": "Greninja",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 664,
+      "name": "Scatterbug",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 665,
+      "name": "Spewpa",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 666,
+      "name": "Vivillon",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 667,
+      "name": "Litleo",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 668,
+      "name": "Pyroar",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 669,
+      "name": "Flabébé",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 670,
+      "name": "Floette",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 671,
+      "name": "Florges",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 672,
+      "name": "Skiddo",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 673,
+      "name": "Gogoat",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 676,
+      "name": "Furfrou",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 681,
+      "name": "Aegislash",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-12"
+      ]
+    },
+    {
+      "dex": 735,
+      "name": "Gumshoos",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00",
+        "form-14-00"
+      ]
+    },
+    {
+      "dex": 746,
+      "name": "Wishiwashi",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-11-00",
+        "form-12",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 774,
+      "name": "Minior",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 775,
+      "name": "Komala",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 778,
+      "name": "Mimikyu",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11",
+        "form-12"
+      ]
+    },
+    {
+      "dex": 779,
+      "name": "Bruxish",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 854,
+      "name": "Sinistea",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 862,
+      "name": "Obstagoon",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-31"
+      ]
+    },
+    {
+      "dex": 864,
+      "name": "Cursola",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-31"
+      ]
+    },
+    {
+      "dex": 865,
+      "name": "Sirfetch’d",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-31",
+        "form-11-00",
+        "form-12-00",
+        "form-13-00"
+      ]
+    },
+    {
+      "dex": 875,
+      "name": "Eiscue",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 877,
+      "name": "Morpeko",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 889,
+      "name": "Zamazenta",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 893,
+      "name": "Zarude",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 898,
+      "name": "Calyrex",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00"
+      ]
+    },
+    {
+      "dex": 899,
+      "name": "Wyrdeer",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 900,
+      "name": "Kleavor",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 905,
+      "name": "Enamorus",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 906,
+      "name": "Sprigatito",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 907,
+      "name": "Floragato",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 908,
+      "name": "Meowscarada",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 911,
+      "name": "Skeledirge",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 912,
+      "name": "Quaxly",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 915,
+      "name": "Lechonk",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 916,
+      "name": "Oinkologne",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 917,
+      "name": "Tarountula",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00"
+      ]
+    },
+    {
+      "dex": 922,
+      "name": "Pawmo",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 925,
+      "name": "Maushold",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00",
+        "form-14-00",
+        "form-15-00",
+        "form-16-00",
+        "form-17-00",
+        "form-18-00",
+        "form-19-00"
+      ]
+    },
+    {
+      "dex": 928,
+      "name": "Smoliv",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 930,
+      "name": "Arboliva",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 931,
+      "name": "Squawkabilly",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 932,
+      "name": "Nacli",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 938,
+      "name": "Tadbulb",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 939,
+      "name": "Bellibolt",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 941,
+      "name": "Kilowattrel",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 943,
+      "name": "Mabosstiff",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-31"
+      ]
+    },
+    {
+      "dex": 947,
+      "name": "Brambleghast",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 960,
+      "name": "Wiglett",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 961,
+      "name": "Wugtrio",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 962,
+      "name": "Bombirdier",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 963,
+      "name": "Finizen",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 972,
+      "name": "Houndstone",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 973,
+      "name": "Flamigo",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 975,
+      "name": "Cetitan",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 979,
+      "name": "Annihilape",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-31"
+      ]
+    },
+    {
+      "dex": 980,
+      "name": "Clodsire",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-31"
+      ]
+    },
+    {
+      "dex": 981,
+      "name": "Farigiraf",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-31"
+      ]
+    },
+    {
+      "dex": 983,
+      "name": "Kingambit",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 986,
+      "name": "Brute Bonnet",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00",
+        "form-13-00"
+      ]
+    },
+    {
+      "dex": 987,
+      "name": "Flutter Mane",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 988,
+      "name": "Slither Wing",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 991,
+      "name": "Iron Bundle",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 992,
+      "name": "Iron Hands",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 993,
+      "name": "Iron Jugulis",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 994,
+      "name": "Iron Moth",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 995,
+      "name": "Iron Thorns",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 996,
+      "name": "Frigibax",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 997,
+      "name": "Arctibax",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 998,
+      "name": "Baxcalibur",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 999,
+      "name": "Gimmighoul",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 1000,
+      "name": "Gholdengo",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 1003,
+      "name": "Ting-Lu",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-41"
+      ]
+    },
+    {
+      "dex": 1004,
+      "name": "Chi-Yu",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    },
+    {
+      "dex": 1005,
+      "name": "Roaring Moon",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-00-41"
+      ]
+    },
+    {
+      "dex": 1006,
+      "name": "Iron Valiant",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-41",
+        "form-12-41"
+      ]
+    },
+    {
+      "dex": 1008,
+      "name": "Miraidon",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 1009,
+      "name": "Walking Wake",
+      "status": "regular_model_not_found_in_sources",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": []
+    },
+    {
+      "dex": 1021,
+      "name": "Raging Bolt",
+      "status": "only_other_forms_found",
+      "installedValid": false,
+      "sourceGame": null,
+      "sourceModelId": null,
+      "sourceModel": null,
+      "matchingIdleCandidates": 0,
+      "potentialTextureSourcesByGame": false,
+      "otherForms": [
+        "form-11-00",
+        "form-12-00"
+      ]
+    }
+  ]
+}

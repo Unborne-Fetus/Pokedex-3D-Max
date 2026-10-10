@@ -1,0 +1,123 @@
+dex	name	status	sourceGame	sourceModelId	matchingIdleCandidates	potentialTextureSourcesByGame
+165	Ledyba	regular_model_not_found_in_sources			0	False
+166	Ledian	regular_model_not_found_in_sources			0	False
+201	Unown	only_other_forms_found			0	False
+276	Taillow	regular_model_not_found_in_sources			0	False
+277	Swellow	regular_model_not_found_in_sources			0	False
+300	Skitty	regular_model_not_found_in_sources			0	False
+301	Delcatty	regular_model_not_found_in_sources			0	False
+327	Spinda	regular_model_not_found_in_sources			0	False
+351	Castform	regular_model_not_found_in_sources			0	False
+366	Clamperl	regular_model_not_found_in_sources			0	False
+367	Huntail	regular_model_not_found_in_sources			0	False
+368	Gorebyss	regular_model_not_found_in_sources			0	False
+386	Deoxys	only_other_forms_found			0	False
+412	Burmy	only_other_forms_found			0	False
+413	Wormadam	only_other_forms_found			0	False
+421	Cherrim	only_other_forms_found			0	False
+422	Shellos	only_other_forms_found			0	False
+423	Gastrodon	only_other_forms_found			0	False
+479	Rotom	only_other_forms_found			0	False
+487	Giratina	only_other_forms_found			0	False
+492	Shaymin	only_other_forms_found			0	False
+493	Arceus	only_other_forms_found			0	False
+550	Basculin	only_other_forms_found			0	False
+555	Darmanitan	only_other_forms_found			0	False
+585	Deerling	only_other_forms_found			0	False
+586	Sawsbuck	only_other_forms_found			0	False
+641	Tornadus	only_other_forms_found			0	False
+642	Thundurus	only_other_forms_found			0	False
+645	Landorus	only_other_forms_found			0	False
+646	Kyurem	only_other_forms_found			0	False
+647	Keldeo	only_other_forms_found			0	False
+648	Meloetta	only_other_forms_found			0	False
+649	Genesect	only_other_forms_found			0	False
+650	Chespin	regular_model_not_found_in_sources			0	False
+651	Quilladin	regular_model_not_found_in_sources			0	False
+652	Chesnaught	regular_model_not_found_in_sources			0	False
+653	Fennekin	regular_model_not_found_in_sources			0	False
+654	Braixen	regular_model_not_found_in_sources			0	False
+655	Delphox	regular_model_not_found_in_sources			0	False
+656	Froakie	regular_model_not_found_in_sources			0	False
+657	Frogadier	regular_model_not_found_in_sources			0	False
+658	Greninja	regular_model_not_found_in_sources			0	False
+664	Scatterbug	regular_model_not_found_in_sources			0	False
+665	Spewpa	regular_model_not_found_in_sources			0	False
+666	Vivillon	regular_model_not_found_in_sources			0	False
+667	Litleo	regular_model_not_found_in_sources			0	False
+668	Pyroar	regular_model_not_found_in_sources			0	False
+669	Flabébé	regular_model_not_found_in_sources			0	False
+670	Floette	regular_model_not_found_in_sources			0	False
+671	Florges	regular_model_not_found_in_sources			0	False
+672	Skiddo	regular_model_not_found_in_sources			0	False
+673	Gogoat	regular_model_not_found_in_sources			0	False
+676	Furfrou	regular_model_not_found_in_sources			0	False
+681	Aegislash	only_other_forms_found			0	False
+735	Gumshoos	only_other_forms_found			0	False
+746	Wishiwashi	only_other_forms_found			0	False
+774	Minior	only_other_forms_found			0	False
+775	Komala	regular_model_not_found_in_sources			0	False
+778	Mimikyu	only_other_forms_found			0	False
+779	Bruxish	regular_model_not_found_in_sources			0	False
+854	Sinistea	only_other_forms_found			0	False
+862	Obstagoon	only_other_forms_found			0	False
+864	Cursola	only_other_forms_found			0	False
+865	Sirfetch’d	only_other_forms_found			0	False
+875	Eiscue	only_other_forms_found			0	False
+877	Morpeko	only_other_forms_found			0	False
+889	Zamazenta	only_other_forms_found			0	False
+893	Zarude	only_other_forms_found			0	False
+898	Calyrex	only_other_forms_found			0	False
+899	Wyrdeer	regular_model_not_found_in_sources			0	False
+900	Kleavor	regular_model_not_found_in_sources			0	False
+905	Enamorus	regular_model_not_found_in_sources			0	False
+906	Sprigatito	regular_model_not_found_in_sources			0	False
+907	Floragato	regular_model_not_found_in_sources			0	False
+908	Meowscarada	regular_model_not_found_in_sources			0	False
+911	Skeledirge	regular_model_not_found_in_sources			0	False
+912	Quaxly	regular_model_not_found_in_sources			0	False
+915	Lechonk	regular_model_not_found_in_sources			0	False
+916	Oinkologne	regular_model_not_found_in_sources			0	False
+917	Tarountula	only_other_forms_found			0	False
+922	Pawmo	only_other_forms_found			0	False
+925	Maushold	only_other_forms_found			0	False
+928	Smoliv	regular_model_not_found_in_sources			0	False
+930	Arboliva	regular_model_not_found_in_sources			0	False
+931	Squawkabilly	regular_model_not_found_in_sources			0	False
+932	Nacli	regular_model_not_found_in_sources			0	False
+938	Tadbulb	only_other_forms_found			0	False
+939	Bellibolt	only_other_forms_found			0	False
+941	Kilowattrel	only_other_forms_found			0	False
+943	Mabosstiff	only_other_forms_found			0	False
+947	Brambleghast	regular_model_not_found_in_sources			0	False
+960	Wiglett	regular_model_not_found_in_sources			0	False
+961	Wugtrio	regular_model_not_found_in_sources			0	False
+962	Bombirdier	regular_model_not_found_in_sources			0	False
+963	Finizen	regular_model_not_found_in_sources			0	False
+972	Houndstone	only_other_forms_found			0	False
+973	Flamigo	only_other_forms_found			0	False
+975	Cetitan	only_other_forms_found			0	False
+979	Annihilape	only_other_forms_found			0	False
+980	Clodsire	only_other_forms_found			0	False
+981	Farigiraf	only_other_forms_found			0	False
+983	Kingambit	only_other_forms_found			0	False
+986	Brute Bonnet	only_other_forms_found			0	False
+987	Flutter Mane	regular_model_not_found_in_sources			0	False
+988	Slither Wing	only_other_forms_found			0	False
+991	Iron Bundle	regular_model_not_found_in_sources			0	False
+992	Iron Hands	regular_model_not_found_in_sources			0	False
+993	Iron Jugulis	regular_model_not_found_in_sources			0	False
+994	Iron Moth	regular_model_not_found_in_sources			0	False
+995	Iron Thorns	regular_model_not_found_in_sources			0	False
+996	Frigibax	regular_model_not_found_in_sources			0	False
+997	Arctibax	regular_model_not_found_in_sources			0	False
+998	Baxcalibur	regular_model_not_found_in_sources			0	False
+999	Gimmighoul	regular_model_not_found_in_sources			0	False
+1000	Gholdengo	regular_model_not_found_in_sources			0	False
+1003	Ting-Lu	only_other_forms_found			0	False
+1004	Chi-Yu	only_other_forms_found			0	False
+1005	Roaring Moon	only_other_forms_found			0	False
+1006	Iron Valiant	only_other_forms_found			0	False
+1008	Miraidon	regular_model_not_found_in_sources			0	False
+1009	Walking Wake	regular_model_not_found_in_sources			0	False
+1021	Raging Bolt	only_other_forms_found			0	False
