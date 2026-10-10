@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.language.jvm.tasks.ProcessResources
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
@@ -45,6 +46,11 @@ compose.desktop {
     }
 }
 
+
+// Embed only the tiny shared review checkpoint, never the giant model directory.
+tasks.named<ProcessResources>("processResources") {
+    from(rootProject.file("web/finished-pokemon.js"))
+}
 
 tasks.register<JavaExec>("verifyDesktop") {
     dependsOn(tasks.classes)
