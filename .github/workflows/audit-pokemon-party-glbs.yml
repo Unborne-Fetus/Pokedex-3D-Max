@@ -1,0 +1,44 @@
+name: Audit missing GLB candidates (pokemon-party)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/audit-pokemon-party-glbs.yml"
+      - "scripts/audit_pokemon_party_glbs.py"
+      - "data/reported-missing-models-2026-10-09.tsv"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Check animation and texture metadata for 122 missing species
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout scripts and 122-species list only
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts
+            data
+          sparse-checkout-cone-mode: true
+
+      - name: Python self-check
+        run: |
+          python3 -m py_compile scripts/audit_pokemon_party_glbs.py
+          python3 scripts/audit_pokemon_party_glbs.py --self-test
+
+      - name: Download and inspect every available candidate GLB
+        run: python3 -u scripts/audit_pokemon_party_glbs.py
+
+      - name: Save JSON, TSV, and summary reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pokemon-party-candidate-audit
+          path: .cache/pokemon-party-glb-audit/
+          retention-days: 14
+          if-no-files-found: warn
