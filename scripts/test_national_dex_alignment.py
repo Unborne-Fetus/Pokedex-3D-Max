@@ -68,8 +68,12 @@ for dex, record in enumerate(audit, 1):
         continue
     assert current.get("name", names[dex]) == names[dex], (dex, current.get("name"))
     assert "switch/" + f"{dex:04d}/regular.glb" in current["url"], dex
-    if current.get("sourceModelId"):
-        assert canonical(str(current["sourceGame"]), int(current["sourceModelId"])) == dex, dex
+    # Legacy imports stored only "modelId" (not "sourceModelId").
+    # Checking the latter alone allowed pm1012 to masquerade as National #1012.
+    recorded_source_id = current.get("sourceModelId", current.get("modelId"))
+    if recorded_source_id:
+        assert canonical(str(current["sourceGame"]), int(recorded_source_id)) == dex, (
+            dex, current["sourceGame"], recorded_source_id)
     elif dex in history:
         old = history[dex]
         source_id = int(re.search(r"pm(\d{4})", old["source"])[1])
