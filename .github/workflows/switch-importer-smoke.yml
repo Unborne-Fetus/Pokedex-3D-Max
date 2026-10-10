@@ -13,6 +13,11 @@ on:
       - "scripts/setup_all.ps1"
       - "setup-all.bat"
       - "import-switch-models.bat"
+      - "index.html"
+      - "web/app.js"
+      - "web/community-candidate-catalog.js"
+      - "web/styles.css"
+      - "scripts/test_community_candidate_catalog.js"
       - ".github/workflows/switch-importer-smoke.yml"
   pull_request:
     branches: [main]
@@ -25,6 +30,11 @@ on:
       - "scripts/setup_all.ps1"
       - "setup-all.bat"
       - "import-switch-models.bat"
+      - "index.html"
+      - "web/app.js"
+      - "web/community-candidate-catalog.js"
+      - "web/styles.css"
+      - "scripts/test_community_candidate_catalog.js"
       - ".github/workflows/switch-importer-smoke.yml"
   workflow_dispatch:
 
@@ -53,6 +63,11 @@ jobs:
           python scripts/test_switch_materials.py
           python scripts/verify_switch_baseline.py --self-test
           python scripts/test_sync_switch_web.py
+
+      - name: Verify community preview GLB metadata and safe Switch priority
+        run: |
+          node scripts/test_community_candidate_catalog.js
+          node scripts/check_shared_app.js
 
       - name: Parse PowerShell setup
         shell: pwsh
