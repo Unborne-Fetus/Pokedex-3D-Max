@@ -1,0 +1,33 @@
+name: Research final 13 Pokémon 3D sources
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/research-final-13.yml"
+      - "scripts/research_final_13.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts
+          sparse-checkout-cone-mode: true
+      - name: Source metadata and hosted 3D viewer research
+        run: python3 -u scripts/research_final_13.py
+      - name: Save source links, animation flags, and licenses
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-13-3d-source-research
+          path: .cache/final-13-research/research.json
+          if-no-files-found: warn
+          retention-days: 14
