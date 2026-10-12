@@ -6,6 +6,11 @@ on:
     paths:
       - 'scripts/import_gfpak_zip.py'
       - 'scripts/test_gfpak_zip_import.py'
+      - 'scripts/test_gfpak_browser_zip.js'
+      - 'web/gfpak-zip-import.js'
+      - 'web/local-switch-catalog.js'
+      - 'web/app.js'
+      - 'index.html'
       - 'scripts/import_switch_game_assets.py'
       - 'data/sv_model_dex.tsv'
       - 'data/swsh_model_dex.tsv'
@@ -30,3 +35,8 @@ jobs:
         run: python -m py_compile scripts/import_gfpak_zip.py scripts/test_gfpak_zip_import.py
       - name: Verify GFPAK archive compatibility and safe import behavior
         run: python scripts/test_gfpak_zip_import.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test offline browser ZIP preview
+        run: node scripts/test_gfpak_browser_zip.js
