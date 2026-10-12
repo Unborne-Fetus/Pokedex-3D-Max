@@ -1,0 +1,32 @@
+name: GFPAK Pokémon ZIP Import
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/import_gfpak_zip.py'
+      - 'scripts/test_gfpak_zip_import.py'
+      - 'scripts/import_switch_game_assets.py'
+      - 'data/sv_model_dex.tsv'
+      - 'data/swsh_model_dex.tsv'
+      - '.github/workflows/gfpak-zip-import.yml'
+  pull_request:
+    paths:
+      - 'scripts/import_gfpak_zip.py'
+      - 'scripts/test_gfpak_zip_import.py'
+      - 'scripts/import_switch_game_assets.py'
+      - '.github/workflows/gfpak-zip-import.yml'
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile importer
+        run: python -m py_compile scripts/import_gfpak_zip.py scripts/test_gfpak_zip_import.py
+      - name: Verify GFPAK archive compatibility and safe import behavior
+        run: python scripts/test_gfpak_zip_import.py
