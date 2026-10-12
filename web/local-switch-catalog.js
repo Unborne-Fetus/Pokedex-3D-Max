@@ -137,5 +137,5 @@
     };
   }
 
-  window.POKEDEX3D_LOCAL_SWITCH = Object.freeze({ fromFiles, buildManifest });
+  window.POKEDEX3D_LOCAL_SWITCH = Object.freeze({ fromFiles, buildManifest, inspectGlb });
 })();
