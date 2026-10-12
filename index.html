@@ -50,6 +50,8 @@
     <aside class="sidebar">
       <div class="browser-folder-picker">
         <button id="chooseLocalModels" type="button">Open Switch model folder</button>
+        <button id="importGfpakZip" type="button">Import GFPAK Pokémon ZIP</button>
+        <input id="gfpakZipFile" type="file" accept=".zip,application/zip" hidden aria-label="GFPAK Pokémon ZIP" />
         <button id="exportModelManifest" type="button" disabled title="Open a folder first, then download its verified inventory">Export model catalog</button>
         <input id="localModelsFolder" type="file" webkitdirectory directory multiple hidden aria-label="Choose validated Switch model folder" />
         <p id="folderStatus">Works entirely in your browser. Models stay on your device.</p>
@@ -152,11 +154,12 @@
   <script src="web/finished-pokemon.js?v=1"></script>
   <script src="web/models/switch-manifest.js?v=11" onerror="this.remove()"></script>
   <script defer src="web/local-switch-catalog.js?v=3"></script>
+  <script defer src="web/gfpak-zip-import.js?v=1"></script>
   <script defer src="web/models/github-inventory.js?v=4"></script>
   <script defer src="web/community-candidate-catalog.js?v=1"></script>
   <script defer src="web/remote-switch-catalog.js?v=8"></script>
   <script defer src="web/species-texture-repairs.js?v=7"></script>
-  <script defer src="web/app.js?v=59"></script>
+  <script defer src="web/app.js?v=60"></script>
 </body>
 </html>
 
