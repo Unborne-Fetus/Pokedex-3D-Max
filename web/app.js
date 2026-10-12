@@ -23,6 +23,8 @@ const closeRepairBtn = document.querySelector("#closeRepair");
 const chooseLocalModelsBtn = document.querySelector("#chooseLocalModels");
 const exportModelManifestBtn = document.querySelector("#exportModelManifest");
 const localModelsFolder = document.querySelector("#localModelsFolder");
+const importGfpakBtn = document.querySelector("#importGfpakZip");
+const gfpakZipFile = document.querySelector("#gfpakZipFile");
 const folderStatus = document.querySelector("#folderStatus");
 const modelCoverageCountEl = document.querySelector("#modelCoverageCount");
 const modelCoverageDetailEl = document.querySelector("#modelCoverageDetail");
@@ -901,6 +903,39 @@ exportModelManifestBtn.addEventListener("click", () => {
   setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
   folderStatus.textContent = "Downloaded a catalog for " + catalog.models + " models. You can upload the JSON to your GitHub model repository; no Actions or billing required.";
 });
+// Browser-only preview. Permanent installation still uses the Python launcher;
+ // the selected ZIP never leaves this browser.
+importGfpakBtn.addEventListener("click", () => gfpakZipFile.click());
+gfpakZipFile.addEventListener("change", async () => {
+  const file = gfpakZipFile.files?.[0];
+  if (!file) return;
+  importGfpakBtn.disabled = true;
+  folderStatus.textContent = "Checking GFPAK Pokémon ZIP, identity, textures and idle…";
+  try {
+    const imported = await window.POKEDEX3D_GFPAK_ZIP.read(file);
+    // Session-only preview takes priority over the same species' published
+    // model. The remote catalog and all files on disk remain untouched.
+    localFolderActive = true;
+    models = withMissingSpeciesEntries([imported, ...models.filter(model =>
+      Number(model.dex) !== imported.dex)]);
+    window.POKEDEX3D_MODELS = models;
+    restoreAnimationCoverage();
+    statusEl.textContent = catalogCoverageText(models);
+    renderCoverage();
+    searchEl.value = "";
+    filtered = [...models];
+    renderList();
+    selectModel(filtered.findIndex(model => Number(model.dex) === imported.dex));
+    folderStatus.textContent = imported.name + " (#" + String(imported.dex).padStart(4, "0") +
+      ") loaded from GFPAK ZIP for this browser session. For permanent Windows installation, use import-gfpak-pokemon.bat.";
+  } catch (error) {
+    folderStatus.textContent = "GFPAK import rejected: " + String(error.message || error);
+  } finally {
+    importGfpakBtn.disabled = false;
+    gfpakZipFile.value = "";
+  }
+});
+
 chooseLocalModelsBtn.addEventListener("click", () => localModelsFolder.click());
 localModelsFolder.addEventListener("change", async () => {
   if (!localModelsFolder.files?.length) return;
