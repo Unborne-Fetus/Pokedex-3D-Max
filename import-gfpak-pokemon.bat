@@ -32,7 +32,7 @@ if not errorlevel 1 (
 set "EXITCODE=%ERRORLEVEL%"
 echo.
 if "%EXITCODE%"=="0" (
-  echo Import succeeded. Refresh Pok edex 3D Max to see the model.
+  echo Import succeeded. Refresh Pokedex 3D Max to see the model.
 ) else (
   echo Import failed. Check the message above; existing models were not intentionally replaced.
   echo Use --game sv, --game za, etc. if GFPAK couldn't identify the source game.
