@@ -117,7 +117,11 @@
       <div class="viewer-controls">
         <button id="resetCamera" type="button">Reset camera</button>
         <button id="toggleRotate" type="button">Auto-rotate: Off</button>
-        <button id="toggleIdleBreaks" type="button">Idle breaks: On</button>
+        <label class="animation-picker" for="animationSelect">Animation
+          <select id="animationSelect" aria-label="Choose animation" disabled>
+            <option value="">Loading…</option>
+          </select>
+        </label>
         <button id="repairTextures" type="button">Repair textures</button>
       </div>
 
@@ -154,12 +158,12 @@
   <script src="web/finished-pokemon.js?v=1"></script>
   <script src="web/models/switch-manifest.js?v=11" onerror="this.remove()"></script>
   <script defer src="web/local-switch-catalog.js?v=3"></script>
-  <script defer src="web/gfpak-zip-import.js?v=1"></script>
+  <script defer src="web/gfpak-zip-import.js?v=2"></script>
   <script defer src="web/models/github-inventory.js?v=4"></script>
   <script defer src="web/community-candidate-catalog.js?v=1"></script>
   <script defer src="web/remote-switch-catalog.js?v=8"></script>
   <script defer src="web/species-texture-repairs.js?v=7"></script>
-  <script defer src="web/app.js?v=60"></script>
+  <script defer src="web/app.js?v=61"></script>
 </body>
 </html>
 

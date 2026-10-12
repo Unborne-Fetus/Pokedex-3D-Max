@@ -81,6 +81,9 @@ button, select {
   cursor: pointer;
 }
 button:hover, select:hover { background: #1a2b45; }
+.animation-picker { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+#animationSelect { width: clamp(130px, 16vw, 240px); max-width: 100%; }
+#animationSelect:disabled { opacity: .65; cursor: not-allowed; }
 
 .pokemon-list {
   margin-top: 12px;

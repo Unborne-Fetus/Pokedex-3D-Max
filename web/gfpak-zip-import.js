@@ -116,7 +116,7 @@
     const idle = clips.find(name => /idle|wait|stand|breath|rest|fight[_ -]?a/i.test(name) &&
       !/attack|damage|faint|death|down|bind|t[-_ ]?pose/i.test(name));
     if (!idle) throw Error('No verified idle animation; existing Pokédex models were preserved');
-    model.animations = clips.map(name => ({name}));
+    model.animations = clips;
     model.idleAnimation = idle;
     model.idleBreaks = [];
     return model;

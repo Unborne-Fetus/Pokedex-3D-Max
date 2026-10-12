@@ -13,7 +13,7 @@ const prevBtn = document.querySelector("#prevBtn");
 const nextBtn = document.querySelector("#nextBtn");
 const resetCameraBtn = document.querySelector("#resetCamera");
 const toggleRotateBtn = document.querySelector("#toggleRotate");
-const toggleIdleBreaksBtn = document.querySelector("#toggleIdleBreaks");
+const animationSelect = document.querySelector("#animationSelect");
 const repairTexturesBtn = document.querySelector("#repairTextures");
 const repairPanel = document.querySelector("#repairPanel");
 const repairTitle = document.querySelector("#repairTitle");
@@ -238,10 +238,6 @@ let filtered = [...models];
 let selectedIndex = 0;
 let currentModel = null;
 let autoRotate = false;
-let idleBreaksEnabled = true;
-let idleAnimation = null;
-let playingBreak = false;
-let breakTimer = null;
 let loadTimer = null;
 let repairPollTimer = null;
 let repairInProgress = false;
@@ -271,13 +267,6 @@ function escapeHtml(value) {
 function prettyName(model) {
   const known = String(window.POKEDEX3D_NAMES?.[model?.dex] || model?.name || "").trim();
   return known || ("#" + String(model?.dex || 0).padStart(4, "0"));
-}
-
-function clearBreakTimer() {
-  if (breakTimer !== null) {
-    clearTimeout(breakTimer);
-    breakTimer = null;
-  }
 }
 
 function clearLoadTimer() {
@@ -318,50 +307,49 @@ function chooseIdle(model, animations) {
   return ranked.length && ranked[0].score >= 30 ? ranked[0].name : null;
 }
 
-function startIdle() {
-  const animations = availableAnimations();
-  idleAnimation = chooseIdle(currentModel, animations);
-  playingBreak = false;
+// A single animation player is shared by local GFPAK ZIPs and published GLBs.
+// Only expose clips the 3D viewer actually decoded, not names in old metadata.
+function resetAnimationSelect(label = "Loading…") {
+  animationSelect.replaceChildren();
+  const option = document.createElement("option");
+  option.value = "";
+  option.textContent = label;
+  animationSelect.appendChild(option);
+  animationSelect.disabled = true;
+}
 
-  if (!idleAnimation) {
-    messageEl.textContent = currentModel?.communityCandidate ?
-      "This external preview did not expose a valid idle animation." :
-      "Switch model loaded, but no verified idle animation is available.";
-    messageEl.classList.remove("hidden");
-    return;
-  }
-
-  viewer.animationName = idleAnimation;
+function playAnimation(name) {
+  if (!name || !availableAnimations().includes(name)) return;
+  viewer.animationName = name;
   viewer.currentTime = 0;
-  viewer.play();
+  viewer.play(); // Loop the selected clip until the user chooses another one.
+  messageEl.classList.add("hidden");
 }
 
-function verifiedBreaks() {
-  if (!currentModel) return [];
-  const available = new Set(availableAnimations());
-  return (Array.isArray(currentModel.idleBreaks) ? currentModel.idleBreaks : [])
-    .filter(name => name && name !== idleAnimation && available.has(name));
+function setupAnimationSelect() {
+  const animations = [...new Set(availableAnimations())];
+  if (!animations.length) {
+    resetAnimationSelect("No animations");
+    messageEl.textContent = "This 3D model does not contain any playable animations.";
+    messageEl.classList.remove("hidden");
+    return false;
+  }
+  const idle = chooseIdle(currentModel, animations);
+  const initial = idle || animations[0];
+  animationSelect.replaceChildren();
+  for (const name of animations) {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    animationSelect.appendChild(option);
+  }
+  animationSelect.value = initial;
+  animationSelect.disabled = false;
+  playAnimation(initial);
+  return Boolean(idle);
 }
 
-function scheduleIdleBreak() {
-  clearBreakTimer();
-  if (!idleBreaksEnabled || document.hidden || !idleAnimation) return;
-
-  const breaks = verifiedBreaks();
-  if (!breaks.length) return;
-
-  breakTimer = setTimeout(() => {
-    if (!idleBreaksEnabled || document.hidden || !viewer.loaded) {
-      scheduleIdleBreak();
-      return;
-    }
-    const clip = breaks[Math.floor(Math.random() * breaks.length)];
-    playingBreak = true;
-    viewer.animationName = clip;
-    viewer.currentTime = 0;
-    viewer.play({ repetitions: 1 });
-  }, 9000 + Math.floor(Math.random() * 6000));
-}
+animationSelect.addEventListener("change", () => playAnimation(animationSelect.value));
 
 // Fit every Switch Pokémon independently. A fixed orbit percentage makes
 // differently proportioned or animated models appear tiny or badly cropped.
@@ -520,11 +508,9 @@ function renderList() {
 }
 
 function loadModel(model) {
-  clearBreakTimer();
   clearLoadTimer();
   clearCameraFitTimer();
-  playingBreak = false;
-  idleAnimation = null;
+  resetAnimationSelect();
   currentModel = model;
   ++loadSequence;
   if (remoteAbort) {
@@ -690,36 +676,18 @@ function applyFilter(loadFirst = true) {
 
 viewer.addEventListener("load", () => {
   clearLoadTimer();
-  startIdle();
-  noteAnimationInspection(currentModel, Boolean(idleAnimation));
+  const hasIdle = setupAnimationSelect();
+  noteAnimationInspection(currentModel, hasIdle);
   scheduleCameraFit();
-  if (idleAnimation) {
-    messageEl.classList.add("hidden");
-    scheduleIdleBreak();
-  }
 });
 
 viewer.addEventListener("error", () => {
   clearLoadTimer();
-  clearBreakTimer();
+  resetAnimationSelect("Unavailable");
   messageEl.textContent = currentModel?.communityCandidate ?
     "The external community preview could not render. The existing Switch catalog is untouched." :
     "Switch model could not be rendered. No alternate model source was used.";
   messageEl.classList.remove("hidden");
-});
-
-viewer.addEventListener("finished", () => {
-  if (!playingBreak) return;
-  startIdle();
-  scheduleIdleBreak();
-});
-
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    clearBreakTimer();
-  } else {
-    scheduleIdleBreak();
-  }
 });
 
 searchEl.addEventListener("input", () => applyFilter(true));
@@ -1006,14 +974,6 @@ toggleRotateBtn.addEventListener("click", () => {
   toggleRotateBtn.textContent = "Auto-rotate: " + (autoRotate ? "On" : "Off");
 });
 
-toggleIdleBreaksBtn.addEventListener("click", () => {
-  idleBreaksEnabled = !idleBreaksEnabled;
-  toggleIdleBreaksBtn.textContent = "Idle breaks: " + (idleBreaksEnabled ? "On" : "Off");
-  clearBreakTimer();
-  if (!playingBreak) startIdle();
-  if (idleBreaksEnabled) scheduleIdleBreak();
-});
-
 restoreAnimationCoverage();
 statusEl.textContent = catalogCoverageText(models);
 renderCoverage();
@@ -1024,6 +984,7 @@ if (models.length) {
 } else {
   formSelect.replaceChildren();
   formSelect.disabled = true;
+  resetAnimationSelect("No animations");
   messageEl.textContent = "Open a folder containing verified Switch GLBs, or use a site with published model assets.";
   messageEl.classList.remove("hidden");
 }
