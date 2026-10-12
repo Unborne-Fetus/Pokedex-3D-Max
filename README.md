@@ -208,7 +208,7 @@ model inventory and GLBs without GitHub Actions, paid services, or an EXE.
 
 ## Import from GFPAK Open (Blender-free ZIP bridge)
 
-The new `import-gfpak-pokemon.bat` accepts the **Export Pokémon** ZIP from GFPAK Open. Drag the ZIP onto the BAT file, or double-click the BAT and select a ZIP with the Windows file picker. Its importer verifies the model's **actual** game-internal species number, regular form, embedded GLB textures and animation before writing it into the Switch catalog and offline desktop model directory. It does not call Blender.
+The **browser viewer** also has **Import GFPAK Pokémon ZIP**, which opens a compatible ZIP as a temporary local preview without uploading anything. Browser imports are not installed permanently and disappear when you reload; use the Windows importer below to install into the local model catalog.\n\nThe new `import-gfpak-pokemon.bat` accepts the **Export Pokémon** ZIP from GFPAK Open. Drag the ZIP onto the BAT file, or double-click the BAT and select a ZIP with the Windows file picker. Its importer verifies the model's **actual** game-internal species number, regular form, embedded GLB textures and animation before writing it into the Switch catalog and offline desktop model directory. It does not call Blender.
 
 For a ZIP from an unknown game profile, specify the correct source game:
 
