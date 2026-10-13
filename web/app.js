@@ -163,7 +163,7 @@ function coverageStatistics(catalog, inspected = inspectedIdleDex, confirmed = c
     previews: catalog.filter(model => model.communityCandidate && !model.missingModel).length,
     inspected: [...inspected].filter(dex => available.has(dex)).length,
     animated: [...confirmed].filter(dex => available.has(dex)).length,
-    finished: finishedDex.size,
+    finished: [...finishedDex].filter(dex => available.has(dex)).length,
   };
 }
 
@@ -567,7 +567,7 @@ function renderList() {
       '<span><span class="name">' + escapeHtml(prettyName(model)) + "</span>" +
       (model.missingModel ? '<span class="form"> · Model missing</span>' :
         model.communityCandidate ? '<span class="form"> · External preview</span>' : '') +
-      (finishedDex.has(Number(model.dex)) ? '<span class="form"> · ✓ Finished</span>' : '') + "</span>";
+      (!model.missingModel && finishedDex.has(Number(model.dex)) ? '<span class="form"> · ✓ Finished</span>' : '') + "</span>";
     button.addEventListener("click", () => selectModel(index));
     fragment.appendChild(button);
   });
@@ -726,7 +726,7 @@ function selectModel(index, remember = true) {
   formEl.textContent = model.communityCandidate ?
     "External community preview · " + model.variantLabel + " · Not finished" :
     (model.missingModel ? "Model not uploaded" : "Regular") +
-      (finishedDex.has(Number(model.dex)) ? " · Finished" : "");
+      (!model.missingModel && finishedDex.has(Number(model.dex)) ? " · Finished" : "");
   updateCandidateSourceLink(model);
   populateFormSelect(model);
   loadModel(model);
