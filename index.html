@@ -54,7 +54,19 @@
         <input id="gfpakZipFile" type="file" accept=".zip,application/zip" hidden aria-label="GFPAK Pokémon ZIP" />
         <button id="exportModelManifest" type="button" disabled title="Open a folder first, then download its verified inventory">Export model catalog</button>
         <input id="localModelsFolder" type="file" webkitdirectory directory multiple hidden aria-label="Choose validated Switch model folder" />
-        <p id="folderStatus">Works entirely in your browser. Models stay on your device.</p>
+        <p id="folderStatus">Imported models stay locally until they are published to GitHub.</p>
+        <section class="github-storage-panel" aria-label="Temporary GitHub model storage">
+          <strong>GitHub model storage (temporary)</strong>
+          <p>Everyone can view published models. Only the repository owner can upload.</p>
+          <label for="githubToken">GitHub fine-grained access token</label>
+          <input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…" />
+          <div class="github-storage-actions">
+            <button id="connectGitHub" type="button">Connect GitHub</button>
+            <button id="disconnectGitHub" type="button" hidden>Disconnect</button>
+          </div>
+          <button id="publishSelectedGitHub" type="button" disabled>Save selected model to GitHub</button>
+          <small id="githubStatus" role="status" aria-live="polite">Public models load automatically. Publishing requires your GitHub token.</small>
+        </section>
       </div>
       <input id="search" type="search" placeholder="Search Pokémon or #" autocomplete="off" />
       <div class="toolbar">
@@ -163,7 +175,8 @@
   <script defer src="web/community-candidate-catalog.js?v=1"></script>
   <script defer src="web/remote-switch-catalog.js?v=8"></script>
   <script defer src="web/species-texture-repairs.js?v=7"></script>
-  <script defer src="web/app.js?v=66"></script>
+  <script defer src="web/github-model-storage.js?v=1"></script>
+  <script defer src="web/app.js?v=67"></script>
 </body>
 </html>
 
