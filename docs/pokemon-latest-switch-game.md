@@ -1,73 +1,30 @@
-# All 1,025 Pokémon — latest appearance among five Switch game families
+# All 1,025 Pokémon — most recent appearance among six Switch game families
 
-Scope: National Pokédex species #0001–#1025; one entry per species (not alternate forms or Mega Evolutions). A game family includes both versions and all released DLC. Each Pokémon goes in the **most recently released** applicable family, in this priority: **PLZA > SV > PLA > SwSh > Let's Go**. Pokémon HOME/event/transfer-only compatibility is considered; the final section explicitly identifies species absent from all five families. Listed within each group by National Dex number.
+Each National Pokédex species (#0001–#1025) appears **exactly once**, in the newest compatible game family. Games are ordered by release: **Let's Go → Sword/Shield → Brilliant Diamond/Shining Pearl → Legends: Arceus → Scarlet/Violet → Legends: Z-A**. DLC and transfer-only compatibility count. BDSP supports all 493 species of Generations 1–4, including Grand Underground and National Dex encounters. Alternate forms and Mega Evolutions aren't separate entries.
 
-**Important:** “Latest appearance” is not “where its model was sourced from” or “where it first appeared.” Transfer-only entries were supplemented beyond regional Pokédexes.
+Classification is by where a Pokémon is available most recently, **not which game its 3D model was exported from**. Empty categories are retained so all six games remain visible.
 
-Source roster: [pkDex game datasets](https://github.com/Insektaure/pkDex/tree/main/resources/data) including Z-A Mega Dimension, [Pokémon availability](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_availability), [Scarlet/Violet transfer-only](https://www.serebii.net/scarletviolet/transferonly.shtml). This is a game-availability classification, not a guarantee that a particular game's model/animation archive has that species.
+## Counts
 
-## Let's Go (5)
+- Let's Go: 0
+- SwSh: 101
+- BDSP: 68
+- PLA: 55
+- SV: 437
+- PLZA: 364
+- None of these six: 0
 
-- #0019 Rattata
-- #0020 Raticate
-- #0021 Spearow
-- #0022 Fearow
-- #0151 Mew
+**Total: 1,025**
 
-## SwSh (153)
+Sources: [pkDex game datasets](https://github.com/Insektaure/pkDex/tree/main/resources/data), [Pokémon Brilliant Diamond/Shining Pearl National Pokédex](https://www.serebii.net/brilliantdiamondshiningpearl/nationalpokedex.shtml), [Pokémon availability](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_availability).
 
-- #0010 Caterpie
-- #0011 Metapod
-- #0012 Butterfree
-- #0029 Nidoran♀
-- #0030 Nidorina
-- #0031 Nidoqueen
-- #0032 Nidoran♂
-- #0033 Nidorino
-- #0034 Nidoking
-- #0098 Krabby
-- #0099 Kingler
-- #0118 Goldeen
-- #0119 Seaking
-- #0124 Jynx
-- #0138 Omanyte
-- #0139 Omastar
-- #0140 Kabuto
-- #0141 Kabutops
-- #0144 Articuno
-- #0145 Zapdos
-- #0146 Moltres
-- #0177 Natu
-- #0178 Xatu
-- #0202 Wobbuffet
-- #0213 Shuckle
-- #0222 Corsola
-- #0238 Smoochum
-- #0241 Miltank
-- #0251 Celebi
-- #0263 Zigzagoon
-- #0264 Linoone
-- #0290 Nincada
-- #0291 Ninjask
-- #0292 Shedinja
-- #0293 Whismur
-- #0294 Loudred
-- #0295 Exploud
-- #0320 Wailmer
-- #0321 Wailord
-- #0337 Lunatone
-- #0338 Solrock
-- #0343 Baltoy
-- #0344 Claydol
-- #0345 Lileep
-- #0346 Cradily
-- #0347 Anorith
-- #0348 Armaldo
-- #0360 Wynaut
-- #0369 Relicanth
-- #0377 Regirock
-- #0378 Regice
-- #0379 Registeel
+
+## Let's Go (0)
+
+
+
+## SwSh (101)
+
 - #0494 Victini
 - #0506 Lillipup
 - #0507 Herdier
@@ -169,6 +126,77 @@ Source roster: [pkDex game datasets](https://github.com/Insektaure/pkDex/tree/ma
 - #0896 Glastrier
 - #0897 Spectrier
 - #0898 Calyrex
+
+## BDSP (68)
+
+- #0010 Caterpie
+- #0011 Metapod
+- #0012 Butterfree
+- #0019 Rattata
+- #0020 Raticate
+- #0021 Spearow
+- #0022 Fearow
+- #0029 Nidoran♀
+- #0030 Nidorina
+- #0031 Nidoqueen
+- #0032 Nidoran♂
+- #0033 Nidorino
+- #0034 Nidoking
+- #0098 Krabby
+- #0099 Kingler
+- #0118 Goldeen
+- #0119 Seaking
+- #0124 Jynx
+- #0138 Omanyte
+- #0139 Omastar
+- #0140 Kabuto
+- #0141 Kabutops
+- #0144 Articuno
+- #0145 Zapdos
+- #0146 Moltres
+- #0151 Mew
+- #0165 Ledyba
+- #0166 Ledian
+- #0177 Natu
+- #0178 Xatu
+- #0202 Wobbuffet
+- #0213 Shuckle
+- #0222 Corsola
+- #0238 Smoochum
+- #0241 Miltank
+- #0251 Celebi
+- #0263 Zigzagoon
+- #0264 Linoone
+- #0276 Taillow
+- #0277 Swellow
+- #0290 Nincada
+- #0291 Ninjask
+- #0292 Shedinja
+- #0293 Whismur
+- #0294 Loudred
+- #0295 Exploud
+- #0300 Skitty
+- #0301 Delcatty
+- #0320 Wailmer
+- #0321 Wailord
+- #0327 Spinda
+- #0337 Lunatone
+- #0338 Solrock
+- #0343 Baltoy
+- #0344 Claydol
+- #0345 Lileep
+- #0346 Cradily
+- #0347 Anorith
+- #0348 Armaldo
+- #0351 Castform
+- #0360 Wynaut
+- #0366 Clamperl
+- #0367 Huntail
+- #0368 Gorebyss
+- #0369 Relicanth
+- #0377 Regirock
+- #0378 Regice
+- #0379 Registeel
 
 ## PLA (55)
 
@@ -1035,17 +1063,6 @@ Source roster: [pkDex game datasets](https://github.com/Insektaure/pkDex/tree/ma
 - #0999 Gimmighoul
 - #1000 Gholdengo
 
-## None of these five (11)
+## None of these six (0)
 
-- #0165 Ledyba
-- #0166 Ledian
-- #0276 Taillow
-- #0277 Swellow
-- #0300 Skitty
-- #0301 Delcatty
-- #0327 Spinda
-- #0351 Castform
-- #0366 Clamperl
-- #0367 Huntail
-- #0368 Gorebyss
 
