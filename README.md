@@ -108,7 +108,7 @@ files. The repair button therefore requires the local `launch-index.bat` server.
 After the repair finishes successfully, refresh the browser index to load the
 new textures. It does not build, install, or require the native Windows EXE.
 
-The browser viewer reads only `web/models/switch-manifest.js`. It has no CDN, PokeMiners, generic-model, or battle-engine fallback path.
+The browser viewer uses its manually imported regular GLBs, including the isolated temporary GitHub imports catalog described below. It has no PokeMiners, generic-model, or battle-engine fallback path.
 
 ## Public GitHub-only website — no billing, no commands
 
