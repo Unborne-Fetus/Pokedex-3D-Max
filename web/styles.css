@@ -85,6 +85,36 @@ button:hover, select:hover { background: #1a2b45; }
 #animationSelect { width: clamp(130px, 16vw, 240px); max-width: 100%; }
 #animationSelect:disabled { opacity: .65; cursor: not-allowed; }
 
+.github-storage-panel {
+  display: grid;
+  gap: 7px;
+  margin: 11px 0 9px;
+  padding: 12px;
+  border: 1px solid #31405a;
+  border-radius: 12px;
+  background: #101c2c;
+}
+.github-storage-panel strong { font-size: .92rem; }
+.github-storage-panel p, .github-storage-panel small {
+  margin: 0;
+  color: #b8c8dc;
+  font-size: .78rem;
+  overflow-wrap: anywhere;
+}
+.github-storage-panel label { font-size: .78rem; color: #dbe8fa; }
+.github-storage-panel input {
+  min-width: 0;
+  width: 100%;
+  color: #fff;
+  background: #081626;
+  border: 1px solid #3b506c;
+  border-radius: 8px;
+  padding: 9px 10px;
+}
+.github-storage-actions { display: flex; gap: 7px; }
+.github-storage-panel button:disabled { cursor: not-allowed; opacity: .55; }
+.github-storage-panel button[hidden], .github-storage-panel input[hidden] { display: none; }
+
 .pokemon-list {
   margin-top: 12px;
   overflow-y: auto;
