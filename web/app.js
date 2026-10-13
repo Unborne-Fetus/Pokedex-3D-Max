@@ -230,7 +230,7 @@ const installedSwitchModels = (Array.isArray(window.POKEDEX3D_SWITCH_MODELS)
   .filter(model => String(model?.form || "regular").toLowerCase() === "regular")
   .filter(model => String(model?.url || "").replaceAll("\\", "/").includes("/switch/"));
 const bundledSwitchModels = window.POKEDEX3D_REMOTE_SWITCH?.bundled?.() || [];
-let models = withMissingSpeciesEntries([...installedSwitchModels, ...bundledSwitchModels]);
+let models = withMissingSpeciesEntries([], false); // Manual rebuild: no preloaded Switch models.
 
 window.POKEDEX3D_MODELS = models;
 
@@ -895,6 +895,7 @@ if (isLocalIndexServer()) {
 // static page. The configured source is disabled while its GitHub repo remains
 // private; visitors are never asked for personal GitHub credentials.
 window.addEventListener("pokedex3d:remote-switch-catalog", event => {
+  return; // Manual catalog: never reinstate legacy remote models.
   if (localFolderActive) return;
   const incoming = Array.isArray(event.detail?.models) ? event.detail.models : [];
   if (!incoming.length) return;
@@ -964,7 +965,7 @@ gfpakZipFile.addEventListener("change", async () => {
     // No uploaded or on-disk models are overwritten.
     localFolderActive = true;
     models = withMissingSpeciesEntries([imported, ...models.filter(model =>
-      Number(model.dex) !== imported.dex)]);
+      Number(model.dex) !== imported.dex)], false);
     window.POKEDEX3D_MODELS = models;
     restoreAnimationCoverage();
     statusEl.textContent = catalogCoverageText(models);
@@ -1073,6 +1074,21 @@ if (models.length) {
 
 async function restoreSavedGfpakModels() {
   try {
+    // One-time reset: discard old browser imports while keeping imports made
+    // after this baseline reset persistent across all later page reloads.
+    const resetKey = "pokedex3d-manual-rebuild-20261012";
+    if (localStorage.getItem(resetKey) !== "done") {
+      const db = await gfpakDB();
+      try {
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction("models", "readwrite");
+          tx.objectStore("models").clear();
+          tx.oncomplete = resolve;
+          tx.onerror = () => reject(tx.error);
+        });
+      } finally { db.close(); }
+      localStorage.setItem(resetKey, "done");
+    }
     const rows = await gfpakStorage("load");
     const restored = [];
     for (const row of rows) {
@@ -1095,7 +1111,7 @@ async function restoreSavedGfpakModels() {
     if (!restored.length) return;
     const selectedDex = currentModel?.dex;
     models = withMissingSpeciesEntries([...restored, ...models.filter(model =>
-      !restored.some(saved => saved.dex === Number(model.dex)))]);
+      !restored.some(saved => saved.dex === Number(model.dex)))], false);
     window.POKEDEX3D_MODELS = models;
     restoreAnimationCoverage();
     statusEl.textContent = catalogCoverageText(models);
