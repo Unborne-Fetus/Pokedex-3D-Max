@@ -234,6 +234,62 @@ let models = withMissingSpeciesEntries([...installedSwitchModels, ...bundledSwit
 
 window.POKEDEX3D_MODELS = models;
 
+
+const gfpakOrientationSelect = document.createElement("select");
+gfpakOrientationSelect.id = "gfpakOrientation";
+gfpakOrientationSelect.setAttribute("aria-label", "GFPAK model rotation");
+for (const [value, label] of [
+  ["0deg 90deg 0deg", "Original"], ["90deg 90deg 0deg", "X +90°"],
+  ["-90deg 90deg 0deg", "X -90°"], ["180deg 90deg 0deg", "X 180°"],
+  ["0deg 0deg 0deg", "Y 0°"], ["0deg 180deg 0deg", "Y 180°"]
+]) {
+  const option = document.createElement("option");
+  option.value = value; option.textContent = label;
+  gfpakOrientationSelect.appendChild(option);
+}
+const gfpakOrientationLabel = document.createElement("label");
+gfpakOrientationLabel.className = "animation-picker";
+gfpakOrientationLabel.hidden = true;
+gfpakOrientationLabel.textContent = "Imported model rotation ";
+gfpakOrientationLabel.appendChild(gfpakOrientationSelect);
+animationSelect.closest("label")?.insertAdjacentElement("afterend", gfpakOrientationLabel);
+
+function gfpakDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("pokedex3d-gfpak-imports", 1);
+    request.onupgradeneeded = () => request.result.createObjectStore("models", { keyPath: "dex" });
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+async function gfpakStorage(mode, value) {
+  const db = await gfpakDB();
+  try {
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction("models", mode === "save" ? "readwrite" : "readonly");
+      const request = mode === "save"
+        ? tx.objectStore("models").put({
+            dex: value.dex, name: value.name, sourceGame: value.sourceGame,
+            sourceModelId: value.sourceModelId, file: value.file,
+            orientation: value.orientation
+          })
+        : tx.objectStore("models").getAll();
+      let result;
+      request.onsuccess = () => { result = request.result; };
+      tx.oncomplete = () => resolve(result);
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+  } finally { db.close(); }
+}
+gfpakOrientationSelect.addEventListener("change", async () => {
+  if (!currentModel?.gfpakImport) return;
+  currentModel.orientation = gfpakOrientationSelect.value;
+  viewer.orientation = currentModel.orientation;
+  try { await gfpakStorage("save", currentModel); }
+  catch (error) { folderStatus.textContent = "Rotation works but could not save: " + error; }
+});
+
 let filtered = [...models];
 let selectedIndex = 0;
 let currentModel = null;
@@ -647,6 +703,9 @@ function selectModel(index) {
   if (!filtered.length) return;
   selectedIndex = Math.max(0, Math.min(index, filtered.length - 1));
   const model = filtered[selectedIndex];
+  gfpakOrientationLabel.hidden = !model.gfpakImport;
+  gfpakOrientationSelect.value = model.orientation || "0deg 90deg 0deg";
+  viewer.orientation = model.gfpakImport ? gfpakOrientationSelect.value : "0deg 90deg 0deg";
 
   dexEl.textContent = "#" + String(model.dex).padStart(4, "0");
   nameEl.textContent = prettyName(model);
@@ -881,6 +940,12 @@ gfpakZipFile.addEventListener("change", async () => {
   folderStatus.textContent = "Checking GFPAK Pokémon ZIP, identity, textures and idle…";
   try {
     const imported = await window.POKEDEX3D_GFPAK_ZIP.read(file);
+    imported.gfpakImport = true;
+    imported.orientation = "90deg 90deg 0deg";
+    let saved = false;
+    try { await gfpakStorage("save", imported); saved = true; }
+    catch (error) { console.warn("GFPAK import could not persist", error); }
+
     // Session-only preview takes priority over the same species' published
     // model. The remote catalog and all files on disk remain untouched.
     localFolderActive = true;
@@ -895,7 +960,7 @@ gfpakZipFile.addEventListener("change", async () => {
     renderList();
     selectModel(filtered.findIndex(model => Number(model.dex) === imported.dex));
     folderStatus.textContent = imported.name + " (#" + String(imported.dex).padStart(4, "0") +
-      ") loaded from GFPAK ZIP for this browser session. For permanent Windows installation, use import-gfpak-pokemon.bat.";
+      (saved ? ") imported and saved in this browser." : ") imported for this session, but browser storage failed.");
   } catch (error) {
     folderStatus.textContent = "GFPAK import rejected: " + String(error.message || error);
   } finally {
@@ -988,3 +1053,43 @@ if (models.length) {
   messageEl.textContent = "Open a folder containing verified Switch GLBs, or use a site with published model assets.";
   messageEl.classList.remove("hidden");
 }
+
+
+async function restoreSavedGfpakModels() {
+  try {
+    const rows = await gfpakStorage("load");
+    const restored = [];
+    for (const row of rows) {
+      try {
+        if (!row.file || !Number.isInteger(row.dex)) continue;
+        const model = {
+          ...row, form: "regular", valid: true, ready: true,
+          gfpakImport: true, url: "web/models/switch/" +
+            String(row.dex).padStart(4, "0") + "/regular.glb"
+        };
+        await window.POKEDEX3D_MODEL_IDENTITY.verify(model, await model.file.arrayBuffer());
+        const clips = await window.POKEDEX3D_LOCAL_SWITCH.inspectGlb(model.file);
+        const idle = clips.find(name => /idle|wait|stand|breath|rest|fight[_ -]?a/i.test(name)
+          && !/attack|damage|faint|death|down|bind|t[-_ ]?pose/i.test(name));
+        if (!idle) continue;
+        model.animations = clips; model.idleAnimation = idle; model.idleBreaks = [];
+        restored.push(model);
+      } catch (error) { console.warn("Invalid saved GFPAK model", row.dex, error); }
+    }
+    if (!restored.length) return;
+    const selectedDex = currentModel?.dex;
+    models = withMissingSpeciesEntries([...restored, ...models.filter(model =>
+      !restored.some(saved => saved.dex === Number(model.dex)))]);
+    window.POKEDEX3D_MODELS = models;
+    restoreAnimationCoverage();
+    statusEl.textContent = catalogCoverageText(models);
+    renderCoverage();
+    filtered = [...models]; renderList();
+    selectModel(Math.max(0, filtered.findIndex(model =>
+      model.dex === (selectedDex === 1 ? restored[0].dex : selectedDex))));
+    folderStatus.textContent = restored.length + " saved GFPAK import(s) restored automatically.";
+  } catch (error) {
+    console.warn("Cannot reload saved GFPAK imports", error);
+  }
+}
+void restoreSavedGfpakModels();
