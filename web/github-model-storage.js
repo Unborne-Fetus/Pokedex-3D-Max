@@ -85,7 +85,7 @@
     return result;
   }
   async function connect(credential) {
-    if (!/^github_pat_|^ghp_/.test(String(credential || "").trim())) {
+    if (!String(credential || "").trim().startsWith("github_pat_")) {
       throw Error("Enter a GitHub fine-grained personal access token");
     }
     token = String(credential).trim();
