@@ -63,7 +63,6 @@
     if (!token) throw Error("Connect your GitHub account before uploading");
     const headers = {
       Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
       Authorization: "Bearer " + token,
     };
     if (options.body != null) headers["Content-Type"] = "application/json";
@@ -94,8 +93,7 @@
         headers: {
           Accept: "application/vnd.github+json",
           Authorization: "Bearer " + token,
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
+            },
         mode: "cors", cache: "no-store",
       });
       if (!response.ok) throw Error("GitHub authentication failed (HTTP " + response.status + ")");
