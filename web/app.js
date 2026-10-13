@@ -26,6 +26,13 @@ const localModelsFolder = document.querySelector("#localModelsFolder");
 const importGfpakBtn = document.querySelector("#importGfpakZip");
 const gfpakZipFile = document.querySelector("#gfpakZipFile");
 const folderStatus = document.querySelector("#folderStatus");
+const githubStorage = window.POKEDEX3D_GITHUB_STORAGE;
+const githubTokenInput = document.querySelector("#githubToken");
+const githubConnectBtn = document.querySelector("#connectGitHub");
+const githubDisconnectBtn = document.querySelector("#disconnectGitHub");
+const githubPublishBtn = document.querySelector("#publishSelectedGitHub");
+const githubStatus = document.querySelector("#githubStatus");
+let githubBusy = false;
 const modelCoverageCountEl = document.querySelector("#modelCoverageCount");
 const modelCoverageDetailEl = document.querySelector("#modelCoverageDetail");
 const modelCoverageProgressEl = document.querySelector("#modelCoverageProgress");
@@ -271,7 +278,7 @@ async function gfpakStorage(mode, value) {
         ? tx.objectStore("models").put({
             dex: value.dex, name: value.name, sourceGame: value.sourceGame,
             sourceModelId: value.sourceModelId, file: value.file,
-            orientation: value.orientation
+            orientation: value.orientation, githubPublished: value.githubPublished === true
           })
         : tx.objectStore("models").getAll();
       let result;
@@ -286,8 +293,10 @@ gfpakOrientationSelect.addEventListener("change", async () => {
   if (!currentModel?.gfpakImport) return;
   currentModel.orientation = gfpakOrientationSelect.value;
   viewer.orientation = currentModel.orientation;
-  try { await gfpakStorage("save", currentModel); }
-  catch (error) { folderStatus.textContent = "Rotation works but could not save: " + error; }
+  if (currentModel.file instanceof File) {
+    try { await gfpakStorage("save", currentModel); }
+    catch (error) { folderStatus.textContent = "Rotation works but could not save: " + error; }
+  }
 });
 
 const LAST_VIEWED_KEY = "pokedex3d-last-viewed-dex";
@@ -615,6 +624,7 @@ function loadModel(model) {
   clearCameraFitTimer();
   resetAnimationSelect();
   currentModel = model;
+  refreshGitHubPublishButton();
   ++loadSequence;
   if (remoteAbort) {
     remoteAbort.abort();
@@ -962,6 +972,111 @@ window.addEventListener("pokedex3d:remote-switch-error", event => {
     String(event.detail?.message || "unknown error") + ". You can still open a local folder.";
 });
 
+// GitHub is the temporary authoritative public catalog for manually imported
+// models. Unpublished browser imports still take priority as local drafts.
+function refreshGitHubPublishButton() {
+  githubPublishBtn.disabled = githubBusy || !githubStorage.connected() ||
+    !(currentModel?.file instanceof File);
+}
+function showGitHubConnected(connected) {
+  githubConnectBtn.hidden = connected;
+  githubTokenInput.hidden = connected;
+  githubDisconnectBtn.hidden = !connected;
+  refreshGitHubPublishButton();
+}
+function mergeGitHubModels(incoming) {
+  const incomingDex = new Set(incoming.map(model => Number(model.dex)));
+  const drafts = models.filter(model => model.file instanceof File &&
+    model.githubPublished !== true);
+  const draftDex = new Set(drafts.map(model => Number(model.dex)));
+  const remaining = models.filter(model =>
+    !model.missingModel && !model.githubTemporary && !draftDex.has(Number(model.dex)) &&
+    !incomingDex.has(Number(model.dex)));
+  const selectedDex = currentModel?.dex || lastViewedDex();
+  models = withMissingSpeciesEntries([...drafts, ...incoming, ...remaining], false);
+  window.POKEDEX3D_MODELS = models;
+  restoreAnimationCoverage();
+  statusEl.textContent = catalogCoverageText(models);
+  renderCoverage();
+  const query = searchEl.value.trim().toLowerCase().replace(/^#/, "");
+  filtered = query ? models.filter(model =>
+    String(model.dex) === query || prettyName(model).toLowerCase().includes(query)
+  ) : [...models];
+  renderList();
+  if (filtered.length) {
+    const selected = filtered.findIndex(model => Number(model.dex) === selectedDex);
+    selectModel(selected < 0 ? 0 : selected, false);
+  }
+}
+async function loadGitHubModels() {
+  try {
+    const hosted = await githubStorage.load();
+    mergeGitHubModels(hosted);
+    githubStatus.textContent = hosted.length
+      ? hosted.length + " published Pokémon model(s) available from GitHub."
+      : "No models have been published to temporary GitHub storage yet.";
+  } catch (error) {
+    githubStatus.textContent = "Could not refresh GitHub models: " + error.message +
+      ". Locally saved imports remain available.";
+  }
+}
+githubConnectBtn.addEventListener("click", async () => {
+  if (githubBusy) return;
+  githubBusy = true;
+  githubConnectBtn.disabled = true;
+  githubStatus.textContent = "Checking GitHub owner and repository permissions…";
+  try {
+    const login = await githubStorage.connect(githubTokenInput.value);
+    githubTokenInput.value = ""; // Never persist the credential.
+    showGitHubConnected(true);
+    githubStatus.textContent = "Connected as " + login +
+      ". GFPAK imports now publish automatically; folder imports can be published individually.";
+  } catch (error) {
+    githubStatus.textContent = "GitHub connection failed: " + error.message;
+  } finally {
+    githubBusy = false;
+    githubConnectBtn.disabled = false;
+    refreshGitHubPublishButton();
+  }
+});
+githubDisconnectBtn.addEventListener("click", () => {
+  githubStorage.disconnect();
+  githubTokenInput.value = "";
+  showGitHubConnected(false);
+  githubStatus.textContent = "Disconnected. Models remain publicly viewable; uploads are disabled.";
+});
+githubPublishBtn.addEventListener("click", async () => {
+  if (githubBusy || !(currentModel?.file instanceof File)) return;
+  const publishing = currentModel;
+  githubBusy = true;
+  refreshGitHubPublishButton();
+  githubStatus.textContent = "Publishing Pokémon #" +
+    String(publishing.dex).padStart(4, "0") + " to GitHub…";
+  try {
+    const published = await githubStorage.publishModel(publishing);
+    publishing.githubPublished = true;
+    if (publishing.gfpakImport) {
+      try { await gfpakStorage("save", publishing); }
+      catch (error) { console.warn("Could not update local upload status", error); }
+    }
+    mergeGitHubModels([
+      published,
+      ...models.filter(model => model.githubTemporary && model.dex !== published.dex),
+    ]);
+    githubStatus.textContent = publishing.name + " saved to GitHub. It is now public on every device.";
+    folderStatus.textContent = "Published Pokémon #" + String(publishing.dex).padStart(4, "0") +
+      " to GitHub. Model, embedded textures, skeleton and animations were saved.";
+  } catch (error) {
+    githubStatus.textContent = "GitHub upload failed: " + error.message +
+      ". Local models were not removed.";
+  } finally {
+    githubBusy = false;
+    refreshGitHubPublishButton();
+  }
+});
+showGitHubConnected(false);
+void loadGitHubModels();
+
 // Static site mode: open already-converted models directly from the visitor's
 // device. File selections never leave the browser; no Python or local server.
 exportModelManifestBtn.addEventListener("click", () => {
@@ -979,8 +1094,8 @@ exportModelManifestBtn.addEventListener("click", () => {
   setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
   folderStatus.textContent = "Downloaded a catalog for " + catalog.models + " models. You can upload the JSON to your GitHub model repository; no Actions or billing required.";
 });
-// Browser-only import: ZIP content is stored in this browser using IndexedDB.
-// The selected ZIP never leaves this browser or alters the desktop files.
+// GFPAK imports are cached locally; when the owner connects GitHub,
+// the verified, self-contained GLB is additionally published to GitHub.
 importGfpakBtn.addEventListener("click", () => gfpakZipFile.click());
 gfpakZipFile.addEventListener("change", async () => {
   const file = gfpakZipFile.files?.[0];
@@ -1009,7 +1124,36 @@ gfpakZipFile.addEventListener("change", async () => {
     renderList();
     selectModel(filtered.findIndex(model => Number(model.dex) === imported.dex));
     folderStatus.textContent = imported.name + " (#" + String(imported.dex).padStart(4, "0") +
-      (saved ? ") imported and saved in this browser." : ") imported for this session, but browser storage failed.");
+      (saved ? ") saved locally." : ") imported temporarily; browser storage failed.");
+    if (githubStorage.connected()) {
+      githubBusy = true;
+      refreshGitHubPublishButton();
+      githubStatus.textContent = "Publishing " + imported.name + " to GitHub…";
+      try {
+        const published = await githubStorage.publishModel(imported);
+        imported.githubPublished = true;
+        if (saved) {
+          try { await gfpakStorage("save", imported); }
+          catch (error) { console.warn("Cannot save GitHub sync status", error); }
+        }
+        mergeGitHubModels([
+          published,
+          ...models.filter(model => model.githubTemporary && model.dex !== published.dex),
+        ]);
+        folderStatus.textContent = imported.name + " saved locally AND published to GitHub.";
+        githubStatus.textContent = "Published #" + String(imported.dex).padStart(4, "0") +
+          " to GitHub for all visitors.";
+      } catch (error) {
+        githubStatus.textContent = "GitHub publish failed: " + error.message;
+        folderStatus.textContent = imported.name +
+          " remains local. GitHub publish failed; retry with Save selected model.";
+      } finally {
+        githubBusy = false;
+        refreshGitHubPublishButton();
+      }
+    } else {
+      githubStatus.textContent = "Model imported locally. Connect GitHub to publish it for everyone.";
+    }
   } catch (error) {
     folderStatus.textContent = "GFPAK import rejected: " + String(error.message || error);
   } finally {
@@ -1144,8 +1288,14 @@ async function restoreSavedGfpakModels() {
     }
     if (!restored.length) return;
     const selectedDex = currentModel?.dex;
-    models = withMissingSpeciesEntries([...restored, ...models.filter(model =>
-      !restored.some(saved => saved.dex === Number(model.dex)))], false);
+    const drafts = restored.filter(model => model.githubPublished !== true);
+    const synced = restored.filter(model => model.githubPublished === true);
+    // Hosted models take precedence over previously published local copies;
+    // never hide an unpublished, newer local edit.
+    models = withMissingSpeciesEntries([...drafts,
+      ...models.filter(model => model.githubTemporary),
+      ...synced,
+      ...models.filter(model => !restored.some(saved => saved.dex === Number(model.dex)))], false);
     window.POKEDEX3D_MODELS = models;
     restoreAnimationCoverage();
     statusEl.textContent = catalogCoverageText(models);
