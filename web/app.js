@@ -422,7 +422,7 @@ function computeCameraFrame(dimensions, center, viewportWidth, viewportHeight, m
 
   // Reserve breathing room for horns, wings, feet, and animated poses.
   // The depth term prevents the closest points clipping the camera plane.
-  const fill = 0.74;
+  const fill = model?.gfpakImport ? 0.62 : 0.74;
   let distance = Math.max(
     height / (2 * tanHalfFov * fill),
     width / (2 * tanHalfFov * fill * viewportAspect),
@@ -437,9 +437,12 @@ function computeCameraFrame(dimensions, center, viewportWidth, viewportHeight, m
   // Offsets are relative to its actual size, not fixed world coordinates.
   const extra = Number(model?.cameraTargetYOffset);
   const yOffset = Number.isFinite(extra) && Math.abs(extra) <= 0.3 ? extra : 0;
+  // Imported GFPAK rigs often use a displaced root/pivot. Raise the camera
+  // target so their visible geometry is centered rather than cropped above.
+  const importOffset = model?.gfpakImport ? 0.24 : 0;
   return {
     distance,
-    target: [cx, cy + height * (0.035 + yOffset), cz + Math.max(width, depth) * (CAMERA_PIVOT_ADJUSTMENTS[Number(model?.dex)] || 0)],
+    target: [cx, cy + height * (0.035 + yOffset + importOffset), cz + Math.max(width, depth) * (CAMERA_PIVOT_ADJUSTMENTS[Number(model?.dex)] || 0)],
   };
 }
 
@@ -941,7 +944,7 @@ gfpakZipFile.addEventListener("change", async () => {
   try {
     const imported = await window.POKEDEX3D_GFPAK_ZIP.read(file);
     imported.gfpakImport = true;
-    imported.orientation = "90deg 90deg 0deg";
+    imported.orientation = "0deg 90deg 0deg";
     let saved = false;
     try { await gfpakStorage("save", imported); saved = true; }
     catch (error) { console.warn("GFPAK import could not persist", error); }
