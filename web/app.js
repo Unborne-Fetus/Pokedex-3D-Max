@@ -930,8 +930,8 @@ exportModelManifestBtn.addEventListener("click", () => {
   setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
   folderStatus.textContent = "Downloaded a catalog for " + catalog.models + " models. You can upload the JSON to your GitHub model repository; no Actions or billing required.";
 });
-// Browser-only preview. Permanent installation still uses the Python launcher;
- // the selected ZIP never leaves this browser.
+// Browser-only import: ZIP content is stored in this browser using IndexedDB.
+// The selected ZIP never leaves this browser or alters the desktop files.
 importGfpakBtn.addEventListener("click", () => gfpakZipFile.click());
 gfpakZipFile.addEventListener("change", async () => {
   const file = gfpakZipFile.files?.[0];
@@ -946,8 +946,8 @@ gfpakZipFile.addEventListener("change", async () => {
     try { await gfpakStorage("save", imported); saved = true; }
     catch (error) { console.warn("GFPAK import could not persist", error); }
 
-    // Session-only preview takes priority over the same species' published
-    // model. The remote catalog and all files on disk remain untouched.
+    // Local stored import takes priority over the published catalog.
+    // No uploaded or on-disk models are overwritten.
     localFolderActive = true;
     models = withMissingSpeciesEntries([imported, ...models.filter(model =>
       Number(model.dex) !== imported.dex)]);
