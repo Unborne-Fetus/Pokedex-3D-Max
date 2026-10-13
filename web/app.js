@@ -1034,6 +1034,7 @@ githubConnectBtn.addEventListener("click", async () => {
   } catch (error) {
     githubStatus.textContent = "GitHub connection failed: " + error.message;
   } finally {
+    githubTokenInput.value = "";
     githubBusy = false;
     githubConnectBtn.disabled = false;
     refreshGitHubPublishButton();
