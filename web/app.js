@@ -290,6 +290,16 @@ gfpakOrientationSelect.addEventListener("change", async () => {
   catch (error) { folderStatus.textContent = "Rotation works but could not save: " + error; }
 });
 
+const LAST_VIEWED_KEY = "pokedex3d-last-viewed-dex";
+function lastViewedDex() {
+  try {
+    const dex = Number(localStorage.getItem(LAST_VIEWED_KEY));
+    return Number.isInteger(dex) && dex >= 1 && dex <= 1025 ? dex : null;
+  } catch (_) { return null; }
+}
+function rememberViewedDex(dex) {
+  try { localStorage.setItem(LAST_VIEWED_KEY, String(dex)); } catch (_) {}
+}
 let filtered = [...models];
 let selectedIndex = 0;
 let currentModel = null;
@@ -702,10 +712,11 @@ function updateCandidateSourceLink(model) {
   else link.removeAttribute("href");
 }
 
-function selectModel(index) {
+function selectModel(index, remember = true) {
   if (!filtered.length) return;
   selectedIndex = Math.max(0, Math.min(index, filtered.length - 1));
   const model = filtered[selectedIndex];
+  if (remember) rememberViewedDex(model.dex);
   gfpakOrientationLabel.hidden = !model.gfpakImport;
   gfpakOrientationSelect.value = model.orientation || "0deg 90deg 0deg";
   viewer.orientation = model.gfpakImport ? gfpakOrientationSelect.value : "0deg 90deg 0deg";
@@ -1048,7 +1059,9 @@ renderCoverage();
 
 renderList();
 if (models.length) {
-  selectModel(0);
+  const savedDex = lastViewedDex();
+  const savedIndex = models.findIndex(model => model.dex === savedDex);
+  selectModel(savedIndex >= 0 ? savedIndex : 0, false);
 } else {
   formSelect.replaceChildren();
   formSelect.disabled = true;
@@ -1088,8 +1101,9 @@ async function restoreSavedGfpakModels() {
     statusEl.textContent = catalogCoverageText(models);
     renderCoverage();
     filtered = [...models]; renderList();
-    selectModel(Math.max(0, filtered.findIndex(model =>
-      model.dex === (selectedDex === 1 ? restored[0].dex : selectedDex))));
+    const preferredDex = lastViewedDex() || selectedDex;
+    const preferredIndex = filtered.findIndex(model => model.dex === preferredDex);
+    selectModel(preferredIndex >= 0 ? preferredIndex : 0, false);
     folderStatus.textContent = restored.length + " saved GFPAK import(s) restored automatically.";
   } catch (error) {
     console.warn("Cannot reload saved GFPAK imports", error);
