@@ -392,6 +392,40 @@ function playAnimation(name) {
   messageEl.classList.add("hidden");
 }
 
+// Render friendly labels without changing the exact animation identifiers used by model-viewer.
+function animationDisplayName(raw) {
+  let name = String(raw || "");
+  // GFPAK exports often prefix each clip with pm0212_01_00_20000_.
+  name = name.replace(/^pm\d{4}(?:_\d{2}){2}_\d{5}_/i, "");
+  name = name.replace(/(?:^|[_-])r(090|180|270)(?=$|[_-])/gi, (_, angle) =>
+    "_right_" + (Number(angle) / 90));
+  name = name.replace(/(?:^|[_-])l(090|180|270)(?=$|[_-])/gi, (_, angle) =>
+    "_left_" + (Number(angle) / 90));
+  const phrases = [
+    [/^defaultwait/i, "Idle"], [/^wait/i, "Idle"],
+    [/^turn_right_1/i, "Turn Right"], [/^turn_left_1/i, "Turn Left"],
+    [/^turn_right_2/i, "Turn Around Right"], [/^turn_left_2/i, "Turn Around Left"],
+    [/^turn_right_3/i, "Turn Right 270°"], [/^turn_left_3/i, "Turn Left 270°"],
+    [/^strife_right_2/i, "Strafe Right"], [/^strife_left_2/i, "Strafe Left"],
+    [/^strife/i, "Strafe"], [/^run/i, "Run"], [/^walk/i, "Walk"],
+    [/^stepout/i, "Step Out"], [/^jumpdown/i, "Jump Down"],
+    [/^jumpup/i, "Jump Up"], [/^jump/i, "Jump"], [/^land/i, "Land"],
+    [/^sleep/i, "Sleep"], [/^eat/i, "Eat"], [/^fall/i, "Fall"],
+    [/^faint/i, "Faint"], [/^damage/i, "Take Damage"], [/^attack/i, "Attack"],
+  ];
+  for (const [pattern, label] of phrases) {
+    if (pattern.test(name)) { name = name.replace(pattern, label + "_"); break; }
+  }
+  name = name.replace(/[_-]+/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/\b(start|loop|end)\b/gi, word =>
+      ({start:"Start",loop:"Loop",end:"End"})[word.toLowerCase()])
+    .replace(/([A-Za-z])0+(\d+)/g, "$1 $2")
+    .replace(/\s+/g, " ").trim();
+  if (!name) return String(raw);
+  return name.replace(/\b[a-z]/g, letter => letter.toUpperCase());
+}
+
 function setupAnimationSelect() {
   const animations = [...new Set(availableAnimations())];
   if (!animations.length) {
@@ -406,7 +440,7 @@ function setupAnimationSelect() {
   for (const name of animations) {
     const option = document.createElement("option");
     option.value = name;
-    option.textContent = name;
+    option.textContent = animationDisplayName(name);
     animationSelect.appendChild(option);
   }
   animationSelect.value = initial;
