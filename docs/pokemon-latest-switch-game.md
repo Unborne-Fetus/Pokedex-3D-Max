@@ -1,1068 +1,1092 @@
-# All 1,025 Pokémon — most recent appearance among six Switch game families
+# All 1,025 Pokémon — latest Switch game/DLC, with regional Pokédex numbers
 
-Each National Pokédex species (#0001–#1025) appears **exactly once**, in the newest compatible game family. Games are ordered by release: **Let's Go → Sword/Shield → Brilliant Diamond/Shining Pearl → Legends: Arceus → Scarlet/Violet → Legends: Z-A**. DLC and transfer-only compatibility count. BDSP supports all 493 species of Generations 1–4, including Grand Underground and National Dex encounters. Alternate forms and Mega Evolutions aren't separate entries.
+Each National Pokédex species appears **exactly once**. Every base game and DLC has its own category and its **own regional numbering**. A species is assigned to the most recent game family in which it appears (as in the original list), then to the **latest DLC Pokédex it belongs to within that family**; otherwise it stays in the base-game Pokédex. Pokémon transferable or obtainable without a regional Pokédex entry are listed separately with `—`, not an invented regional number. Numbers can repeat across categories because each Pokédex starts again at #001. Original National Dex numbers remain available in the companion CSV.
 
-Classification is by where a Pokémon is available most recently, **not which game its 3D model was exported from**. Empty categories are retained so all six games remain visible.
+**Scope:** Let's Go, Sword/Shield (base, Isle of Armor, Crown Tundra), Brilliant Diamond/Shining Pearl, Legends: Arceus, Scarlet/Violet (base, Teal Mask/Kitakami, Indigo Disk/Blueberry), Legends: Z-A (base Lumiose, Mega Dimension/Hyperspace). Regional numbers were matched against the [PokéAPI regional Pokédex dataset](https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/pokemon_dex_numbers.csv). BDSP uses the expanded Sinnoh regional Pokédex; its National Dex-only species have no Sinnoh number. The introduction generation is retained in each line.
 
 ## Counts
 
-- Let's Go: 0
-- SwSh: 101
-- BDSP: 68
-- PLA: 55
-- SV: 437
-- PLZA: 364
-- None of these six: 0
+- Let's Go — Kanto: 0
+- Sword/Shield — Galar: 30
+- Sword/Shield — Isle of Armor DLC: 20
+- Sword/Shield — Crown Tundra DLC: 30
+- SwSh — Other compatible (no regional number): 21
+- BDSP — Sinnoh: 2
+- BDSP — Other compatible (no regional number): 66
+- Legends: Arceus — Hisui: 55
+- Scarlet/Violet — Paldea: 141
+- Scarlet/Violet — Teal Mask DLC (Kitakami): 126
+- Scarlet/Violet — Indigo Disk DLC (Blueberry): 160
+- SV — Other compatible (no regional number): 10
+- Legends: Z-A — Lumiose City: 232
+- Legends: Z-A — Mega Dimension DLC (Hyperspace): 132
 
-**Total: 1,025**
+**Total: 1,025 distinct species**
 
-Sources: [pkDex game datasets](https://github.com/Insektaure/pkDex/tree/main/resources/data), [Pokémon Brilliant Diamond/Shining Pearl National Pokédex](https://www.serebii.net/brilliantdiamondshiningpearl/nationalpokedex.shtml), [Pokémon availability](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_availability).
-
-
-## Let's Go (0)
+## Let's Go — Kanto (0)
 
 
+## Sword/Shield — Galar (30)
 
-## SwSh (101)
+- #026 Pidove (Gen 5)
+- #027 Tranquill (Gen 5)
+- #028 Unfezant (Gen 5)
+- #132 Tympole (Gen 5)
+- #133 Palpitoad (Gen 5)
+- #134 Seismitoad (Gen 5)
+- #296 Maractus (Gen 5)
+- #297 Sigilyph (Gen 5)
+- #113 Klink (Gen 5)
+- #114 Klang (Gen 5)
+- #115 Klinklang (Gen 5)
+- #277 Elgyem (Gen 5)
+- #278 Beheeyem (Gen 5)
+- #340 Morelull (Gen 7)
+- #341 Shiinotic (Gen 7)
+- #094 Stufful (Gen 7)
+- #095 Bewear (Gen 7)
+- #156 Pyukumuku (Gen 7)
+- #381 Type: Null (Gen 7)
+- #382 Silvally (Gen 7)
+- #347 Turtonator (Gen 7)
+- #348 Togedemaru (Gen 7)
+- #237 Cursola (Gen 8)
+- #374 Dracozolt (Gen 8)
+- #375 Arctozolt (Gen 8)
+- #376 Dracovish (Gen 8)
+- #377 Arctovish (Gen 8)
+- #398 Zacian (Gen 8)
+- #399 Zamazenta (Gen 8)
+- #400 Eternatus (Gen 8)
 
-- #0494 Victini
-- #0506 Lillipup
-- #0507 Herdier
-- #0508 Stoutland
-- #0519 Pidove
-- #0520 Tranquill
-- #0521 Unfezant
-- #0524 Roggenrola
-- #0525 Boldore
-- #0526 Gigalith
-- #0527 Woobat
-- #0528 Swoobat
-- #0535 Tympole
-- #0536 Palpitoad
-- #0537 Seismitoad
-- #0554 Darumaka
-- #0555 Darmanitan
-- #0556 Maractus
-- #0557 Dwebble
-- #0558 Crustle
-- #0561 Sigilyph
-- #0564 Tirtouga
-- #0565 Carracosta
-- #0566 Archen
-- #0567 Archeops
-- #0588 Karrablast
-- #0589 Escavalier
-- #0592 Frillish
-- #0593 Jellicent
-- #0597 Ferroseed
-- #0598 Ferrothorn
-- #0599 Klink
-- #0600 Klang
-- #0601 Klinklang
-- #0605 Elgyem
-- #0606 Beheeyem
-- #0616 Shelmet
-- #0617 Accelgor
-- #0621 Druddigon
-- #0626 Bouffalant
-- #0631 Heatmor
-- #0632 Durant
-- #0746 Wishiwashi
-- #0755 Morelull
-- #0756 Shiinotic
-- #0759 Stufful
-- #0760 Bewear
-- #0771 Pyukumuku
-- #0772 Type: Null
-- #0773 Silvally
-- #0776 Turtonator
-- #0777 Togedemaru
-- #0781 Dhelmise
-- #0785 Tapu Koko
-- #0786 Tapu Lele
-- #0787 Tapu Bulu
-- #0788 Tapu Fini
-- #0789 Cosmog
-- #0790 Cosmoem
-- #0791 Solgaleo
-- #0792 Lunala
-- #0793 Nihilego
-- #0794 Buzzwole
-- #0795 Pheromosa
-- #0796 Xurkitree
-- #0797 Celesteela
-- #0798 Kartana
-- #0799 Guzzlord
-- #0800 Necrozma
-- #0803 Poipole
-- #0804 Naganadel
-- #0805 Stakataka
-- #0806 Blacephalon
-- #0824 Blipbug
-- #0825 Dottler
-- #0826 Orbeetle
-- #0829 Gossifleur
-- #0830 Eldegoss
-- #0831 Wooloo
-- #0832 Dubwool
-- #0835 Yamper
-- #0836 Boltund
-- #0850 Sizzlipede
-- #0851 Centiskorch
-- #0862 Obstagoon
-- #0864 Cursola
-- #0880 Dracozolt
-- #0881 Arctozolt
-- #0882 Dracovish
-- #0883 Arctovish
-- #0888 Zacian
-- #0889 Zamazenta
-- #0890 Eternatus
-- #0891 Kubfu
-- #0892 Urshifu
-- #0893 Zarude
-- #0894 Regieleki
-- #0895 Regidrago
-- #0896 Glastrier
-- #0897 Spectrier
-- #0898 Calyrex
+## Sword/Shield — Isle of Armor DLC (20)
 
-## BDSP (68)
+- #113 Lillipup (Gen 5)
+- #114 Herdier (Gen 5)
+- #115 Stoutland (Gen 5)
+- #154 Roggenrola (Gen 5)
+- #155 Boldore (Gen 5)
+- #156 Gigalith (Gen 5)
+- #151 Woobat (Gen 5)
+- #152 Swoobat (Gen 5)
+- #122 Dwebble (Gen 5)
+- #123 Crustle (Gen 5)
+- #192 Frillish (Gen 5)
+- #193 Jellicent (Gen 5)
+- #053 Bouffalant (Gen 5)
+- #110 Wishiwashi (Gen 7)
+- #014 Blipbug (Gen 8)
+- #015 Dottler (Gen 8)
+- #016 Orbeetle (Gen 8)
+- #100 Kubfu (Gen 8)
+- #101 Urshifu (Gen 8)
+- #211 Zarude (Gen 8)
 
-- #0010 Caterpie
-- #0011 Metapod
-- #0012 Butterfree
-- #0019 Rattata
-- #0020 Raticate
-- #0021 Spearow
-- #0022 Fearow
-- #0029 Nidoran♀
-- #0030 Nidorina
-- #0031 Nidoqueen
-- #0032 Nidoran♂
-- #0033 Nidorino
-- #0034 Nidoking
-- #0098 Krabby
-- #0099 Kingler
-- #0118 Goldeen
-- #0119 Seaking
-- #0124 Jynx
-- #0138 Omanyte
-- #0139 Omastar
-- #0140 Kabuto
-- #0141 Kabutops
-- #0144 Articuno
-- #0145 Zapdos
-- #0146 Moltres
-- #0151 Mew
-- #0165 Ledyba
-- #0166 Ledian
-- #0177 Natu
-- #0178 Xatu
-- #0202 Wobbuffet
-- #0213 Shuckle
-- #0222 Corsola
-- #0238 Smoochum
-- #0241 Miltank
-- #0251 Celebi
-- #0263 Zigzagoon
-- #0264 Linoone
-- #0276 Taillow
-- #0277 Swellow
-- #0290 Nincada
-- #0291 Ninjask
-- #0292 Shedinja
-- #0293 Whismur
-- #0294 Loudred
-- #0295 Exploud
-- #0300 Skitty
-- #0301 Delcatty
-- #0320 Wailmer
-- #0321 Wailord
-- #0327 Spinda
-- #0337 Lunatone
-- #0338 Solrock
-- #0343 Baltoy
-- #0344 Claydol
-- #0345 Lileep
-- #0346 Cradily
-- #0347 Anorith
-- #0348 Armaldo
-- #0351 Castform
-- #0360 Wynaut
-- #0366 Clamperl
-- #0367 Huntail
-- #0368 Gorebyss
-- #0369 Relicanth
-- #0377 Regirock
-- #0378 Regice
-- #0379 Registeel
+## Sword/Shield — Crown Tundra DLC (30)
 
-## PLA (55)
+- #103 Darumaka (Gen 5)
+- #104 Darmanitan (Gen 5)
+- #147 Tirtouga (Gen 5)
+- #148 Carracosta (Gen 5)
+- #149 Archen (Gen 5)
+- #150 Archeops (Gen 5)
+- #095 Karrablast (Gen 5)
+- #096 Escavalier (Gen 5)
+- #179 Ferroseed (Gen 5)
+- #180 Ferrothorn (Gen 5)
+- #097 Shelmet (Gen 5)
+- #098 Accelgor (Gen 5)
+- #119 Druddigon (Gen 5)
+- #102 Heatmor (Gen 5)
+- #101 Durant (Gen 5)
+- #162 Dhelmise (Gen 7)
+- #166 Gossifleur (Gen 8)
+- #167 Eldegoss (Gen 8)
+- #003 Wooloo (Gen 8)
+- #004 Dubwool (Gen 8)
+- #155 Yamper (Gen 8)
+- #156 Boltund (Gen 8)
+- #099 Sizzlipede (Gen 8)
+- #100 Centiskorch (Gen 8)
+- #073 Obstagoon (Gen 8)
+- #200 Regieleki (Gen 8)
+- #201 Regidrago (Gen 8)
+- #208 Glastrier (Gen 8)
+- #209 Spectrier (Gen 8)
+- #210 Calyrex (Gen 8)
 
-- #0046 Paras
-- #0047 Parasect
-- #0077 Ponyta
-- #0078 Rapidash
-- #0108 Lickitung
-- #0114 Tangela
-- #0175 Togepi
-- #0176 Togetic
-- #0201 Unown
-- #0223 Remoraid
-- #0224 Octillery
-- #0226 Mantine
-- #0265 Wurmple
-- #0266 Silcoon
-- #0267 Beautifly
-- #0268 Cascoon
-- #0269 Dustox
-- #0363 Spheal
-- #0364 Sealeo
-- #0365 Walrein
-- #0399 Bidoof
-- #0400 Bibarel
-- #0412 Burmy
-- #0413 Wormadam
-- #0414 Mothim
-- #0420 Cherubi
-- #0421 Cherrim
-- #0431 Glameow
-- #0432 Purugly
-- #0441 Chatot
-- #0451 Skorupi
-- #0452 Drapion
-- #0455 Carnivine
-- #0458 Mantyke
-- #0463 Lickilicky
-- #0465 Tangrowth
-- #0468 Togekiss
-- #0480 Uxie
-- #0481 Mesprit
-- #0482 Azelf
-- #0483 Dialga
-- #0484 Palkia
-- #0486 Regigigas
-- #0487 Giratina
-- #0488 Cresselia
-- #0489 Phione
-- #0490 Manaphy
-- #0492 Shaymin
-- #0493 Arceus
-- #0641 Tornadus
-- #0642 Thundurus
-- #0645 Landorus
-- #0899 Wyrdeer
-- #0903 Sneasler
-- #0905 Enamorus
+## SwSh — Other compatible, no regional Pokédex number (21)
 
-## SV (437)
+- — Victini (Gen 5)
+- — Tapu Koko (Gen 7)
+- — Tapu Lele (Gen 7)
+- — Tapu Bulu (Gen 7)
+- — Tapu Fini (Gen 7)
+- — Cosmog (Gen 7)
+- — Cosmoem (Gen 7)
+- — Solgaleo (Gen 7)
+- — Lunala (Gen 7)
+- — Nihilego (Gen 7)
+- — Buzzwole (Gen 7)
+- — Pheromosa (Gen 7)
+- — Xurkitree (Gen 7)
+- — Celesteela (Gen 7)
+- — Kartana (Gen 7)
+- — Guzzlord (Gen 7)
+- — Necrozma (Gen 7)
+- — Poipole (Gen 7)
+- — Naganadel (Gen 7)
+- — Stakataka (Gen 7)
+- — Blacephalon (Gen 7)
 
-- #0027 Sandshrew
-- #0028 Sandslash
-- #0037 Vulpix
-- #0038 Ninetales
-- #0043 Oddish
-- #0044 Gloom
-- #0045 Vileplume
-- #0048 Venonat
-- #0049 Venomoth
-- #0050 Diglett
-- #0051 Dugtrio
-- #0054 Psyduck
-- #0055 Golduck
-- #0058 Growlithe
-- #0059 Arcanine
-- #0060 Poliwag
-- #0061 Poliwhirl
-- #0062 Poliwrath
-- #0072 Tentacool
-- #0073 Tentacruel
-- #0074 Geodude
-- #0075 Graveler
-- #0076 Golem
-- #0081 Magnemite
-- #0082 Magneton
-- #0084 Doduo
-- #0085 Dodrio
-- #0086 Seel
-- #0087 Dewgong
-- #0088 Grimer
-- #0089 Muk
-- #0090 Shellder
-- #0091 Cloyster
-- #0096 Drowzee
-- #0097 Hypno
-- #0100 Voltorb
-- #0101 Electrode
-- #0102 Exeggcute
-- #0103 Exeggutor
-- #0106 Hitmonlee
-- #0107 Hitmonchan
-- #0109 Koffing
-- #0110 Weezing
-- #0111 Rhyhorn
-- #0112 Rhydon
-- #0113 Chansey
-- #0116 Horsea
-- #0117 Seadra
-- #0125 Electabuzz
-- #0126 Magmar
-- #0128 Tauros
-- #0131 Lapras
-- #0132 Ditto
-- #0143 Snorlax
-- #0155 Cyndaquil
-- #0156 Quilava
-- #0157 Typhlosion
-- #0161 Sentret
-- #0162 Furret
-- #0163 Hoothoot
-- #0164 Noctowl
-- #0170 Chinchou
-- #0171 Lanturn
-- #0182 Bellossom
-- #0183 Marill
-- #0184 Azumarill
-- #0185 Sudowoodo
-- #0186 Politoed
-- #0187 Hoppip
-- #0188 Skiploom
-- #0189 Jumpluff
-- #0190 Aipom
-- #0191 Sunkern
-- #0192 Sunflora
-- #0193 Yanma
-- #0194 Wooper
-- #0195 Quagsire
-- #0198 Murkrow
-- #0200 Misdreavus
-- #0203 Girafarig
-- #0204 Pineco
-- #0205 Forretress
-- #0206 Dunsparce
-- #0207 Gligar
-- #0209 Snubbull
-- #0210 Granbull
-- #0215 Sneasel
-- #0216 Teddiursa
-- #0217 Ursaring
-- #0218 Slugma
-- #0219 Magcargo
-- #0220 Swinub
-- #0221 Piloswine
-- #0230 Kingdra
-- #0231 Phanpy
-- #0232 Donphan
-- #0234 Stantler
-- #0235 Smeargle
-- #0236 Tyrogue
-- #0237 Hitmontop
-- #0239 Elekid
-- #0240 Magby
-- #0242 Blissey
-- #0243 Raikou
-- #0244 Entei
-- #0245 Suicune
-- #0249 Lugia
-- #0250 Ho-Oh
-- #0261 Poochyena
-- #0262 Mightyena
-- #0270 Lotad
-- #0271 Lombre
-- #0272 Ludicolo
-- #0273 Seedot
-- #0274 Nuzleaf
-- #0275 Shiftry
-- #0278 Wingull
-- #0279 Pelipper
-- #0283 Surskit
-- #0284 Masquerain
-- #0285 Shroomish
-- #0286 Breloom
-- #0287 Slakoth
-- #0288 Vigoroth
-- #0289 Slaking
-- #0296 Makuhita
-- #0297 Hariyama
-- #0298 Azurill
-- #0299 Nosepass
-- #0311 Plusle
-- #0312 Minun
-- #0313 Volbeat
-- #0314 Illumise
-- #0324 Torkoal
-- #0328 Trapinch
-- #0329 Vibrava
-- #0330 Flygon
-- #0331 Cacnea
-- #0332 Cacturne
-- #0339 Barboach
-- #0340 Whiscash
-- #0341 Corphish
-- #0342 Crawdaunt
-- #0355 Duskull
-- #0356 Dusclops
-- #0357 Tropius
-- #0370 Luvdisc
-- #0385 Jirachi
-- #0386 Deoxys
-- #0387 Turtwig
-- #0388 Grotle
-- #0389 Torterra
-- #0390 Chimchar
-- #0391 Monferno
-- #0392 Infernape
-- #0393 Piplup
-- #0394 Prinplup
-- #0395 Empoleon
-- #0401 Kricketot
-- #0402 Kricketune
-- #0403 Shinx
-- #0404 Luxio
-- #0405 Luxray
-- #0408 Cranidos
-- #0409 Rampardos
-- #0410 Shieldon
-- #0411 Bastiodon
-- #0415 Combee
-- #0416 Vespiquen
-- #0417 Pachirisu
-- #0418 Buizel
-- #0419 Floatzel
-- #0422 Shellos
-- #0423 Gastrodon
-- #0424 Ambipom
-- #0425 Drifloon
-- #0426 Drifblim
-- #0429 Mismagius
-- #0430 Honchkrow
-- #0434 Stunky
-- #0435 Skuntank
-- #0436 Bronzor
-- #0437 Bronzong
-- #0438 Bonsly
-- #0440 Happiny
-- #0442 Spiritomb
-- #0446 Munchlax
-- #0453 Croagunk
-- #0454 Toxicroak
-- #0456 Finneon
-- #0457 Lumineon
-- #0461 Weavile
-- #0462 Magnezone
-- #0464 Rhyperior
-- #0466 Electivire
-- #0467 Magmortar
-- #0469 Yanmega
-- #0472 Gliscor
-- #0473 Mamoswine
-- #0476 Probopass
-- #0477 Dusknoir
-- #0495 Snivy
-- #0496 Servine
-- #0497 Serperior
-- #0501 Oshawott
-- #0502 Dewott
-- #0503 Samurott
-- #0522 Blitzle
-- #0523 Zebstrika
-- #0532 Timburr
-- #0533 Gurdurr
-- #0534 Conkeldurr
-- #0540 Sewaddle
-- #0541 Swadloon
-- #0542 Leavanny
-- #0546 Cottonee
-- #0547 Whimsicott
-- #0548 Petilil
-- #0549 Lilligant
-- #0550 Basculin
-- #0570 Zorua
-- #0571 Zoroark
-- #0572 Minccino
-- #0573 Cinccino
-- #0574 Gothita
-- #0575 Gothorita
-- #0576 Gothitelle
-- #0577 Solosis
-- #0578 Duosion
-- #0579 Reuniclus
-- #0580 Ducklett
-- #0581 Swanna
-- #0585 Deerling
-- #0586 Sawsbuck
-- #0594 Alomomola
-- #0595 Joltik
-- #0596 Galvantula
-- #0610 Axew
-- #0611 Fraxure
-- #0612 Haxorus
-- #0613 Cubchoo
-- #0614 Beartic
-- #0619 Mienfoo
-- #0620 Mienshao
-- #0624 Pawniard
-- #0625 Bisharp
-- #0627 Rufflet
-- #0628 Braviary
-- #0629 Vullaby
-- #0630 Mandibuzz
-- #0633 Deino
-- #0634 Zweilous
-- #0635 Hydreigon
-- #0636 Larvesta
-- #0637 Volcarona
-- #0643 Reshiram
-- #0644 Zekrom
-- #0646 Kyurem
-- #0722 Rowlet
-- #0723 Dartrix
-- #0724 Decidueye
-- #0725 Litten
-- #0726 Torracat
-- #0727 Incineroar
-- #0728 Popplio
-- #0729 Brionne
-- #0730 Primarina
-- #0731 Pikipek
-- #0732 Trumbeak
-- #0733 Toucannon
-- #0734 Yungoos
-- #0735 Gumshoos
-- #0736 Grubbin
-- #0737 Charjabug
-- #0738 Vikavolt
-- #0741 Oricorio
-- #0742 Cutiefly
-- #0743 Ribombee
-- #0744 Rockruff
-- #0745 Lycanroc
-- #0747 Mareanie
-- #0748 Toxapex
-- #0749 Mudbray
-- #0750 Mudsdale
-- #0751 Dewpider
-- #0752 Araquanid
-- #0753 Fomantis
-- #0754 Lurantis
-- #0757 Salandit
-- #0758 Salazzle
-- #0761 Bounsweet
-- #0762 Steenee
-- #0763 Tsareena
-- #0764 Comfey
-- #0765 Oranguru
-- #0766 Passimian
-- #0774 Minior
-- #0775 Komala
-- #0779 Bruxish
-- #0782 Jangmo-o
-- #0783 Hakamo-o
-- #0784 Kommo-o
-- #0810 Grookey
-- #0811 Thwackey
-- #0812 Rillaboom
-- #0813 Scorbunny
-- #0814 Raboot
-- #0815 Cinderace
-- #0816 Sobble
-- #0817 Drizzile
-- #0818 Inteleon
-- #0819 Skwovet
-- #0820 Greedent
-- #0833 Chewtle
-- #0834 Drednaw
-- #0837 Rolycoly
-- #0838 Carkol
-- #0839 Coalossal
-- #0840 Applin
-- #0841 Flapple
-- #0842 Appletun
-- #0843 Silicobra
-- #0844 Sandaconda
-- #0845 Cramorant
-- #0846 Arrokuda
-- #0847 Barraskewda
-- #0854 Sinistea
-- #0855 Polteageist
-- #0856 Hatenna
-- #0857 Hattrem
-- #0858 Hatterene
-- #0859 Impidimp
-- #0860 Morgrem
-- #0861 Grimmsnarl
-- #0868 Milcery
-- #0869 Alcremie
-- #0871 Pincurchin
-- #0872 Snom
-- #0873 Frosmoth
-- #0874 Stonjourner
-- #0875 Eiscue
-- #0878 Cufant
-- #0879 Copperajah
-- #0884 Duraludon
-- #0885 Dreepy
-- #0886 Drakloak
-- #0887 Dragapult
-- #0901 Ursaluna
-- #0902 Basculegion
-- #0906 Sprigatito
-- #0907 Floragato
-- #0908 Meowscarada
-- #0909 Fuecoco
-- #0910 Crocalor
-- #0911 Skeledirge
-- #0912 Quaxly
-- #0913 Quaxwell
-- #0914 Quaquaval
-- #0915 Lechonk
-- #0916 Oinkologne
-- #0917 Tarountula
-- #0918 Spidops
-- #0919 Nymble
-- #0920 Lokix
-- #0921 Pawmi
-- #0922 Pawmo
-- #0923 Pawmot
-- #0924 Tandemaus
-- #0925 Maushold
-- #0928 Smoliv
-- #0929 Dolliv
-- #0930 Arboliva
-- #0938 Tadbulb
-- #0939 Bellibolt
-- #0940 Wattrel
-- #0941 Kilowattrel
-- #0946 Bramblin
-- #0947 Brambleghast
-- #0948 Toedscool
-- #0949 Toedscruel
-- #0950 Klawf
-- #0953 Rellor
-- #0954 Rabsca
-- #0955 Flittle
-- #0956 Espathra
-- #0960 Wiglett
-- #0961 Wugtrio
-- #0962 Bombirdier
-- #0963 Finizen
-- #0964 Palafin
-- #0965 Varoom
-- #0966 Revavroom
-- #0968 Orthworm
-- #0974 Cetoddle
-- #0975 Cetitan
-- #0976 Veluza
-- #0980 Clodsire
-- #0981 Farigiraf
-- #0982 Dudunsparce
-- #0983 Kingambit
-- #0984 Great Tusk
-- #0985 Scream Tail
-- #0986 Brute Bonnet
-- #0987 Flutter Mane
-- #0988 Slither Wing
-- #0989 Sandy Shocks
-- #0990 Iron Treads
-- #0991 Iron Bundle
-- #0992 Iron Hands
-- #0993 Iron Jugulis
-- #0994 Iron Moth
-- #0995 Iron Thorns
-- #1001 Wo-Chien
-- #1002 Chien-Pao
-- #1003 Ting-Lu
-- #1004 Chi-Yu
-- #1005 Roaring Moon
-- #1006 Iron Valiant
-- #1007 Koraidon
-- #1008 Miraidon
-- #1009 Walking Wake
-- #1010 Iron Leaves
-- #1011 Dipplin
-- #1012 Poltchageist
-- #1013 Sinistcha
-- #1014 Okidogi
-- #1015 Munkidori
-- #1016 Fezandipiti
-- #1017 Ogerpon
-- #1018 Archaludon
-- #1019 Hydrapple
-- #1020 Gouging Fire
-- #1021 Raging Bolt
-- #1022 Iron Boulder
-- #1023 Iron Crown
-- #1024 Terapagos
-- #1025 Pecharunt
+## BDSP — Sinnoh (2)
 
-## PLZA (364)
+- #078 Goldeen (Gen 1)
+- #079 Seaking (Gen 1)
 
-- #0001 Bulbasaur
-- #0002 Ivysaur
-- #0003 Venusaur
-- #0004 Charmander
-- #0005 Charmeleon
-- #0006 Charizard
-- #0007 Squirtle
-- #0008 Wartortle
-- #0009 Blastoise
-- #0013 Weedle
-- #0014 Kakuna
-- #0015 Beedrill
-- #0016 Pidgey
-- #0017 Pidgeotto
-- #0018 Pidgeot
-- #0023 Ekans
-- #0024 Arbok
-- #0025 Pikachu
-- #0026 Raichu
-- #0035 Clefairy
-- #0036 Clefable
-- #0039 Jigglypuff
-- #0040 Wigglytuff
-- #0041 Zubat
-- #0042 Golbat
-- #0052 Meowth
-- #0053 Persian
-- #0056 Mankey
-- #0057 Primeape
-- #0063 Abra
-- #0064 Kadabra
-- #0065 Alakazam
-- #0066 Machop
-- #0067 Machoke
-- #0068 Machamp
-- #0069 Bellsprout
-- #0070 Weepinbell
-- #0071 Victreebel
-- #0079 Slowpoke
-- #0080 Slowbro
-- #0083 Farfetch’d
-- #0092 Gastly
-- #0093 Haunter
-- #0094 Gengar
-- #0095 Onix
-- #0104 Cubone
-- #0105 Marowak
-- #0115 Kangaskhan
-- #0120 Staryu
-- #0121 Starmie
-- #0122 Mr. Mime
-- #0123 Scyther
-- #0127 Pinsir
-- #0129 Magikarp
-- #0130 Gyarados
-- #0133 Eevee
-- #0134 Vaporeon
-- #0135 Jolteon
-- #0136 Flareon
-- #0137 Porygon
-- #0142 Aerodactyl
-- #0147 Dratini
-- #0148 Dragonair
-- #0149 Dragonite
-- #0150 Mewtwo
-- #0152 Chikorita
-- #0153 Bayleef
-- #0154 Meganium
-- #0158 Totodile
-- #0159 Croconaw
-- #0160 Feraligatr
-- #0167 Spinarak
-- #0168 Ariados
-- #0169 Crobat
-- #0172 Pichu
-- #0173 Cleffa
-- #0174 Igglybuff
-- #0179 Mareep
-- #0180 Flaaffy
-- #0181 Ampharos
-- #0196 Espeon
-- #0197 Umbreon
-- #0199 Slowking
-- #0208 Steelix
-- #0211 Qwilfish
-- #0212 Scizor
-- #0214 Heracross
-- #0225 Delibird
-- #0227 Skarmory
-- #0228 Houndour
-- #0229 Houndoom
-- #0233 Porygon2
-- #0246 Larvitar
-- #0247 Pupitar
-- #0248 Tyranitar
-- #0252 Treecko
-- #0253 Grovyle
-- #0254 Sceptile
-- #0255 Torchic
-- #0256 Combusken
-- #0257 Blaziken
-- #0258 Mudkip
-- #0259 Marshtomp
-- #0260 Swampert
-- #0280 Ralts
-- #0281 Kirlia
-- #0282 Gardevoir
-- #0302 Sableye
-- #0303 Mawile
-- #0304 Aron
-- #0305 Lairon
-- #0306 Aggron
-- #0307 Meditite
-- #0308 Medicham
-- #0309 Electrike
-- #0310 Manectric
-- #0315 Roselia
-- #0316 Gulpin
-- #0317 Swalot
-- #0318 Carvanha
-- #0319 Sharpedo
-- #0322 Numel
-- #0323 Camerupt
-- #0325 Spoink
-- #0326 Grumpig
-- #0333 Swablu
-- #0334 Altaria
-- #0335 Zangoose
-- #0336 Seviper
-- #0349 Feebas
-- #0350 Milotic
-- #0352 Kecleon
-- #0353 Shuppet
-- #0354 Banette
-- #0358 Chimecho
-- #0359 Absol
-- #0361 Snorunt
-- #0362 Glalie
-- #0371 Bagon
-- #0372 Shelgon
-- #0373 Salamence
-- #0374 Beldum
-- #0375 Metang
-- #0376 Metagross
-- #0380 Latias
-- #0381 Latios
-- #0382 Kyogre
-- #0383 Groudon
-- #0384 Rayquaza
-- #0396 Starly
-- #0397 Staravia
-- #0398 Staraptor
-- #0406 Budew
-- #0407 Roserade
-- #0427 Buneary
-- #0428 Lopunny
-- #0433 Chingling
-- #0439 Mime Jr.
-- #0443 Gible
-- #0444 Gabite
-- #0445 Garchomp
-- #0447 Riolu
-- #0448 Lucario
-- #0449 Hippopotas
-- #0450 Hippowdon
-- #0459 Snover
-- #0460 Abomasnow
-- #0470 Leafeon
-- #0471 Glaceon
-- #0474 Porygon-Z
-- #0475 Gallade
-- #0478 Froslass
-- #0479 Rotom
-- #0485 Heatran
-- #0491 Darkrai
-- #0498 Tepig
-- #0499 Pignite
-- #0500 Emboar
-- #0504 Patrat
-- #0505 Watchog
-- #0509 Purrloin
-- #0510 Liepard
-- #0511 Pansage
-- #0512 Simisage
-- #0513 Pansear
-- #0514 Simisear
-- #0515 Panpour
-- #0516 Simipour
-- #0517 Munna
-- #0518 Musharna
-- #0529 Drilbur
-- #0530 Excadrill
-- #0531 Audino
-- #0538 Throh
-- #0539 Sawk
-- #0543 Venipede
-- #0544 Whirlipede
-- #0545 Scolipede
-- #0551 Sandile
-- #0552 Krokorok
-- #0553 Krookodile
-- #0559 Scraggy
-- #0560 Scrafty
-- #0562 Yamask
-- #0563 Cofagrigus
-- #0568 Trubbish
-- #0569 Garbodor
-- #0582 Vanillite
-- #0583 Vanillish
-- #0584 Vanilluxe
-- #0587 Emolga
-- #0590 Foongus
-- #0591 Amoonguss
-- #0602 Tynamo
-- #0603 Eelektrik
-- #0604 Eelektross
-- #0607 Litwick
-- #0608 Lampent
-- #0609 Chandelure
-- #0615 Cryogonal
-- #0618 Stunfisk
-- #0622 Golett
-- #0623 Golurk
-- #0638 Cobalion
-- #0639 Terrakion
-- #0640 Virizion
-- #0647 Keldeo
-- #0648 Meloetta
-- #0649 Genesect
-- #0650 Chespin
-- #0651 Quilladin
-- #0652 Chesnaught
-- #0653 Fennekin
-- #0654 Braixen
-- #0655 Delphox
-- #0656 Froakie
-- #0657 Frogadier
-- #0658 Greninja
-- #0659 Bunnelby
-- #0660 Diggersby
-- #0661 Fletchling
-- #0662 Fletchinder
-- #0663 Talonflame
-- #0664 Scatterbug
-- #0665 Spewpa
-- #0666 Vivillon
-- #0667 Litleo
-- #0668 Pyroar
-- #0669 Flabébé
-- #0670 Floette
-- #0671 Florges
-- #0672 Skiddo
-- #0673 Gogoat
-- #0674 Pancham
-- #0675 Pangoro
-- #0676 Furfrou
-- #0677 Espurr
-- #0678 Meowstic
-- #0679 Honedge
-- #0680 Doublade
-- #0681 Aegislash
-- #0682 Spritzee
-- #0683 Aromatisse
-- #0684 Swirlix
-- #0685 Slurpuff
-- #0686 Inkay
-- #0687 Malamar
-- #0688 Binacle
-- #0689 Barbaracle
-- #0690 Skrelp
-- #0691 Dragalge
-- #0692 Clauncher
-- #0693 Clawitzer
-- #0694 Helioptile
-- #0695 Heliolisk
-- #0696 Tyrunt
-- #0697 Tyrantrum
-- #0698 Amaura
-- #0699 Aurorus
-- #0700 Sylveon
-- #0701 Hawlucha
-- #0702 Dedenne
-- #0703 Carbink
-- #0704 Goomy
-- #0705 Sliggoo
-- #0706 Goodra
-- #0707 Klefki
-- #0708 Phantump
-- #0709 Trevenant
-- #0710 Pumpkaboo
-- #0711 Gourgeist
-- #0712 Bergmite
-- #0713 Avalugg
-- #0714 Noibat
-- #0715 Noivern
-- #0716 Xerneas
-- #0717 Yveltal
-- #0718 Zygarde
-- #0719 Diancie
-- #0720 Hoopa
-- #0721 Volcanion
-- #0739 Crabrawler
-- #0740 Crabominable
-- #0767 Wimpod
-- #0768 Golisopod
-- #0769 Sandygast
-- #0770 Palossand
-- #0778 Mimikyu
-- #0780 Drampa
-- #0801 Magearna
-- #0802 Marshadow
-- #0807 Zeraora
-- #0808 Meltan
-- #0809 Melmetal
-- #0821 Rookidee
-- #0822 Corvisquire
-- #0823 Corviknight
-- #0827 Nickit
-- #0828 Thievul
-- #0848 Toxel
-- #0849 Toxtricity
-- #0852 Clobbopus
-- #0853 Grapploct
-- #0863 Perrserker
-- #0865 Sirfetch’d
-- #0866 Mr. Rime
-- #0867 Runerigus
-- #0870 Falinks
-- #0876 Indeedee
-- #0877 Morpeko
-- #0900 Kleavor
-- #0904 Overqwil
-- #0926 Fidough
-- #0927 Dachsbun
-- #0931 Squawkabilly
-- #0932 Nacli
-- #0933 Naclstack
-- #0934 Garganacl
-- #0935 Charcadet
-- #0936 Armarouge
-- #0937 Ceruledge
-- #0942 Maschiff
-- #0943 Mabosstiff
-- #0944 Shroodle
-- #0945 Grafaiai
-- #0951 Capsakid
-- #0952 Scovillain
-- #0957 Tinkatink
-- #0958 Tinkatuff
-- #0959 Tinkaton
-- #0967 Cyclizar
-- #0969 Glimmet
-- #0970 Glimmora
-- #0971 Greavard
-- #0972 Houndstone
-- #0973 Flamigo
-- #0977 Dondozo
-- #0978 Tatsugiri
-- #0979 Annihilape
-- #0996 Frigibax
-- #0997 Arctibax
-- #0998 Baxcalibur
-- #0999 Gimmighoul
-- #1000 Gholdengo
+## BDSP — Other compatible, no regional Pokédex number (66)
 
-## None of these six (0)
+- — Caterpie (Gen 1)
+- — Metapod (Gen 1)
+- — Butterfree (Gen 1)
+- — Rattata (Gen 1)
+- — Raticate (Gen 1)
+- — Spearow (Gen 1)
+- — Fearow (Gen 1)
+- — Nidoran♀ (Gen 1)
+- — Nidorina (Gen 1)
+- — Nidoqueen (Gen 1)
+- — Nidoran♂ (Gen 1)
+- — Nidorino (Gen 1)
+- — Nidoking (Gen 1)
+- — Krabby (Gen 1)
+- — Kingler (Gen 1)
+- — Jynx (Gen 1)
+- — Omanyte (Gen 1)
+- — Omastar (Gen 1)
+- — Kabuto (Gen 1)
+- — Kabutops (Gen 1)
+- — Articuno (Gen 1)
+- — Zapdos (Gen 1)
+- — Moltres (Gen 1)
+- — Mew (Gen 1)
+- — Ledyba (Gen 2)
+- — Ledian (Gen 2)
+- — Natu (Gen 2)
+- — Xatu (Gen 2)
+- — Wobbuffet (Gen 2)
+- — Shuckle (Gen 2)
+- — Corsola (Gen 2)
+- — Smoochum (Gen 2)
+- — Miltank (Gen 2)
+- — Celebi (Gen 2)
+- — Zigzagoon (Gen 3)
+- — Linoone (Gen 3)
+- — Taillow (Gen 3)
+- — Swellow (Gen 3)
+- — Nincada (Gen 3)
+- — Ninjask (Gen 3)
+- — Shedinja (Gen 3)
+- — Whismur (Gen 3)
+- — Loudred (Gen 3)
+- — Exploud (Gen 3)
+- — Skitty (Gen 3)
+- — Delcatty (Gen 3)
+- — Wailmer (Gen 3)
+- — Wailord (Gen 3)
+- — Spinda (Gen 3)
+- — Lunatone (Gen 3)
+- — Solrock (Gen 3)
+- — Baltoy (Gen 3)
+- — Claydol (Gen 3)
+- — Lileep (Gen 3)
+- — Cradily (Gen 3)
+- — Anorith (Gen 3)
+- — Armaldo (Gen 3)
+- — Castform (Gen 3)
+- — Wynaut (Gen 3)
+- — Clamperl (Gen 3)
+- — Huntail (Gen 3)
+- — Gorebyss (Gen 3)
+- — Relicanth (Gen 3)
+- — Regirock (Gen 3)
+- — Regice (Gen 3)
+- — Registeel (Gen 3)
 
+## Legends: Arceus — Hisui (55)
+
+- #053 Paras (Gen 1)
+- #054 Parasect (Gen 1)
+- #023 Ponyta (Gen 1)
+- #024 Rapidash (Gen 1)
+- #125 Lickitung (Gen 1)
+- #095 Tangela (Gen 1)
+- #127 Togepi (Gen 2)
+- #128 Togetic (Gen 2)
+- #142 Unown (Gen 2)
+- #146 Remoraid (Gen 2)
+- #147 Octillery (Gen 2)
+- #165 Mantine (Gen 2)
+- #018 Wurmple (Gen 3)
+- #019 Silcoon (Gen 3)
+- #020 Beautifly (Gen 3)
+- #021 Cascoon (Gen 3)
+- #022 Dustox (Gen 3)
+- #143 Spheal (Gen 3)
+- #144 Sealeo (Gen 3)
+- #145 Walrein (Gen 3)
+- #010 Bidoof (Gen 4)
+- #011 Bibarel (Gen 4)
+- #043 Burmy (Gen 4)
+- #044 Wormadam (Gen 4)
+- #045 Mothim (Gen 4)
+- #066 Cherubi (Gen 4)
+- #067 Cherrim (Gen 4)
+- #152 Glameow (Gen 4)
+- #153 Purugly (Gen 4)
+- #157 Chatot (Gen 4)
+- #148 Skorupi (Gen 4)
+- #149 Drapion (Gen 4)
+- #092 Carnivine (Gen 4)
+- #164 Mantyke (Gen 4)
+- #126 Lickilicky (Gen 4)
+- #096 Tangrowth (Gen 4)
+- #129 Togekiss (Gen 4)
+- #225 Uxie (Gen 4)
+- #226 Mesprit (Gen 4)
+- #227 Azelf (Gen 4)
+- #235 Dialga (Gen 4)
+- #236 Palkia (Gen 4)
+- #229 Regigigas (Gen 4)
+- #237 Giratina (Gen 4)
+- #230 Cresselia (Gen 4)
+- #239 Phione (Gen 4)
+- #240 Manaphy (Gen 4)
+- #241 Shaymin (Gen 4)
+- #238 Arceus (Gen 4)
+- #231 Tornadus (Gen 5)
+- #232 Thundurus (Gen 5)
+- #233 Landorus (Gen 5)
+- #050 Wyrdeer (Gen 8)
+- #203 Sneasler (Gen 8)
+- #234 Enamorus (Gen 8)
+
+## Scarlet/Violet — Paldea (141)
+
+- #055 Psyduck (Gen 1)
+- #056 Golduck (Gen 1)
+- #329 Shellder (Gen 1)
+- #330 Cloyster (Gen 1)
+- #066 Drowzee (Gen 1)
+- #067 Hypno (Gen 1)
+- #207 Voltorb (Gen 1)
+- #208 Electrode (Gen 1)
+- #212 Ditto (Gen 1)
+- #047 Marill (Gen 2)
+- #048 Azumarill (Gen 2)
+- #016 Hoppip (Gen 2)
+- #017 Skiploom (Gen 2)
+- #018 Jumpluff (Gen 2)
+- #031 Sunkern (Gen 2)
+- #032 Sunflora (Gen 2)
+- #232 Murkrow (Gen 2)
+- #114 Misdreavus (Gen 2)
+- #258 Pineco (Gen 2)
+- #259 Forretress (Gen 2)
+- #215 Teddiursa (Gen 2)
+- #216 Ursaring (Gen 2)
+- #122 Phanpy (Gen 2)
+- #123 Donphan (Gen 2)
+- #132 Wingull (Gen 3)
+- #133 Pelipper (Gen 3)
+- #106 Shroomish (Gen 3)
+- #107 Breloom (Gen 3)
+- #116 Makuhita (Gen 3)
+- #117 Hariyama (Gen 3)
+- #046 Azurill (Gen 3)
+- #252 Cacnea (Gen 3)
+- #253 Cacturne (Gen 3)
+- #246 Tropius (Gen 3)
+- #038 Combee (Gen 4)
+- #039 Vespiquen (Gen 4)
+- #051 Buizel (Gen 4)
+- #052 Floatzel (Gen 4)
+- #327 Shellos (Gen 4)
+- #328 Gastrodon (Gen 4)
+- #143 Drifloon (Gen 4)
+- #144 Drifblim (Gen 4)
+- #115 Mismagius (Gen 4)
+- #233 Honchkrow (Gen 4)
+- #226 Stunky (Gen 4)
+- #227 Skuntank (Gen 4)
+- #302 Spiritomb (Gen 4)
+- #175 Croagunk (Gen 4)
+- #176 Toxicroak (Gen 4)
+- #228 Zorua (Gen 5)
+- #229 Zoroark (Gen 5)
+- #370 Deino (Gen 5)
+- #371 Zweilous (Gen 5)
+- #372 Hydreigon (Gen 5)
+- #274 Larvesta (Gen 5)
+- #275 Volcarona (Gen 5)
+- #027 Yungoos (Gen 7)
+- #028 Gumshoos (Gen 7)
+- #344 Mareanie (Gen 7)
+- #345 Toxapex (Gen 7)
+- #081 Bounsweet (Gen 7)
+- #082 Steenee (Gen 7)
+- #083 Tsareena (Gen 7)
+- #313 Oranguru (Gen 7)
+- #314 Passimian (Gen 7)
+- #315 Komala (Gen 7)
+- #091 Rolycoly (Gen 8)
+- #092 Carkol (Gen 8)
+- #093 Coalossal (Gen 8)
+- #270 Silicobra (Gen 8)
+- #271 Sandaconda (Gen 8)
+- #321 Pincurchin (Gen 8)
+- #350 Snom (Gen 8)
+- #351 Frosmoth (Gen 8)
+- #319 Stonjourner (Gen 8)
+- #320 Eiscue (Gen 8)
+- #124 Cufant (Gen 8)
+- #125 Copperajah (Gen 8)
+- #305 Dreepy (Gen 8)
+- #306 Drakloak (Gen 8)
+- #307 Dragapult (Gen 8)
+- #001 Sprigatito (Gen 9)
+- #002 Floragato (Gen 9)
+- #003 Meowscarada (Gen 9)
+- #004 Fuecoco (Gen 9)
+- #005 Crocalor (Gen 9)
+- #006 Skeledirge (Gen 9)
+- #007 Quaxly (Gen 9)
+- #008 Quaxwell (Gen 9)
+- #009 Quaquaval (Gen 9)
+- #010 Lechonk (Gen 9)
+- #011 Oinkologne (Gen 9)
+- #012 Tarountula (Gen 9)
+- #013 Spidops (Gen 9)
+- #014 Nymble (Gen 9)
+- #015 Lokix (Gen 9)
+- #022 Pawmi (Gen 9)
+- #023 Pawmo (Gen 9)
+- #024 Pawmot (Gen 9)
+- #084 Smoliv (Gen 9)
+- #085 Dolliv (Gen 9)
+- #086 Arboliva (Gen 9)
+- #170 Tadbulb (Gen 9)
+- #171 Bellibolt (Gen 9)
+- #177 Wattrel (Gen 9)
+- #178 Kilowattrel (Gen 9)
+- #242 Bramblin (Gen 9)
+- #243 Brambleghast (Gen 9)
+- #249 Klawf (Gen 9)
+- #263 Flittle (Gen 9)
+- #264 Espathra (Gen 9)
+- #288 Wiglett (Gen 9)
+- #289 Wugtrio (Gen 9)
+- #291 Finizen (Gen 9)
+- #292 Palafin (Gen 9)
+- #293 Varoom (Gen 9)
+- #294 Revavroom (Gen 9)
+- #361 Cetoddle (Gen 9)
+- #362 Cetitan (Gen 9)
+- #373 Veluza (Gen 9)
+- #054 Clodsire (Gen 9)
+- #376 Great Tusk (Gen 9)
+- #377 Scream Tail (Gen 9)
+- #378 Brute Bonnet (Gen 9)
+- #379 Flutter Mane (Gen 9)
+- #380 Slither Wing (Gen 9)
+- #381 Sandy Shocks (Gen 9)
+- #382 Iron Treads (Gen 9)
+- #383 Iron Bundle (Gen 9)
+- #384 Iron Hands (Gen 9)
+- #385 Iron Jugulis (Gen 9)
+- #386 Iron Moth (Gen 9)
+- #387 Iron Thorns (Gen 9)
+- #393 Wo-Chien (Gen 9)
+- #394 Chien-Pao (Gen 9)
+- #395 Ting-Lu (Gen 9)
+- #396 Chi-Yu (Gen 9)
+- #397 Roaring Moon (Gen 9)
+- #398 Iron Valiant (Gen 9)
+- #399 Koraidon (Gen 9)
+- #400 Miraidon (Gen 9)
+
+## Scarlet/Violet — Teal Mask DLC (Kitakami) (126)
+
+- #078 Growlithe (Gen 1)
+- #079 Arcanine (Gen 1)
+- #039 Poliwag (Gen 1)
+- #040 Poliwhirl (Gen 1)
+- #041 Poliwrath (Gen 1)
+- #135 Koffing (Gen 1)
+- #136 Weezing (Gen 1)
+- #103 Snorlax (Gen 1)
+- #026 Sentret (Gen 2)
+- #027 Furret (Gen 2)
+- #045 Hoothoot (Gen 2)
+- #046 Noctowl (Gen 2)
+- #084 Sudowoodo (Gen 2)
+- #042 Politoed (Gen 2)
+- #047 Aipom (Gen 2)
+- #003 Yanma (Gen 2)
+- #005 Wooper (Gen 2)
+- #006 Quagsire (Gen 2)
+- #160 Dunsparce (Gen 2)
+- #121 Gligar (Gen 2)
+- #170 Sneasel (Gen 2)
+- #144 Slugma (Gen 2)
+- #145 Magcargo (Gen 2)
+- #050 Swinub (Gen 2)
+- #051 Piloswine (Gen 2)
+- #053 Stantler (Gen 2)
+- #007 Poochyena (Gen 3)
+- #008 Mightyena (Gen 3)
+- #104 Lotad (Gen 3)
+- #105 Lombre (Gen 3)
+- #106 Ludicolo (Gen 3)
+- #054 Seedot (Gen 3)
+- #055 Nuzleaf (Gen 3)
+- #056 Shiftry (Gen 3)
+- #149 Surskit (Gen 3)
+- #150 Masquerain (Gen 3)
+- #107 Nosepass (Gen 3)
+- #009 Volbeat (Gen 3)
+- #010 Illumise (Gen 3)
+- #162 Barboach (Gen 3)
+- #163 Whiscash (Gen 3)
+- #011 Corphish (Gen 3)
+- #012 Crawdaunt (Gen 3)
+- #139 Duskull (Gen 3)
+- #140 Dusclops (Gen 3)
+- #061 Kricketot (Gen 4)
+- #062 Kricketune (Gen 4)
+- #109 Shinx (Gen 4)
+- #110 Luxio (Gen 4)
+- #111 Luxray (Gen 4)
+- #063 Pachirisu (Gen 4)
+- #048 Ambipom (Gen 4)
+- #154 Bronzor (Gen 4)
+- #155 Bronzong (Gen 4)
+- #083 Bonsly (Gen 4)
+- #102 Munchlax (Gen 4)
+- #171 Weavile (Gen 4)
+- #004 Yanmega (Gen 4)
+- #122 Gliscor (Gen 4)
+- #052 Mamoswine (Gen 4)
+- #108 Probopass (Gen 4)
+- #141 Dusknoir (Gen 4)
+- #085 Timburr (Gen 5)
+- #086 Gurdurr (Gen 5)
+- #087 Conkeldurr (Gen 5)
+- #013 Sewaddle (Gen 5)
+- #014 Swadloon (Gen 5)
+- #015 Leavanny (Gen 5)
+- #066 Petilil (Gen 5)
+- #067 Lilligant (Gen 5)
+- #194 Basculin (Gen 5)
+- #181 Ducklett (Gen 5)
+- #182 Swanna (Gen 5)
+- #137 Mienfoo (Gen 5)
+- #138 Mienshao (Gen 5)
+- #186 Pawniard (Gen 5)
+- #187 Bisharp (Gen 5)
+- #112 Grubbin (Gen 7)
+- #113 Charjabug (Gen 7)
+- #114 Vikavolt (Gen 7)
+- #016 Cutiefly (Gen 7)
+- #017 Ribombee (Gen 7)
+- #070 Rockruff (Gen 7)
+- #071 Lycanroc (Gen 7)
+- #129 Mudbray (Gen 7)
+- #130 Mudsdale (Gen 7)
+- #031 Fomantis (Gen 7)
+- #032 Lurantis (Gen 7)
+- #168 Salandit (Gen 7)
+- #169 Salazzle (Gen 7)
+- #131 Jangmo-o (Gen 7)
+- #132 Hakamo-o (Gen 7)
+- #133 Kommo-o (Gen 7)
+- #072 Skwovet (Gen 8)
+- #073 Greedent (Gen 8)
+- #183 Chewtle (Gen 8)
+- #184 Drednaw (Gen 8)
+- #033 Applin (Gen 8)
+- #034 Flapple (Gen 8)
+- #035 Appletun (Gen 8)
+- #185 Cramorant (Gen 8)
+- #090 Arrokuda (Gen 8)
+- #091 Barraskewda (Gen 8)
+- #092 Hatenna (Gen 8)
+- #093 Hattrem (Gen 8)
+- #094 Hatterene (Gen 8)
+- #190 Impidimp (Gen 8)
+- #191 Morgrem (Gen 8)
+- #192 Grimmsnarl (Gen 8)
+- #196 Ursaluna (Gen 8)
+- #195 Basculegion (Gen 8)
+- #097 Tandemaus (Gen 9)
+- #098 Maushold (Gen 9)
+- #074 Toedscool (Gen 9)
+- #075 Toedscruel (Gen 9)
+- #134 Bombirdier (Gen 9)
+- #096 Orthworm (Gen 9)
+- #161 Dudunsparce (Gen 9)
+- #188 Kingambit (Gen 9)
+- #036 Dipplin (Gen 9)
+- #076 Poltchageist (Gen 9)
+- #077 Sinistcha (Gen 9)
+- #197 Okidogi (Gen 9)
+- #198 Munkidori (Gen 9)
+- #199 Fezandipiti (Gen 9)
+- #200 Ogerpon (Gen 9)
+
+## Scarlet/Violet — Indigo Disk DLC (Blueberry) (160)
+
+- #155 Sandshrew (Gen 1)
+- #156 Sandslash (Gen 1)
+- #157 Vulpix (Gen 1)
+- #158 Ninetales (Gen 1)
+- #062 Oddish (Gen 1)
+- #063 Gloom (Gen 1)
+- #064 Vileplume (Gen 1)
+- #008 Venonat (Gen 1)
+- #009 Venomoth (Gen 1)
+- #066 Diglett (Gen 1)
+- #067 Dugtrio (Gen 1)
+- #050 Tentacool (Gen 1)
+- #051 Tentacruel (Gen 1)
+- #096 Geodude (Gen 1)
+- #097 Graveler (Gen 1)
+- #098 Golem (Gen 1)
+- #116 Magnemite (Gen 1)
+- #117 Magneton (Gen 1)
+- #001 Doduo (Gen 1)
+- #002 Dodrio (Gen 1)
+- #143 Seel (Gen 1)
+- #144 Dewgong (Gen 1)
+- #068 Grimer (Gen 1)
+- #069 Muk (Gen 1)
+- #003 Exeggcute (Gen 1)
+- #004 Exeggutor (Gen 1)
+- #093 Hitmonlee (Gen 1)
+- #094 Hitmonchan (Gen 1)
+- #005 Rhyhorn (Gen 1)
+- #006 Rhydon (Gen 1)
+- #017 Chansey (Gen 1)
+- #052 Horsea (Gen 1)
+- #053 Seadra (Gen 1)
+- #011 Electabuzz (Gen 1)
+- #014 Magmar (Gen 1)
+- #022 Tauros (Gen 1)
+- #145 Lapras (Gen 1)
+- #176 Cyndaquil (Gen 2)
+- #177 Quilava (Gen 2)
+- #178 Typhlosion (Gen 2)
+- #078 Chinchou (Gen 2)
+- #079 Lanturn (Gen 2)
+- #065 Bellossom (Gen 2)
+- #025 Girafarig (Gen 2)
+- #151 Snubbull (Gen 2)
+- #152 Granbull (Gen 2)
+- #054 Kingdra (Gen 2)
+- #040 Smeargle (Gen 2)
+- #092 Tyrogue (Gen 2)
+- #095 Hitmontop (Gen 2)
+- #010 Elekid (Gen 2)
+- #013 Magby (Gen 2)
+- #018 Blissey (Gen 2)
+- #059 Slakoth (Gen 3)
+- #060 Vigoroth (Gen 3)
+- #061 Slaking (Gen 3)
+- #119 Plusle (Gen 3)
+- #120 Minun (Gen 3)
+- #086 Torkoal (Gen 3)
+- #044 Trapinch (Gen 3)
+- #045 Vibrava (Gen 3)
+- #046 Flygon (Gen 3)
+- #082 Luvdisc (Gen 3)
+- #191 Turtwig (Gen 4)
+- #192 Grotle (Gen 4)
+- #193 Torterra (Gen 4)
+- #194 Chimchar (Gen 4)
+- #195 Monferno (Gen 4)
+- #196 Infernape (Gen 4)
+- #197 Piplup (Gen 4)
+- #198 Prinplup (Gen 4)
+- #199 Empoleon (Gen 4)
+- #107 Cranidos (Gen 4)
+- #108 Rampardos (Gen 4)
+- #109 Shieldon (Gen 4)
+- #110 Bastiodon (Gen 4)
+- #016 Happiny (Gen 4)
+- #083 Finneon (Gen 4)
+- #084 Lumineon (Gen 4)
+- #118 Magnezone (Gen 4)
+- #007 Rhyperior (Gen 4)
+- #012 Electivire (Gen 4)
+- #015 Magmortar (Gen 4)
+- #200 Snivy (Gen 5)
+- #201 Servine (Gen 5)
+- #202 Serperior (Gen 5)
+- #206 Oshawott (Gen 5)
+- #207 Dewott (Gen 5)
+- #208 Samurott (Gen 5)
+- #023 Blitzle (Gen 5)
+- #024 Zebstrika (Gen 5)
+- #056 Cottonee (Gen 5)
+- #057 Whimsicott (Gen 5)
+- #111 Minccino (Gen 5)
+- #112 Cinccino (Gen 5)
+- #101 Gothita (Gen 5)
+- #102 Gothorita (Gen 5)
+- #103 Gothitelle (Gen 5)
+- #148 Solosis (Gen 5)
+- #149 Duosion (Gen 5)
+- #150 Reuniclus (Gen 5)
+- #038 Deerling (Gen 5)
+- #039 Sawsbuck (Gen 5)
+- #085 Alomomola (Gen 5)
+- #132 Joltik (Gen 5)
+- #133 Galvantula (Gen 5)
+- #140 Axew (Gen 5)
+- #141 Fraxure (Gen 5)
+- #142 Haxorus (Gen 5)
+- #153 Cubchoo (Gen 5)
+- #154 Beartic (Gen 5)
+- #032 Rufflet (Gen 5)
+- #033 Braviary (Gen 5)
+- #034 Vullaby (Gen 5)
+- #035 Mandibuzz (Gen 5)
+- #218 Rowlet (Gen 7)
+- #219 Dartrix (Gen 7)
+- #220 Decidueye (Gen 7)
+- #221 Litten (Gen 7)
+- #222 Torracat (Gen 7)
+- #223 Incineroar (Gen 7)
+- #224 Popplio (Gen 7)
+- #225 Brionne (Gen 7)
+- #226 Primarina (Gen 7)
+- #047 Pikipek (Gen 7)
+- #048 Trumbeak (Gen 7)
+- #049 Toucannon (Gen 7)
+- #074 Oricorio (Gen 7)
+- #090 Dewpider (Gen 7)
+- #091 Araquanid (Gen 7)
+- #058 Comfey (Gen 7)
+- #106 Minior (Gen 7)
+- #055 Bruxish (Gen 7)
+- #227 Grookey (Gen 8)
+- #228 Thwackey (Gen 8)
+- #229 Rillaboom (Gen 8)
+- #230 Scorbunny (Gen 8)
+- #231 Raboot (Gen 8)
+- #232 Cinderace (Gen 8)
+- #233 Sobble (Gen 8)
+- #234 Drizzile (Gen 8)
+- #235 Inteleon (Gen 8)
+- #127 Sinistea (Gen 8)
+- #128 Polteageist (Gen 8)
+- #042 Milcery (Gen 8)
+- #043 Alcremie (Gen 8)
+- #161 Duraludon (Gen 8)
+- #030 Rellor (Gen 9)
+- #031 Rabsca (Gen 9)
+- #026 Farigiraf (Gen 9)
+- #241 Walking Wake (Gen 9)
+- #242 Iron Leaves (Gen 9)
+- #162 Archaludon (Gen 9)
+- #163 Hydrapple (Gen 9)
+- #236 Gouging Fire (Gen 9)
+- #237 Raging Bolt (Gen 9)
+- #239 Iron Boulder (Gen 9)
+- #238 Iron Crown (Gen 9)
+- #240 Terapagos (Gen 9)
+- #243 Pecharunt (Gen 9)
+
+## SV — Other compatible, no regional Pokédex number (10)
+
+- — Raikou (Gen 2)
+- — Entei (Gen 2)
+- — Suicune (Gen 2)
+- — Lugia (Gen 2)
+- — Ho-Oh (Gen 2)
+- — Jirachi (Gen 3)
+- — Deoxys (Gen 3)
+- — Reshiram (Gen 5)
+- — Zekrom (Gen 5)
+- — Kyurem (Gen 5)
+
+## Legends: Z-A — Lumiose City (232)
+
+- #148 Bulbasaur (Gen 1)
+- #149 Ivysaur (Gen 1)
+- #150 Venusaur (Gen 1)
+- #151 Charmander (Gen 1)
+- #152 Charmeleon (Gen 1)
+- #153 Charizard (Gen 1)
+- #154 Squirtle (Gen 1)
+- #155 Wartortle (Gen 1)
+- #156 Blastoise (Gen 1)
+- #018 Weedle (Gen 1)
+- #019 Kakuna (Gen 1)
+- #020 Beedrill (Gen 1)
+- #021 Pidgey (Gen 1)
+- #022 Pidgeotto (Gen 1)
+- #023 Pidgeot (Gen 1)
+- #060 Ekans (Gen 1)
+- #061 Arbok (Gen 1)
+- #053 Pikachu (Gen 1)
+- #054 Raichu (Gen 1)
+- #056 Clefairy (Gen 1)
+- #057 Clefable (Gen 1)
+- #062 Abra (Gen 1)
+- #063 Kadabra (Gen 1)
+- #064 Alakazam (Gen 1)
+- #125 Machop (Gen 1)
+- #126 Machoke (Gen 1)
+- #127 Machamp (Gen 1)
+- #074 Bellsprout (Gen 1)
+- #075 Weepinbell (Gen 1)
+- #076 Victreebel (Gen 1)
+- #137 Slowpoke (Gen 1)
+- #138 Slowbro (Gen 1)
+- #065 Gastly (Gen 1)
+- #066 Haunter (Gen 1)
+- #067 Gengar (Gen 1)
+- #197 Onix (Gen 1)
+- #223 Kangaskhan (Gen 1)
+- #036 Staryu (Gen 1)
+- #037 Starmie (Gen 1)
+- #176 Scyther (Gen 1)
+- #178 Pinsir (Gen 1)
+- #032 Magikarp (Gen 1)
+- #033 Gyarados (Gen 1)
+- #100 Eevee (Gen 1)
+- #101 Vaporeon (Gen 1)
+- #102 Jolteon (Gen 1)
+- #103 Flareon (Gen 1)
+- #192 Aerodactyl (Gen 1)
+- #145 Dratini (Gen 1)
+- #146 Dragonair (Gen 1)
+- #147 Dragonite (Gen 1)
+- #232 Mewtwo (Gen 1)
+- #001 Chikorita (Gen 2)
+- #002 Bayleef (Gen 2)
+- #003 Meganium (Gen 2)
+- #007 Totodile (Gen 2)
+- #008 Croconaw (Gen 2)
+- #009 Feraligatr (Gen 2)
+- #058 Spinarak (Gen 2)
+- #059 Ariados (Gen 2)
+- #052 Pichu (Gen 2)
+- #055 Cleffa (Gen 2)
+- #024 Mareep (Gen 2)
+- #025 Flaaffy (Gen 2)
+- #026 Ampharos (Gen 2)
+- #104 Espeon (Gen 2)
+- #105 Umbreon (Gen 2)
+- #139 Slowking (Gen 2)
+- #198 Steelix (Gen 2)
+- #177 Scizor (Gen 2)
+- #179 Heracross (Gen 2)
+- #168 Delibird (Gen 2)
+- #216 Skarmory (Gen 2)
+- #091 Houndour (Gen 2)
+- #092 Houndoom (Gen 2)
+- #206 Larvitar (Gen 2)
+- #207 Pupitar (Gen 2)
+- #208 Tyranitar (Gen 2)
+- #087 Ralts (Gen 3)
+- #088 Kirlia (Gen 3)
+- #089 Gardevoir (Gen 3)
+- #132 Sableye (Gen 3)
+- #133 Mawile (Gen 3)
+- #199 Aron (Gen 3)
+- #200 Lairon (Gen 3)
+- #201 Aggron (Gen 3)
+- #083 Meditite (Gen 3)
+- #084 Medicham (Gen 3)
+- #085 Electrike (Gen 3)
+- #086 Manectric (Gen 3)
+- #030 Roselia (Gen 3)
+- #140 Carvanha (Gen 3)
+- #141 Sharpedo (Gen 3)
+- #116 Numel (Gen 3)
+- #117 Camerupt (Gen 3)
+- #093 Swablu (Gen 3)
+- #094 Altaria (Gen 3)
+- #111 Shuppet (Gen 3)
+- #112 Banette (Gen 3)
+- #134 Absol (Gen 3)
+- #169 Snorunt (Gen 3)
+- #170 Glalie (Gen 3)
+- #220 Bagon (Gen 3)
+- #221 Shelgon (Gen 3)
+- #222 Salamence (Gen 3)
+- #225 Beldum (Gen 3)
+- #226 Metang (Gen 3)
+- #227 Metagross (Gen 3)
+- #029 Budew (Gen 4)
+- #031 Roserade (Gen 4)
+- #109 Buneary (Gen 4)
+- #110 Lopunny (Gen 4)
+- #128 Gible (Gen 4)
+- #129 Gabite (Gen 4)
+- #130 Garchomp (Gen 4)
+- #135 Riolu (Gen 4)
+- #136 Lucario (Gen 4)
+- #118 Hippopotas (Gen 4)
+- #119 Hippowdon (Gen 4)
+- #172 Snover (Gen 4)
+- #173 Abomasnow (Gen 4)
+- #106 Leafeon (Gen 4)
+- #107 Glaceon (Gen 4)
+- #090 Gallade (Gen 4)
+- #171 Froslass (Gen 4)
+- #004 Tepig (Gen 5)
+- #005 Pignite (Gen 5)
+- #006 Emboar (Gen 5)
+- #027 Patrat (Gen 5)
+- #028 Watchog (Gen 5)
+- #077 Pansage (Gen 5)
+- #078 Simisage (Gen 5)
+- #079 Pansear (Gen 5)
+- #080 Simisear (Gen 5)
+- #081 Panpour (Gen 5)
+- #082 Simipour (Gen 5)
+- #120 Drilbur (Gen 5)
+- #121 Excadrill (Gen 5)
+- #095 Audino (Gen 5)
+- #068 Venipede (Gen 5)
+- #069 Whirlipede (Gen 5)
+- #070 Scolipede (Gen 5)
+- #122 Sandile (Gen 5)
+- #123 Krokorok (Gen 5)
+- #124 Krookodile (Gen 5)
+- #184 Scraggy (Gen 5)
+- #185 Scrafty (Gen 5)
+- #049 Trubbish (Gen 5)
+- #050 Garbodor (Gen 5)
+- #113 Vanillite (Gen 5)
+- #114 Vanillish (Gen 5)
+- #115 Vanilluxe (Gen 5)
+- #180 Emolga (Gen 5)
+- #142 Tynamo (Gen 5)
+- #143 Eelektrik (Gen 5)
+- #144 Eelektross (Gen 5)
+- #189 Litwick (Gen 5)
+- #190 Lampent (Gen 5)
+- #191 Chandelure (Gen 5)
+- #157 Stunfisk (Gen 5)
+- #213 Chespin (Gen 6)
+- #214 Quilladin (Gen 6)
+- #215 Chesnaught (Gen 6)
+- #217 Fennekin (Gen 6)
+- #218 Braixen (Gen 6)
+- #219 Delphox (Gen 6)
+- #209 Froakie (Gen 6)
+- #210 Frogadier (Gen 6)
+- #211 Greninja (Gen 6)
+- #013 Bunnelby (Gen 6)
+- #014 Diggersby (Gen 6)
+- #010 Fletchling (Gen 6)
+- #011 Fletchinder (Gen 6)
+- #012 Talonflame (Gen 6)
+- #015 Scatterbug (Gen 6)
+- #016 Spewpa (Gen 6)
+- #017 Vivillon (Gen 6)
+- #045 Litleo (Gen 6)
+- #046 Pyroar (Gen 6)
+- #038 Flabébé (Gen 6)
+- #039 Floette (Gen 6)
+- #040 Florges (Gen 6)
+- #041 Skiddo (Gen 6)
+- #042 Gogoat (Gen 6)
+- #047 Pancham (Gen 6)
+- #048 Pangoro (Gen 6)
+- #158 Furfrou (Gen 6)
+- #043 Espurr (Gen 6)
+- #044 Meowstic (Gen 6)
+- #071 Honedge (Gen 6)
+- #072 Doublade (Gen 6)
+- #073 Aegislash (Gen 6)
+- #096 Spritzee (Gen 6)
+- #097 Aromatisse (Gen 6)
+- #098 Swirlix (Gen 6)
+- #099 Slurpuff (Gen 6)
+- #159 Inkay (Gen 6)
+- #160 Malamar (Gen 6)
+- #034 Binacle (Gen 6)
+- #035 Barbaracle (Gen 6)
+- #161 Skrelp (Gen 6)
+- #162 Dragalge (Gen 6)
+- #163 Clauncher (Gen 6)
+- #164 Clawitzer (Gen 6)
+- #202 Helioptile (Gen 6)
+- #203 Heliolisk (Gen 6)
+- #193 Tyrunt (Gen 6)
+- #194 Tyrantrum (Gen 6)
+- #195 Amaura (Gen 6)
+- #196 Aurorus (Gen 6)
+- #108 Sylveon (Gen 6)
+- #181 Hawlucha (Gen 6)
+- #051 Dedenne (Gen 6)
+- #131 Carbink (Gen 6)
+- #165 Goomy (Gen 6)
+- #166 Sliggoo (Gen 6)
+- #167 Goodra (Gen 6)
+- #188 Klefki (Gen 6)
+- #182 Phantump (Gen 6)
+- #183 Trevenant (Gen 6)
+- #204 Pumpkaboo (Gen 6)
+- #205 Gourgeist (Gen 6)
+- #174 Bergmite (Gen 6)
+- #175 Avalugg (Gen 6)
+- #186 Noibat (Gen 6)
+- #187 Noivern (Gen 6)
+- #228 Xerneas (Gen 6)
+- #229 Yveltal (Gen 6)
+- #230 Zygarde (Gen 6)
+- #231 Diancie (Gen 6)
+- #224 Drampa (Gen 7)
+- #212 Falinks (Gen 8)
+
+## Legends: Z-A — Mega Dimension DLC (Hyperspace) (132)
+
+- #077 Jigglypuff (Gen 1)
+- #078 Wigglytuff (Gen 1)
+- #094 Zubat (Gen 1)
+- #095 Golbat (Gen 1)
+- #004 Meowth (Gen 1)
+- #005 Persian (Gen 1)
+- #001 Mankey (Gen 1)
+- #002 Primeape (Gen 1)
+- #007 Farfetch’d (Gen 1)
+- #009 Cubone (Gen 1)
+- #010 Marowak (Gen 1)
+- #109 Mr. Mime (Gen 1)
+- #011 Porygon (Gen 1)
+- #096 Crobat (Gen 2)
+- #076 Igglybuff (Gen 2)
+- #037 Qwilfish (Gen 2)
+- #012 Porygon2 (Gen 2)
+- #039 Treecko (Gen 3)
+- #040 Grovyle (Gen 3)
+- #041 Sceptile (Gen 3)
+- #042 Torchic (Gen 3)
+- #043 Combusken (Gen 3)
+- #044 Blaziken (Gen 3)
+- #045 Mudkip (Gen 3)
+- #046 Marshtomp (Gen 3)
+- #047 Swampert (Gen 3)
+- #092 Gulpin (Gen 3)
+- #093 Swalot (Gen 3)
+- #084 Spoink (Gen 3)
+- #085 Grumpig (Gen 3)
+- #106 Zangoose (Gen 3)
+- #107 Seviper (Gen 3)
+- #048 Feebas (Gen 3)
+- #049 Milotic (Gen 3)
+- #027 Kecleon (Gen 3)
+- #051 Chimecho (Gen 3)
+- #126 Latias (Gen 3)
+- #127 Latios (Gen 3)
+- #128 Kyogre (Gen 3)
+- #129 Groudon (Gen 3)
+- #130 Rayquaza (Gen 3)
+- #081 Starly (Gen 4)
+- #082 Staravia (Gen 4)
+- #083 Staraptor (Gen 4)
+- #050 Chingling (Gen 4)
+- #108 Mime Jr. (Gen 4)
+- #013 Porygon-Z (Gen 4)
+- #022 Rotom (Gen 4)
+- #113 Heatran (Gen 4)
+- #125 Darkrai (Gen 4)
+- #053 Purrloin (Gen 5)
+- #054 Liepard (Gen 5)
+- #055 Munna (Gen 5)
+- #056 Musharna (Gen 5)
+- #057 Throh (Gen 5)
+- #058 Sawk (Gen 5)
+- #059 Yamask (Gen 5)
+- #060 Cofagrigus (Gen 5)
+- #111 Foongus (Gen 5)
+- #112 Amoonguss (Gen 5)
+- #029 Cryogonal (Gen 5)
+- #071 Golett (Gen 5)
+- #072 Golurk (Gen 5)
+- #115 Cobalion (Gen 5)
+- #116 Terrakion (Gen 5)
+- #117 Virizion (Gen 5)
+- #118 Keldeo (Gen 5)
+- #119 Meloetta (Gen 5)
+- #120 Genesect (Gen 5)
+- #121 Hoopa (Gen 6)
+- #114 Volcanion (Gen 6)
+- #087 Crabrawler (Gen 7)
+- #088 Crabominable (Gen 7)
+- #062 Wimpod (Gen 7)
+- #063 Golisopod (Gen 7)
+- #025 Sandygast (Gen 7)
+- #026 Palossand (Gen 7)
+- #068 Mimikyu (Gen 7)
+- #131 Magearna (Gen 7)
+- #122 Marshadow (Gen 7)
+- #132 Zeraora (Gen 7)
+- #123 Meltan (Gen 7)
+- #124 Melmetal (Gen 7)
+- #073 Rookidee (Gen 8)
+- #074 Corvisquire (Gen 8)
+- #075 Corviknight (Gen 8)
+- #064 Nickit (Gen 8)
+- #065 Thievul (Gen 8)
+- #102 Toxel (Gen 8)
+- #103 Toxtricity (Gen 8)
+- #066 Clobbopus (Gen 8)
+- #067 Grapploct (Gen 8)
+- #006 Perrserker (Gen 8)
+- #008 Sirfetch’d (Gen 8)
+- #110 Mr. Rime (Gen 8)
+- #061 Runerigus (Gen 8)
+- #052 Indeedee (Gen 8)
+- #070 Morpeko (Gen 8)
+- #069 Kleavor (Gen 8)
+- #038 Overqwil (Gen 8)
+- #079 Fidough (Gen 9)
+- #080 Dachsbun (Gen 9)
+- #086 Squawkabilly (Gen 9)
+- #089 Nacli (Gen 9)
+- #090 Naclstack (Gen 9)
+- #091 Garganacl (Gen 9)
+- #097 Charcadet (Gen 9)
+- #098 Armarouge (Gen 9)
+- #099 Ceruledge (Gen 9)
+- #100 Maschiff (Gen 9)
+- #101 Mabosstiff (Gen 9)
+- #104 Shroodle (Gen 9)
+- #105 Grafaiai (Gen 9)
+- #014 Capsakid (Gen 9)
+- #015 Scovillain (Gen 9)
+- #016 Tinkatink (Gen 9)
+- #017 Tinkatuff (Gen 9)
+- #018 Tinkaton (Gen 9)
+- #019 Cyclizar (Gen 9)
+- #020 Glimmet (Gen 9)
+- #021 Glimmora (Gen 9)
+- #023 Greavard (Gen 9)
+- #024 Houndstone (Gen 9)
+- #028 Flamigo (Gen 9)
+- #030 Dondozo (Gen 9)
+- #031 Tatsugiri (Gen 9)
+- #003 Annihilape (Gen 9)
+- #032 Frigibax (Gen 9)
+- #033 Arctibax (Gen 9)
+- #034 Baxcalibur (Gen 9)
+- #035 Gimmighoul (Gen 9)
+- #036 Gholdengo (Gen 9)
 
