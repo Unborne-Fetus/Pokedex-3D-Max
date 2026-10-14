@@ -46,6 +46,14 @@ const hash = bytes => crypto.createHash("sha1").update(
 
 (async () => {
   const lokix = fixture(1025), fuecoco = fixture(1013), caterpie = fixture(10);
+  const egg = fixture(0);
+  const eggModel = {dex:494,sourceGame:"swsh",sourceModelId:0,eggPlaceholder:true};
+  assert.equal((await validator.verify(eggModel,egg)).sourceModelId,0);
+  await assert.rejects(validator.verify({dex:494,sourceGame:"swsh",sourceModelId:0},egg),/Egg/);
+  await assert.rejects(validator.verify({...eggModel,dex:493},egg),/Invalid Egg placeholder/);
+  await assert.rejects(validator.verify({...eggModel,sourceGame:"sv"},egg),/Invalid Egg placeholder/);
+  await assert.rejects(validator.verify({...eggModel,sourceModelId:1},egg),/Invalid Egg placeholder/);
+  await assert.rejects(validator.verify({...eggModel},caterpie),/Invalid Egg placeholder/);
   assert.equal((await validator.verify({dex:920,sourceGame:"SV-Poke",sourceModelId:1025}, lokix)).sourceModelId,1025);
   await assert.rejects(validator.verify({dex:1025,sourceGame:"SV-Poke",sourceModelId:1025},lokix),/Wrong Pokémon/);
   await assert.rejects(validator.verify({dex:801,sourceGame:"SV-Poke",sourceModelId:801},fixture(801)),/Wrong Pokémon/);
