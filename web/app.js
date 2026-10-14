@@ -246,9 +246,12 @@ const gfpakOrientationSelect = document.createElement("select");
 gfpakOrientationSelect.id = "gfpakOrientation";
 gfpakOrientationSelect.setAttribute("aria-label", "GFPAK model rotation");
 for (const [value, label] of [
-  ["0deg 90deg 0deg", "Original"], ["90deg 90deg 0deg", "X +90°"],
-  ["-90deg 90deg 0deg", "X -90°"], ["180deg 90deg 0deg", "X 180°"],
-  ["0deg 0deg 0deg", "Y 0°"], ["0deg 180deg 0deg", "Y 180°"]
+  ["0deg 0deg 0deg", "Original"], ["0deg 90deg 0deg", "X +90°"],
+  ["0deg -90deg 0deg", "X -90°"], ["0deg 180deg 0deg", "X 180°"],
+  ["0deg 0deg 90deg", "Y +90°"], ["0deg 0deg 180deg", "Y 180°"],
+  ["90deg 90deg 0deg", "Legacy rotation 1"],
+  ["-90deg 90deg 0deg", "Legacy rotation 2"],
+  ["180deg 90deg 0deg", "Legacy rotation 3"]
 ]) {
   const option = document.createElement("option");
   option.value = value; option.textContent = label;
@@ -278,7 +281,7 @@ async function gfpakStorage(mode, value) {
         ? tx.objectStore("models").put({
             dex: value.dex, name: value.name, sourceGame: value.sourceGame,
             sourceModelId: value.sourceModelId, file: value.file,
-            orientation: value.orientation, githubPublished: value.githubPublished === true,
+            orientation: value.orientation, orientationVersion: value.orientationVersion, githubPublished: value.githubPublished === true,
             eggPlaceholder: value.eggPlaceholder === true
           })
         : tx.objectStore("models").getAll();
@@ -293,6 +296,7 @@ async function gfpakStorage(mode, value) {
 gfpakOrientationSelect.addEventListener("change", async () => {
   if (!currentModel?.gfpakImport) return;
   currentModel.orientation = gfpakOrientationSelect.value;
+  currentModel.orientationVersion = 2;
   viewer.orientation = currentModel.orientation;
   if (currentModel.file instanceof File) {
     try { await gfpakStorage("save", currentModel); }
@@ -763,8 +767,15 @@ function selectModel(index, remember = true) {
   const model = filtered[selectedIndex];
   if (remember) rememberViewedDex(model.dex);
   gfpakOrientationLabel.hidden = !model.gfpakImport;
-  gfpakOrientationSelect.value = model.orientation || "0deg 90deg 0deg";
-  viewer.orientation = model.gfpakImport ? gfpakOrientationSelect.value : "0deg 90deg 0deg";
+  const isGfpak = model.gfpakImport || model.sourceFormat === "gfpak-zip";
+  model.gfpakImport = !!isGfpak;
+  gfpakOrientationLabel.hidden = !isGfpak;
+  if (isGfpak) {
+    model.orientation = window.POKEDEX3D_GFPAK_ZIP.orientation(model);
+    model.orientationVersion = 2;
+  }
+  gfpakOrientationSelect.value = model.orientation || "0deg 0deg 0deg";
+  viewer.orientation = isGfpak ? model.orientation : "0deg 90deg 0deg";
 
   dexEl.textContent = "#" + String(model.dex).padStart(4, "0");
   nameEl.textContent = prettyName(model);
@@ -1120,7 +1131,7 @@ gfpakZipFile.addEventListener("change", async () => {
       "This replaces the local Victini preview; it does not change the original ZIP."
     )) return;
     imported.gfpakImport = true;
-    imported.orientation = "0deg 90deg 0deg";
+    imported.orientation = window.POKEDEX3D_GFPAK_ZIP.orientation(imported);
     let saved = false;
     try { await gfpakStorage("save", imported); saved = true; }
     catch (error) { console.warn("GFPAK import could not persist", error); }

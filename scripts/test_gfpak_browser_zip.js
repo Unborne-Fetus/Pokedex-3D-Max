@@ -81,9 +81,16 @@ async function check(method) {
   assert.equal(result.name, 'Indeedee');
   assert.equal(result.idleAnimation, 'battle_idle');
   assert.equal(result.sourceModelId, 942);
+  assert.equal(result.orientation, '0deg 0deg 0deg');
+  assert.equal(result.orientationVersion, 2);
 }
 
 (async()=>{
+  const orientation = sandbox.window.POKEDEX3D_GFPAK_ZIP.orientation;
+  assert.equal(orientation({}), '0deg 0deg 0deg');
+  assert.equal(orientation({orientation:'0deg 90deg 0deg'}), '0deg 0deg 0deg');
+  assert.equal(orientation({orientation:'0deg 90deg 0deg',orientationVersion:2}), '0deg 90deg 0deg');
+  assert.equal(orientation({orientation:'90deg 90deg 0deg'}), '90deg 90deg 0deg');
   await check(false);
   if (typeof DecompressionStream !== 'undefined') await check(true);
   const eggMeta = {...meta, sourceGame:'swsh', selectedModel:'pm0000_resource_0009.gfbmdl'};

@@ -79,6 +79,15 @@
     return result;
   }
 
+  // model-viewer uses roll/pitch/yaw; a 90-degree pitch tilts Y-up
+  // native GFPAK exports onto their backs. Migrate the old automatic tilt,
+  // while preserving deliberate rotations made with the updated controls.
+  function orientation(model) {
+    const value = model?.orientation;
+    return !value || (model?.orientationVersion !== 2 && value === '0deg 90deg 0deg')
+      ? '0deg 0deg 0deg' : value;
+  }
+
   async function read(file, options = {}) {
     if (!file || file.size <= 0 || file.size > MAX_ZIP)
       throw Error('Select a GFPAK ZIP no larger than 512 MiB');
@@ -110,7 +119,7 @@
     const buffer = glb.buffer.slice(glb.byteOffset, glb.byteOffset + glb.byteLength);
     const model = {
       dex, form:'regular', sourceGame:game, sourceModelId:modelId,
-      eggPlaceholder,
+      eggPlaceholder, orientation:'0deg 0deg 0deg', orientationVersion:2,
       name: window.POKEDEX3D_NAMES?.[dex] || '#' + String(dex).padStart(4, '0'),
       url:'web/models/switch/' + String(dex).padStart(4, '0') + '/regular.glb',
       file: new File([buffer], 'regular.glb', {type:'model/gltf-binary'}),
@@ -128,5 +137,5 @@
     return model;
   }
 
-  window.POKEDEX3D_GFPAK_ZIP = Object.freeze({read});
+  window.POKEDEX3D_GFPAK_ZIP = Object.freeze({read, orientation});
 })();

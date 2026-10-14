@@ -43,6 +43,7 @@
         form: "regular", url: url.href, ready: true, valid: true,
         remoteSwitch: true, githubTemporary: true, gfpakImport: row.gfpakImport === true,
         orientation: typeof row.orientation === "string" ? row.orientation : "0deg 90deg 0deg",
+        orientationVersion: row.orientationVersion,
         sourceGame: row.sourceGame || null,
         sourceModelId: row.eggPlaceholder === true ? 0 : (Number(row.sourceModelId) || null),
         eggPlaceholder: row.eggPlaceholder === true,
@@ -171,7 +172,9 @@
       sourceModelId: model.eggPlaceholder === true ? 0 : (Number(model.sourceModelId) || null),
       eggPlaceholder: model.eggPlaceholder === true,
       gfpakImport: model.gfpakImport === true,
-      orientation: model.orientation || "0deg 90deg 0deg",
+      orientation: model.gfpakImport
+        ? window.POKEDEX3D_GFPAK_ZIP.orientation(model) : model.orientation || "0deg 90deg 0deg",
+      orientationVersion: model.gfpakImport ? 2 : model.orientationVersion,
       idleAnimation: model.idleAnimation || null,
       updatedAt: now,
     };
