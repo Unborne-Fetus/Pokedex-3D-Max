@@ -85,6 +85,27 @@ button:hover, select:hover { background: #1a2b45; }
 #animationSelect { width: clamp(130px, 16vw, 240px); max-width: 100%; }
 #animationSelect:disabled { opacity: .65; cursor: not-allowed; }
 
+.gfpak-batch-results {
+  margin: 9px 0;
+  border: 1px solid #31405a;
+  border-radius: 9px;
+  padding: 8px 10px;
+  background: #101c2c;
+  color: #dbe8fa;
+  font-size: .78rem;
+}
+.gfpak-batch-results[hidden] { display: none; }
+.gfpak-batch-results summary { cursor: pointer; font-weight: 600; }
+.gfpak-batch-results ul {
+  list-style: none;
+  padding: 0;
+  margin: 7px 0 0;
+  max-height: 190px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+.gfpak-batch-results li { padding: 5px 0; border-top: 1px solid #31405a; }
+
 .github-storage-panel {
   display: grid;
   gap: 7px;
