@@ -110,10 +110,21 @@ def resolve_identity(metadata: dict, game_override: str | None, dex_override: in
     return dex, model_id, game
 
 
-def inspect_converted_glb(path: Path) -> tuple[list[dict], str]:
+def inspect_converted_glb(path: Path, *, egg_placeholder: bool = False) -> tuple[list[dict], str]:
     doc = parse_glb_doc(path)
     if not doc.get("meshes") or not doc.get("nodes"):
         raise ImportErrorWithAdvice("GLB has no model geometry or scene nodes")
+    if egg_placeholder:
+        embedded_ids = {
+            int(match) for group in ("images", "meshes", "nodes", "materials")
+            for item in (doc.get(group) or [])
+            if isinstance(item, dict)
+            for match in MODEL_ID.findall(str(item.get("name") or ""))
+        }
+        if embedded_ids != {0}:
+            raise ImportErrorWithAdvice(
+                "Egg placeholder must contain original pm0000 geometry, not a different Pokémon."
+            )
     if not glb_textures_complete(path):
         raise ImportErrorWithAdvice(
             "GLB is missing base-color textures. Existing Pokédex models were preserved."
@@ -191,7 +202,9 @@ def import_archive(
             validated = Path(temporary) / "regular.glb"
             with archive.open(info) as data, validated.open("wb") as output:
                 shutil.copyfileobj(data, output, length=1024 * 1024)
-            animations, idle = inspect_converted_glb(validated)
+            animations, idle = inspect_converted_glb(
+                validated, egg_placeholder=model_id == 0 and dex == 494 and game == "swsh"
+            )
             entry = {
                 "dex": dex,
                 "modelId": model_id,
