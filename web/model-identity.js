@@ -87,8 +87,23 @@
     const original = sha && window.POKEDEX3D_SOURCE_PROVENANCE?.[sha];
     const embedded = embeddedModelId(doc);
     const statedId = Number(model?.sourceModelId || model?.modelId || 0);
-    const provenId = original ? Number(original[0]) : 0;
+    const provenId = original ? Number(original[0]) : null;
     const provenGame = original ? gameName(original[1]) : null;
+    const game = provenGame || gameName(model?.sourceGame || model?.source);
+    if (model?.eggPlaceholder === true) {
+      // Do not make pm0000 a global alias for Victini: it is an Egg.
+      // Require an explicit override, trusted embedded ID, and SWSH origin.
+      if (dex !== 494 || game !== "swsh" || embedded !== 0 ||
+          model.sourceModelId !== 0 || (original && provenId !== 0) ||
+          (provenGame && provenGame !== "swsh")) {
+        throw Error("Invalid Egg placeholder: only Sword/Shield pm0000 may be displayed in Victini #0494");
+      }
+      return { embeddedModelId: 0, sourceGame: "swsh", sourceModelId: 0,
+        eggPlaceholder: true };
+    }
+    if (embedded === 0) {
+      throw Error("pm0000 is an Egg, not a Pokémon. Import it explicitly as a Victini Egg placeholder.");
+    }
     if (provenId && embedded && provenId !== embedded) {
       throw Error("Embedded source ID disagrees with the original game asset");
     }
@@ -96,7 +111,6 @@
       throw Error("GLB contains pm" + embedded + " but the catalog lists pm" + statedId);
     }
     const id = provenId || embedded || statedId;
-    const game = provenGame || gameName(model?.sourceGame || model?.source);
     if (game && id) {
       const actual = nationalDex(id, game);
       if (actual !== dex) {
