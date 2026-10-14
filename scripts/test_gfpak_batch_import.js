@@ -43,7 +43,7 @@ async function main() {
   assert.equal(result.imported,3);
   assert.equal(result.rejected,4);
   assert.equal(result.skipped,1);
-  assert.deepEqual(result.results.map(x=>x.status),
+  assert.deepEqual([...result.results.map(x=>x.status)],
     ['imported','rejected','imported','rejected','rejected','rejected','skipped','imported']);
   assert.match(result.results[3].detail,/Duplicate Pokémon #0519/);
   assert.match(result.results[1].detail,/Bad GFPAK manifest/);
