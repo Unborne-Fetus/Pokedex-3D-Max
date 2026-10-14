@@ -25,6 +25,9 @@ const exportModelManifestBtn = document.querySelector("#exportModelManifest");
 const localModelsFolder = document.querySelector("#localModelsFolder");
 const importGfpakBtn = document.querySelector("#importGfpakZip");
 const gfpakZipFile = document.querySelector("#gfpakZipFile");
+const gfpakBatchResults = document.querySelector("#gfpakBatchResults");
+const gfpakBatchSummary = document.querySelector("#gfpakBatchSummary");
+const gfpakBatchResultsList = document.querySelector("#gfpakBatchResultsList");
 const folderStatus = document.querySelector("#folderStatus");
 const githubStorage = window.POKEDEX3D_GITHUB_STORAGE;
 const githubTokenInput = document.querySelector("#githubToken");
@@ -1119,79 +1122,152 @@ exportModelManifestBtn.addEventListener("click", () => {
   setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
   folderStatus.textContent = "Downloaded a catalog for " + catalog.models + " models. You can upload the JSON to your GitHub model repository; no Actions or billing required.";
 });
-// GFPAK imports are cached locally; when the owner connects GitHub,
-// the verified, self-contained GLB is additionally published to GitHub.
+// Each GFPAK ZIP is validated and cached independently. Batch imports
+// publish sequentially: overlapping GitHub manifest writes would lose entries.
 importGfpakBtn.addEventListener("click", () => gfpakZipFile.click());
 gfpakZipFile.addEventListener("change", async () => {
-  const file = gfpakZipFile.files?.[0];
-  if (!file) return;
-  importGfpakBtn.disabled = true;
-  folderStatus.textContent = "Checking GFPAK Pokémon ZIP, identity, textures and idle…";
-  try {
-    const imported = await window.POKEDEX3D_GFPAK_ZIP.read(file, {
-      targetDex: Number(currentModel?.dex) === 494 ? 494 : null
-    });
-    if (imported.eggPlaceholder && !window.confirm(
-      "This ZIP contains a Pokémon Egg (pm0000), not Victini. " +
-      "Install it in Victini #0494 as a temporary Egg placeholder? " +
-      "This replaces the local Victini preview; it does not change the original ZIP."
-    )) return;
-    imported.gfpakImport = true;
-    imported.orientation = window.POKEDEX3D_GFPAK_ZIP.orientation(imported);
-    let saved = false;
-    try { await gfpakStorage("save", imported); saved = true; }
-    catch (error) { console.warn("GFPAK import could not persist", error); }
+  const files = Array.from(gfpakZipFile.files || []);
+  if (!files.length) return;
 
-    // Local stored import takes priority over the published catalog.
-    // No uploaded or on-disk models are overwritten.
-    localFolderActive = true;
-    models = withMissingSpeciesEntries([imported, ...models.filter(model =>
-      Number(model.dex) !== imported.dex)], false);
-    window.POKEDEX3D_MODELS = models;
-    restoreAnimationCoverage();
-    statusEl.textContent = catalogCoverageText(models);
-    renderCoverage();
-    searchEl.value = "";
-    filtered = [...models];
-    renderList();
-    selectModel(filtered.findIndex(model => Number(model.dex) === imported.dex));
-    folderStatus.textContent = imported.name + " (#" + String(imported.dex).padStart(4, "0") +
-      (saved ? ") saved locally." : ") imported temporarily; browser storage failed.") +
-      (imported.eggPlaceholder ? " Showing Pokémon Egg placeholder, not Victini's model." : "");
-    if (githubStorage.connected() && !imported.eggPlaceholder) {
-      githubBusy = true;
-      refreshGitHubPublishButton();
-      githubStatus.textContent = "Publishing " + imported.name + " to GitHub…";
-      try {
-        const published = await githubStorage.publishModel(imported);
-        imported.githubPublished = true;
-        if (saved) {
-          try { await gfpakStorage("save", imported); }
-          catch (error) { console.warn("Cannot save GitHub sync status", error); }
+  importGfpakBtn.disabled = true;
+  gfpakBatchResults.hidden = true;
+  gfpakBatchResultsList.replaceChildren();
+  const acceptedModels = [];
+  const savedDex = new Set();
+  const published = [];
+  const publishFailures = [];
+  let outcome = null;
+
+  try {
+    outcome = await window.POKEDEX3D_GFPAK_BATCH.run(files, {
+      read: (file, single) => window.POKEDEX3D_GFPAK_ZIP.read(file, {
+        // An Egg placeholder always needs an explicit Victini selection.
+        // Selecting many files must not silently assign eggs to Victini.
+        targetDex: single && Number(currentModel?.dex) === 494 ? 494 : null
+      }),
+      accept: async imported => {
+        if (imported.eggPlaceholder && !window.confirm(
+          "This ZIP contains a Pokémon Egg (pm0000), not Victini. " +
+          "Install it in Victini #0494 as a temporary Egg placeholder? " +
+          "This replaces the local Victini preview; it does not change the original ZIP."
+        )) return {skipped: true, detail: "Egg placeholder import cancelled"};
+        imported.gfpakImport = true;
+        imported.orientation = window.POKEDEX3D_GFPAK_ZIP.orientation(imported);
+        try {
+          await gfpakStorage("save", imported);
+          savedDex.add(imported.dex);
+        } catch (error) {
+          console.warn("GFPAK import could not persist", imported.dex, error);
         }
-        mergeGitHubModels([
-          published,
-          ...models.filter(model => model.githubTemporary && model.dex !== published.dex),
-        ]);
-        folderStatus.textContent = imported.name + " saved locally AND published to GitHub.";
-        githubStatus.textContent = "Published #" + String(imported.dex).padStart(4, "0") +
-          " to GitHub for all visitors.";
-      } catch (error) {
-        githubStatus.textContent = "GitHub publish failed: " + error.message;
-        folderStatus.textContent = imported.name +
-          " remains local. GitHub publish failed; retry with Save selected model.";
-      } finally {
-        githubBusy = false;
-        refreshGitHubPublishButton();
+        acceptedModels.push(imported);
+        return {detail: savedDex.has(imported.dex)
+          ? "Saved locally" : "Imported for this session; browser storage unavailable"};
+      },
+      progress: ({phase, index, total, name, imported, rejected}) => {
+        folderStatus.textContent = phase === "reading"
+          ? "Checking " + index + "/" + total + ": " + name +
+            " (" + imported + " imported, " + rejected + " rejected)…"
+          : "Checked " + index + "/" + total + " ZIPs. " +
+            imported + " imported; " + rejected + " rejected.";
       }
-    } else {
-      githubStatus.textContent = imported.eggPlaceholder
-        ? "Egg placeholder saved locally, not auto-published. Use Save selected model to publish deliberately."
-        : "Model imported locally. Connect GitHub to publish it for everyone.";
+    });
+
+    if (acceptedModels.length) {
+      // Keep earlier local/hosted models for species not included in this batch.
+      // Replace each species just once after all the ZIP checks have finished.
+      const newDex = new Set(acceptedModels.map(model => Number(model.dex)));
+      localFolderActive = true;
+      models = withMissingSpeciesEntries([
+        ...acceptedModels, ...models.filter(model => !newDex.has(Number(model.dex)))
+      ], false);
+      window.POKEDEX3D_MODELS = models;
+      restoreAnimationCoverage();
+      statusEl.textContent = catalogCoverageText(models);
+      renderCoverage();
+      searchEl.value = "";
+      filtered = [...models];
+      renderList();
+      selectModel(filtered.findIndex(model =>
+        Number(model.dex) === Number(acceptedModels[0].dex)));
     }
+
+    // Preserve the existing auto-publish behavior for connected owners.
+    // GitHub's manifest is updated with each successful publish; concurrent
+    // calls would race and could overwrite another Pokémon's inventory entry.
+    if (githubStorage.connected() && acceptedModels.some(model => !model.eggPlaceholder)) {
+      githubBusy = true;
+      githubDisconnectBtn.disabled = true;
+      refreshGitHubPublishButton();
+      const eligible = acceptedModels.filter(model => !model.eggPlaceholder);
+      for (const [index, imported] of eligible.entries()) {
+        githubStatus.textContent = "Publishing " + (index + 1) + "/" +
+          eligible.length + " to GitHub: " + imported.name + "…";
+        try {
+          const entry = await githubStorage.publishModel(imported);
+          published.push(entry);
+          imported.githubPublished = true;
+          if (savedDex.has(imported.dex)) {
+            try { await gfpakStorage("save", imported); }
+            catch (error) { console.warn("Could not save GitHub sync status", error); }
+          }
+        } catch (error) {
+          publishFailures.push({
+            dex: imported.dex, message: String(error?.message || error)
+          });
+          console.warn("Cannot publish GFPAK model", imported.dex, error);
+        }
+      }
+      if (published.length) {
+        const publishedDex = new Set(published.map(model => Number(model.dex)));
+        mergeGitHubModels([
+          ...published, ...models.filter(model =>
+            model.githubTemporary && !publishedDex.has(Number(model.dex)))
+        ]);
+      }
+      githubStatus.textContent = published.length + "/" + eligible.length +
+        " Pokémon published to GitHub." +
+        (publishFailures.length ? " Failed uploads remain locally available." : "");
+    } else {
+      githubStatus.textContent = githubStorage.connected()
+        ? "Egg placeholders are local-only until explicitly published."
+        : "Imports are local. Connect GitHub to publish them for everyone.";
+    }
+
+    const failedUploads = new Map(publishFailures.map(item => [Number(item.dex), item.message]));
+    const publishedDex = new Set(published.map(model => Number(model.dex)));
+    for (const item of outcome.results) {
+      const row = document.createElement("li");
+      const number = Number.isInteger(item.dex)
+        ? " (#" + String(item.dex).padStart(4, "0") + ")" : "";
+      const prefix = item.status === "imported" ? "✓ " :
+        item.status === "skipped" ? "– " : "✗ ";
+      const publishProblem = failedUploads.get(Number(item.dex));
+      const detail = publishProblem
+        ? item.detail + "; GitHub upload failed: " + publishProblem
+        : publishedDex.has(Number(item.dex))
+          ? item.detail + "; published to GitHub" : item.detail;
+      row.textContent = prefix + item.name + number + ": " + detail;
+      gfpakBatchResultsList.appendChild(row);
+    }
+    gfpakBatchSummary.textContent = "GFPAK ZIP results (" +
+      outcome.imported + " imported, " + outcome.rejected + " rejected" +
+      (outcome.skipped ? ", " + outcome.skipped + " skipped" : "") + ")";
+    gfpakBatchResults.hidden = false;
+    folderStatus.textContent = "Finished " + files.length + " ZIP" +
+      (files.length === 1 ? "" : "s") + ": " + outcome.imported +
+      " imported, " + outcome.rejected + " rejected" +
+      (outcome.skipped ? ", " + outcome.skipped + " skipped" : "") +
+      ". " + savedDex.size + " saved on this device." +
+      (published.length ? " " + published.length + " published to GitHub." : "") +
+      " See per-file results below.";
   } catch (error) {
-    folderStatus.textContent = "GFPAK import rejected: " + String(error.message || error);
+    folderStatus.textContent = "GFPAK batch import interrupted: " +
+      String(error?.message || error) + ". Successfully saved models remain available.";
+    console.error("GFPAK batch import interrupted", error);
   } finally {
+    githubBusy = false;
+    githubDisconnectBtn.disabled = false;
+    refreshGitHubPublishButton();
     importGfpakBtn.disabled = false;
     gfpakZipFile.value = "";
   }
