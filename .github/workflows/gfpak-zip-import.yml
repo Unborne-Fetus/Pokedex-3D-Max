@@ -7,6 +7,8 @@ on:
       - 'scripts/import_gfpak_zip.py'
       - 'scripts/test_gfpak_zip_import.py'
       - 'scripts/test_gfpak_browser_zip.js'
+      - 'scripts/test_gfpak_batch_import.js'
+      - 'web/gfpak-batch-import.js'
       - 'web/gfpak-zip-import.js'
       - 'web/local-switch-catalog.js'
       - 'web/app.js'
@@ -38,5 +40,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test offline browser ZIP preview
-        run: node scripts/test_gfpak_browser_zip.js
+      - name: Test offline browser ZIP preview and fault-isolated bulk uploads
+        run: |
+          node scripts/test_gfpak_browser_zip.js
+          node scripts/test_gfpak_batch_import.js
