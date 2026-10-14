@@ -55,7 +55,7 @@ const sandbox = {
     },
     POKEDEX3D_LOCAL_SWITCH: { inspectGlb: async () => ['battle_idle'] },
   },
-  TextDecoder, DataView, Uint8Array, Blob, File, Response, DecompressionStream,
+  TextDecoder, TextEncoder, ArrayBuffer, DataView, Uint8Array, Blob, File, Response, DecompressionStream,
   Error, Set, Map
 };
 vm.runInNewContext(fs.readFileSync('web/gfpak-zip-import.js', 'utf8'), sandbox);
@@ -86,6 +86,26 @@ async function check(method) {
 }
 
 (async()=>{
+  const repair = sandbox.window.POKEDEX3D_GFPAK_ZIP.repairGlb;
+  const document = {asset:{generator:'THREE.GLTFExporter r180'},
+    accessors:[{componentType:5126,max:[255,255,255,255]}, {componentType:5126,max:[1,1,1,1]}],
+    meshes:[{primitives:[{attributes:{POSITION:2,COLOR_0:0}}, {attributes:{POSITION:2,COLOR_0:1}}]}]};
+  const json = Buffer.from(JSON.stringify(document));
+  const padded = Math.ceil(json.length/4)*4;
+  const sample = Buffer.alloc(20+padded+12,32);
+  sample.writeUInt32LE(0x46546c67,0);sample.writeUInt32LE(2,4);
+  sample.writeUInt32LE(sample.length,8);sample.writeUInt32LE(padded,12);
+  sample.writeUInt32LE(0x4e4f534a,16);json.copy(sample,20);
+  const tail = Buffer.from([4,0,0,0,66,73,78,0,1,2,3,4]);tail.copy(sample,20+padded);
+  const input = sample.buffer.slice(sample.byteOffset,sample.byteOffset+sample.byteLength);
+  const fixed = repair(input);
+  const bytes = Buffer.from(fixed); const size = bytes.readUInt32LE(12);
+  const doc = JSON.parse(bytes.subarray(20,20+size));
+  assert.equal(doc.meshes[0].primitives[0].attributes.COLOR_0,undefined);
+  assert.equal(doc.meshes[0].primitives[1].attributes.COLOR_0,1);
+  assert.deepEqual(bytes.subarray(20+size),tail); // Images, rig and clips are unchanged.
+  assert.equal(bytes.readUInt32LE(8),bytes.length);
+  assert.equal(repair(fixed),fixed); // Safe to re-open a repaired saved import.
   const orientation = sandbox.window.POKEDEX3D_GFPAK_ZIP.orientation;
   assert.equal(orientation({}), '0deg 0deg 0deg');
   assert.equal(orientation({orientation:'0deg 90deg 0deg'}), '0deg 0deg 0deg');

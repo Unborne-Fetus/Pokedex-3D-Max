@@ -88,6 +88,42 @@
       ? '0deg 0deg 0deg' : value;
   }
 
+  // Older Three.js exports included native shader masks as COLOR_0 even
+  // though their preview materials had vertexColors disabled. glTF applies
+  // them unconditionally, so 255-valued masks wash out the embedded textures.
+  function repairGlb(buffer) {
+    const view = new DataView(buffer);
+    if (buffer.byteLength < 20 || view.getUint32(0, true) !== 0x46546c67 ||
+        view.getUint32(16, true) !== 0x4e4f534a) return buffer;
+    const length = view.getUint32(12, true);
+    if (length > buffer.byteLength - 20) return buffer;
+    const doc = JSON.parse(decoder.decode(new Uint8Array(buffer, 20, length)));
+    if (!/^THREE\.GLTFExporter/.test(doc.asset?.generator || '')) return buffer;
+    let changed = false;
+    for (const mesh of doc.meshes || []) for (const primitive of mesh.primitives || []) {
+      const accessor = doc.accessors?.[primitive.attributes?.COLOR_0];
+      if (accessor?.componentType === 5126 && accessor.max?.some(value => value > 1)) {
+        delete primitive.attributes.COLOR_0;
+        changed = true;
+      }
+    }
+    if (!changed) return buffer;
+    const json = new TextEncoder().encode(JSON.stringify(doc));
+    const padded = Math.ceil(json.byteLength / 4) * 4;
+    const tail = new Uint8Array(buffer, 20 + length);
+    const output = new ArrayBuffer(20 + padded + tail.byteLength);
+    const bytes = new Uint8Array(output);
+    bytes.set(new Uint8Array(buffer, 0, 12));
+    const header = new DataView(output);
+    header.setUint32(8, output.byteLength, true);
+    header.setUint32(12, padded, true);
+    header.setUint32(16, 0x4e4f534a, true);
+    bytes.fill(32, 20, 20 + padded);
+    bytes.set(json, 20);
+    bytes.set(tail, 20 + padded);
+    return output;
+  }
+
   async function read(file, options = {}) {
     if (!file || file.size <= 0 || file.size > MAX_ZIP)
       throw Error('Select a GFPAK ZIP no larger than 512 MiB');
@@ -116,7 +152,7 @@
         ? 'pm0000 is a Pokémon Egg, not a species. Select Victini (#0494) before importing it as an Egg placeholder.'
         : 'Unmapped game-internal Pokémon ID pm' + modelId);
     const glb = await readEntry(raw, entries, MODEL, MAX_GLB);
-    const buffer = glb.buffer.slice(glb.byteOffset, glb.byteOffset + glb.byteLength);
+    const buffer = repairGlb(glb.buffer.slice(glb.byteOffset, glb.byteOffset + glb.byteLength));
     const model = {
       dex, form:'regular', sourceGame:game, sourceModelId:modelId,
       eggPlaceholder, orientation:'0deg 0deg 0deg', orientationVersion:2,
@@ -137,5 +173,5 @@
     return model;
   }
 
-  window.POKEDEX3D_GFPAK_ZIP = Object.freeze({read, orientation});
+  window.POKEDEX3D_GFPAK_ZIP = Object.freeze({read, orientation, repairGlb});
 })();

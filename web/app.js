@@ -686,7 +686,12 @@ function loadModel(model) {
     // A selected local file is untrusted until its embedded species ID is checked.
     (async () => {
       try {
-        const bytes = await model.file.arrayBuffer();
+        let bytes = await model.file.arrayBuffer();
+        if (model.gfpakImport) {
+          const repaired = window.POKEDEX3D_GFPAK_ZIP.repairGlb(bytes);
+          if (repaired !== bytes) model.file = new File([repaired], 'regular.glb', {type:'model/gltf-binary'});
+          bytes = repaired;
+        }
         await window.POKEDEX3D_MODEL_IDENTITY.verify(model, bytes);
         if (selectedSequence !== loadSequence) return;
         activeObjectUrl = URL.createObjectURL(model.file);
@@ -707,8 +712,9 @@ function loadModel(model) {
     remoteAbort = abort;
     (async () => {
       try {
-        const downloaded = await window.POKEDEX3D_MODEL_IDENTITY.loadVerified(
+        let downloaded = await window.POKEDEX3D_MODEL_IDENTITY.loadVerified(
           model, catalogUrl, abort.signal);
+        if (model.gfpakImport) downloaded = window.POKEDEX3D_GFPAK_ZIP.repairGlb(downloaded);
         // Never modify third-party GLBs with Switch-only shader/UV repairs.
         const data = !fromCommunity && typeof window.POKEDEX3D_REPAIR_SWITCH_MODEL === "function"
           ? await window.POKEDEX3D_REPAIR_SWITCH_MODEL(downloaded, Number(model.dex))

@@ -11,6 +11,7 @@ import argparse
 import json
 import re
 import shutil
+import struct
 import sys
 import tempfile
 import zipfile
@@ -29,6 +30,40 @@ GAMES = {"lgpe", "swsh", "la", "sv", "za", "bdsp"}
 GAME_ALIASES = {"pla": "la"}
 MAX_GLB_SIZE = 256 * 1024 * 1024
 MAX_MANIFEST_SIZE = 64 * 1024
+
+
+def repair_native_vertex_colors(path: Path) -> bool:
+    """Discard overflow shader masks from older GFPAK Three.js GLBs."""
+    data = path.read_bytes()
+    if len(data) < 20 or data[:4] != b"glTF" or data[16:20] != b"JSON":
+        return False
+    length = struct.unpack_from("<I", data, 12)[0]
+    if length > len(data) - 20:
+        return False
+    doc = json.loads(data[20:20 + length])
+    if not doc.get("asset", {}).get("generator", "").startswith("THREE.GLTFExporter"):
+        return False
+    changed = False
+    accessors = doc.get("accessors", [])
+    for mesh in doc.get("meshes", []):
+        for primitive in mesh.get("primitives", []):
+            attributes = primitive.get("attributes", {})
+            index = attributes.get("COLOR_0")
+            if not isinstance(index, int) or not 0 <= index < len(accessors):
+                continue
+            accessor = accessors[index]
+            if accessor.get("componentType") == 5126 and any(v > 1 for v in accessor.get("max", [])):
+                del attributes["COLOR_0"]
+                changed = True
+    if not changed:
+        return False
+    encoded = json.dumps(doc, separators=(",", ":")).encode()
+    encoded += b" " * (-len(encoded) % 4)
+    tail = data[20 + length:]
+    header = bytearray(data[:12])
+    struct.pack_into("<I", header, 8, 20 + len(encoded) + len(tail))
+    path.write_bytes(header + struct.pack("<I4s", len(encoded), b"JSON") + encoded + tail)
+    return True
 
 
 class ImportErrorWithAdvice(ValueError):
@@ -202,6 +237,7 @@ def import_archive(
             validated = Path(temporary) / "regular.glb"
             with archive.open(info) as data, validated.open("wb") as output:
                 shutil.copyfileobj(data, output, length=1024 * 1024)
+            repair_native_vertex_colors(validated)
             animations, idle = inspect_converted_glb(
                 validated, egg_placeholder=model_id == 0 and dex == 494 and game == "swsh"
             )

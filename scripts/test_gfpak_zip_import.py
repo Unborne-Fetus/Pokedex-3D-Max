@@ -63,6 +63,29 @@ def make_zip(path: Path, *, glb: bytes | None = None, game="za", model_id: int =
 
 
 class GfpakZipTests(unittest.TestCase):
+    def test_overflow_native_colors_removed_without_changing_binary_assets(self):
+        data = minimal_glb()
+        length = struct.unpack_from("<I", data, 12)[0]
+        doc = json.loads(data[20:20 + length])
+        doc["asset"]["generator"] = "THREE.GLTFExporter r180"
+        doc["accessors"].append({"componentType": 5126, "max": [255, 255, 255, 255]})
+        doc["meshes"][0]["primitives"][0]["attributes"]["COLOR_0"] = 1
+        encoded = json.dumps(doc).encode()
+        encoded += b" " * (-len(encoded) % 4)
+        tail = data[20 + length:]
+        fixture = (struct.pack("<III", 0x46546c67, 2, 20 + len(encoded) + len(tail))
+                   + struct.pack("<I4s", len(encoded), b"JSON") + encoded + tail)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "regular.glb"
+            path.write_bytes(fixture)
+            self.assertTrue(bridge.repair_native_vertex_colors(path))
+            repaired = path.read_bytes()
+            size = struct.unpack_from("<I", repaired, 12)[0]
+            updated = json.loads(repaired[20:20 + size])
+            self.assertNotIn("COLOR_0", updated["meshes"][0]["primitives"][0]["attributes"])
+            self.assertEqual(repaired[20 + size:], tail)
+            self.assertFalse(bridge.repair_native_vertex_colors(path))
+
     def test_correct_internal_id_mapping(self):
         metadata = {"selectedModel": "pm0942_00_00.trmdl", "sourceGame": "za"}
         dex, model_id, game = bridge.resolve_identity(metadata, None, None)
