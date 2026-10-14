@@ -278,7 +278,8 @@ async function gfpakStorage(mode, value) {
         ? tx.objectStore("models").put({
             dex: value.dex, name: value.name, sourceGame: value.sourceGame,
             sourceModelId: value.sourceModelId, file: value.file,
-            orientation: value.orientation, githubPublished: value.githubPublished === true
+            orientation: value.orientation, githubPublished: value.githubPublished === true,
+            eggPlaceholder: value.eggPlaceholder === true
           })
         : tx.objectStore("models").getAll();
       let result;
@@ -767,10 +768,12 @@ function selectModel(index, remember = true) {
 
   dexEl.textContent = "#" + String(model.dex).padStart(4, "0");
   nameEl.textContent = prettyName(model);
-  formEl.textContent = model.communityCandidate ?
-    "External community preview · " + model.variantLabel + " · Not finished" :
-    (model.missingModel ? "Model not uploaded" : "Regular") +
-      (!model.missingModel && finishedDex.has(Number(model.dex)) ? " · Finished" : "");
+  formEl.textContent = model.eggPlaceholder
+    ? "Egg placeholder (source pm0000) · Not Victini's model" :
+    model.communityCandidate ?
+      "External community preview · " + model.variantLabel + " · Not finished" :
+      (model.missingModel ? "Model not uploaded" : "Regular") +
+        (!model.missingModel && finishedDex.has(Number(model.dex)) ? " · Finished" : "");
   updateCandidateSourceLink(model);
   populateFormSelect(model);
   loadModel(model);
@@ -1049,6 +1052,10 @@ githubDisconnectBtn.addEventListener("click", () => {
 githubPublishBtn.addEventListener("click", async () => {
   if (githubBusy || !(currentModel?.file instanceof File)) return;
   const publishing = currentModel;
+  if (publishing.eggPlaceholder && !window.confirm(
+    "This is the Sword/Shield Egg (pm0000), NOT Victini's actual model. " +
+    "Publish it publicly in Victini #0494 as a clearly labelled Egg placeholder?"
+  )) return;
   githubBusy = true;
   refreshGitHubPublishButton();
   githubStatus.textContent = "Publishing Pokémon #" +
@@ -1104,7 +1111,14 @@ gfpakZipFile.addEventListener("change", async () => {
   importGfpakBtn.disabled = true;
   folderStatus.textContent = "Checking GFPAK Pokémon ZIP, identity, textures and idle…";
   try {
-    const imported = await window.POKEDEX3D_GFPAK_ZIP.read(file);
+    const imported = await window.POKEDEX3D_GFPAK_ZIP.read(file, {
+      targetDex: Number(currentModel?.dex) === 494 ? 494 : null
+    });
+    if (imported.eggPlaceholder && !window.confirm(
+      "This ZIP contains a Pokémon Egg (pm0000), not Victini. " +
+      "Install it in Victini #0494 as a temporary Egg placeholder? " +
+      "This replaces the local Victini preview; it does not change the original ZIP."
+    )) return;
     imported.gfpakImport = true;
     imported.orientation = "0deg 90deg 0deg";
     let saved = false;
@@ -1125,8 +1139,9 @@ gfpakZipFile.addEventListener("change", async () => {
     renderList();
     selectModel(filtered.findIndex(model => Number(model.dex) === imported.dex));
     folderStatus.textContent = imported.name + " (#" + String(imported.dex).padStart(4, "0") +
-      (saved ? ") saved locally." : ") imported temporarily; browser storage failed.");
-    if (githubStorage.connected()) {
+      (saved ? ") saved locally." : ") imported temporarily; browser storage failed.") +
+      (imported.eggPlaceholder ? " Showing Pokémon Egg placeholder, not Victini's model." : "");
+    if (githubStorage.connected() && !imported.eggPlaceholder) {
       githubBusy = true;
       refreshGitHubPublishButton();
       githubStatus.textContent = "Publishing " + imported.name + " to GitHub…";
@@ -1153,7 +1168,9 @@ gfpakZipFile.addEventListener("change", async () => {
         refreshGitHubPublishButton();
       }
     } else {
-      githubStatus.textContent = "Model imported locally. Connect GitHub to publish it for everyone.";
+      githubStatus.textContent = imported.eggPlaceholder
+        ? "Egg placeholder saved locally, not auto-published. Use Save selected model to publish deliberately."
+        : "Model imported locally. Connect GitHub to publish it for everyone.";
     }
   } catch (error) {
     folderStatus.textContent = "GFPAK import rejected: " + String(error.message || error);
