@@ -1128,7 +1128,17 @@ importGfpakBtn.addEventListener("click", () => gfpakZipFile.click());
 gfpakZipFile.addEventListener("change", async () => {
   const files = Array.from(gfpakZipFile.files || []);
   if (!files.length) return;
+  if (githubBusy) {
+    folderStatus.textContent = "Wait for the current GitHub operation to finish before importing ZIPs.";
+    gfpakZipFile.value = "";
+    return;
+  }
 
+  // Block other GitHub writes for the entire batch, including ZIP validation,
+  // to avoid concurrent manifest commits.
+  githubBusy = true;
+  githubDisconnectBtn.disabled = true;
+  refreshGitHubPublishButton();
   importGfpakBtn.disabled = true;
   gfpakBatchResults.hidden = true;
   gfpakBatchResultsList.replaceChildren();
