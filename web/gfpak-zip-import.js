@@ -79,7 +79,7 @@
     return result;
   }
 
-  async function read(file) {
+  async function read(file, options = {}) {
     if (!file || file.size <= 0 || file.size > MAX_ZIP)
       throw Error('Select a GFPAK ZIP no larger than 512 MiB');
     const raw = new Uint8Array(await file.arrayBuffer());
@@ -98,13 +98,19 @@
     const game = meta.sourceGame === 'pla' ? 'la' : String(meta.sourceGame || '');
     if (!GAMES.has(game))
       throw Error('Unknown source game. Choose the correct Game Source in GFPAK and export again.');
-    const dex = window.POKEDEX3D_MODEL_IDENTITY.nationalDex(modelId, game);
+    // pm0000 is the shared Pokémon Egg model, NOT Victini. Only an explicitly
+    // selected Victini entry may use it as a clearly labelled placeholder.
+    const eggPlaceholder = modelId === 0 && game === 'swsh' && options.targetDex === 494;
+    const dex = eggPlaceholder ? 494 : window.POKEDEX3D_MODEL_IDENTITY.nationalDex(modelId, game);
     if (!Number.isInteger(dex) || dex < 1 || dex > 1025)
-      throw Error('Unmapped game-internal Pokémon ID pm' + modelId);
+      throw Error(modelId === 0
+        ? 'pm0000 is a Pokémon Egg, not a species. Select Victini (#0494) before importing it as an Egg placeholder.'
+        : 'Unmapped game-internal Pokémon ID pm' + modelId);
     const glb = await readEntry(raw, entries, MODEL, MAX_GLB);
     const buffer = glb.buffer.slice(glb.byteOffset, glb.byteOffset + glb.byteLength);
     const model = {
       dex, form:'regular', sourceGame:game, sourceModelId:modelId,
+      eggPlaceholder,
       name: window.POKEDEX3D_NAMES?.[dex] || '#' + String(dex).padStart(4, '0'),
       url:'web/models/switch/' + String(dex).padStart(4, '0') + '/regular.glb',
       file: new File([buffer], 'regular.glb', {type:'model/gltf-binary'}),
