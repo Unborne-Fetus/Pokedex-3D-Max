@@ -13,15 +13,16 @@ from unittest.mock import patch
 import import_gfpak_zip as bridge
 
 
-def minimal_glb(idle: bool = True, textured: bool = True) -> bytes:
+def minimal_glb(idle: bool = True, textured: bool = True, model_id: int = 942) -> bytes:
     # Compact structural GLB fixture; validates archive routing and manifest
     # invariants, not pixel rendering in a GPU driver.
     materials = [{"pbrMetallicRoughness": {"baseColorTexture": {"index": 0}}}] if textured else [{}]
+    name = f"pm{model_id:04d}_body"
     doc = {
         "asset": {"version": "2.0"},
         "scenes": [{"nodes": [0]}], "scene": 0,
-        "nodes": [{"name": "pm0942_body", "mesh": 0}],
-        "meshes": [{"name": "pm0942_body", "primitives": [
+        "nodes": [{"name": name, "mesh": 0}],
+        "meshes": [{"name": name, "primitives": [
             {"attributes": {"POSITION": 0}, "material": 0}
         ]}],
         "accessors": [{"bufferView": 0, "componentType": 5126, "count": 3, "type": "VEC3"}],
@@ -45,18 +46,18 @@ def minimal_glb(idle: bool = True, textured: bool = True) -> bytes:
             + struct.pack("<II", len(binary), 0x004e4942) + binary)
 
 
-def make_zip(path: Path, *, glb: bytes | None = None, game="za") -> None:
+def make_zip(path: Path, *, glb: bytes | None = None, game="za", model_id: int = 942) -> None:
     metadata = {
         "format": "gfpak-pokemon-export",
         "version": 1,
         "sourceGame": game,
-        "selectedModel": "pm0942_00_00.trmdl",
+        "selectedModel": f"pm{model_id:04d}_00_00.trmdl",
         "convertedModel": bridge.EXPORT_GLb if glb else None,
         "conversion": "glb-included" if glb else "original-assets-only",
     }
     with zipfile.ZipFile(path, "w") as archive:
         archive.writestr(bridge.EXPORT_MANIFEST, json.dumps(metadata))
-        archive.writestr("pm0942_00_00.trmdl", b"native game data")
+        archive.writestr(f"pm{model_id:04d}_00_00.trmdl", b"native game data")
         if glb is not None:
             archive.writestr(bridge.EXPORT_GLb, glb)
 
@@ -68,6 +69,41 @@ class GfpakZipTests(unittest.TestCase):
         self.assertEqual((dex, model_id, game), (876, 942, "za"))
         with self.assertRaisesRegex(ValueError, "conflicts"):
             bridge.resolve_identity(metadata, None, 942)
+
+    def test_egg_can_only_target_victini_explicitly(self):
+        metadata = {"selectedModel": "pm0000_resource_0009.gfbmdl", "sourceGame": "swsh"}
+        with self.assertRaisesRegex(ValueError, "Pokémon Egg"):
+            bridge.resolve_identity(metadata, None, None)
+        with self.assertRaisesRegex(ValueError, "Pokémon Egg"):
+            bridge.resolve_identity(metadata, None, 493)
+        self.assertEqual(bridge.resolve_identity(metadata, None, 494), (494, 0, "swsh"))
+        with self.assertRaisesRegex(ValueError, "Pokémon Egg"):
+            bridge.resolve_identity({**metadata, "sourceGame": "sv"}, None, 494)
+
+    def test_egg_import_into_victini_keeps_provenance(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            archive = folder / "pm0000.zip"
+            make_zip(archive, glb=minimal_glb(model_id=0), game="swsh", model_id=0)
+            captured = []
+            with patch.object(bridge, "WEB_ROOT", folder / "switch"), \
+                 patch.object(bridge, "load_existing_manifest", return_value=[]), \
+                 patch.object(bridge, "write_manifest", side_effect=captured.append):
+                result = bridge.import_archive(archive, dex_override=494, desktop=False)
+            self.assertEqual((result["dex"], result["modelId"]), (494, 0))
+            self.assertTrue((folder / "switch" / "0494" / "regular.glb").is_file())
+            self.assertTrue(captured[0][0]["eggPlaceholder"])
+            self.assertEqual(captured[0][0]["modelId"], 0)
+
+    def test_egg_rejects_different_embedded_species(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            archive = folder / "pm0000.zip"
+            make_zip(archive, glb=minimal_glb(model_id=494), game="swsh", model_id=0)
+            with patch.object(bridge, "WEB_ROOT", folder / "switch"), \
+                 patch.object(bridge, "load_existing_manifest", return_value=[]):
+                with self.assertRaisesRegex(ValueError, "original pm0000 geometry"):
+                    bridge.import_archive(archive, dex_override=494, desktop=False)
 
     def test_requires_game_identity(self):
         with self.assertRaisesRegex(ValueError, "Unknown source game"):
