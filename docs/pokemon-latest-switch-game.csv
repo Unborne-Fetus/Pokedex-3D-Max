@@ -1,1026 +1,1026 @@
-National Dex,Species,Most Recent Game
-1,"Bulbasaur","PLZA"
-2,"Ivysaur","PLZA"
-3,"Venusaur","PLZA"
-4,"Charmander","PLZA"
-5,"Charmeleon","PLZA"
-6,"Charizard","PLZA"
-7,"Squirtle","PLZA"
-8,"Wartortle","PLZA"
-9,"Blastoise","PLZA"
-10,"Caterpie","BDSP"
-11,"Metapod","BDSP"
-12,"Butterfree","BDSP"
-13,"Weedle","PLZA"
-14,"Kakuna","PLZA"
-15,"Beedrill","PLZA"
-16,"Pidgey","PLZA"
-17,"Pidgeotto","PLZA"
-18,"Pidgeot","PLZA"
-19,"Rattata","BDSP"
-20,"Raticate","BDSP"
-21,"Spearow","BDSP"
-22,"Fearow","BDSP"
-23,"Ekans","PLZA"
-24,"Arbok","PLZA"
-25,"Pikachu","PLZA"
-26,"Raichu","PLZA"
-27,"Sandshrew","SV"
-28,"Sandslash","SV"
-29,"Nidoran♀","BDSP"
-30,"Nidorina","BDSP"
-31,"Nidoqueen","BDSP"
-32,"Nidoran♂","BDSP"
-33,"Nidorino","BDSP"
-34,"Nidoking","BDSP"
-35,"Clefairy","PLZA"
-36,"Clefable","PLZA"
-37,"Vulpix","SV"
-38,"Ninetales","SV"
-39,"Jigglypuff","PLZA"
-40,"Wigglytuff","PLZA"
-41,"Zubat","PLZA"
-42,"Golbat","PLZA"
-43,"Oddish","SV"
-44,"Gloom","SV"
-45,"Vileplume","SV"
-46,"Paras","PLA"
-47,"Parasect","PLA"
-48,"Venonat","SV"
-49,"Venomoth","SV"
-50,"Diglett","SV"
-51,"Dugtrio","SV"
-52,"Meowth","PLZA"
-53,"Persian","PLZA"
-54,"Psyduck","SV"
-55,"Golduck","SV"
-56,"Mankey","PLZA"
-57,"Primeape","PLZA"
-58,"Growlithe","SV"
-59,"Arcanine","SV"
-60,"Poliwag","SV"
-61,"Poliwhirl","SV"
-62,"Poliwrath","SV"
-63,"Abra","PLZA"
-64,"Kadabra","PLZA"
-65,"Alakazam","PLZA"
-66,"Machop","PLZA"
-67,"Machoke","PLZA"
-68,"Machamp","PLZA"
-69,"Bellsprout","PLZA"
-70,"Weepinbell","PLZA"
-71,"Victreebel","PLZA"
-72,"Tentacool","SV"
-73,"Tentacruel","SV"
-74,"Geodude","SV"
-75,"Graveler","SV"
-76,"Golem","SV"
-77,"Ponyta","PLA"
-78,"Rapidash","PLA"
-79,"Slowpoke","PLZA"
-80,"Slowbro","PLZA"
-81,"Magnemite","SV"
-82,"Magneton","SV"
-83,"Farfetch’d","PLZA"
-84,"Doduo","SV"
-85,"Dodrio","SV"
-86,"Seel","SV"
-87,"Dewgong","SV"
-88,"Grimer","SV"
-89,"Muk","SV"
-90,"Shellder","SV"
-91,"Cloyster","SV"
-92,"Gastly","PLZA"
-93,"Haunter","PLZA"
-94,"Gengar","PLZA"
-95,"Onix","PLZA"
-96,"Drowzee","SV"
-97,"Hypno","SV"
-98,"Krabby","BDSP"
-99,"Kingler","BDSP"
-100,"Voltorb","SV"
-101,"Electrode","SV"
-102,"Exeggcute","SV"
-103,"Exeggutor","SV"
-104,"Cubone","PLZA"
-105,"Marowak","PLZA"
-106,"Hitmonlee","SV"
-107,"Hitmonchan","SV"
-108,"Lickitung","PLA"
-109,"Koffing","SV"
-110,"Weezing","SV"
-111,"Rhyhorn","SV"
-112,"Rhydon","SV"
-113,"Chansey","SV"
-114,"Tangela","PLA"
-115,"Kangaskhan","PLZA"
-116,"Horsea","SV"
-117,"Seadra","SV"
-118,"Goldeen","BDSP"
-119,"Seaking","BDSP"
-120,"Staryu","PLZA"
-121,"Starmie","PLZA"
-122,"Mr. Mime","PLZA"
-123,"Scyther","PLZA"
-124,"Jynx","BDSP"
-125,"Electabuzz","SV"
-126,"Magmar","SV"
-127,"Pinsir","PLZA"
-128,"Tauros","SV"
-129,"Magikarp","PLZA"
-130,"Gyarados","PLZA"
-131,"Lapras","SV"
-132,"Ditto","SV"
-133,"Eevee","PLZA"
-134,"Vaporeon","PLZA"
-135,"Jolteon","PLZA"
-136,"Flareon","PLZA"
-137,"Porygon","PLZA"
-138,"Omanyte","BDSP"
-139,"Omastar","BDSP"
-140,"Kabuto","BDSP"
-141,"Kabutops","BDSP"
-142,"Aerodactyl","PLZA"
-143,"Snorlax","SV"
-144,"Articuno","BDSP"
-145,"Zapdos","BDSP"
-146,"Moltres","BDSP"
-147,"Dratini","PLZA"
-148,"Dragonair","PLZA"
-149,"Dragonite","PLZA"
-150,"Mewtwo","PLZA"
-151,"Mew","BDSP"
-152,"Chikorita","PLZA"
-153,"Bayleef","PLZA"
-154,"Meganium","PLZA"
-155,"Cyndaquil","SV"
-156,"Quilava","SV"
-157,"Typhlosion","SV"
-158,"Totodile","PLZA"
-159,"Croconaw","PLZA"
-160,"Feraligatr","PLZA"
-161,"Sentret","SV"
-162,"Furret","SV"
-163,"Hoothoot","SV"
-164,"Noctowl","SV"
-165,"Ledyba","BDSP"
-166,"Ledian","BDSP"
-167,"Spinarak","PLZA"
-168,"Ariados","PLZA"
-169,"Crobat","PLZA"
-170,"Chinchou","SV"
-171,"Lanturn","SV"
-172,"Pichu","PLZA"
-173,"Cleffa","PLZA"
-174,"Igglybuff","PLZA"
-175,"Togepi","PLA"
-176,"Togetic","PLA"
-177,"Natu","BDSP"
-178,"Xatu","BDSP"
-179,"Mareep","PLZA"
-180,"Flaaffy","PLZA"
-181,"Ampharos","PLZA"
-182,"Bellossom","SV"
-183,"Marill","SV"
-184,"Azumarill","SV"
-185,"Sudowoodo","SV"
-186,"Politoed","SV"
-187,"Hoppip","SV"
-188,"Skiploom","SV"
-189,"Jumpluff","SV"
-190,"Aipom","SV"
-191,"Sunkern","SV"
-192,"Sunflora","SV"
-193,"Yanma","SV"
-194,"Wooper","SV"
-195,"Quagsire","SV"
-196,"Espeon","PLZA"
-197,"Umbreon","PLZA"
-198,"Murkrow","SV"
-199,"Slowking","PLZA"
-200,"Misdreavus","SV"
-201,"Unown","PLA"
-202,"Wobbuffet","BDSP"
-203,"Girafarig","SV"
-204,"Pineco","SV"
-205,"Forretress","SV"
-206,"Dunsparce","SV"
-207,"Gligar","SV"
-208,"Steelix","PLZA"
-209,"Snubbull","SV"
-210,"Granbull","SV"
-211,"Qwilfish","PLZA"
-212,"Scizor","PLZA"
-213,"Shuckle","BDSP"
-214,"Heracross","PLZA"
-215,"Sneasel","SV"
-216,"Teddiursa","SV"
-217,"Ursaring","SV"
-218,"Slugma","SV"
-219,"Magcargo","SV"
-220,"Swinub","SV"
-221,"Piloswine","SV"
-222,"Corsola","BDSP"
-223,"Remoraid","PLA"
-224,"Octillery","PLA"
-225,"Delibird","PLZA"
-226,"Mantine","PLA"
-227,"Skarmory","PLZA"
-228,"Houndour","PLZA"
-229,"Houndoom","PLZA"
-230,"Kingdra","SV"
-231,"Phanpy","SV"
-232,"Donphan","SV"
-233,"Porygon2","PLZA"
-234,"Stantler","SV"
-235,"Smeargle","SV"
-236,"Tyrogue","SV"
-237,"Hitmontop","SV"
-238,"Smoochum","BDSP"
-239,"Elekid","SV"
-240,"Magby","SV"
-241,"Miltank","BDSP"
-242,"Blissey","SV"
-243,"Raikou","SV"
-244,"Entei","SV"
-245,"Suicune","SV"
-246,"Larvitar","PLZA"
-247,"Pupitar","PLZA"
-248,"Tyranitar","PLZA"
-249,"Lugia","SV"
-250,"Ho-Oh","SV"
-251,"Celebi","BDSP"
-252,"Treecko","PLZA"
-253,"Grovyle","PLZA"
-254,"Sceptile","PLZA"
-255,"Torchic","PLZA"
-256,"Combusken","PLZA"
-257,"Blaziken","PLZA"
-258,"Mudkip","PLZA"
-259,"Marshtomp","PLZA"
-260,"Swampert","PLZA"
-261,"Poochyena","SV"
-262,"Mightyena","SV"
-263,"Zigzagoon","BDSP"
-264,"Linoone","BDSP"
-265,"Wurmple","PLA"
-266,"Silcoon","PLA"
-267,"Beautifly","PLA"
-268,"Cascoon","PLA"
-269,"Dustox","PLA"
-270,"Lotad","SV"
-271,"Lombre","SV"
-272,"Ludicolo","SV"
-273,"Seedot","SV"
-274,"Nuzleaf","SV"
-275,"Shiftry","SV"
-276,"Taillow","BDSP"
-277,"Swellow","BDSP"
-278,"Wingull","SV"
-279,"Pelipper","SV"
-280,"Ralts","PLZA"
-281,"Kirlia","PLZA"
-282,"Gardevoir","PLZA"
-283,"Surskit","SV"
-284,"Masquerain","SV"
-285,"Shroomish","SV"
-286,"Breloom","SV"
-287,"Slakoth","SV"
-288,"Vigoroth","SV"
-289,"Slaking","SV"
-290,"Nincada","BDSP"
-291,"Ninjask","BDSP"
-292,"Shedinja","BDSP"
-293,"Whismur","BDSP"
-294,"Loudred","BDSP"
-295,"Exploud","BDSP"
-296,"Makuhita","SV"
-297,"Hariyama","SV"
-298,"Azurill","SV"
-299,"Nosepass","SV"
-300,"Skitty","BDSP"
-301,"Delcatty","BDSP"
-302,"Sableye","PLZA"
-303,"Mawile","PLZA"
-304,"Aron","PLZA"
-305,"Lairon","PLZA"
-306,"Aggron","PLZA"
-307,"Meditite","PLZA"
-308,"Medicham","PLZA"
-309,"Electrike","PLZA"
-310,"Manectric","PLZA"
-311,"Plusle","SV"
-312,"Minun","SV"
-313,"Volbeat","SV"
-314,"Illumise","SV"
-315,"Roselia","PLZA"
-316,"Gulpin","PLZA"
-317,"Swalot","PLZA"
-318,"Carvanha","PLZA"
-319,"Sharpedo","PLZA"
-320,"Wailmer","BDSP"
-321,"Wailord","BDSP"
-322,"Numel","PLZA"
-323,"Camerupt","PLZA"
-324,"Torkoal","SV"
-325,"Spoink","PLZA"
-326,"Grumpig","PLZA"
-327,"Spinda","BDSP"
-328,"Trapinch","SV"
-329,"Vibrava","SV"
-330,"Flygon","SV"
-331,"Cacnea","SV"
-332,"Cacturne","SV"
-333,"Swablu","PLZA"
-334,"Altaria","PLZA"
-335,"Zangoose","PLZA"
-336,"Seviper","PLZA"
-337,"Lunatone","BDSP"
-338,"Solrock","BDSP"
-339,"Barboach","SV"
-340,"Whiscash","SV"
-341,"Corphish","SV"
-342,"Crawdaunt","SV"
-343,"Baltoy","BDSP"
-344,"Claydol","BDSP"
-345,"Lileep","BDSP"
-346,"Cradily","BDSP"
-347,"Anorith","BDSP"
-348,"Armaldo","BDSP"
-349,"Feebas","PLZA"
-350,"Milotic","PLZA"
-351,"Castform","BDSP"
-352,"Kecleon","PLZA"
-353,"Shuppet","PLZA"
-354,"Banette","PLZA"
-355,"Duskull","SV"
-356,"Dusclops","SV"
-357,"Tropius","SV"
-358,"Chimecho","PLZA"
-359,"Absol","PLZA"
-360,"Wynaut","BDSP"
-361,"Snorunt","PLZA"
-362,"Glalie","PLZA"
-363,"Spheal","PLA"
-364,"Sealeo","PLA"
-365,"Walrein","PLA"
-366,"Clamperl","BDSP"
-367,"Huntail","BDSP"
-368,"Gorebyss","BDSP"
-369,"Relicanth","BDSP"
-370,"Luvdisc","SV"
-371,"Bagon","PLZA"
-372,"Shelgon","PLZA"
-373,"Salamence","PLZA"
-374,"Beldum","PLZA"
-375,"Metang","PLZA"
-376,"Metagross","PLZA"
-377,"Regirock","BDSP"
-378,"Regice","BDSP"
-379,"Registeel","BDSP"
-380,"Latias","PLZA"
-381,"Latios","PLZA"
-382,"Kyogre","PLZA"
-383,"Groudon","PLZA"
-384,"Rayquaza","PLZA"
-385,"Jirachi","SV"
-386,"Deoxys","SV"
-387,"Turtwig","SV"
-388,"Grotle","SV"
-389,"Torterra","SV"
-390,"Chimchar","SV"
-391,"Monferno","SV"
-392,"Infernape","SV"
-393,"Piplup","SV"
-394,"Prinplup","SV"
-395,"Empoleon","SV"
-396,"Starly","PLZA"
-397,"Staravia","PLZA"
-398,"Staraptor","PLZA"
-399,"Bidoof","PLA"
-400,"Bibarel","PLA"
-401,"Kricketot","SV"
-402,"Kricketune","SV"
-403,"Shinx","SV"
-404,"Luxio","SV"
-405,"Luxray","SV"
-406,"Budew","PLZA"
-407,"Roserade","PLZA"
-408,"Cranidos","SV"
-409,"Rampardos","SV"
-410,"Shieldon","SV"
-411,"Bastiodon","SV"
-412,"Burmy","PLA"
-413,"Wormadam","PLA"
-414,"Mothim","PLA"
-415,"Combee","SV"
-416,"Vespiquen","SV"
-417,"Pachirisu","SV"
-418,"Buizel","SV"
-419,"Floatzel","SV"
-420,"Cherubi","PLA"
-421,"Cherrim","PLA"
-422,"Shellos","SV"
-423,"Gastrodon","SV"
-424,"Ambipom","SV"
-425,"Drifloon","SV"
-426,"Drifblim","SV"
-427,"Buneary","PLZA"
-428,"Lopunny","PLZA"
-429,"Mismagius","SV"
-430,"Honchkrow","SV"
-431,"Glameow","PLA"
-432,"Purugly","PLA"
-433,"Chingling","PLZA"
-434,"Stunky","SV"
-435,"Skuntank","SV"
-436,"Bronzor","SV"
-437,"Bronzong","SV"
-438,"Bonsly","SV"
-439,"Mime Jr.","PLZA"
-440,"Happiny","SV"
-441,"Chatot","PLA"
-442,"Spiritomb","SV"
-443,"Gible","PLZA"
-444,"Gabite","PLZA"
-445,"Garchomp","PLZA"
-446,"Munchlax","SV"
-447,"Riolu","PLZA"
-448,"Lucario","PLZA"
-449,"Hippopotas","PLZA"
-450,"Hippowdon","PLZA"
-451,"Skorupi","PLA"
-452,"Drapion","PLA"
-453,"Croagunk","SV"
-454,"Toxicroak","SV"
-455,"Carnivine","PLA"
-456,"Finneon","SV"
-457,"Lumineon","SV"
-458,"Mantyke","PLA"
-459,"Snover","PLZA"
-460,"Abomasnow","PLZA"
-461,"Weavile","SV"
-462,"Magnezone","SV"
-463,"Lickilicky","PLA"
-464,"Rhyperior","SV"
-465,"Tangrowth","PLA"
-466,"Electivire","SV"
-467,"Magmortar","SV"
-468,"Togekiss","PLA"
-469,"Yanmega","SV"
-470,"Leafeon","PLZA"
-471,"Glaceon","PLZA"
-472,"Gliscor","SV"
-473,"Mamoswine","SV"
-474,"Porygon-Z","PLZA"
-475,"Gallade","PLZA"
-476,"Probopass","SV"
-477,"Dusknoir","SV"
-478,"Froslass","PLZA"
-479,"Rotom","PLZA"
-480,"Uxie","PLA"
-481,"Mesprit","PLA"
-482,"Azelf","PLA"
-483,"Dialga","PLA"
-484,"Palkia","PLA"
-485,"Heatran","PLZA"
-486,"Regigigas","PLA"
-487,"Giratina","PLA"
-488,"Cresselia","PLA"
-489,"Phione","PLA"
-490,"Manaphy","PLA"
-491,"Darkrai","PLZA"
-492,"Shaymin","PLA"
-493,"Arceus","PLA"
-494,"Victini","SwSh"
-495,"Snivy","SV"
-496,"Servine","SV"
-497,"Serperior","SV"
-498,"Tepig","PLZA"
-499,"Pignite","PLZA"
-500,"Emboar","PLZA"
-501,"Oshawott","SV"
-502,"Dewott","SV"
-503,"Samurott","SV"
-504,"Patrat","PLZA"
-505,"Watchog","PLZA"
-506,"Lillipup","SwSh"
-507,"Herdier","SwSh"
-508,"Stoutland","SwSh"
-509,"Purrloin","PLZA"
-510,"Liepard","PLZA"
-511,"Pansage","PLZA"
-512,"Simisage","PLZA"
-513,"Pansear","PLZA"
-514,"Simisear","PLZA"
-515,"Panpour","PLZA"
-516,"Simipour","PLZA"
-517,"Munna","PLZA"
-518,"Musharna","PLZA"
-519,"Pidove","SwSh"
-520,"Tranquill","SwSh"
-521,"Unfezant","SwSh"
-522,"Blitzle","SV"
-523,"Zebstrika","SV"
-524,"Roggenrola","SwSh"
-525,"Boldore","SwSh"
-526,"Gigalith","SwSh"
-527,"Woobat","SwSh"
-528,"Swoobat","SwSh"
-529,"Drilbur","PLZA"
-530,"Excadrill","PLZA"
-531,"Audino","PLZA"
-532,"Timburr","SV"
-533,"Gurdurr","SV"
-534,"Conkeldurr","SV"
-535,"Tympole","SwSh"
-536,"Palpitoad","SwSh"
-537,"Seismitoad","SwSh"
-538,"Throh","PLZA"
-539,"Sawk","PLZA"
-540,"Sewaddle","SV"
-541,"Swadloon","SV"
-542,"Leavanny","SV"
-543,"Venipede","PLZA"
-544,"Whirlipede","PLZA"
-545,"Scolipede","PLZA"
-546,"Cottonee","SV"
-547,"Whimsicott","SV"
-548,"Petilil","SV"
-549,"Lilligant","SV"
-550,"Basculin","SV"
-551,"Sandile","PLZA"
-552,"Krokorok","PLZA"
-553,"Krookodile","PLZA"
-554,"Darumaka","SwSh"
-555,"Darmanitan","SwSh"
-556,"Maractus","SwSh"
-557,"Dwebble","SwSh"
-558,"Crustle","SwSh"
-559,"Scraggy","PLZA"
-560,"Scrafty","PLZA"
-561,"Sigilyph","SwSh"
-562,"Yamask","PLZA"
-563,"Cofagrigus","PLZA"
-564,"Tirtouga","SwSh"
-565,"Carracosta","SwSh"
-566,"Archen","SwSh"
-567,"Archeops","SwSh"
-568,"Trubbish","PLZA"
-569,"Garbodor","PLZA"
-570,"Zorua","SV"
-571,"Zoroark","SV"
-572,"Minccino","SV"
-573,"Cinccino","SV"
-574,"Gothita","SV"
-575,"Gothorita","SV"
-576,"Gothitelle","SV"
-577,"Solosis","SV"
-578,"Duosion","SV"
-579,"Reuniclus","SV"
-580,"Ducklett","SV"
-581,"Swanna","SV"
-582,"Vanillite","PLZA"
-583,"Vanillish","PLZA"
-584,"Vanilluxe","PLZA"
-585,"Deerling","SV"
-586,"Sawsbuck","SV"
-587,"Emolga","PLZA"
-588,"Karrablast","SwSh"
-589,"Escavalier","SwSh"
-590,"Foongus","PLZA"
-591,"Amoonguss","PLZA"
-592,"Frillish","SwSh"
-593,"Jellicent","SwSh"
-594,"Alomomola","SV"
-595,"Joltik","SV"
-596,"Galvantula","SV"
-597,"Ferroseed","SwSh"
-598,"Ferrothorn","SwSh"
-599,"Klink","SwSh"
-600,"Klang","SwSh"
-601,"Klinklang","SwSh"
-602,"Tynamo","PLZA"
-603,"Eelektrik","PLZA"
-604,"Eelektross","PLZA"
-605,"Elgyem","SwSh"
-606,"Beheeyem","SwSh"
-607,"Litwick","PLZA"
-608,"Lampent","PLZA"
-609,"Chandelure","PLZA"
-610,"Axew","SV"
-611,"Fraxure","SV"
-612,"Haxorus","SV"
-613,"Cubchoo","SV"
-614,"Beartic","SV"
-615,"Cryogonal","PLZA"
-616,"Shelmet","SwSh"
-617,"Accelgor","SwSh"
-618,"Stunfisk","PLZA"
-619,"Mienfoo","SV"
-620,"Mienshao","SV"
-621,"Druddigon","SwSh"
-622,"Golett","PLZA"
-623,"Golurk","PLZA"
-624,"Pawniard","SV"
-625,"Bisharp","SV"
-626,"Bouffalant","SwSh"
-627,"Rufflet","SV"
-628,"Braviary","SV"
-629,"Vullaby","SV"
-630,"Mandibuzz","SV"
-631,"Heatmor","SwSh"
-632,"Durant","SwSh"
-633,"Deino","SV"
-634,"Zweilous","SV"
-635,"Hydreigon","SV"
-636,"Larvesta","SV"
-637,"Volcarona","SV"
-638,"Cobalion","PLZA"
-639,"Terrakion","PLZA"
-640,"Virizion","PLZA"
-641,"Tornadus","PLA"
-642,"Thundurus","PLA"
-643,"Reshiram","SV"
-644,"Zekrom","SV"
-645,"Landorus","PLA"
-646,"Kyurem","SV"
-647,"Keldeo","PLZA"
-648,"Meloetta","PLZA"
-649,"Genesect","PLZA"
-650,"Chespin","PLZA"
-651,"Quilladin","PLZA"
-652,"Chesnaught","PLZA"
-653,"Fennekin","PLZA"
-654,"Braixen","PLZA"
-655,"Delphox","PLZA"
-656,"Froakie","PLZA"
-657,"Frogadier","PLZA"
-658,"Greninja","PLZA"
-659,"Bunnelby","PLZA"
-660,"Diggersby","PLZA"
-661,"Fletchling","PLZA"
-662,"Fletchinder","PLZA"
-663,"Talonflame","PLZA"
-664,"Scatterbug","PLZA"
-665,"Spewpa","PLZA"
-666,"Vivillon","PLZA"
-667,"Litleo","PLZA"
-668,"Pyroar","PLZA"
-669,"Flabébé","PLZA"
-670,"Floette","PLZA"
-671,"Florges","PLZA"
-672,"Skiddo","PLZA"
-673,"Gogoat","PLZA"
-674,"Pancham","PLZA"
-675,"Pangoro","PLZA"
-676,"Furfrou","PLZA"
-677,"Espurr","PLZA"
-678,"Meowstic","PLZA"
-679,"Honedge","PLZA"
-680,"Doublade","PLZA"
-681,"Aegislash","PLZA"
-682,"Spritzee","PLZA"
-683,"Aromatisse","PLZA"
-684,"Swirlix","PLZA"
-685,"Slurpuff","PLZA"
-686,"Inkay","PLZA"
-687,"Malamar","PLZA"
-688,"Binacle","PLZA"
-689,"Barbaracle","PLZA"
-690,"Skrelp","PLZA"
-691,"Dragalge","PLZA"
-692,"Clauncher","PLZA"
-693,"Clawitzer","PLZA"
-694,"Helioptile","PLZA"
-695,"Heliolisk","PLZA"
-696,"Tyrunt","PLZA"
-697,"Tyrantrum","PLZA"
-698,"Amaura","PLZA"
-699,"Aurorus","PLZA"
-700,"Sylveon","PLZA"
-701,"Hawlucha","PLZA"
-702,"Dedenne","PLZA"
-703,"Carbink","PLZA"
-704,"Goomy","PLZA"
-705,"Sliggoo","PLZA"
-706,"Goodra","PLZA"
-707,"Klefki","PLZA"
-708,"Phantump","PLZA"
-709,"Trevenant","PLZA"
-710,"Pumpkaboo","PLZA"
-711,"Gourgeist","PLZA"
-712,"Bergmite","PLZA"
-713,"Avalugg","PLZA"
-714,"Noibat","PLZA"
-715,"Noivern","PLZA"
-716,"Xerneas","PLZA"
-717,"Yveltal","PLZA"
-718,"Zygarde","PLZA"
-719,"Diancie","PLZA"
-720,"Hoopa","PLZA"
-721,"Volcanion","PLZA"
-722,"Rowlet","SV"
-723,"Dartrix","SV"
-724,"Decidueye","SV"
-725,"Litten","SV"
-726,"Torracat","SV"
-727,"Incineroar","SV"
-728,"Popplio","SV"
-729,"Brionne","SV"
-730,"Primarina","SV"
-731,"Pikipek","SV"
-732,"Trumbeak","SV"
-733,"Toucannon","SV"
-734,"Yungoos","SV"
-735,"Gumshoos","SV"
-736,"Grubbin","SV"
-737,"Charjabug","SV"
-738,"Vikavolt","SV"
-739,"Crabrawler","PLZA"
-740,"Crabominable","PLZA"
-741,"Oricorio","SV"
-742,"Cutiefly","SV"
-743,"Ribombee","SV"
-744,"Rockruff","SV"
-745,"Lycanroc","SV"
-746,"Wishiwashi","SwSh"
-747,"Mareanie","SV"
-748,"Toxapex","SV"
-749,"Mudbray","SV"
-750,"Mudsdale","SV"
-751,"Dewpider","SV"
-752,"Araquanid","SV"
-753,"Fomantis","SV"
-754,"Lurantis","SV"
-755,"Morelull","SwSh"
-756,"Shiinotic","SwSh"
-757,"Salandit","SV"
-758,"Salazzle","SV"
-759,"Stufful","SwSh"
-760,"Bewear","SwSh"
-761,"Bounsweet","SV"
-762,"Steenee","SV"
-763,"Tsareena","SV"
-764,"Comfey","SV"
-765,"Oranguru","SV"
-766,"Passimian","SV"
-767,"Wimpod","PLZA"
-768,"Golisopod","PLZA"
-769,"Sandygast","PLZA"
-770,"Palossand","PLZA"
-771,"Pyukumuku","SwSh"
-772,"Type: Null","SwSh"
-773,"Silvally","SwSh"
-774,"Minior","SV"
-775,"Komala","SV"
-776,"Turtonator","SwSh"
-777,"Togedemaru","SwSh"
-778,"Mimikyu","PLZA"
-779,"Bruxish","SV"
-780,"Drampa","PLZA"
-781,"Dhelmise","SwSh"
-782,"Jangmo-o","SV"
-783,"Hakamo-o","SV"
-784,"Kommo-o","SV"
-785,"Tapu Koko","SwSh"
-786,"Tapu Lele","SwSh"
-787,"Tapu Bulu","SwSh"
-788,"Tapu Fini","SwSh"
-789,"Cosmog","SwSh"
-790,"Cosmoem","SwSh"
-791,"Solgaleo","SwSh"
-792,"Lunala","SwSh"
-793,"Nihilego","SwSh"
-794,"Buzzwole","SwSh"
-795,"Pheromosa","SwSh"
-796,"Xurkitree","SwSh"
-797,"Celesteela","SwSh"
-798,"Kartana","SwSh"
-799,"Guzzlord","SwSh"
-800,"Necrozma","SwSh"
-801,"Magearna","PLZA"
-802,"Marshadow","PLZA"
-803,"Poipole","SwSh"
-804,"Naganadel","SwSh"
-805,"Stakataka","SwSh"
-806,"Blacephalon","SwSh"
-807,"Zeraora","PLZA"
-808,"Meltan","PLZA"
-809,"Melmetal","PLZA"
-810,"Grookey","SV"
-811,"Thwackey","SV"
-812,"Rillaboom","SV"
-813,"Scorbunny","SV"
-814,"Raboot","SV"
-815,"Cinderace","SV"
-816,"Sobble","SV"
-817,"Drizzile","SV"
-818,"Inteleon","SV"
-819,"Skwovet","SV"
-820,"Greedent","SV"
-821,"Rookidee","PLZA"
-822,"Corvisquire","PLZA"
-823,"Corviknight","PLZA"
-824,"Blipbug","SwSh"
-825,"Dottler","SwSh"
-826,"Orbeetle","SwSh"
-827,"Nickit","PLZA"
-828,"Thievul","PLZA"
-829,"Gossifleur","SwSh"
-830,"Eldegoss","SwSh"
-831,"Wooloo","SwSh"
-832,"Dubwool","SwSh"
-833,"Chewtle","SV"
-834,"Drednaw","SV"
-835,"Yamper","SwSh"
-836,"Boltund","SwSh"
-837,"Rolycoly","SV"
-838,"Carkol","SV"
-839,"Coalossal","SV"
-840,"Applin","SV"
-841,"Flapple","SV"
-842,"Appletun","SV"
-843,"Silicobra","SV"
-844,"Sandaconda","SV"
-845,"Cramorant","SV"
-846,"Arrokuda","SV"
-847,"Barraskewda","SV"
-848,"Toxel","PLZA"
-849,"Toxtricity","PLZA"
-850,"Sizzlipede","SwSh"
-851,"Centiskorch","SwSh"
-852,"Clobbopus","PLZA"
-853,"Grapploct","PLZA"
-854,"Sinistea","SV"
-855,"Polteageist","SV"
-856,"Hatenna","SV"
-857,"Hattrem","SV"
-858,"Hatterene","SV"
-859,"Impidimp","SV"
-860,"Morgrem","SV"
-861,"Grimmsnarl","SV"
-862,"Obstagoon","SwSh"
-863,"Perrserker","PLZA"
-864,"Cursola","SwSh"
-865,"Sirfetch’d","PLZA"
-866,"Mr. Rime","PLZA"
-867,"Runerigus","PLZA"
-868,"Milcery","SV"
-869,"Alcremie","SV"
-870,"Falinks","PLZA"
-871,"Pincurchin","SV"
-872,"Snom","SV"
-873,"Frosmoth","SV"
-874,"Stonjourner","SV"
-875,"Eiscue","SV"
-876,"Indeedee","PLZA"
-877,"Morpeko","PLZA"
-878,"Cufant","SV"
-879,"Copperajah","SV"
-880,"Dracozolt","SwSh"
-881,"Arctozolt","SwSh"
-882,"Dracovish","SwSh"
-883,"Arctovish","SwSh"
-884,"Duraludon","SV"
-885,"Dreepy","SV"
-886,"Drakloak","SV"
-887,"Dragapult","SV"
-888,"Zacian","SwSh"
-889,"Zamazenta","SwSh"
-890,"Eternatus","SwSh"
-891,"Kubfu","SwSh"
-892,"Urshifu","SwSh"
-893,"Zarude","SwSh"
-894,"Regieleki","SwSh"
-895,"Regidrago","SwSh"
-896,"Glastrier","SwSh"
-897,"Spectrier","SwSh"
-898,"Calyrex","SwSh"
-899,"Wyrdeer","PLA"
-900,"Kleavor","PLZA"
-901,"Ursaluna","SV"
-902,"Basculegion","SV"
-903,"Sneasler","PLA"
-904,"Overqwil","PLZA"
-905,"Enamorus","PLA"
-906,"Sprigatito","SV"
-907,"Floragato","SV"
-908,"Meowscarada","SV"
-909,"Fuecoco","SV"
-910,"Crocalor","SV"
-911,"Skeledirge","SV"
-912,"Quaxly","SV"
-913,"Quaxwell","SV"
-914,"Quaquaval","SV"
-915,"Lechonk","SV"
-916,"Oinkologne","SV"
-917,"Tarountula","SV"
-918,"Spidops","SV"
-919,"Nymble","SV"
-920,"Lokix","SV"
-921,"Pawmi","SV"
-922,"Pawmo","SV"
-923,"Pawmot","SV"
-924,"Tandemaus","SV"
-925,"Maushold","SV"
-926,"Fidough","PLZA"
-927,"Dachsbun","PLZA"
-928,"Smoliv","SV"
-929,"Dolliv","SV"
-930,"Arboliva","SV"
-931,"Squawkabilly","PLZA"
-932,"Nacli","PLZA"
-933,"Naclstack","PLZA"
-934,"Garganacl","PLZA"
-935,"Charcadet","PLZA"
-936,"Armarouge","PLZA"
-937,"Ceruledge","PLZA"
-938,"Tadbulb","SV"
-939,"Bellibolt","SV"
-940,"Wattrel","SV"
-941,"Kilowattrel","SV"
-942,"Maschiff","PLZA"
-943,"Mabosstiff","PLZA"
-944,"Shroodle","PLZA"
-945,"Grafaiai","PLZA"
-946,"Bramblin","SV"
-947,"Brambleghast","SV"
-948,"Toedscool","SV"
-949,"Toedscruel","SV"
-950,"Klawf","SV"
-951,"Capsakid","PLZA"
-952,"Scovillain","PLZA"
-953,"Rellor","SV"
-954,"Rabsca","SV"
-955,"Flittle","SV"
-956,"Espathra","SV"
-957,"Tinkatink","PLZA"
-958,"Tinkatuff","PLZA"
-959,"Tinkaton","PLZA"
-960,"Wiglett","SV"
-961,"Wugtrio","SV"
-962,"Bombirdier","SV"
-963,"Finizen","SV"
-964,"Palafin","SV"
-965,"Varoom","SV"
-966,"Revavroom","SV"
-967,"Cyclizar","PLZA"
-968,"Orthworm","SV"
-969,"Glimmet","PLZA"
-970,"Glimmora","PLZA"
-971,"Greavard","PLZA"
-972,"Houndstone","PLZA"
-973,"Flamigo","PLZA"
-974,"Cetoddle","SV"
-975,"Cetitan","SV"
-976,"Veluza","SV"
-977,"Dondozo","PLZA"
-978,"Tatsugiri","PLZA"
-979,"Annihilape","PLZA"
-980,"Clodsire","SV"
-981,"Farigiraf","SV"
-982,"Dudunsparce","SV"
-983,"Kingambit","SV"
-984,"Great Tusk","SV"
-985,"Scream Tail","SV"
-986,"Brute Bonnet","SV"
-987,"Flutter Mane","SV"
-988,"Slither Wing","SV"
-989,"Sandy Shocks","SV"
-990,"Iron Treads","SV"
-991,"Iron Bundle","SV"
-992,"Iron Hands","SV"
-993,"Iron Jugulis","SV"
-994,"Iron Moth","SV"
-995,"Iron Thorns","SV"
-996,"Frigibax","PLZA"
-997,"Arctibax","PLZA"
-998,"Baxcalibur","PLZA"
-999,"Gimmighoul","PLZA"
-1000,"Gholdengo","PLZA"
-1001,"Wo-Chien","SV"
-1002,"Chien-Pao","SV"
-1003,"Ting-Lu","SV"
-1004,"Chi-Yu","SV"
-1005,"Roaring Moon","SV"
-1006,"Iron Valiant","SV"
-1007,"Koraidon","SV"
-1008,"Miraidon","SV"
-1009,"Walking Wake","SV"
-1010,"Iron Leaves","SV"
-1011,"Dipplin","SV"
-1012,"Poltchageist","SV"
-1013,"Sinistcha","SV"
-1014,"Okidogi","SV"
-1015,"Munkidori","SV"
-1016,"Fezandipiti","SV"
-1017,"Ogerpon","SV"
-1018,"Archaludon","SV"
-1019,"Hydrapple","SV"
-1020,"Gouging Fire","SV"
-1021,"Raging Bolt","SV"
-1022,"Iron Boulder","SV"
-1023,"Iron Crown","SV"
-1024,"Terapagos","SV"
-1025,"Pecharunt","SV"
+Regional Dex,Species,Game or DLC,National Dex,Introduced Generation
+026,"Pidove","Sword/Shield — Galar",519,5
+027,"Tranquill","Sword/Shield — Galar",520,5
+028,"Unfezant","Sword/Shield — Galar",521,5
+132,"Tympole","Sword/Shield — Galar",535,5
+133,"Palpitoad","Sword/Shield — Galar",536,5
+134,"Seismitoad","Sword/Shield — Galar",537,5
+296,"Maractus","Sword/Shield — Galar",556,5
+297,"Sigilyph","Sword/Shield — Galar",561,5
+113,"Klink","Sword/Shield — Galar",599,5
+114,"Klang","Sword/Shield — Galar",600,5
+115,"Klinklang","Sword/Shield — Galar",601,5
+277,"Elgyem","Sword/Shield — Galar",605,5
+278,"Beheeyem","Sword/Shield — Galar",606,5
+340,"Morelull","Sword/Shield — Galar",755,7
+341,"Shiinotic","Sword/Shield — Galar",756,7
+094,"Stufful","Sword/Shield — Galar",759,7
+095,"Bewear","Sword/Shield — Galar",760,7
+156,"Pyukumuku","Sword/Shield — Galar",771,7
+381,"Type: Null","Sword/Shield — Galar",772,7
+382,"Silvally","Sword/Shield — Galar",773,7
+347,"Turtonator","Sword/Shield — Galar",776,7
+348,"Togedemaru","Sword/Shield — Galar",777,7
+237,"Cursola","Sword/Shield — Galar",864,8
+374,"Dracozolt","Sword/Shield — Galar",880,8
+375,"Arctozolt","Sword/Shield — Galar",881,8
+376,"Dracovish","Sword/Shield — Galar",882,8
+377,"Arctovish","Sword/Shield — Galar",883,8
+398,"Zacian","Sword/Shield — Galar",888,8
+399,"Zamazenta","Sword/Shield — Galar",889,8
+400,"Eternatus","Sword/Shield — Galar",890,8
+113,"Lillipup","Sword/Shield — Isle of Armor DLC",506,5
+114,"Herdier","Sword/Shield — Isle of Armor DLC",507,5
+115,"Stoutland","Sword/Shield — Isle of Armor DLC",508,5
+154,"Roggenrola","Sword/Shield — Isle of Armor DLC",524,5
+155,"Boldore","Sword/Shield — Isle of Armor DLC",525,5
+156,"Gigalith","Sword/Shield — Isle of Armor DLC",526,5
+151,"Woobat","Sword/Shield — Isle of Armor DLC",527,5
+152,"Swoobat","Sword/Shield — Isle of Armor DLC",528,5
+122,"Dwebble","Sword/Shield — Isle of Armor DLC",557,5
+123,"Crustle","Sword/Shield — Isle of Armor DLC",558,5
+192,"Frillish","Sword/Shield — Isle of Armor DLC",592,5
+193,"Jellicent","Sword/Shield — Isle of Armor DLC",593,5
+053,"Bouffalant","Sword/Shield — Isle of Armor DLC",626,5
+110,"Wishiwashi","Sword/Shield — Isle of Armor DLC",746,7
+014,"Blipbug","Sword/Shield — Isle of Armor DLC",824,8
+015,"Dottler","Sword/Shield — Isle of Armor DLC",825,8
+016,"Orbeetle","Sword/Shield — Isle of Armor DLC",826,8
+100,"Kubfu","Sword/Shield — Isle of Armor DLC",891,8
+101,"Urshifu","Sword/Shield — Isle of Armor DLC",892,8
+211,"Zarude","Sword/Shield — Isle of Armor DLC",893,8
+103,"Darumaka","Sword/Shield — Crown Tundra DLC",554,5
+104,"Darmanitan","Sword/Shield — Crown Tundra DLC",555,5
+147,"Tirtouga","Sword/Shield — Crown Tundra DLC",564,5
+148,"Carracosta","Sword/Shield — Crown Tundra DLC",565,5
+149,"Archen","Sword/Shield — Crown Tundra DLC",566,5
+150,"Archeops","Sword/Shield — Crown Tundra DLC",567,5
+095,"Karrablast","Sword/Shield — Crown Tundra DLC",588,5
+096,"Escavalier","Sword/Shield — Crown Tundra DLC",589,5
+179,"Ferroseed","Sword/Shield — Crown Tundra DLC",597,5
+180,"Ferrothorn","Sword/Shield — Crown Tundra DLC",598,5
+097,"Shelmet","Sword/Shield — Crown Tundra DLC",616,5
+098,"Accelgor","Sword/Shield — Crown Tundra DLC",617,5
+119,"Druddigon","Sword/Shield — Crown Tundra DLC",621,5
+102,"Heatmor","Sword/Shield — Crown Tundra DLC",631,5
+101,"Durant","Sword/Shield — Crown Tundra DLC",632,5
+162,"Dhelmise","Sword/Shield — Crown Tundra DLC",781,7
+166,"Gossifleur","Sword/Shield — Crown Tundra DLC",829,8
+167,"Eldegoss","Sword/Shield — Crown Tundra DLC",830,8
+003,"Wooloo","Sword/Shield — Crown Tundra DLC",831,8
+004,"Dubwool","Sword/Shield — Crown Tundra DLC",832,8
+155,"Yamper","Sword/Shield — Crown Tundra DLC",835,8
+156,"Boltund","Sword/Shield — Crown Tundra DLC",836,8
+099,"Sizzlipede","Sword/Shield — Crown Tundra DLC",850,8
+100,"Centiskorch","Sword/Shield — Crown Tundra DLC",851,8
+073,"Obstagoon","Sword/Shield — Crown Tundra DLC",862,8
+200,"Regieleki","Sword/Shield — Crown Tundra DLC",894,8
+201,"Regidrago","Sword/Shield — Crown Tundra DLC",895,8
+208,"Glastrier","Sword/Shield — Crown Tundra DLC",896,8
+209,"Spectrier","Sword/Shield — Crown Tundra DLC",897,8
+210,"Calyrex","Sword/Shield — Crown Tundra DLC",898,8
+,"Victini","SwSh — Other compatible (not in regional Pokédex)",494,5
+,"Tapu Koko","SwSh — Other compatible (not in regional Pokédex)",785,7
+,"Tapu Lele","SwSh — Other compatible (not in regional Pokédex)",786,7
+,"Tapu Bulu","SwSh — Other compatible (not in regional Pokédex)",787,7
+,"Tapu Fini","SwSh — Other compatible (not in regional Pokédex)",788,7
+,"Cosmog","SwSh — Other compatible (not in regional Pokédex)",789,7
+,"Cosmoem","SwSh — Other compatible (not in regional Pokédex)",790,7
+,"Solgaleo","SwSh — Other compatible (not in regional Pokédex)",791,7
+,"Lunala","SwSh — Other compatible (not in regional Pokédex)",792,7
+,"Nihilego","SwSh — Other compatible (not in regional Pokédex)",793,7
+,"Buzzwole","SwSh — Other compatible (not in regional Pokédex)",794,7
+,"Pheromosa","SwSh — Other compatible (not in regional Pokédex)",795,7
+,"Xurkitree","SwSh — Other compatible (not in regional Pokédex)",796,7
+,"Celesteela","SwSh — Other compatible (not in regional Pokédex)",797,7
+,"Kartana","SwSh — Other compatible (not in regional Pokédex)",798,7
+,"Guzzlord","SwSh — Other compatible (not in regional Pokédex)",799,7
+,"Necrozma","SwSh — Other compatible (not in regional Pokédex)",800,7
+,"Poipole","SwSh — Other compatible (not in regional Pokédex)",803,7
+,"Naganadel","SwSh — Other compatible (not in regional Pokédex)",804,7
+,"Stakataka","SwSh — Other compatible (not in regional Pokédex)",805,7
+,"Blacephalon","SwSh — Other compatible (not in regional Pokédex)",806,7
+078,"Goldeen","BDSP — Sinnoh",118,1
+079,"Seaking","BDSP — Sinnoh",119,1
+,"Caterpie","BDSP — Other compatible (not in regional Pokédex)",10,1
+,"Metapod","BDSP — Other compatible (not in regional Pokédex)",11,1
+,"Butterfree","BDSP — Other compatible (not in regional Pokédex)",12,1
+,"Rattata","BDSP — Other compatible (not in regional Pokédex)",19,1
+,"Raticate","BDSP — Other compatible (not in regional Pokédex)",20,1
+,"Spearow","BDSP — Other compatible (not in regional Pokédex)",21,1
+,"Fearow","BDSP — Other compatible (not in regional Pokédex)",22,1
+,"Nidoran♀","BDSP — Other compatible (not in regional Pokédex)",29,1
+,"Nidorina","BDSP — Other compatible (not in regional Pokédex)",30,1
+,"Nidoqueen","BDSP — Other compatible (not in regional Pokédex)",31,1
+,"Nidoran♂","BDSP — Other compatible (not in regional Pokédex)",32,1
+,"Nidorino","BDSP — Other compatible (not in regional Pokédex)",33,1
+,"Nidoking","BDSP — Other compatible (not in regional Pokédex)",34,1
+,"Krabby","BDSP — Other compatible (not in regional Pokédex)",98,1
+,"Kingler","BDSP — Other compatible (not in regional Pokédex)",99,1
+,"Jynx","BDSP — Other compatible (not in regional Pokédex)",124,1
+,"Omanyte","BDSP — Other compatible (not in regional Pokédex)",138,1
+,"Omastar","BDSP — Other compatible (not in regional Pokédex)",139,1
+,"Kabuto","BDSP — Other compatible (not in regional Pokédex)",140,1
+,"Kabutops","BDSP — Other compatible (not in regional Pokédex)",141,1
+,"Articuno","BDSP — Other compatible (not in regional Pokédex)",144,1
+,"Zapdos","BDSP — Other compatible (not in regional Pokédex)",145,1
+,"Moltres","BDSP — Other compatible (not in regional Pokédex)",146,1
+,"Mew","BDSP — Other compatible (not in regional Pokédex)",151,1
+,"Ledyba","BDSP — Other compatible (not in regional Pokédex)",165,2
+,"Ledian","BDSP — Other compatible (not in regional Pokédex)",166,2
+,"Natu","BDSP — Other compatible (not in regional Pokédex)",177,2
+,"Xatu","BDSP — Other compatible (not in regional Pokédex)",178,2
+,"Wobbuffet","BDSP — Other compatible (not in regional Pokédex)",202,2
+,"Shuckle","BDSP — Other compatible (not in regional Pokédex)",213,2
+,"Corsola","BDSP — Other compatible (not in regional Pokédex)",222,2
+,"Smoochum","BDSP — Other compatible (not in regional Pokédex)",238,2
+,"Miltank","BDSP — Other compatible (not in regional Pokédex)",241,2
+,"Celebi","BDSP — Other compatible (not in regional Pokédex)",251,2
+,"Zigzagoon","BDSP — Other compatible (not in regional Pokédex)",263,3
+,"Linoone","BDSP — Other compatible (not in regional Pokédex)",264,3
+,"Taillow","BDSP — Other compatible (not in regional Pokédex)",276,3
+,"Swellow","BDSP — Other compatible (not in regional Pokédex)",277,3
+,"Nincada","BDSP — Other compatible (not in regional Pokédex)",290,3
+,"Ninjask","BDSP — Other compatible (not in regional Pokédex)",291,3
+,"Shedinja","BDSP — Other compatible (not in regional Pokédex)",292,3
+,"Whismur","BDSP — Other compatible (not in regional Pokédex)",293,3
+,"Loudred","BDSP — Other compatible (not in regional Pokédex)",294,3
+,"Exploud","BDSP — Other compatible (not in regional Pokédex)",295,3
+,"Skitty","BDSP — Other compatible (not in regional Pokédex)",300,3
+,"Delcatty","BDSP — Other compatible (not in regional Pokédex)",301,3
+,"Wailmer","BDSP — Other compatible (not in regional Pokédex)",320,3
+,"Wailord","BDSP — Other compatible (not in regional Pokédex)",321,3
+,"Spinda","BDSP — Other compatible (not in regional Pokédex)",327,3
+,"Lunatone","BDSP — Other compatible (not in regional Pokédex)",337,3
+,"Solrock","BDSP — Other compatible (not in regional Pokédex)",338,3
+,"Baltoy","BDSP — Other compatible (not in regional Pokédex)",343,3
+,"Claydol","BDSP — Other compatible (not in regional Pokédex)",344,3
+,"Lileep","BDSP — Other compatible (not in regional Pokédex)",345,3
+,"Cradily","BDSP — Other compatible (not in regional Pokédex)",346,3
+,"Anorith","BDSP — Other compatible (not in regional Pokédex)",347,3
+,"Armaldo","BDSP — Other compatible (not in regional Pokédex)",348,3
+,"Castform","BDSP — Other compatible (not in regional Pokédex)",351,3
+,"Wynaut","BDSP — Other compatible (not in regional Pokédex)",360,3
+,"Clamperl","BDSP — Other compatible (not in regional Pokédex)",366,3
+,"Huntail","BDSP — Other compatible (not in regional Pokédex)",367,3
+,"Gorebyss","BDSP — Other compatible (not in regional Pokédex)",368,3
+,"Relicanth","BDSP — Other compatible (not in regional Pokédex)",369,3
+,"Regirock","BDSP — Other compatible (not in regional Pokédex)",377,3
+,"Regice","BDSP — Other compatible (not in regional Pokédex)",378,3
+,"Registeel","BDSP — Other compatible (not in regional Pokédex)",379,3
+053,"Paras","Legends: Arceus — Hisui",46,1
+054,"Parasect","Legends: Arceus — Hisui",47,1
+023,"Ponyta","Legends: Arceus — Hisui",77,1
+024,"Rapidash","Legends: Arceus — Hisui",78,1
+125,"Lickitung","Legends: Arceus — Hisui",108,1
+095,"Tangela","Legends: Arceus — Hisui",114,1
+127,"Togepi","Legends: Arceus — Hisui",175,2
+128,"Togetic","Legends: Arceus — Hisui",176,2
+142,"Unown","Legends: Arceus — Hisui",201,2
+146,"Remoraid","Legends: Arceus — Hisui",223,2
+147,"Octillery","Legends: Arceus — Hisui",224,2
+165,"Mantine","Legends: Arceus — Hisui",226,2
+018,"Wurmple","Legends: Arceus — Hisui",265,3
+019,"Silcoon","Legends: Arceus — Hisui",266,3
+020,"Beautifly","Legends: Arceus — Hisui",267,3
+021,"Cascoon","Legends: Arceus — Hisui",268,3
+022,"Dustox","Legends: Arceus — Hisui",269,3
+143,"Spheal","Legends: Arceus — Hisui",363,3
+144,"Sealeo","Legends: Arceus — Hisui",364,3
+145,"Walrein","Legends: Arceus — Hisui",365,3
+010,"Bidoof","Legends: Arceus — Hisui",399,4
+011,"Bibarel","Legends: Arceus — Hisui",400,4
+043,"Burmy","Legends: Arceus — Hisui",412,4
+044,"Wormadam","Legends: Arceus — Hisui",413,4
+045,"Mothim","Legends: Arceus — Hisui",414,4
+066,"Cherubi","Legends: Arceus — Hisui",420,4
+067,"Cherrim","Legends: Arceus — Hisui",421,4
+152,"Glameow","Legends: Arceus — Hisui",431,4
+153,"Purugly","Legends: Arceus — Hisui",432,4
+157,"Chatot","Legends: Arceus — Hisui",441,4
+148,"Skorupi","Legends: Arceus — Hisui",451,4
+149,"Drapion","Legends: Arceus — Hisui",452,4
+092,"Carnivine","Legends: Arceus — Hisui",455,4
+164,"Mantyke","Legends: Arceus — Hisui",458,4
+126,"Lickilicky","Legends: Arceus — Hisui",463,4
+096,"Tangrowth","Legends: Arceus — Hisui",465,4
+129,"Togekiss","Legends: Arceus — Hisui",468,4
+225,"Uxie","Legends: Arceus — Hisui",480,4
+226,"Mesprit","Legends: Arceus — Hisui",481,4
+227,"Azelf","Legends: Arceus — Hisui",482,4
+235,"Dialga","Legends: Arceus — Hisui",483,4
+236,"Palkia","Legends: Arceus — Hisui",484,4
+229,"Regigigas","Legends: Arceus — Hisui",486,4
+237,"Giratina","Legends: Arceus — Hisui",487,4
+230,"Cresselia","Legends: Arceus — Hisui",488,4
+239,"Phione","Legends: Arceus — Hisui",489,4
+240,"Manaphy","Legends: Arceus — Hisui",490,4
+241,"Shaymin","Legends: Arceus — Hisui",492,4
+238,"Arceus","Legends: Arceus — Hisui",493,4
+231,"Tornadus","Legends: Arceus — Hisui",641,5
+232,"Thundurus","Legends: Arceus — Hisui",642,5
+233,"Landorus","Legends: Arceus — Hisui",645,5
+050,"Wyrdeer","Legends: Arceus — Hisui",899,8
+203,"Sneasler","Legends: Arceus — Hisui",903,8
+234,"Enamorus","Legends: Arceus — Hisui",905,8
+055,"Psyduck","Scarlet/Violet — Paldea",54,1
+056,"Golduck","Scarlet/Violet — Paldea",55,1
+329,"Shellder","Scarlet/Violet — Paldea",90,1
+330,"Cloyster","Scarlet/Violet — Paldea",91,1
+066,"Drowzee","Scarlet/Violet — Paldea",96,1
+067,"Hypno","Scarlet/Violet — Paldea",97,1
+207,"Voltorb","Scarlet/Violet — Paldea",100,1
+208,"Electrode","Scarlet/Violet — Paldea",101,1
+212,"Ditto","Scarlet/Violet — Paldea",132,1
+047,"Marill","Scarlet/Violet — Paldea",183,2
+048,"Azumarill","Scarlet/Violet — Paldea",184,2
+016,"Hoppip","Scarlet/Violet — Paldea",187,2
+017,"Skiploom","Scarlet/Violet — Paldea",188,2
+018,"Jumpluff","Scarlet/Violet — Paldea",189,2
+031,"Sunkern","Scarlet/Violet — Paldea",191,2
+032,"Sunflora","Scarlet/Violet — Paldea",192,2
+232,"Murkrow","Scarlet/Violet — Paldea",198,2
+114,"Misdreavus","Scarlet/Violet — Paldea",200,2
+258,"Pineco","Scarlet/Violet — Paldea",204,2
+259,"Forretress","Scarlet/Violet — Paldea",205,2
+215,"Teddiursa","Scarlet/Violet — Paldea",216,2
+216,"Ursaring","Scarlet/Violet — Paldea",217,2
+122,"Phanpy","Scarlet/Violet — Paldea",231,2
+123,"Donphan","Scarlet/Violet — Paldea",232,2
+132,"Wingull","Scarlet/Violet — Paldea",278,3
+133,"Pelipper","Scarlet/Violet — Paldea",279,3
+106,"Shroomish","Scarlet/Violet — Paldea",285,3
+107,"Breloom","Scarlet/Violet — Paldea",286,3
+116,"Makuhita","Scarlet/Violet — Paldea",296,3
+117,"Hariyama","Scarlet/Violet — Paldea",297,3
+046,"Azurill","Scarlet/Violet — Paldea",298,3
+252,"Cacnea","Scarlet/Violet — Paldea",331,3
+253,"Cacturne","Scarlet/Violet — Paldea",332,3
+246,"Tropius","Scarlet/Violet — Paldea",357,3
+038,"Combee","Scarlet/Violet — Paldea",415,4
+039,"Vespiquen","Scarlet/Violet — Paldea",416,4
+051,"Buizel","Scarlet/Violet — Paldea",418,4
+052,"Floatzel","Scarlet/Violet — Paldea",419,4
+327,"Shellos","Scarlet/Violet — Paldea",422,4
+328,"Gastrodon","Scarlet/Violet — Paldea",423,4
+143,"Drifloon","Scarlet/Violet — Paldea",425,4
+144,"Drifblim","Scarlet/Violet — Paldea",426,4
+115,"Mismagius","Scarlet/Violet — Paldea",429,4
+233,"Honchkrow","Scarlet/Violet — Paldea",430,4
+226,"Stunky","Scarlet/Violet — Paldea",434,4
+227,"Skuntank","Scarlet/Violet — Paldea",435,4
+302,"Spiritomb","Scarlet/Violet — Paldea",442,4
+175,"Croagunk","Scarlet/Violet — Paldea",453,4
+176,"Toxicroak","Scarlet/Violet — Paldea",454,4
+228,"Zorua","Scarlet/Violet — Paldea",570,5
+229,"Zoroark","Scarlet/Violet — Paldea",571,5
+370,"Deino","Scarlet/Violet — Paldea",633,5
+371,"Zweilous","Scarlet/Violet — Paldea",634,5
+372,"Hydreigon","Scarlet/Violet — Paldea",635,5
+274,"Larvesta","Scarlet/Violet — Paldea",636,5
+275,"Volcarona","Scarlet/Violet — Paldea",637,5
+027,"Yungoos","Scarlet/Violet — Paldea",734,7
+028,"Gumshoos","Scarlet/Violet — Paldea",735,7
+344,"Mareanie","Scarlet/Violet — Paldea",747,7
+345,"Toxapex","Scarlet/Violet — Paldea",748,7
+081,"Bounsweet","Scarlet/Violet — Paldea",761,7
+082,"Steenee","Scarlet/Violet — Paldea",762,7
+083,"Tsareena","Scarlet/Violet — Paldea",763,7
+313,"Oranguru","Scarlet/Violet — Paldea",765,7
+314,"Passimian","Scarlet/Violet — Paldea",766,7
+315,"Komala","Scarlet/Violet — Paldea",775,7
+091,"Rolycoly","Scarlet/Violet — Paldea",837,8
+092,"Carkol","Scarlet/Violet — Paldea",838,8
+093,"Coalossal","Scarlet/Violet — Paldea",839,8
+270,"Silicobra","Scarlet/Violet — Paldea",843,8
+271,"Sandaconda","Scarlet/Violet — Paldea",844,8
+321,"Pincurchin","Scarlet/Violet — Paldea",871,8
+350,"Snom","Scarlet/Violet — Paldea",872,8
+351,"Frosmoth","Scarlet/Violet — Paldea",873,8
+319,"Stonjourner","Scarlet/Violet — Paldea",874,8
+320,"Eiscue","Scarlet/Violet — Paldea",875,8
+124,"Cufant","Scarlet/Violet — Paldea",878,8
+125,"Copperajah","Scarlet/Violet — Paldea",879,8
+305,"Dreepy","Scarlet/Violet — Paldea",885,8
+306,"Drakloak","Scarlet/Violet — Paldea",886,8
+307,"Dragapult","Scarlet/Violet — Paldea",887,8
+001,"Sprigatito","Scarlet/Violet — Paldea",906,9
+002,"Floragato","Scarlet/Violet — Paldea",907,9
+003,"Meowscarada","Scarlet/Violet — Paldea",908,9
+004,"Fuecoco","Scarlet/Violet — Paldea",909,9
+005,"Crocalor","Scarlet/Violet — Paldea",910,9
+006,"Skeledirge","Scarlet/Violet — Paldea",911,9
+007,"Quaxly","Scarlet/Violet — Paldea",912,9
+008,"Quaxwell","Scarlet/Violet — Paldea",913,9
+009,"Quaquaval","Scarlet/Violet — Paldea",914,9
+010,"Lechonk","Scarlet/Violet — Paldea",915,9
+011,"Oinkologne","Scarlet/Violet — Paldea",916,9
+012,"Tarountula","Scarlet/Violet — Paldea",917,9
+013,"Spidops","Scarlet/Violet — Paldea",918,9
+014,"Nymble","Scarlet/Violet — Paldea",919,9
+015,"Lokix","Scarlet/Violet — Paldea",920,9
+022,"Pawmi","Scarlet/Violet — Paldea",921,9
+023,"Pawmo","Scarlet/Violet — Paldea",922,9
+024,"Pawmot","Scarlet/Violet — Paldea",923,9
+084,"Smoliv","Scarlet/Violet — Paldea",928,9
+085,"Dolliv","Scarlet/Violet — Paldea",929,9
+086,"Arboliva","Scarlet/Violet — Paldea",930,9
+170,"Tadbulb","Scarlet/Violet — Paldea",938,9
+171,"Bellibolt","Scarlet/Violet — Paldea",939,9
+177,"Wattrel","Scarlet/Violet — Paldea",940,9
+178,"Kilowattrel","Scarlet/Violet — Paldea",941,9
+242,"Bramblin","Scarlet/Violet — Paldea",946,9
+243,"Brambleghast","Scarlet/Violet — Paldea",947,9
+249,"Klawf","Scarlet/Violet — Paldea",950,9
+263,"Flittle","Scarlet/Violet — Paldea",955,9
+264,"Espathra","Scarlet/Violet — Paldea",956,9
+288,"Wiglett","Scarlet/Violet — Paldea",960,9
+289,"Wugtrio","Scarlet/Violet — Paldea",961,9
+291,"Finizen","Scarlet/Violet — Paldea",963,9
+292,"Palafin","Scarlet/Violet — Paldea",964,9
+293,"Varoom","Scarlet/Violet — Paldea",965,9
+294,"Revavroom","Scarlet/Violet — Paldea",966,9
+361,"Cetoddle","Scarlet/Violet — Paldea",974,9
+362,"Cetitan","Scarlet/Violet — Paldea",975,9
+373,"Veluza","Scarlet/Violet — Paldea",976,9
+054,"Clodsire","Scarlet/Violet — Paldea",980,9
+376,"Great Tusk","Scarlet/Violet — Paldea",984,9
+377,"Scream Tail","Scarlet/Violet — Paldea",985,9
+378,"Brute Bonnet","Scarlet/Violet — Paldea",986,9
+379,"Flutter Mane","Scarlet/Violet — Paldea",987,9
+380,"Slither Wing","Scarlet/Violet — Paldea",988,9
+381,"Sandy Shocks","Scarlet/Violet — Paldea",989,9
+382,"Iron Treads","Scarlet/Violet — Paldea",990,9
+383,"Iron Bundle","Scarlet/Violet — Paldea",991,9
+384,"Iron Hands","Scarlet/Violet — Paldea",992,9
+385,"Iron Jugulis","Scarlet/Violet — Paldea",993,9
+386,"Iron Moth","Scarlet/Violet — Paldea",994,9
+387,"Iron Thorns","Scarlet/Violet — Paldea",995,9
+393,"Wo-Chien","Scarlet/Violet — Paldea",1001,9
+394,"Chien-Pao","Scarlet/Violet — Paldea",1002,9
+395,"Ting-Lu","Scarlet/Violet — Paldea",1003,9
+396,"Chi-Yu","Scarlet/Violet — Paldea",1004,9
+397,"Roaring Moon","Scarlet/Violet — Paldea",1005,9
+398,"Iron Valiant","Scarlet/Violet — Paldea",1006,9
+399,"Koraidon","Scarlet/Violet — Paldea",1007,9
+400,"Miraidon","Scarlet/Violet — Paldea",1008,9
+078,"Growlithe","Scarlet/Violet — Teal Mask DLC (Kitakami)",58,1
+079,"Arcanine","Scarlet/Violet — Teal Mask DLC (Kitakami)",59,1
+039,"Poliwag","Scarlet/Violet — Teal Mask DLC (Kitakami)",60,1
+040,"Poliwhirl","Scarlet/Violet — Teal Mask DLC (Kitakami)",61,1
+041,"Poliwrath","Scarlet/Violet — Teal Mask DLC (Kitakami)",62,1
+135,"Koffing","Scarlet/Violet — Teal Mask DLC (Kitakami)",109,1
+136,"Weezing","Scarlet/Violet — Teal Mask DLC (Kitakami)",110,1
+103,"Snorlax","Scarlet/Violet — Teal Mask DLC (Kitakami)",143,1
+026,"Sentret","Scarlet/Violet — Teal Mask DLC (Kitakami)",161,2
+027,"Furret","Scarlet/Violet — Teal Mask DLC (Kitakami)",162,2
+045,"Hoothoot","Scarlet/Violet — Teal Mask DLC (Kitakami)",163,2
+046,"Noctowl","Scarlet/Violet — Teal Mask DLC (Kitakami)",164,2
+084,"Sudowoodo","Scarlet/Violet — Teal Mask DLC (Kitakami)",185,2
+042,"Politoed","Scarlet/Violet — Teal Mask DLC (Kitakami)",186,2
+047,"Aipom","Scarlet/Violet — Teal Mask DLC (Kitakami)",190,2
+003,"Yanma","Scarlet/Violet — Teal Mask DLC (Kitakami)",193,2
+005,"Wooper","Scarlet/Violet — Teal Mask DLC (Kitakami)",194,2
+006,"Quagsire","Scarlet/Violet — Teal Mask DLC (Kitakami)",195,2
+160,"Dunsparce","Scarlet/Violet — Teal Mask DLC (Kitakami)",206,2
+121,"Gligar","Scarlet/Violet — Teal Mask DLC (Kitakami)",207,2
+170,"Sneasel","Scarlet/Violet — Teal Mask DLC (Kitakami)",215,2
+144,"Slugma","Scarlet/Violet — Teal Mask DLC (Kitakami)",218,2
+145,"Magcargo","Scarlet/Violet — Teal Mask DLC (Kitakami)",219,2
+050,"Swinub","Scarlet/Violet — Teal Mask DLC (Kitakami)",220,2
+051,"Piloswine","Scarlet/Violet — Teal Mask DLC (Kitakami)",221,2
+053,"Stantler","Scarlet/Violet — Teal Mask DLC (Kitakami)",234,2
+007,"Poochyena","Scarlet/Violet — Teal Mask DLC (Kitakami)",261,3
+008,"Mightyena","Scarlet/Violet — Teal Mask DLC (Kitakami)",262,3
+104,"Lotad","Scarlet/Violet — Teal Mask DLC (Kitakami)",270,3
+105,"Lombre","Scarlet/Violet — Teal Mask DLC (Kitakami)",271,3
+106,"Ludicolo","Scarlet/Violet — Teal Mask DLC (Kitakami)",272,3
+054,"Seedot","Scarlet/Violet — Teal Mask DLC (Kitakami)",273,3
+055,"Nuzleaf","Scarlet/Violet — Teal Mask DLC (Kitakami)",274,3
+056,"Shiftry","Scarlet/Violet — Teal Mask DLC (Kitakami)",275,3
+149,"Surskit","Scarlet/Violet — Teal Mask DLC (Kitakami)",283,3
+150,"Masquerain","Scarlet/Violet — Teal Mask DLC (Kitakami)",284,3
+107,"Nosepass","Scarlet/Violet — Teal Mask DLC (Kitakami)",299,3
+009,"Volbeat","Scarlet/Violet — Teal Mask DLC (Kitakami)",313,3
+010,"Illumise","Scarlet/Violet — Teal Mask DLC (Kitakami)",314,3
+162,"Barboach","Scarlet/Violet — Teal Mask DLC (Kitakami)",339,3
+163,"Whiscash","Scarlet/Violet — Teal Mask DLC (Kitakami)",340,3
+011,"Corphish","Scarlet/Violet — Teal Mask DLC (Kitakami)",341,3
+012,"Crawdaunt","Scarlet/Violet — Teal Mask DLC (Kitakami)",342,3
+139,"Duskull","Scarlet/Violet — Teal Mask DLC (Kitakami)",355,3
+140,"Dusclops","Scarlet/Violet — Teal Mask DLC (Kitakami)",356,3
+061,"Kricketot","Scarlet/Violet — Teal Mask DLC (Kitakami)",401,4
+062,"Kricketune","Scarlet/Violet — Teal Mask DLC (Kitakami)",402,4
+109,"Shinx","Scarlet/Violet — Teal Mask DLC (Kitakami)",403,4
+110,"Luxio","Scarlet/Violet — Teal Mask DLC (Kitakami)",404,4
+111,"Luxray","Scarlet/Violet — Teal Mask DLC (Kitakami)",405,4
+063,"Pachirisu","Scarlet/Violet — Teal Mask DLC (Kitakami)",417,4
+048,"Ambipom","Scarlet/Violet — Teal Mask DLC (Kitakami)",424,4
+154,"Bronzor","Scarlet/Violet — Teal Mask DLC (Kitakami)",436,4
+155,"Bronzong","Scarlet/Violet — Teal Mask DLC (Kitakami)",437,4
+083,"Bonsly","Scarlet/Violet — Teal Mask DLC (Kitakami)",438,4
+102,"Munchlax","Scarlet/Violet — Teal Mask DLC (Kitakami)",446,4
+171,"Weavile","Scarlet/Violet — Teal Mask DLC (Kitakami)",461,4
+004,"Yanmega","Scarlet/Violet — Teal Mask DLC (Kitakami)",469,4
+122,"Gliscor","Scarlet/Violet — Teal Mask DLC (Kitakami)",472,4
+052,"Mamoswine","Scarlet/Violet — Teal Mask DLC (Kitakami)",473,4
+108,"Probopass","Scarlet/Violet — Teal Mask DLC (Kitakami)",476,4
+141,"Dusknoir","Scarlet/Violet — Teal Mask DLC (Kitakami)",477,4
+085,"Timburr","Scarlet/Violet — Teal Mask DLC (Kitakami)",532,5
+086,"Gurdurr","Scarlet/Violet — Teal Mask DLC (Kitakami)",533,5
+087,"Conkeldurr","Scarlet/Violet — Teal Mask DLC (Kitakami)",534,5
+013,"Sewaddle","Scarlet/Violet — Teal Mask DLC (Kitakami)",540,5
+014,"Swadloon","Scarlet/Violet — Teal Mask DLC (Kitakami)",541,5
+015,"Leavanny","Scarlet/Violet — Teal Mask DLC (Kitakami)",542,5
+066,"Petilil","Scarlet/Violet — Teal Mask DLC (Kitakami)",548,5
+067,"Lilligant","Scarlet/Violet — Teal Mask DLC (Kitakami)",549,5
+194,"Basculin","Scarlet/Violet — Teal Mask DLC (Kitakami)",550,5
+181,"Ducklett","Scarlet/Violet — Teal Mask DLC (Kitakami)",580,5
+182,"Swanna","Scarlet/Violet — Teal Mask DLC (Kitakami)",581,5
+137,"Mienfoo","Scarlet/Violet — Teal Mask DLC (Kitakami)",619,5
+138,"Mienshao","Scarlet/Violet — Teal Mask DLC (Kitakami)",620,5
+186,"Pawniard","Scarlet/Violet — Teal Mask DLC (Kitakami)",624,5
+187,"Bisharp","Scarlet/Violet — Teal Mask DLC (Kitakami)",625,5
+112,"Grubbin","Scarlet/Violet — Teal Mask DLC (Kitakami)",736,7
+113,"Charjabug","Scarlet/Violet — Teal Mask DLC (Kitakami)",737,7
+114,"Vikavolt","Scarlet/Violet — Teal Mask DLC (Kitakami)",738,7
+016,"Cutiefly","Scarlet/Violet — Teal Mask DLC (Kitakami)",742,7
+017,"Ribombee","Scarlet/Violet — Teal Mask DLC (Kitakami)",743,7
+070,"Rockruff","Scarlet/Violet — Teal Mask DLC (Kitakami)",744,7
+071,"Lycanroc","Scarlet/Violet — Teal Mask DLC (Kitakami)",745,7
+129,"Mudbray","Scarlet/Violet — Teal Mask DLC (Kitakami)",749,7
+130,"Mudsdale","Scarlet/Violet — Teal Mask DLC (Kitakami)",750,7
+031,"Fomantis","Scarlet/Violet — Teal Mask DLC (Kitakami)",753,7
+032,"Lurantis","Scarlet/Violet — Teal Mask DLC (Kitakami)",754,7
+168,"Salandit","Scarlet/Violet — Teal Mask DLC (Kitakami)",757,7
+169,"Salazzle","Scarlet/Violet — Teal Mask DLC (Kitakami)",758,7
+131,"Jangmo-o","Scarlet/Violet — Teal Mask DLC (Kitakami)",782,7
+132,"Hakamo-o","Scarlet/Violet — Teal Mask DLC (Kitakami)",783,7
+133,"Kommo-o","Scarlet/Violet — Teal Mask DLC (Kitakami)",784,7
+072,"Skwovet","Scarlet/Violet — Teal Mask DLC (Kitakami)",819,8
+073,"Greedent","Scarlet/Violet — Teal Mask DLC (Kitakami)",820,8
+183,"Chewtle","Scarlet/Violet — Teal Mask DLC (Kitakami)",833,8
+184,"Drednaw","Scarlet/Violet — Teal Mask DLC (Kitakami)",834,8
+033,"Applin","Scarlet/Violet — Teal Mask DLC (Kitakami)",840,8
+034,"Flapple","Scarlet/Violet — Teal Mask DLC (Kitakami)",841,8
+035,"Appletun","Scarlet/Violet — Teal Mask DLC (Kitakami)",842,8
+185,"Cramorant","Scarlet/Violet — Teal Mask DLC (Kitakami)",845,8
+090,"Arrokuda","Scarlet/Violet — Teal Mask DLC (Kitakami)",846,8
+091,"Barraskewda","Scarlet/Violet — Teal Mask DLC (Kitakami)",847,8
+092,"Hatenna","Scarlet/Violet — Teal Mask DLC (Kitakami)",856,8
+093,"Hattrem","Scarlet/Violet — Teal Mask DLC (Kitakami)",857,8
+094,"Hatterene","Scarlet/Violet — Teal Mask DLC (Kitakami)",858,8
+190,"Impidimp","Scarlet/Violet — Teal Mask DLC (Kitakami)",859,8
+191,"Morgrem","Scarlet/Violet — Teal Mask DLC (Kitakami)",860,8
+192,"Grimmsnarl","Scarlet/Violet — Teal Mask DLC (Kitakami)",861,8
+196,"Ursaluna","Scarlet/Violet — Teal Mask DLC (Kitakami)",901,8
+195,"Basculegion","Scarlet/Violet — Teal Mask DLC (Kitakami)",902,8
+097,"Tandemaus","Scarlet/Violet — Teal Mask DLC (Kitakami)",924,9
+098,"Maushold","Scarlet/Violet — Teal Mask DLC (Kitakami)",925,9
+074,"Toedscool","Scarlet/Violet — Teal Mask DLC (Kitakami)",948,9
+075,"Toedscruel","Scarlet/Violet — Teal Mask DLC (Kitakami)",949,9
+134,"Bombirdier","Scarlet/Violet — Teal Mask DLC (Kitakami)",962,9
+096,"Orthworm","Scarlet/Violet — Teal Mask DLC (Kitakami)",968,9
+161,"Dudunsparce","Scarlet/Violet — Teal Mask DLC (Kitakami)",982,9
+188,"Kingambit","Scarlet/Violet — Teal Mask DLC (Kitakami)",983,9
+036,"Dipplin","Scarlet/Violet — Teal Mask DLC (Kitakami)",1011,9
+076,"Poltchageist","Scarlet/Violet — Teal Mask DLC (Kitakami)",1012,9
+077,"Sinistcha","Scarlet/Violet — Teal Mask DLC (Kitakami)",1013,9
+197,"Okidogi","Scarlet/Violet — Teal Mask DLC (Kitakami)",1014,9
+198,"Munkidori","Scarlet/Violet — Teal Mask DLC (Kitakami)",1015,9
+199,"Fezandipiti","Scarlet/Violet — Teal Mask DLC (Kitakami)",1016,9
+200,"Ogerpon","Scarlet/Violet — Teal Mask DLC (Kitakami)",1017,9
+155,"Sandshrew","Scarlet/Violet — Indigo Disk DLC (Blueberry)",27,1
+156,"Sandslash","Scarlet/Violet — Indigo Disk DLC (Blueberry)",28,1
+157,"Vulpix","Scarlet/Violet — Indigo Disk DLC (Blueberry)",37,1
+158,"Ninetales","Scarlet/Violet — Indigo Disk DLC (Blueberry)",38,1
+062,"Oddish","Scarlet/Violet — Indigo Disk DLC (Blueberry)",43,1
+063,"Gloom","Scarlet/Violet — Indigo Disk DLC (Blueberry)",44,1
+064,"Vileplume","Scarlet/Violet — Indigo Disk DLC (Blueberry)",45,1
+008,"Venonat","Scarlet/Violet — Indigo Disk DLC (Blueberry)",48,1
+009,"Venomoth","Scarlet/Violet — Indigo Disk DLC (Blueberry)",49,1
+066,"Diglett","Scarlet/Violet — Indigo Disk DLC (Blueberry)",50,1
+067,"Dugtrio","Scarlet/Violet — Indigo Disk DLC (Blueberry)",51,1
+050,"Tentacool","Scarlet/Violet — Indigo Disk DLC (Blueberry)",72,1
+051,"Tentacruel","Scarlet/Violet — Indigo Disk DLC (Blueberry)",73,1
+096,"Geodude","Scarlet/Violet — Indigo Disk DLC (Blueberry)",74,1
+097,"Graveler","Scarlet/Violet — Indigo Disk DLC (Blueberry)",75,1
+098,"Golem","Scarlet/Violet — Indigo Disk DLC (Blueberry)",76,1
+116,"Magnemite","Scarlet/Violet — Indigo Disk DLC (Blueberry)",81,1
+117,"Magneton","Scarlet/Violet — Indigo Disk DLC (Blueberry)",82,1
+001,"Doduo","Scarlet/Violet — Indigo Disk DLC (Blueberry)",84,1
+002,"Dodrio","Scarlet/Violet — Indigo Disk DLC (Blueberry)",85,1
+143,"Seel","Scarlet/Violet — Indigo Disk DLC (Blueberry)",86,1
+144,"Dewgong","Scarlet/Violet — Indigo Disk DLC (Blueberry)",87,1
+068,"Grimer","Scarlet/Violet — Indigo Disk DLC (Blueberry)",88,1
+069,"Muk","Scarlet/Violet — Indigo Disk DLC (Blueberry)",89,1
+003,"Exeggcute","Scarlet/Violet — Indigo Disk DLC (Blueberry)",102,1
+004,"Exeggutor","Scarlet/Violet — Indigo Disk DLC (Blueberry)",103,1
+093,"Hitmonlee","Scarlet/Violet — Indigo Disk DLC (Blueberry)",106,1
+094,"Hitmonchan","Scarlet/Violet — Indigo Disk DLC (Blueberry)",107,1
+005,"Rhyhorn","Scarlet/Violet — Indigo Disk DLC (Blueberry)",111,1
+006,"Rhydon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",112,1
+017,"Chansey","Scarlet/Violet — Indigo Disk DLC (Blueberry)",113,1
+052,"Horsea","Scarlet/Violet — Indigo Disk DLC (Blueberry)",116,1
+053,"Seadra","Scarlet/Violet — Indigo Disk DLC (Blueberry)",117,1
+011,"Electabuzz","Scarlet/Violet — Indigo Disk DLC (Blueberry)",125,1
+014,"Magmar","Scarlet/Violet — Indigo Disk DLC (Blueberry)",126,1
+022,"Tauros","Scarlet/Violet — Indigo Disk DLC (Blueberry)",128,1
+145,"Lapras","Scarlet/Violet — Indigo Disk DLC (Blueberry)",131,1
+176,"Cyndaquil","Scarlet/Violet — Indigo Disk DLC (Blueberry)",155,2
+177,"Quilava","Scarlet/Violet — Indigo Disk DLC (Blueberry)",156,2
+178,"Typhlosion","Scarlet/Violet — Indigo Disk DLC (Blueberry)",157,2
+078,"Chinchou","Scarlet/Violet — Indigo Disk DLC (Blueberry)",170,2
+079,"Lanturn","Scarlet/Violet — Indigo Disk DLC (Blueberry)",171,2
+065,"Bellossom","Scarlet/Violet — Indigo Disk DLC (Blueberry)",182,2
+025,"Girafarig","Scarlet/Violet — Indigo Disk DLC (Blueberry)",203,2
+151,"Snubbull","Scarlet/Violet — Indigo Disk DLC (Blueberry)",209,2
+152,"Granbull","Scarlet/Violet — Indigo Disk DLC (Blueberry)",210,2
+054,"Kingdra","Scarlet/Violet — Indigo Disk DLC (Blueberry)",230,2
+040,"Smeargle","Scarlet/Violet — Indigo Disk DLC (Blueberry)",235,2
+092,"Tyrogue","Scarlet/Violet — Indigo Disk DLC (Blueberry)",236,2
+095,"Hitmontop","Scarlet/Violet — Indigo Disk DLC (Blueberry)",237,2
+010,"Elekid","Scarlet/Violet — Indigo Disk DLC (Blueberry)",239,2
+013,"Magby","Scarlet/Violet — Indigo Disk DLC (Blueberry)",240,2
+018,"Blissey","Scarlet/Violet — Indigo Disk DLC (Blueberry)",242,2
+059,"Slakoth","Scarlet/Violet — Indigo Disk DLC (Blueberry)",287,3
+060,"Vigoroth","Scarlet/Violet — Indigo Disk DLC (Blueberry)",288,3
+061,"Slaking","Scarlet/Violet — Indigo Disk DLC (Blueberry)",289,3
+119,"Plusle","Scarlet/Violet — Indigo Disk DLC (Blueberry)",311,3
+120,"Minun","Scarlet/Violet — Indigo Disk DLC (Blueberry)",312,3
+086,"Torkoal","Scarlet/Violet — Indigo Disk DLC (Blueberry)",324,3
+044,"Trapinch","Scarlet/Violet — Indigo Disk DLC (Blueberry)",328,3
+045,"Vibrava","Scarlet/Violet — Indigo Disk DLC (Blueberry)",329,3
+046,"Flygon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",330,3
+082,"Luvdisc","Scarlet/Violet — Indigo Disk DLC (Blueberry)",370,3
+191,"Turtwig","Scarlet/Violet — Indigo Disk DLC (Blueberry)",387,4
+192,"Grotle","Scarlet/Violet — Indigo Disk DLC (Blueberry)",388,4
+193,"Torterra","Scarlet/Violet — Indigo Disk DLC (Blueberry)",389,4
+194,"Chimchar","Scarlet/Violet — Indigo Disk DLC (Blueberry)",390,4
+195,"Monferno","Scarlet/Violet — Indigo Disk DLC (Blueberry)",391,4
+196,"Infernape","Scarlet/Violet — Indigo Disk DLC (Blueberry)",392,4
+197,"Piplup","Scarlet/Violet — Indigo Disk DLC (Blueberry)",393,4
+198,"Prinplup","Scarlet/Violet — Indigo Disk DLC (Blueberry)",394,4
+199,"Empoleon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",395,4
+107,"Cranidos","Scarlet/Violet — Indigo Disk DLC (Blueberry)",408,4
+108,"Rampardos","Scarlet/Violet — Indigo Disk DLC (Blueberry)",409,4
+109,"Shieldon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",410,4
+110,"Bastiodon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",411,4
+016,"Happiny","Scarlet/Violet — Indigo Disk DLC (Blueberry)",440,4
+083,"Finneon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",456,4
+084,"Lumineon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",457,4
+118,"Magnezone","Scarlet/Violet — Indigo Disk DLC (Blueberry)",462,4
+007,"Rhyperior","Scarlet/Violet — Indigo Disk DLC (Blueberry)",464,4
+012,"Electivire","Scarlet/Violet — Indigo Disk DLC (Blueberry)",466,4
+015,"Magmortar","Scarlet/Violet — Indigo Disk DLC (Blueberry)",467,4
+200,"Snivy","Scarlet/Violet — Indigo Disk DLC (Blueberry)",495,5
+201,"Servine","Scarlet/Violet — Indigo Disk DLC (Blueberry)",496,5
+202,"Serperior","Scarlet/Violet — Indigo Disk DLC (Blueberry)",497,5
+206,"Oshawott","Scarlet/Violet — Indigo Disk DLC (Blueberry)",501,5
+207,"Dewott","Scarlet/Violet — Indigo Disk DLC (Blueberry)",502,5
+208,"Samurott","Scarlet/Violet — Indigo Disk DLC (Blueberry)",503,5
+023,"Blitzle","Scarlet/Violet — Indigo Disk DLC (Blueberry)",522,5
+024,"Zebstrika","Scarlet/Violet — Indigo Disk DLC (Blueberry)",523,5
+056,"Cottonee","Scarlet/Violet — Indigo Disk DLC (Blueberry)",546,5
+057,"Whimsicott","Scarlet/Violet — Indigo Disk DLC (Blueberry)",547,5
+111,"Minccino","Scarlet/Violet — Indigo Disk DLC (Blueberry)",572,5
+112,"Cinccino","Scarlet/Violet — Indigo Disk DLC (Blueberry)",573,5
+101,"Gothita","Scarlet/Violet — Indigo Disk DLC (Blueberry)",574,5
+102,"Gothorita","Scarlet/Violet — Indigo Disk DLC (Blueberry)",575,5
+103,"Gothitelle","Scarlet/Violet — Indigo Disk DLC (Blueberry)",576,5
+148,"Solosis","Scarlet/Violet — Indigo Disk DLC (Blueberry)",577,5
+149,"Duosion","Scarlet/Violet — Indigo Disk DLC (Blueberry)",578,5
+150,"Reuniclus","Scarlet/Violet — Indigo Disk DLC (Blueberry)",579,5
+038,"Deerling","Scarlet/Violet — Indigo Disk DLC (Blueberry)",585,5
+039,"Sawsbuck","Scarlet/Violet — Indigo Disk DLC (Blueberry)",586,5
+085,"Alomomola","Scarlet/Violet — Indigo Disk DLC (Blueberry)",594,5
+132,"Joltik","Scarlet/Violet — Indigo Disk DLC (Blueberry)",595,5
+133,"Galvantula","Scarlet/Violet — Indigo Disk DLC (Blueberry)",596,5
+140,"Axew","Scarlet/Violet — Indigo Disk DLC (Blueberry)",610,5
+141,"Fraxure","Scarlet/Violet — Indigo Disk DLC (Blueberry)",611,5
+142,"Haxorus","Scarlet/Violet — Indigo Disk DLC (Blueberry)",612,5
+153,"Cubchoo","Scarlet/Violet — Indigo Disk DLC (Blueberry)",613,5
+154,"Beartic","Scarlet/Violet — Indigo Disk DLC (Blueberry)",614,5
+032,"Rufflet","Scarlet/Violet — Indigo Disk DLC (Blueberry)",627,5
+033,"Braviary","Scarlet/Violet — Indigo Disk DLC (Blueberry)",628,5
+034,"Vullaby","Scarlet/Violet — Indigo Disk DLC (Blueberry)",629,5
+035,"Mandibuzz","Scarlet/Violet — Indigo Disk DLC (Blueberry)",630,5
+218,"Rowlet","Scarlet/Violet — Indigo Disk DLC (Blueberry)",722,7
+219,"Dartrix","Scarlet/Violet — Indigo Disk DLC (Blueberry)",723,7
+220,"Decidueye","Scarlet/Violet — Indigo Disk DLC (Blueberry)",724,7
+221,"Litten","Scarlet/Violet — Indigo Disk DLC (Blueberry)",725,7
+222,"Torracat","Scarlet/Violet — Indigo Disk DLC (Blueberry)",726,7
+223,"Incineroar","Scarlet/Violet — Indigo Disk DLC (Blueberry)",727,7
+224,"Popplio","Scarlet/Violet — Indigo Disk DLC (Blueberry)",728,7
+225,"Brionne","Scarlet/Violet — Indigo Disk DLC (Blueberry)",729,7
+226,"Primarina","Scarlet/Violet — Indigo Disk DLC (Blueberry)",730,7
+047,"Pikipek","Scarlet/Violet — Indigo Disk DLC (Blueberry)",731,7
+048,"Trumbeak","Scarlet/Violet — Indigo Disk DLC (Blueberry)",732,7
+049,"Toucannon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",733,7
+074,"Oricorio","Scarlet/Violet — Indigo Disk DLC (Blueberry)",741,7
+090,"Dewpider","Scarlet/Violet — Indigo Disk DLC (Blueberry)",751,7
+091,"Araquanid","Scarlet/Violet — Indigo Disk DLC (Blueberry)",752,7
+058,"Comfey","Scarlet/Violet — Indigo Disk DLC (Blueberry)",764,7
+106,"Minior","Scarlet/Violet — Indigo Disk DLC (Blueberry)",774,7
+055,"Bruxish","Scarlet/Violet — Indigo Disk DLC (Blueberry)",779,7
+227,"Grookey","Scarlet/Violet — Indigo Disk DLC (Blueberry)",810,8
+228,"Thwackey","Scarlet/Violet — Indigo Disk DLC (Blueberry)",811,8
+229,"Rillaboom","Scarlet/Violet — Indigo Disk DLC (Blueberry)",812,8
+230,"Scorbunny","Scarlet/Violet — Indigo Disk DLC (Blueberry)",813,8
+231,"Raboot","Scarlet/Violet — Indigo Disk DLC (Blueberry)",814,8
+232,"Cinderace","Scarlet/Violet — Indigo Disk DLC (Blueberry)",815,8
+233,"Sobble","Scarlet/Violet — Indigo Disk DLC (Blueberry)",816,8
+234,"Drizzile","Scarlet/Violet — Indigo Disk DLC (Blueberry)",817,8
+235,"Inteleon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",818,8
+127,"Sinistea","Scarlet/Violet — Indigo Disk DLC (Blueberry)",854,8
+128,"Polteageist","Scarlet/Violet — Indigo Disk DLC (Blueberry)",855,8
+042,"Milcery","Scarlet/Violet — Indigo Disk DLC (Blueberry)",868,8
+043,"Alcremie","Scarlet/Violet — Indigo Disk DLC (Blueberry)",869,8
+161,"Duraludon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",884,8
+030,"Rellor","Scarlet/Violet — Indigo Disk DLC (Blueberry)",953,9
+031,"Rabsca","Scarlet/Violet — Indigo Disk DLC (Blueberry)",954,9
+026,"Farigiraf","Scarlet/Violet — Indigo Disk DLC (Blueberry)",981,9
+241,"Walking Wake","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1009,9
+242,"Iron Leaves","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1010,9
+162,"Archaludon","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1018,9
+163,"Hydrapple","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1019,9
+236,"Gouging Fire","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1020,9
+237,"Raging Bolt","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1021,9
+239,"Iron Boulder","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1022,9
+238,"Iron Crown","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1023,9
+240,"Terapagos","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1024,9
+243,"Pecharunt","Scarlet/Violet — Indigo Disk DLC (Blueberry)",1025,9
+,"Raikou","SV — Other compatible (not in regional Pokédex)",243,2
+,"Entei","SV — Other compatible (not in regional Pokédex)",244,2
+,"Suicune","SV — Other compatible (not in regional Pokédex)",245,2
+,"Lugia","SV — Other compatible (not in regional Pokédex)",249,2
+,"Ho-Oh","SV — Other compatible (not in regional Pokédex)",250,2
+,"Jirachi","SV — Other compatible (not in regional Pokédex)",385,3
+,"Deoxys","SV — Other compatible (not in regional Pokédex)",386,3
+,"Reshiram","SV — Other compatible (not in regional Pokédex)",643,5
+,"Zekrom","SV — Other compatible (not in regional Pokédex)",644,5
+,"Kyurem","SV — Other compatible (not in regional Pokédex)",646,5
+148,"Bulbasaur","Legends: Z-A — Lumiose City",1,1
+149,"Ivysaur","Legends: Z-A — Lumiose City",2,1
+150,"Venusaur","Legends: Z-A — Lumiose City",3,1
+151,"Charmander","Legends: Z-A — Lumiose City",4,1
+152,"Charmeleon","Legends: Z-A — Lumiose City",5,1
+153,"Charizard","Legends: Z-A — Lumiose City",6,1
+154,"Squirtle","Legends: Z-A — Lumiose City",7,1
+155,"Wartortle","Legends: Z-A — Lumiose City",8,1
+156,"Blastoise","Legends: Z-A — Lumiose City",9,1
+018,"Weedle","Legends: Z-A — Lumiose City",13,1
+019,"Kakuna","Legends: Z-A — Lumiose City",14,1
+020,"Beedrill","Legends: Z-A — Lumiose City",15,1
+021,"Pidgey","Legends: Z-A — Lumiose City",16,1
+022,"Pidgeotto","Legends: Z-A — Lumiose City",17,1
+023,"Pidgeot","Legends: Z-A — Lumiose City",18,1
+060,"Ekans","Legends: Z-A — Lumiose City",23,1
+061,"Arbok","Legends: Z-A — Lumiose City",24,1
+053,"Pikachu","Legends: Z-A — Lumiose City",25,1
+054,"Raichu","Legends: Z-A — Lumiose City",26,1
+056,"Clefairy","Legends: Z-A — Lumiose City",35,1
+057,"Clefable","Legends: Z-A — Lumiose City",36,1
+062,"Abra","Legends: Z-A — Lumiose City",63,1
+063,"Kadabra","Legends: Z-A — Lumiose City",64,1
+064,"Alakazam","Legends: Z-A — Lumiose City",65,1
+125,"Machop","Legends: Z-A — Lumiose City",66,1
+126,"Machoke","Legends: Z-A — Lumiose City",67,1
+127,"Machamp","Legends: Z-A — Lumiose City",68,1
+074,"Bellsprout","Legends: Z-A — Lumiose City",69,1
+075,"Weepinbell","Legends: Z-A — Lumiose City",70,1
+076,"Victreebel","Legends: Z-A — Lumiose City",71,1
+137,"Slowpoke","Legends: Z-A — Lumiose City",79,1
+138,"Slowbro","Legends: Z-A — Lumiose City",80,1
+065,"Gastly","Legends: Z-A — Lumiose City",92,1
+066,"Haunter","Legends: Z-A — Lumiose City",93,1
+067,"Gengar","Legends: Z-A — Lumiose City",94,1
+197,"Onix","Legends: Z-A — Lumiose City",95,1
+223,"Kangaskhan","Legends: Z-A — Lumiose City",115,1
+036,"Staryu","Legends: Z-A — Lumiose City",120,1
+037,"Starmie","Legends: Z-A — Lumiose City",121,1
+176,"Scyther","Legends: Z-A — Lumiose City",123,1
+178,"Pinsir","Legends: Z-A — Lumiose City",127,1
+032,"Magikarp","Legends: Z-A — Lumiose City",129,1
+033,"Gyarados","Legends: Z-A — Lumiose City",130,1
+100,"Eevee","Legends: Z-A — Lumiose City",133,1
+101,"Vaporeon","Legends: Z-A — Lumiose City",134,1
+102,"Jolteon","Legends: Z-A — Lumiose City",135,1
+103,"Flareon","Legends: Z-A — Lumiose City",136,1
+192,"Aerodactyl","Legends: Z-A — Lumiose City",142,1
+145,"Dratini","Legends: Z-A — Lumiose City",147,1
+146,"Dragonair","Legends: Z-A — Lumiose City",148,1
+147,"Dragonite","Legends: Z-A — Lumiose City",149,1
+232,"Mewtwo","Legends: Z-A — Lumiose City",150,1
+001,"Chikorita","Legends: Z-A — Lumiose City",152,2
+002,"Bayleef","Legends: Z-A — Lumiose City",153,2
+003,"Meganium","Legends: Z-A — Lumiose City",154,2
+007,"Totodile","Legends: Z-A — Lumiose City",158,2
+008,"Croconaw","Legends: Z-A — Lumiose City",159,2
+009,"Feraligatr","Legends: Z-A — Lumiose City",160,2
+058,"Spinarak","Legends: Z-A — Lumiose City",167,2
+059,"Ariados","Legends: Z-A — Lumiose City",168,2
+052,"Pichu","Legends: Z-A — Lumiose City",172,2
+055,"Cleffa","Legends: Z-A — Lumiose City",173,2
+024,"Mareep","Legends: Z-A — Lumiose City",179,2
+025,"Flaaffy","Legends: Z-A — Lumiose City",180,2
+026,"Ampharos","Legends: Z-A — Lumiose City",181,2
+104,"Espeon","Legends: Z-A — Lumiose City",196,2
+105,"Umbreon","Legends: Z-A — Lumiose City",197,2
+139,"Slowking","Legends: Z-A — Lumiose City",199,2
+198,"Steelix","Legends: Z-A — Lumiose City",208,2
+177,"Scizor","Legends: Z-A — Lumiose City",212,2
+179,"Heracross","Legends: Z-A — Lumiose City",214,2
+168,"Delibird","Legends: Z-A — Lumiose City",225,2
+216,"Skarmory","Legends: Z-A — Lumiose City",227,2
+091,"Houndour","Legends: Z-A — Lumiose City",228,2
+092,"Houndoom","Legends: Z-A — Lumiose City",229,2
+206,"Larvitar","Legends: Z-A — Lumiose City",246,2
+207,"Pupitar","Legends: Z-A — Lumiose City",247,2
+208,"Tyranitar","Legends: Z-A — Lumiose City",248,2
+087,"Ralts","Legends: Z-A — Lumiose City",280,3
+088,"Kirlia","Legends: Z-A — Lumiose City",281,3
+089,"Gardevoir","Legends: Z-A — Lumiose City",282,3
+132,"Sableye","Legends: Z-A — Lumiose City",302,3
+133,"Mawile","Legends: Z-A — Lumiose City",303,3
+199,"Aron","Legends: Z-A — Lumiose City",304,3
+200,"Lairon","Legends: Z-A — Lumiose City",305,3
+201,"Aggron","Legends: Z-A — Lumiose City",306,3
+083,"Meditite","Legends: Z-A — Lumiose City",307,3
+084,"Medicham","Legends: Z-A — Lumiose City",308,3
+085,"Electrike","Legends: Z-A — Lumiose City",309,3
+086,"Manectric","Legends: Z-A — Lumiose City",310,3
+030,"Roselia","Legends: Z-A — Lumiose City",315,3
+140,"Carvanha","Legends: Z-A — Lumiose City",318,3
+141,"Sharpedo","Legends: Z-A — Lumiose City",319,3
+116,"Numel","Legends: Z-A — Lumiose City",322,3
+117,"Camerupt","Legends: Z-A — Lumiose City",323,3
+093,"Swablu","Legends: Z-A — Lumiose City",333,3
+094,"Altaria","Legends: Z-A — Lumiose City",334,3
+111,"Shuppet","Legends: Z-A — Lumiose City",353,3
+112,"Banette","Legends: Z-A — Lumiose City",354,3
+134,"Absol","Legends: Z-A — Lumiose City",359,3
+169,"Snorunt","Legends: Z-A — Lumiose City",361,3
+170,"Glalie","Legends: Z-A — Lumiose City",362,3
+220,"Bagon","Legends: Z-A — Lumiose City",371,3
+221,"Shelgon","Legends: Z-A — Lumiose City",372,3
+222,"Salamence","Legends: Z-A — Lumiose City",373,3
+225,"Beldum","Legends: Z-A — Lumiose City",374,3
+226,"Metang","Legends: Z-A — Lumiose City",375,3
+227,"Metagross","Legends: Z-A — Lumiose City",376,3
+029,"Budew","Legends: Z-A — Lumiose City",406,4
+031,"Roserade","Legends: Z-A — Lumiose City",407,4
+109,"Buneary","Legends: Z-A — Lumiose City",427,4
+110,"Lopunny","Legends: Z-A — Lumiose City",428,4
+128,"Gible","Legends: Z-A — Lumiose City",443,4
+129,"Gabite","Legends: Z-A — Lumiose City",444,4
+130,"Garchomp","Legends: Z-A — Lumiose City",445,4
+135,"Riolu","Legends: Z-A — Lumiose City",447,4
+136,"Lucario","Legends: Z-A — Lumiose City",448,4
+118,"Hippopotas","Legends: Z-A — Lumiose City",449,4
+119,"Hippowdon","Legends: Z-A — Lumiose City",450,4
+172,"Snover","Legends: Z-A — Lumiose City",459,4
+173,"Abomasnow","Legends: Z-A — Lumiose City",460,4
+106,"Leafeon","Legends: Z-A — Lumiose City",470,4
+107,"Glaceon","Legends: Z-A — Lumiose City",471,4
+090,"Gallade","Legends: Z-A — Lumiose City",475,4
+171,"Froslass","Legends: Z-A — Lumiose City",478,4
+004,"Tepig","Legends: Z-A — Lumiose City",498,5
+005,"Pignite","Legends: Z-A — Lumiose City",499,5
+006,"Emboar","Legends: Z-A — Lumiose City",500,5
+027,"Patrat","Legends: Z-A — Lumiose City",504,5
+028,"Watchog","Legends: Z-A — Lumiose City",505,5
+077,"Pansage","Legends: Z-A — Lumiose City",511,5
+078,"Simisage","Legends: Z-A — Lumiose City",512,5
+079,"Pansear","Legends: Z-A — Lumiose City",513,5
+080,"Simisear","Legends: Z-A — Lumiose City",514,5
+081,"Panpour","Legends: Z-A — Lumiose City",515,5
+082,"Simipour","Legends: Z-A — Lumiose City",516,5
+120,"Drilbur","Legends: Z-A — Lumiose City",529,5
+121,"Excadrill","Legends: Z-A — Lumiose City",530,5
+095,"Audino","Legends: Z-A — Lumiose City",531,5
+068,"Venipede","Legends: Z-A — Lumiose City",543,5
+069,"Whirlipede","Legends: Z-A — Lumiose City",544,5
+070,"Scolipede","Legends: Z-A — Lumiose City",545,5
+122,"Sandile","Legends: Z-A — Lumiose City",551,5
+123,"Krokorok","Legends: Z-A — Lumiose City",552,5
+124,"Krookodile","Legends: Z-A — Lumiose City",553,5
+184,"Scraggy","Legends: Z-A — Lumiose City",559,5
+185,"Scrafty","Legends: Z-A — Lumiose City",560,5
+049,"Trubbish","Legends: Z-A — Lumiose City",568,5
+050,"Garbodor","Legends: Z-A — Lumiose City",569,5
+113,"Vanillite","Legends: Z-A — Lumiose City",582,5
+114,"Vanillish","Legends: Z-A — Lumiose City",583,5
+115,"Vanilluxe","Legends: Z-A — Lumiose City",584,5
+180,"Emolga","Legends: Z-A — Lumiose City",587,5
+142,"Tynamo","Legends: Z-A — Lumiose City",602,5
+143,"Eelektrik","Legends: Z-A — Lumiose City",603,5
+144,"Eelektross","Legends: Z-A — Lumiose City",604,5
+189,"Litwick","Legends: Z-A — Lumiose City",607,5
+190,"Lampent","Legends: Z-A — Lumiose City",608,5
+191,"Chandelure","Legends: Z-A — Lumiose City",609,5
+157,"Stunfisk","Legends: Z-A — Lumiose City",618,5
+213,"Chespin","Legends: Z-A — Lumiose City",650,6
+214,"Quilladin","Legends: Z-A — Lumiose City",651,6
+215,"Chesnaught","Legends: Z-A — Lumiose City",652,6
+217,"Fennekin","Legends: Z-A — Lumiose City",653,6
+218,"Braixen","Legends: Z-A — Lumiose City",654,6
+219,"Delphox","Legends: Z-A — Lumiose City",655,6
+209,"Froakie","Legends: Z-A — Lumiose City",656,6
+210,"Frogadier","Legends: Z-A — Lumiose City",657,6
+211,"Greninja","Legends: Z-A — Lumiose City",658,6
+013,"Bunnelby","Legends: Z-A — Lumiose City",659,6
+014,"Diggersby","Legends: Z-A — Lumiose City",660,6
+010,"Fletchling","Legends: Z-A — Lumiose City",661,6
+011,"Fletchinder","Legends: Z-A — Lumiose City",662,6
+012,"Talonflame","Legends: Z-A — Lumiose City",663,6
+015,"Scatterbug","Legends: Z-A — Lumiose City",664,6
+016,"Spewpa","Legends: Z-A — Lumiose City",665,6
+017,"Vivillon","Legends: Z-A — Lumiose City",666,6
+045,"Litleo","Legends: Z-A — Lumiose City",667,6
+046,"Pyroar","Legends: Z-A — Lumiose City",668,6
+038,"Flabébé","Legends: Z-A — Lumiose City",669,6
+039,"Floette","Legends: Z-A — Lumiose City",670,6
+040,"Florges","Legends: Z-A — Lumiose City",671,6
+041,"Skiddo","Legends: Z-A — Lumiose City",672,6
+042,"Gogoat","Legends: Z-A — Lumiose City",673,6
+047,"Pancham","Legends: Z-A — Lumiose City",674,6
+048,"Pangoro","Legends: Z-A — Lumiose City",675,6
+158,"Furfrou","Legends: Z-A — Lumiose City",676,6
+043,"Espurr","Legends: Z-A — Lumiose City",677,6
+044,"Meowstic","Legends: Z-A — Lumiose City",678,6
+071,"Honedge","Legends: Z-A — Lumiose City",679,6
+072,"Doublade","Legends: Z-A — Lumiose City",680,6
+073,"Aegislash","Legends: Z-A — Lumiose City",681,6
+096,"Spritzee","Legends: Z-A — Lumiose City",682,6
+097,"Aromatisse","Legends: Z-A — Lumiose City",683,6
+098,"Swirlix","Legends: Z-A — Lumiose City",684,6
+099,"Slurpuff","Legends: Z-A — Lumiose City",685,6
+159,"Inkay","Legends: Z-A — Lumiose City",686,6
+160,"Malamar","Legends: Z-A — Lumiose City",687,6
+034,"Binacle","Legends: Z-A — Lumiose City",688,6
+035,"Barbaracle","Legends: Z-A — Lumiose City",689,6
+161,"Skrelp","Legends: Z-A — Lumiose City",690,6
+162,"Dragalge","Legends: Z-A — Lumiose City",691,6
+163,"Clauncher","Legends: Z-A — Lumiose City",692,6
+164,"Clawitzer","Legends: Z-A — Lumiose City",693,6
+202,"Helioptile","Legends: Z-A — Lumiose City",694,6
+203,"Heliolisk","Legends: Z-A — Lumiose City",695,6
+193,"Tyrunt","Legends: Z-A — Lumiose City",696,6
+194,"Tyrantrum","Legends: Z-A — Lumiose City",697,6
+195,"Amaura","Legends: Z-A — Lumiose City",698,6
+196,"Aurorus","Legends: Z-A — Lumiose City",699,6
+108,"Sylveon","Legends: Z-A — Lumiose City",700,6
+181,"Hawlucha","Legends: Z-A — Lumiose City",701,6
+051,"Dedenne","Legends: Z-A — Lumiose City",702,6
+131,"Carbink","Legends: Z-A — Lumiose City",703,6
+165,"Goomy","Legends: Z-A — Lumiose City",704,6
+166,"Sliggoo","Legends: Z-A — Lumiose City",705,6
+167,"Goodra","Legends: Z-A — Lumiose City",706,6
+188,"Klefki","Legends: Z-A — Lumiose City",707,6
+182,"Phantump","Legends: Z-A — Lumiose City",708,6
+183,"Trevenant","Legends: Z-A — Lumiose City",709,6
+204,"Pumpkaboo","Legends: Z-A — Lumiose City",710,6
+205,"Gourgeist","Legends: Z-A — Lumiose City",711,6
+174,"Bergmite","Legends: Z-A — Lumiose City",712,6
+175,"Avalugg","Legends: Z-A — Lumiose City",713,6
+186,"Noibat","Legends: Z-A — Lumiose City",714,6
+187,"Noivern","Legends: Z-A — Lumiose City",715,6
+228,"Xerneas","Legends: Z-A — Lumiose City",716,6
+229,"Yveltal","Legends: Z-A — Lumiose City",717,6
+230,"Zygarde","Legends: Z-A — Lumiose City",718,6
+231,"Diancie","Legends: Z-A — Lumiose City",719,6
+224,"Drampa","Legends: Z-A — Lumiose City",780,7
+212,"Falinks","Legends: Z-A — Lumiose City",870,8
+077,"Jigglypuff","Legends: Z-A — Mega Dimension DLC (Hyperspace)",39,1
+078,"Wigglytuff","Legends: Z-A — Mega Dimension DLC (Hyperspace)",40,1
+094,"Zubat","Legends: Z-A — Mega Dimension DLC (Hyperspace)",41,1
+095,"Golbat","Legends: Z-A — Mega Dimension DLC (Hyperspace)",42,1
+004,"Meowth","Legends: Z-A — Mega Dimension DLC (Hyperspace)",52,1
+005,"Persian","Legends: Z-A — Mega Dimension DLC (Hyperspace)",53,1
+001,"Mankey","Legends: Z-A — Mega Dimension DLC (Hyperspace)",56,1
+002,"Primeape","Legends: Z-A — Mega Dimension DLC (Hyperspace)",57,1
+007,"Farfetch’d","Legends: Z-A — Mega Dimension DLC (Hyperspace)",83,1
+009,"Cubone","Legends: Z-A — Mega Dimension DLC (Hyperspace)",104,1
+010,"Marowak","Legends: Z-A — Mega Dimension DLC (Hyperspace)",105,1
+109,"Mr. Mime","Legends: Z-A — Mega Dimension DLC (Hyperspace)",122,1
+011,"Porygon","Legends: Z-A — Mega Dimension DLC (Hyperspace)",137,1
+096,"Crobat","Legends: Z-A — Mega Dimension DLC (Hyperspace)",169,2
+076,"Igglybuff","Legends: Z-A — Mega Dimension DLC (Hyperspace)",174,2
+037,"Qwilfish","Legends: Z-A — Mega Dimension DLC (Hyperspace)",211,2
+012,"Porygon2","Legends: Z-A — Mega Dimension DLC (Hyperspace)",233,2
+039,"Treecko","Legends: Z-A — Mega Dimension DLC (Hyperspace)",252,3
+040,"Grovyle","Legends: Z-A — Mega Dimension DLC (Hyperspace)",253,3
+041,"Sceptile","Legends: Z-A — Mega Dimension DLC (Hyperspace)",254,3
+042,"Torchic","Legends: Z-A — Mega Dimension DLC (Hyperspace)",255,3
+043,"Combusken","Legends: Z-A — Mega Dimension DLC (Hyperspace)",256,3
+044,"Blaziken","Legends: Z-A — Mega Dimension DLC (Hyperspace)",257,3
+045,"Mudkip","Legends: Z-A — Mega Dimension DLC (Hyperspace)",258,3
+046,"Marshtomp","Legends: Z-A — Mega Dimension DLC (Hyperspace)",259,3
+047,"Swampert","Legends: Z-A — Mega Dimension DLC (Hyperspace)",260,3
+092,"Gulpin","Legends: Z-A — Mega Dimension DLC (Hyperspace)",316,3
+093,"Swalot","Legends: Z-A — Mega Dimension DLC (Hyperspace)",317,3
+084,"Spoink","Legends: Z-A — Mega Dimension DLC (Hyperspace)",325,3
+085,"Grumpig","Legends: Z-A — Mega Dimension DLC (Hyperspace)",326,3
+106,"Zangoose","Legends: Z-A — Mega Dimension DLC (Hyperspace)",335,3
+107,"Seviper","Legends: Z-A — Mega Dimension DLC (Hyperspace)",336,3
+048,"Feebas","Legends: Z-A — Mega Dimension DLC (Hyperspace)",349,3
+049,"Milotic","Legends: Z-A — Mega Dimension DLC (Hyperspace)",350,3
+027,"Kecleon","Legends: Z-A — Mega Dimension DLC (Hyperspace)",352,3
+051,"Chimecho","Legends: Z-A — Mega Dimension DLC (Hyperspace)",358,3
+126,"Latias","Legends: Z-A — Mega Dimension DLC (Hyperspace)",380,3
+127,"Latios","Legends: Z-A — Mega Dimension DLC (Hyperspace)",381,3
+128,"Kyogre","Legends: Z-A — Mega Dimension DLC (Hyperspace)",382,3
+129,"Groudon","Legends: Z-A — Mega Dimension DLC (Hyperspace)",383,3
+130,"Rayquaza","Legends: Z-A — Mega Dimension DLC (Hyperspace)",384,3
+081,"Starly","Legends: Z-A — Mega Dimension DLC (Hyperspace)",396,4
+082,"Staravia","Legends: Z-A — Mega Dimension DLC (Hyperspace)",397,4
+083,"Staraptor","Legends: Z-A — Mega Dimension DLC (Hyperspace)",398,4
+050,"Chingling","Legends: Z-A — Mega Dimension DLC (Hyperspace)",433,4
+108,"Mime Jr.","Legends: Z-A — Mega Dimension DLC (Hyperspace)",439,4
+013,"Porygon-Z","Legends: Z-A — Mega Dimension DLC (Hyperspace)",474,4
+022,"Rotom","Legends: Z-A — Mega Dimension DLC (Hyperspace)",479,4
+113,"Heatran","Legends: Z-A — Mega Dimension DLC (Hyperspace)",485,4
+125,"Darkrai","Legends: Z-A — Mega Dimension DLC (Hyperspace)",491,4
+053,"Purrloin","Legends: Z-A — Mega Dimension DLC (Hyperspace)",509,5
+054,"Liepard","Legends: Z-A — Mega Dimension DLC (Hyperspace)",510,5
+055,"Munna","Legends: Z-A — Mega Dimension DLC (Hyperspace)",517,5
+056,"Musharna","Legends: Z-A — Mega Dimension DLC (Hyperspace)",518,5
+057,"Throh","Legends: Z-A — Mega Dimension DLC (Hyperspace)",538,5
+058,"Sawk","Legends: Z-A — Mega Dimension DLC (Hyperspace)",539,5
+059,"Yamask","Legends: Z-A — Mega Dimension DLC (Hyperspace)",562,5
+060,"Cofagrigus","Legends: Z-A — Mega Dimension DLC (Hyperspace)",563,5
+111,"Foongus","Legends: Z-A — Mega Dimension DLC (Hyperspace)",590,5
+112,"Amoonguss","Legends: Z-A — Mega Dimension DLC (Hyperspace)",591,5
+029,"Cryogonal","Legends: Z-A — Mega Dimension DLC (Hyperspace)",615,5
+071,"Golett","Legends: Z-A — Mega Dimension DLC (Hyperspace)",622,5
+072,"Golurk","Legends: Z-A — Mega Dimension DLC (Hyperspace)",623,5
+115,"Cobalion","Legends: Z-A — Mega Dimension DLC (Hyperspace)",638,5
+116,"Terrakion","Legends: Z-A — Mega Dimension DLC (Hyperspace)",639,5
+117,"Virizion","Legends: Z-A — Mega Dimension DLC (Hyperspace)",640,5
+118,"Keldeo","Legends: Z-A — Mega Dimension DLC (Hyperspace)",647,5
+119,"Meloetta","Legends: Z-A — Mega Dimension DLC (Hyperspace)",648,5
+120,"Genesect","Legends: Z-A — Mega Dimension DLC (Hyperspace)",649,5
+121,"Hoopa","Legends: Z-A — Mega Dimension DLC (Hyperspace)",720,6
+114,"Volcanion","Legends: Z-A — Mega Dimension DLC (Hyperspace)",721,6
+087,"Crabrawler","Legends: Z-A — Mega Dimension DLC (Hyperspace)",739,7
+088,"Crabominable","Legends: Z-A — Mega Dimension DLC (Hyperspace)",740,7
+062,"Wimpod","Legends: Z-A — Mega Dimension DLC (Hyperspace)",767,7
+063,"Golisopod","Legends: Z-A — Mega Dimension DLC (Hyperspace)",768,7
+025,"Sandygast","Legends: Z-A — Mega Dimension DLC (Hyperspace)",769,7
+026,"Palossand","Legends: Z-A — Mega Dimension DLC (Hyperspace)",770,7
+068,"Mimikyu","Legends: Z-A — Mega Dimension DLC (Hyperspace)",778,7
+131,"Magearna","Legends: Z-A — Mega Dimension DLC (Hyperspace)",801,7
+122,"Marshadow","Legends: Z-A — Mega Dimension DLC (Hyperspace)",802,7
+132,"Zeraora","Legends: Z-A — Mega Dimension DLC (Hyperspace)",807,7
+123,"Meltan","Legends: Z-A — Mega Dimension DLC (Hyperspace)",808,7
+124,"Melmetal","Legends: Z-A — Mega Dimension DLC (Hyperspace)",809,7
+073,"Rookidee","Legends: Z-A — Mega Dimension DLC (Hyperspace)",821,8
+074,"Corvisquire","Legends: Z-A — Mega Dimension DLC (Hyperspace)",822,8
+075,"Corviknight","Legends: Z-A — Mega Dimension DLC (Hyperspace)",823,8
+064,"Nickit","Legends: Z-A — Mega Dimension DLC (Hyperspace)",827,8
+065,"Thievul","Legends: Z-A — Mega Dimension DLC (Hyperspace)",828,8
+102,"Toxel","Legends: Z-A — Mega Dimension DLC (Hyperspace)",848,8
+103,"Toxtricity","Legends: Z-A — Mega Dimension DLC (Hyperspace)",849,8
+066,"Clobbopus","Legends: Z-A — Mega Dimension DLC (Hyperspace)",852,8
+067,"Grapploct","Legends: Z-A — Mega Dimension DLC (Hyperspace)",853,8
+006,"Perrserker","Legends: Z-A — Mega Dimension DLC (Hyperspace)",863,8
+008,"Sirfetch’d","Legends: Z-A — Mega Dimension DLC (Hyperspace)",865,8
+110,"Mr. Rime","Legends: Z-A — Mega Dimension DLC (Hyperspace)",866,8
+061,"Runerigus","Legends: Z-A — Mega Dimension DLC (Hyperspace)",867,8
+052,"Indeedee","Legends: Z-A — Mega Dimension DLC (Hyperspace)",876,8
+070,"Morpeko","Legends: Z-A — Mega Dimension DLC (Hyperspace)",877,8
+069,"Kleavor","Legends: Z-A — Mega Dimension DLC (Hyperspace)",900,8
+038,"Overqwil","Legends: Z-A — Mega Dimension DLC (Hyperspace)",904,8
+079,"Fidough","Legends: Z-A — Mega Dimension DLC (Hyperspace)",926,9
+080,"Dachsbun","Legends: Z-A — Mega Dimension DLC (Hyperspace)",927,9
+086,"Squawkabilly","Legends: Z-A — Mega Dimension DLC (Hyperspace)",931,9
+089,"Nacli","Legends: Z-A — Mega Dimension DLC (Hyperspace)",932,9
+090,"Naclstack","Legends: Z-A — Mega Dimension DLC (Hyperspace)",933,9
+091,"Garganacl","Legends: Z-A — Mega Dimension DLC (Hyperspace)",934,9
+097,"Charcadet","Legends: Z-A — Mega Dimension DLC (Hyperspace)",935,9
+098,"Armarouge","Legends: Z-A — Mega Dimension DLC (Hyperspace)",936,9
+099,"Ceruledge","Legends: Z-A — Mega Dimension DLC (Hyperspace)",937,9
+100,"Maschiff","Legends: Z-A — Mega Dimension DLC (Hyperspace)",942,9
+101,"Mabosstiff","Legends: Z-A — Mega Dimension DLC (Hyperspace)",943,9
+104,"Shroodle","Legends: Z-A — Mega Dimension DLC (Hyperspace)",944,9
+105,"Grafaiai","Legends: Z-A — Mega Dimension DLC (Hyperspace)",945,9
+014,"Capsakid","Legends: Z-A — Mega Dimension DLC (Hyperspace)",951,9
+015,"Scovillain","Legends: Z-A — Mega Dimension DLC (Hyperspace)",952,9
+016,"Tinkatink","Legends: Z-A — Mega Dimension DLC (Hyperspace)",957,9
+017,"Tinkatuff","Legends: Z-A — Mega Dimension DLC (Hyperspace)",958,9
+018,"Tinkaton","Legends: Z-A — Mega Dimension DLC (Hyperspace)",959,9
+019,"Cyclizar","Legends: Z-A — Mega Dimension DLC (Hyperspace)",967,9
+020,"Glimmet","Legends: Z-A — Mega Dimension DLC (Hyperspace)",969,9
+021,"Glimmora","Legends: Z-A — Mega Dimension DLC (Hyperspace)",970,9
+023,"Greavard","Legends: Z-A — Mega Dimension DLC (Hyperspace)",971,9
+024,"Houndstone","Legends: Z-A — Mega Dimension DLC (Hyperspace)",972,9
+028,"Flamigo","Legends: Z-A — Mega Dimension DLC (Hyperspace)",973,9
+030,"Dondozo","Legends: Z-A — Mega Dimension DLC (Hyperspace)",977,9
+031,"Tatsugiri","Legends: Z-A — Mega Dimension DLC (Hyperspace)",978,9
+003,"Annihilape","Legends: Z-A — Mega Dimension DLC (Hyperspace)",979,9
+032,"Frigibax","Legends: Z-A — Mega Dimension DLC (Hyperspace)",996,9
+033,"Arctibax","Legends: Z-A — Mega Dimension DLC (Hyperspace)",997,9
+034,"Baxcalibur","Legends: Z-A — Mega Dimension DLC (Hyperspace)",998,9
+035,"Gimmighoul","Legends: Z-A — Mega Dimension DLC (Hyperspace)",999,9
+036,"Gholdengo","Legends: Z-A — Mega Dimension DLC (Hyperspace)",1000,9
