@@ -78,8 +78,16 @@ def resolve_identity(metadata: dict, game_override: str | None, dex_override: in
             "Unknown source game. Select the correct game in GFPAK before export, "
             "or pass --game sv|za|swsh|lgpe|la|bdsp (or --dex N for a verified ID)."
         )
+    # pm0000 is a Sword/Shield Pokémon Egg, not species #0000.
+    # Only an explicit --dex 494 request can install it as Victini's Egg placeholder.
+    egg_placeholder = model_id == 0 and game == "swsh" and dex_override == 494
+    if model_id == 0 and not egg_placeholder:
+        raise ImportErrorWithAdvice(
+            "pm0000 is a Pokémon Egg, not Victini. Use --dex 494 explicitly "
+            "to install this Sword/Shield Egg as a placeholder for Victini."
+        )
     if game in GAMES:
-        dex = national_dex_for_model_id(model_id, game)
+        dex = 494 if egg_placeholder else national_dex_for_model_id(model_id, game)
         if not 1 <= dex <= 1025:
             raise ImportErrorWithAdvice(
                 f"Internal model ID pm{model_id:04d} has no verified National Dex mapping for {game}."
@@ -93,7 +101,7 @@ def resolve_identity(metadata: dict, game_override: str | None, dex_override: in
         dex = dex_override
     if not isinstance(dex, int) or not 1 <= dex <= 1025:
         raise ImportErrorWithAdvice("National Dex number must be between 1 and 1025")
-    if game in GAMES:
+    if game in GAMES and not egg_placeholder:
         form, _form_key = canonical_regular_form(Path(selected), dex, game)
         if form != "regular":
             raise ImportErrorWithAdvice(
@@ -187,6 +195,7 @@ def import_archive(
             entry = {
                 "dex": dex,
                 "modelId": model_id,
+                "eggPlaceholder": model_id == 0 and dex == 494 and game == "swsh",
                 "form": "regular",
                 "formKey": "regular",
                 "url": f"web/models/switch/{dex:04d}/regular.glb",
@@ -235,7 +244,8 @@ def main() -> int:
     parser.add_argument("zip", type=Path, help="GFPAK Export Pokémon ZIP")
     parser.add_argument("--game", choices=sorted(GAMES | set(GAME_ALIASES)),
                         help="source game when auto-detection is unknown")
-    parser.add_argument("--dex", type=int, help="explicit verified National Dex ID (unknown games only)")
+    parser.add_argument("--dex", type=int,
+                        help="verified National Dex ID; --dex 494 permits SWSH pm0000 as an Egg placeholder")
     parser.add_argument("--replace", action="store_true", help="replace an existing working Pokémon")
     parser.add_argument("--no-desktop-install", action="store_true",
                         help="write web catalog only (do not install to desktop runtime)")
