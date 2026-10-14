@@ -44,11 +44,12 @@ function zip(members, deflated = false) {
 
 const sandbox = {
   window: {
-    POKEDEX3D_NAMES: {876:'Indeedee',494:'Victini'},
+    POKEDEX3D_NAMES: {876:'Indeedee',877:'Morpeko',494:'Victini'},
     POKEDEX3D_MODEL_IDENTITY: {
-      nationalDex: (id, game) => id === 942 && game === 'za' ? 876 : 0,
+      nationalDex: (id, game) => game === 'za' && id === 942 ? 876 :
+        game === 'za' && id === 943 ? 877 : 0,
       verify: async (model, bytes) => {
-        assert.equal(model.dex, model.eggPlaceholder ? 494 : 876);
+        assert.ok([494,876,877].includes(model.dex));
         if (model.eggPlaceholder) assert.equal(model.sourceModelId, 0);
         assert.equal(bytes.byteLength, 24);
       }
@@ -59,6 +60,7 @@ const sandbox = {
   Error, Set, Map
 };
 vm.runInNewContext(fs.readFileSync('web/gfpak-zip-import.js', 'utf8'), sandbox);
+vm.runInNewContext(fs.readFileSync('web/gfpak-batch-import.js', 'utf8'), sandbox);
 const read = sandbox.window.POKEDEX3D_GFPAK_ZIP.read;
 const meta = {
   format:'gfpak-pokemon-export', version:1, sourceGame:'za',
@@ -113,6 +115,28 @@ async function check(method) {
   assert.equal(orientation({orientation:'90deg 90deg 0deg'}), '90deg 90deg 0deg');
   await check(false);
   if (typeof DecompressionStream !== 'undefined') await check(true);
+  // Two complete GFPAK exports can be selected together; a malformed ZIP
+  // between them does not prevent the later species from importing.
+  const mk = (identity, filename) => new File([zip([
+    ['gfpak-pokemon-export.json',Buffer.from(JSON.stringify({
+      ...meta,selectedModel: 'pm' + identity + '_00_00.trmdl'
+    }))],
+    ['pokedex3d/regular.glb',glb]
+  ])], filename);
+  const batchFiles = [
+    mk('0942','pm0942.zip'),
+    new File([Buffer.from('not a zip')],'invalid.zip'),
+    mk('0943','pm0943.zip')
+  ];
+  const saved = [];
+  const batch = await sandbox.window.POKEDEX3D_GFPAK_BATCH.run(batchFiles,{
+    read:file=>read(file),
+    accept:async model=>{ saved.push(model);return {detail:'Saved locally'}; }
+  });
+  assert.equal(batch.imported,2);
+  assert.equal(batch.rejected,1);
+  assert.deepEqual(saved.map(model=>model.dex),[876,877]);
+  assert.ok(saved.every(model=>model.file instanceof File && model.idleAnimation==='battle_idle'));
   const eggMeta = {...meta, sourceGame:'swsh', selectedModel:'pm0000_resource_0009.gfbmdl'};
   const eggZip = zip([
     ['gfpak-pokemon-export.json',Buffer.from(JSON.stringify(eggMeta))],
