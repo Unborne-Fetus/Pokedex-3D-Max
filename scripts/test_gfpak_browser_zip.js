@@ -44,11 +44,12 @@ function zip(members, deflated = false) {
 
 const sandbox = {
   window: {
-    POKEDEX3D_NAMES: {876:'Indeedee'},
+    POKEDEX3D_NAMES: {876:'Indeedee',494:'Victini'},
     POKEDEX3D_MODEL_IDENTITY: {
       nationalDex: (id, game) => id === 942 && game === 'za' ? 876 : 0,
       verify: async (model, bytes) => {
-        assert.equal(model.dex, 876);
+        assert.equal(model.dex, model.eggPlaceholder ? 494 : 876);
+        if (model.eggPlaceholder) assert.equal(model.sourceModelId, 0);
         assert.equal(bytes.byteLength, 24);
       }
     },
@@ -85,6 +86,20 @@ async function check(method) {
 (async()=>{
   await check(false);
   if (typeof DecompressionStream !== 'undefined') await check(true);
+  const eggMeta = {...meta, sourceGame:'swsh', selectedModel:'pm0000_resource_0009.gfbmdl'};
+  const eggZip = zip([
+    ['gfpak-pokemon-export.json',Buffer.from(JSON.stringify(eggMeta))],
+    ['pokedex3d/regular.glb',glb]
+  ]);
+  const eggFile = new File([eggZip], 'pm0000.zip');
+  await assert.rejects(read(eggFile), /Egg/);
+  await assert.rejects(read(eggFile, {targetDex:493}), /Egg/);
+  const egg = await read(eggFile, {targetDex:494});
+  assert.equal(egg.dex,494);
+  assert.equal(egg.name,'Victini');
+  assert.equal(egg.sourceModelId,0);
+  assert.equal(egg.eggPlaceholder,true);
+  assert.equal(egg.idleAnimation,'battle_idle');
   const raw = {...meta, convertedModel:null};
   const data = zip([['gfpak-pokemon-export.json',Buffer.from(JSON.stringify(raw))]]);
   await assert.rejects(read(new File([data],'raw.zip')), /original assets only/);
