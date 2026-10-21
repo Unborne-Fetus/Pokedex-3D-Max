@@ -14,7 +14,7 @@ jobs:
   correct-model-roots:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: true
       - name: Normalize recovered GLB root transforms without changing animations
