@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             scripts
@@ -25,7 +25,7 @@ jobs:
         run: python3 -u scripts/research_final_13.py
       - name: Save source links, animation flags, and licenses
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: final-13-3d-source-research
           path: .cache/final-13-research/research.json
