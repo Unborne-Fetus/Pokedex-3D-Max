@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 25
     steps:
       - name: Checkout scripts and 122-species list only
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           sparse-checkout: |
             scripts
@@ -36,7 +36,7 @@ jobs:
 
       - name: Save JSON, TSV, and summary reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pokemon-party-candidate-audit
           path: .cache/pokemon-party-glb-audit/
