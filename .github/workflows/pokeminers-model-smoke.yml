@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Checkout Pokedex 3D Max
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Blender
         run: |
@@ -96,7 +96,7 @@ jobs:
             "chunk-manifest-${{ matrix.range.start }}-${{ matrix.range.end }}.json"
 
       - name: Upload converted chunk
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pokeminers-${{ matrix.range.start }}-${{ matrix.range.end }}
           if-no-files-found: error
@@ -114,7 +114,7 @@ jobs:
 
     steps:
       - name: Checkout latest main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
 
