@@ -29,15 +29,15 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Compile importer
         run: python -m py_compile scripts/import_gfpak_zip.py scripts/test_gfpak_zip_import.py
       - name: Verify GFPAK archive compatibility and safe import behavior
         run: python scripts/test_gfpak_zip_import.py
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
       - name: Test offline browser ZIP preview and fault-isolated bulk uploads
