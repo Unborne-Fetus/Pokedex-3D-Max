@@ -101,7 +101,17 @@ for internal, real_dex, wrong_dex in [
     assert canonical(game, internal) == real_dex
     if wrong_dex in (942, 964, 965, 1025):
         assert wrong_dex not in remote, f"Wrong model still masquerades as #{wrong_dex}"
-assert 1025 not in local and 1025 not in remote, "Never show Lokix as Pecharunt"
+# Pecharunt is allowed when its actual Switch source model is proven by the
+# game-specific model-ID table. In particular, SV internal ID 1025 is Lokix,
+# not Pecharunt; excluding the entire National Dex slot rejected valid models.
+for catalog in (local, remote):
+    candidate = catalog.get(1025)
+    if candidate is None:
+        continue
+    source = int(candidate.get("sourceModelId") or candidate.get("modelId") or 0)
+    game = str(candidate.get("sourceGame") or "")
+    assert source and canonical(game, source) == 1025, "Unverified Pecharunt identity"
+    assert not (game.lower().startswith(("sv", "za")) and source == 1025), "Lokix is not Pecharunt"
 assert 852 in remote and 853 in remote and 876 in remote
 assert set(range(1, 1026)) == set(names), "Even missing models retain their correct Dex labels"
 print(f"Audited 1,025 slots: {len(local)} local, {len(remote)} public, "
