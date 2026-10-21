@@ -60,6 +60,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Pin Node.js for JavaScript checks
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
