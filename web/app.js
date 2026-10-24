@@ -288,7 +288,7 @@ async function gfpakStorage(mode, value) {
             dex: value.dex, name: value.name, sourceGame: value.sourceGame,
             sourceModelId: value.sourceModelId, file: value.file,
             orientation: value.orientation, orientationVersion: value.orientationVersion,
-            idleAnimation: value.idleAnimation,
+            idleAnimation: value.idleAnimation, sourceBlobSha: value.sourceBlobSha || null,
             githubPublished: value.githubPublished === true,
             eggPlaceholder: value.eggPlaceholder === true
           })
@@ -1126,8 +1126,9 @@ githubDisconnectBtn.addEventListener("click", () => {
   showGitHubConnected(false);
   githubStatus.textContent = "Disconnected. Models remain publicly viewable; uploads are disabled.";
 });
-async function rememberSuccessfulUpload(model) {
+async function rememberSuccessfulUpload(model, published) {
   model.githubPublished = true;
+  model.sourceBlobSha = published.sourceBlobSha;
   if (model.gfpakImport && model.file instanceof File) {
     try { await gfpakStorage("save", model); }
     catch (error) { console.warn("Could not update local GitHub sync status", error); }
@@ -1164,10 +1165,13 @@ githubPublishBtn.addEventListener("click", async () => {
     String(publishing.dex).padStart(4, "0") + " to GitHub…" :
     "Saving selected model orientation and default animation…";
   try {
-    const published = uploadingFile
-      ? await githubStorage.publishModel(publishing, {replaceExisting})
-      : await githubStorage.saveModelSettings(publishing);
-    if (uploadingFile) await rememberSuccessfulUpload(publishing);
+    const settingsOnly = !replaceExisting &&
+      (publishing.githubTemporary === true || (publishing.githubPublished === true &&
+        !!publishing.sourceBlobSha));
+    const published = settingsOnly
+      ? await githubStorage.saveModelSettings(publishing)
+      : await githubStorage.publishModel(publishing, {replaceExisting});
+    if (!settingsOnly) await rememberSuccessfulUpload(publishing, published);
     mergePublishedEntries([published]);
     githubStatus.textContent = uploadingFile
       ? publishing.name + " saved to GitHub. Its selected default settings are public."
@@ -1210,7 +1214,10 @@ githubPublishAllBtn.addEventListener("click", async () => {
     });
     const publishedDex = new Set(outcome.published.map(row => Number(row.dex)));
     for (const local of pending) {
-      if (publishedDex.has(Number(local.dex))) await rememberSuccessfulUpload(local);
+      if (publishedDex.has(Number(local.dex))) {
+        const published = outcome.published.find(row => Number(row.dex) === Number(local.dex));
+        await rememberSuccessfulUpload(local, published);
+      }
     }
     mergePublishedEntries(outcome.published);
     const failures = outcome.failed.slice(0, 3).map(item =>
