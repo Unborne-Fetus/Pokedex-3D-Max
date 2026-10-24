@@ -266,8 +266,9 @@
   async function saveModelSettings(model) {
     if (!connected()) throw Error("Connect GitHub first");
     const dex = validDex(model?.dex);
-    if (!dex || model.githubTemporary !== true) {
-      throw Error("Only previously published temporary models can be edited without a local GLB");
+    if (!dex || (model.githubTemporary !== true &&
+        (model.githubPublished !== true || !model.sourceBlobSha))) {
+      throw Error("Only previously published models can have their settings updated");
     }
     const orientation = validatedOrientation(model);
     if (!model?.idleAnimation || !Array.isArray(model.animations) ||
@@ -283,6 +284,9 @@
     if (index < 0) throw Error("The published model is missing. Refresh its GitHub catalog.");
     const existing = manifest.entries[index];
     if (existing.path !== pathFor(dex)) throw Error("Cannot edit an unexpected model path");
+    if (model.sourceBlobSha && model.sourceBlobSha !== existing.sha) {
+      throw Error("The published model file has changed. Refresh before editing its settings.");
+    }
     const entry = { ...existing, orientation, orientationVersion: 2,
       idleAnimation: model.idleAnimation, updatedAt: new Date().toISOString() };
     manifest.entries[index] = entry;
