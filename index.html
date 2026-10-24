@@ -72,7 +72,18 @@
             <button id="connectGitHub" type="button">Connect GitHub</button>
             <button id="disconnectGitHub" type="button" hidden>Disconnect</button>
           </div>
-          <button id="publishSelectedGitHub" type="button" disabled>Save selected model to GitHub</button>
+          <label class="github-setting-toggle" for="githubOverrideExisting">
+            <input id="githubOverrideExisting" type="checkbox" disabled />
+            Override existing model with the same Pokédex number
+          </label>
+          <p>Overrides replace the previously published temporary GLB for that species.
+            Without this option duplicates are skipped, not overwritten.</p>
+          <label for="githubDefaultAnimation">Default animation on load</label>
+          <select id="githubDefaultAnimation" disabled>
+            <option value="">Load a model to choose</option>
+          </select>
+          <button id="publishSelectedGitHub" type="button" disabled>Save selected model / settings to GitHub</button>
+          <button id="publishAllGitHub" type="button" disabled>Save all loaded models to GitHub</button>
           <small id="githubStatus" role="status" aria-live="polite">Public models load automatically. Publishing requires your GitHub token.</small>
         </section>
       </div>
@@ -184,7 +195,7 @@
   <script defer src="web/community-candidate-catalog.js?v=1"></script>
   <script defer src="web/remote-switch-catalog.js?v=8"></script>
   <script defer src="web/species-texture-repairs.js?v=7"></script>
-  <script defer src="web/github-model-storage.js?v=2"></script>
+  <script defer src="web/github-model-storage.js?v=3"></script>
   <script defer src="web/app.js?v=70"></script>
 </body>
 </html>
