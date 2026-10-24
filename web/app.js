@@ -1025,10 +1025,10 @@ function refreshGitHubPublishButton() {
   githubOverrideExisting.disabled = githubBusy || !connected;
   githubDefaultAnimation.disabled = githubBusy || !connected ||
     githubDefaultAnimation.options.length === 0;
-  gfpakOrientationLabel.hidden = !currentModel?.gfpakImport && !connected;
+  gfpakOrientationLabel.hidden = !currentModel ||
+    (!currentModel.gfpakImport && !connected);
 }
 function refreshGitHubModelOptions() {
-  const previous = githubDefaultAnimation.value;
   const clips = [...new Set((currentModel?.animations || [])
     .filter(name => typeof name === "string" && name))];
   githubDefaultAnimation.replaceChildren();
@@ -1040,8 +1040,7 @@ function refreshGitHubModelOptions() {
   }
   if (clips.length) {
     githubDefaultAnimation.value = clips.includes(currentModel?.idleAnimation)
-      ? currentModel.idleAnimation : clips.includes(previous) ? previous
-      : chooseIdle(currentModel, clips) || clips[0];
+      ? currentModel.idleAnimation : chooseIdle(currentModel, clips) || clips[0];
   }
   refreshGitHubPublishButton();
 }
@@ -1109,7 +1108,7 @@ githubConnectBtn.addEventListener("click", async () => {
     githubTokenInput.value = ""; // Never persist the credential.
     showGitHubConnected(true);
     githubStatus.textContent = "Connected as " + login +
-      ". Save selected models or all loaded models. Configure rotation and the default animation before saving.";
+      ". GFPAK ZIPs still publish automatically. Use Save selected to update their defaults, or Save all for loaded model files.";
   } catch (error) {
     githubStatus.textContent = "GitHub connection failed: " + error.message;
   } finally {
