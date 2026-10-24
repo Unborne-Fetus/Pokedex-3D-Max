@@ -13,6 +13,9 @@
   const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
   const MAX_BYTES = 40 * 1024 * 1024; // Larger files need a non-Git storage backend.
   const FORMAT = "pokedex3d-temporary-github-imports";
+  const PERMISSION_HELP = "Edit or recreate your fine-grained token with Resource owner: " +
+    OWNER + ", Repository access: Only select repositories → " + REPO +
+    ", and Repository permissions → Contents: Read and write. Reconnect using the updated token; do not share it.";
   let token = "";
   let account = "";
 
@@ -80,8 +83,19 @@
     }
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw Error("GitHub HTTP " + response.status + ": " +
-        String(result.message || "request failed").slice(0, 220));
+      const reason = String(result.message || "request failed").slice(0, 180);
+      const stage = options.stage || "the request";
+      if (response.status === 401) {
+        throw Error("GitHub rejected " + stage + " (HTTP 401). The token is invalid or expired. " +
+          PERMISSION_HELP);
+      }
+      if (response.status === 403) {
+        throw Error("GitHub denied " + stage + " for " + OWNER + "/" + REPO +
+          " (HTTP 403: " + reason + "). " + PERMISSION_HELP +
+          " If the write check succeeded but publishing still fails, inspect the main branch rules.");
+      }
+      throw Error("GitHub rejected " + stage + " (HTTP " + response.status +
+        ": " + reason + ")");
     }
     return result;
   }
@@ -103,9 +117,26 @@
       if (String(user.login || "").toLowerCase() !== OWNER.toLowerCase()) {
         throw Error("Only the repository owner may publish Pokémon models");
       }
-      const repo = await request("");
+      const repo = await request("", { stage: "repository access check" });
       if (repo.permissions?.push !== true) {
-        throw Error("Token needs Contents: Read and write on " + REPO);
+        throw Error("GitHub did not confirm repository push access for " + OWNER + "/" +
+          REPO + ". " + PERMISSION_HELP);
+      }
+      // A public repository's GET response can report the user's push rights
+      // even when a fine-grained PAT lacks Contents write permission. Verify
+      // actual write authorization BEFORE accepting automated model imports.
+      // This creates only a tiny *unreferenced* Git blob (no commit, branch,
+      // file, manifest or uploaded model is changed).
+      const probe = await request("/git/blobs", {
+        method: "POST",
+        stage: "the safe write-permission check",
+        body: {
+          content: "Pokedex 3D Max temporary storage permission check",
+          encoding: "utf-8",
+        },
+      });
+      if (!/^[0-9a-f]{40}$/i.test(String(probe.sha || ""))) {
+        throw Error("GitHub did not confirm write access to " + OWNER + "/" + REPO);
       }
       account = user.login;
       return account;
@@ -156,13 +187,14 @@
     const animations = await window.POKEDEX3D_LOCAL_SWITCH.inspectGlb(model.file);
     if (!animations.length) throw Error("This model has no usable animations");
     // Re-read HEAD and manifest immediately before creating the commit.
-    const head = await request("/git/ref/heads/" + BRANCH);
+    const head = await request("/git/ref/heads/" + BRANCH, { stage: "reading the main branch" });
     const parentSha = head.object?.sha;
     if (!/^[0-9a-f]{40}$/i.test(parentSha || "")) throw Error("Cannot identify GitHub branch");
-    const parent = await request("/git/commits/" + parentSha);
+    const parent = await request("/git/commits/" + parentSha, { stage: "reading the parent commit" });
     const manifest = await currentManifest();
     const fileBlob = await request("/git/blobs", {
-      method: "POST", body: { content: base64(bytes), encoding: "base64" },
+      method: "POST", stage: "uploading the model blob",
+      body: { content: base64(bytes), encoding: "base64" },
     });
     const now = new Date().toISOString();
     const entry = {
@@ -182,11 +214,11 @@
       .filter(item => Number(item?.dex) !== dex).concat(entry)
       .sort((a, b) => Number(a.dex) - Number(b.dex));
     const manifestBlob = await request("/git/blobs", {
-      method: "POST",
+      method: "POST", stage: "uploading the updated model inventory",
       body: { content: JSON.stringify(manifest, null, 2) + "\n", encoding: "utf-8" },
     });
     const tree = await request("/git/trees", {
-      method: "POST",
+      method: "POST", stage: "preparing the model commit",
       body: {
         base_tree: parent.tree.sha,
         tree: [
@@ -196,7 +228,7 @@
       },
     });
     const commit = await request("/git/commits", {
-      method: "POST",
+      method: "POST", stage: "creating the model commit",
       body: {
         message: "Save Pokémon #" + String(dex).padStart(4, "0") + " from Pokédex 3D Max",
         tree: tree.sha, parents: [parentSha],
@@ -204,7 +236,8 @@
     });
     // No force push: conflicts fail rather than overwriting another upload.
     await request("/git/refs/heads/" + BRANCH, {
-      method: "PATCH", body: { sha: commit.sha, force: false },
+      method: "PATCH", stage: "updating the main branch",
+      body: { sha: commit.sha, force: false },
     });
     return fromManifest({ format: 1, source: FORMAT, entries: [entry] })[0];
   }
