@@ -227,8 +227,15 @@ Viewing is **public and requires no sign-in**. Publishing is owner-only:
    `Unborne-Fetus/Pokedex-3D-Models-Animations`, with repository
    **Contents: Read and write**. Choose a short expiration.
 2. On the Pokédex website, paste it under **GitHub model storage (temporary)**
-   and click **Connect GitHub**. The token is used in browser memory only and
-   cleared when you disconnect or reload. Never commit it or share it.
+   and click **Connect GitHub**. The app verifies write access with a tiny
+   unreferenced Git blob before enabling automatic uploads; this check does not
+   publish a model, update the manifest, or change the branch. The token is
+   used in browser memory only and cleared when you disconnect or reload.
+   Never commit it or share it. If GitHub returns HTTP 403, check that the
+   token's resource owner is **Unborne-Fetus**, repository selection includes
+   **Pokedex-3D-Models-Animations** (not only Pokedex-3D-Max), and
+   **Contents: Read and write** is enabled. GitHub branch rules or token
+   approval policies can still restrict publishing after a successful check.
 3. Import a GFPAK Pokémon ZIP. When connected, its verified, self-contained
    regular GLB is automatically uploaded to GitHub. With **Open Switch model
    folder**, select the model in the Pokédex and click
