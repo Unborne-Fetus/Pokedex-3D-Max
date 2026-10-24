@@ -1007,15 +1007,59 @@ window.addEventListener("pokedex3d:remote-switch-error", event => {
 
 // GitHub is the temporary authoritative public catalog for manually imported
 // models. Unpublished browser imports still take priority as local drafts.
-function refreshGitHubPublishButton() {
-  githubPublishBtn.disabled = githubBusy || !githubStorage.connected() ||
-    !(currentModel?.file instanceof File);
+function publishableLocalModels() {
+  // Never try to publish remote URLs, external preview candidates or placeholders.
+  return models.filter(model => model?.file instanceof File &&
+    model.form === "regular" && model.valid !== false &&
+    !model.communityCandidate && !model.missingModel);
 }
+function refreshGitHubPublishButton() {
+  const connected = githubStorage.connected();
+  const selected = currentModel?.file instanceof File ||
+    currentModel?.githubTemporary === true;
+  githubPublishBtn.disabled = githubBusy || !connected || !selected;
+  githubPublishAllBtn.disabled = githubBusy || !connected ||
+    publishableLocalModels().length === 0;
+  githubOverrideExisting.disabled = githubBusy || !connected;
+  githubDefaultAnimation.disabled = githubBusy || !connected ||
+    githubDefaultAnimation.options.length === 0;
+  gfpakOrientationLabel.hidden = !currentModel?.gfpakImport && !connected;
+}
+function refreshGitHubModelOptions() {
+  const previous = githubDefaultAnimation.value;
+  const clips = [...new Set((currentModel?.animations || availableAnimations())
+    .filter(name => typeof name === "string" && name))];
+  githubDefaultAnimation.replaceChildren();
+  for (const clip of clips) {
+    const option = document.createElement("option");
+    option.value = clip;
+    option.textContent = animationDisplayName(clip);
+    githubDefaultAnimation.appendChild(option);
+  }
+  if (clips.length) {
+    githubDefaultAnimation.value = clips.includes(currentModel?.idleAnimation)
+      ? currentModel.idleAnimation : clips.includes(previous) ? previous
+      : chooseIdle(currentModel, clips) || clips[0];
+  }
+  refreshGitHubPublishButton();
+}
+githubDefaultAnimation.addEventListener("change", async () => {
+  if (!githubStorage.connected() || !currentModel) return;
+  const clips = currentModel.animations || availableAnimations();
+  if (!clips.includes(githubDefaultAnimation.value)) return;
+  currentModel.idleAnimation = githubDefaultAnimation.value;
+  playAnimation(currentModel.idleAnimation);
+  if (currentModel.gfpakImport && currentModel.file instanceof File) {
+    try { await gfpakStorage("save", currentModel); }
+    catch (error) { folderStatus.textContent = "Default animation could not be saved locally: " + error; }
+  }
+  githubStatus.textContent = "Default animation selected. Save the model/settings to publish this choice.";
+});
 function showGitHubConnected(connected) {
   githubConnectBtn.hidden = connected;
   githubTokenInput.hidden = connected;
   githubDisconnectBtn.hidden = !connected;
-  refreshGitHubPublishButton();
+  refreshGitHubModelOptions();
 }
 function mergeGitHubModels(incoming) {
   const incomingDex = new Set(incoming.map(model => Number(model.dex)));
