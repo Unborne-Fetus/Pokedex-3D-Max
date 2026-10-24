@@ -44,7 +44,9 @@ function mock() {
     if (method === "GET" && url === repo + "/contents/temporary-imports/manifest.json?ref=main")
       return response(200, { content: Buffer.from(JSON.stringify(manifest)).toString("base64") });
     if (method === "POST" && url === repo + "/git/blobs") {
-      if (payload.encoding === "utf-8") pendingManifest = JSON.parse(payload.content);
+      if (payload.encoding === "utf-8" && payload.content.trimStart().startsWith("{")) {
+        pendingManifest = JSON.parse(payload.content);
+      }
       return response(201, { sha: sha(String((serial++ % 6) + 1)) });
     }
     if (method === "POST" && url === repo + "/git/trees")
