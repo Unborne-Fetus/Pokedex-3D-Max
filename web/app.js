@@ -34,6 +34,9 @@ const githubTokenInput = document.querySelector("#githubToken");
 const githubConnectBtn = document.querySelector("#connectGitHub");
 const githubDisconnectBtn = document.querySelector("#disconnectGitHub");
 const githubPublishBtn = document.querySelector("#publishSelectedGitHub");
+const githubPublishAllBtn = document.querySelector("#publishAllGitHub");
+const githubOverrideExisting = document.querySelector("#githubOverrideExisting");
+const githubDefaultAnimation = document.querySelector("#githubDefaultAnimation");
 const githubStatus = document.querySelector("#githubStatus");
 let githubBusy = false;
 const modelCoverageCountEl = document.querySelector("#modelCoverageCount");
@@ -284,7 +287,9 @@ async function gfpakStorage(mode, value) {
         ? tx.objectStore("models").put({
             dex: value.dex, name: value.name, sourceGame: value.sourceGame,
             sourceModelId: value.sourceModelId, file: value.file,
-            orientation: value.orientation, orientationVersion: value.orientationVersion, githubPublished: value.githubPublished === true,
+            orientation: value.orientation, orientationVersion: value.orientationVersion,
+            idleAnimation: value.idleAnimation,
+            githubPublished: value.githubPublished === true,
             eggPlaceholder: value.eggPlaceholder === true
           })
         : tx.objectStore("models").getAll();
@@ -297,7 +302,7 @@ async function gfpakStorage(mode, value) {
   } finally { db.close(); }
 }
 gfpakOrientationSelect.addEventListener("change", async () => {
-  if (!currentModel?.gfpakImport) return;
+  if (!currentModel || (!currentModel.gfpakImport && !githubStorage.connected())) return;
   currentModel.orientation = gfpakOrientationSelect.value;
   currentModel.orientationVersion = 2;
   viewer.orientation = currentModel.orientation;
@@ -463,6 +468,8 @@ function setupAnimationSelect() {
   animationSelect.value = initial;
   animationSelect.disabled = false;
   playAnimation(initial);
+  if (currentModel) currentModel.animations = animations;
+  refreshGitHubModelOptions();
   return Boolean(idle);
 }
 
@@ -632,6 +639,8 @@ function loadModel(model) {
   clearCameraFitTimer();
   resetAnimationSelect();
   currentModel = model;
+  githubDefaultAnimation.replaceChildren();
+  refreshGitHubModelOptions();
   refreshGitHubPublishButton();
   ++loadSequence;
   if (remoteAbort) {
@@ -739,7 +748,8 @@ function loadModel(model) {
               return { animations, idleAnimation };
             })();
         if (abort.signal.aborted || selectedSequence !== loadSequence) return;
-        model.idleAnimation = checked.idleAnimation;
+        model.idleAnimation = chooseIdle(model, checked.animations) || checked.idleAnimation;
+        model.animations = checked.animations;
         model.idleBreaks = (model.idleBreaks || [])
           .filter(name => checked.animations.includes(name) && name !== checked.idleAnimation);
         activeObjectUrl = URL.createObjectURL(new Blob([data], { type: "model/gltf-binary" }));
@@ -778,13 +788,13 @@ function selectModel(index, remember = true) {
   gfpakOrientationLabel.hidden = !model.gfpakImport;
   const isGfpak = model.gfpakImport || model.sourceFormat === "gfpak-zip";
   model.gfpakImport = !!isGfpak;
-  gfpakOrientationLabel.hidden = !isGfpak;
+  gfpakOrientationLabel.hidden = !isGfpak && !githubStorage.connected();
   if (isGfpak) {
     model.orientation = window.POKEDEX3D_GFPAK_ZIP.orientation(model);
     model.orientationVersion = 2;
   }
   gfpakOrientationSelect.value = model.orientation || "0deg 0deg 0deg";
-  viewer.orientation = isGfpak ? model.orientation : "0deg 90deg 0deg";
+  viewer.orientation = model.orientation || "0deg 90deg 0deg";
 
   dexEl.textContent = "#" + String(model.dex).padStart(4, "0");
   nameEl.textContent = prettyName(model);
@@ -1403,7 +1413,9 @@ async function restoreSavedGfpakModels() {
         const idle = clips.find(name => /idle|wait|stand|breath|rest|fight[_ -]?a/i.test(name)
           && !/attack|damage|faint|death|down|bind|t[-_ ]?pose/i.test(name));
         if (!idle) continue;
-        model.animations = clips; model.idleAnimation = idle; model.idleBreaks = [];
+        model.animations = clips;
+        model.idleAnimation = clips.includes(row.idleAnimation) ? row.idleAnimation : idle;
+        model.idleBreaks = [];
         restored.push(model);
       } catch (error) { console.warn("Invalid saved GFPAK model", row.dex, error); }
     }
