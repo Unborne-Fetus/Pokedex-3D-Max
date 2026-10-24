@@ -173,7 +173,21 @@
       throw Error("Could not read the existing GitHub inventory: " + error.message);
     }
   }
-  async function publishModel(model) {
+  function validatedOrientation(model) {
+    const value = String(model?.orientation || (model?.gfpakImport ? "0deg 0deg 0deg" : "0deg 90deg 0deg"));
+    if (!/^-?\d{1,3}deg(?: -?\d{1,3}deg){2}$/.test(value)) {
+      throw Error("Choose a supported three-axis model orientation before publishing");
+    }
+    return value;
+  }
+  function verifiedAnimation(model, animations) {
+    const preferred = String(model?.idleAnimation || "");
+    if (preferred && !animations.includes(preferred)) {
+      throw Error("Selected default animation is missing from the uploaded model");
+    }
+    return preferred || animations.find(name => /idle|wait|stand|breath|rest/i.test(name)) || animations[0];
+  }
+  async function publishModel(model, options = {}) {
     if (!connected()) throw Error("Connect GitHub first");
     const dex = validDex(model?.dex);
     if (!dex || !(model.file instanceof File)) {
@@ -186,12 +200,19 @@
     await window.POKEDEX3D_MODEL_IDENTITY.verify(model, bytes);
     const animations = await window.POKEDEX3D_LOCAL_SWITCH.inspectGlb(model.file);
     if (!animations.length) throw Error("This model has no usable animations");
+    const idleAnimation = verifiedAnimation(model, animations);
+    const orientation = validatedOrientation(model);
     // Re-read HEAD and manifest immediately before creating the commit.
     const head = await request("/git/ref/heads/" + BRANCH, { stage: "reading the main branch" });
     const parentSha = head.object?.sha;
     if (!/^[0-9a-f]{40}$/i.test(parentSha || "")) throw Error("Cannot identify GitHub branch");
     const parent = await request("/git/commits/" + parentSha, { stage: "reading the parent commit" });
     const manifest = await currentManifest();
+    if (manifest.entries.some(item => Number(item.dex) === dex) &&
+        options.replaceExisting !== true) {
+      throw Error("Pokémon #" + String(dex).padStart(4, "0") +
+        " is already published. Enable Override existing model to replace it.");
+    }
     const fileBlob = await request("/git/blobs", {
       method: "POST", stage: "uploading the model blob",
       body: { content: base64(bytes), encoding: "base64" },
@@ -204,10 +225,8 @@
       sourceModelId: model.eggPlaceholder === true ? 0 : (Number(model.sourceModelId) || null),
       eggPlaceholder: model.eggPlaceholder === true,
       gfpakImport: model.gfpakImport === true,
-      orientation: model.gfpakImport
-        ? window.POKEDEX3D_GFPAK_ZIP.orientation(model) : model.orientation || "0deg 90deg 0deg",
-      orientationVersion: model.gfpakImport ? 2 : model.orientationVersion,
-      idleAnimation: model.idleAnimation || null,
+      orientation, orientationVersion: 2,
+      idleAnimation,
       updatedAt: now,
     };
     manifest.entries = manifest.entries
@@ -242,8 +261,81 @@
     return fromManifest({ format: 1, source: FORMAT, entries: [entry] })[0];
   }
 
+  // Update appearance and preferred animation for a previously published
+  // temporary import without uploading or replacing its GLB contents.
+  async function saveModelSettings(model) {
+    if (!connected()) throw Error("Connect GitHub first");
+    const dex = validDex(model?.dex);
+    if (!dex || model.githubTemporary !== true) {
+      throw Error("Only previously published temporary models can be edited without a local GLB");
+    }
+    const orientation = validatedOrientation(model);
+    if (!model?.idleAnimation || !Array.isArray(model.animations) ||
+        !model.animations.includes(model.idleAnimation)) {
+      throw Error("Load the model and choose a playable default animation first");
+    }
+    const head = await request("/git/ref/heads/" + BRANCH, { stage: "reading the main branch" });
+    const parentSha = head.object?.sha;
+    if (!/^[0-9a-f]{40}$/i.test(parentSha || "")) throw Error("Cannot identify GitHub branch");
+    const parent = await request("/git/commits/" + parentSha, { stage: "reading the parent commit" });
+    const manifest = await currentManifest();
+    const index = manifest.entries.findIndex(row => Number(row.dex) === dex);
+    if (index < 0) throw Error("The published model is missing. Refresh its GitHub catalog.");
+    const existing = manifest.entries[index];
+    if (existing.path !== pathFor(dex)) throw Error("Cannot edit an unexpected model path");
+    const entry = { ...existing, orientation, orientationVersion: 2,
+      idleAnimation: model.idleAnimation, updatedAt: new Date().toISOString() };
+    manifest.entries[index] = entry;
+    const manifestBlob = await request("/git/blobs", {
+      method: "POST", stage: "uploading model settings",
+      body: { content: JSON.stringify(manifest, null, 2) + "\n", encoding: "utf-8" },
+    });
+    const tree = await request("/git/trees", {
+      method: "POST", stage: "preparing settings commit",
+      body: { base_tree: parent.tree.sha,
+        tree: [{ path: DIR + "/manifest.json", mode: "100644",
+          type: "blob", sha: manifestBlob.sha }] },
+    });
+    const commit = await request("/git/commits", {
+      method: "POST", stage: "creating settings commit",
+      body: { message: "Set default orientation and animation for #" + dex,
+        tree: tree.sha, parents: [parentSha] },
+    });
+    await request("/git/refs/heads/" + BRANCH, {
+      method: "PATCH", stage: "updating settings on main",
+      body: { sha: commit.sha, force: false },
+    });
+    return fromManifest({ format: 1, source: FORMAT, entries: [entry] })[0];
+  }
+
+  async function publishModels(models, options = {}) {
+    if (!connected()) throw Error("Connect GitHub first");
+    if (!Array.isArray(models)) throw Error("Choose local model files to publish");
+    const unique = new Map();
+    for (const model of models) {
+      if (model?.file instanceof File && validDex(model.dex)) unique.set(Number(model.dex), model);
+    }
+    const result = { published: [], skipped: [], failed: [] };
+    let position = 0;
+    for (const model of unique.values()) {
+      position++;
+      options.onProgress?.(position, unique.size, model);
+      try {
+        result.published.push(await publishModel(model, {
+          replaceExisting: options.replaceExisting === true,
+        }));
+      } catch (error) {
+        const item = { dex: model.dex, message: String(error?.message || error) };
+        if (/already published/.test(item.message)) result.skipped.push(item);
+        else result.failed.push(item);
+        if (/HTTP 40[13]/.test(item.message)) break;
+      }
+    }
+    return result;
+  }
+
   window.POKEDEX3D_GITHUB_STORAGE = Object.freeze({
-    load, connect, disconnect, connected, publishModel,
+    load, connect, disconnect, connected, publishModel, publishModels, saveModelSettings,
     storageRepository: OWNER + "/" + REPO,
   });
 })();
