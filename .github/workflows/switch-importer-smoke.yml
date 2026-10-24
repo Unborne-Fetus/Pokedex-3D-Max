@@ -32,6 +32,7 @@ on:
       - "web/app.js"
       - "web/github-model-storage.js"
       - "scripts/test_github_model_storage.js"
+      - "scripts/test_github_model_publish.js"
       - "web/community-candidate-catalog.js"
       - "web/styles.css"
       - "scripts/test_community_candidate_catalog.js"
@@ -58,6 +59,7 @@ on:
       - "web/app.js"
       - "web/github-model-storage.js"
       - "scripts/test_github_model_storage.js"
+      - "scripts/test_github_model_publish.js"
       - "web/community-candidate-catalog.js"
       - "web/styles.css"
       - "scripts/test_community_candidate_catalog.js"
@@ -104,6 +106,7 @@ jobs:
           python scripts/audit_embedded_model_ids.py --strict
           node scripts/test_model_identity.js
           node scripts/test_github_model_storage.js
+          node scripts/test_github_model_publish.js
           node --check web/github-model-storage.js
           node scripts/test_remote_switch_catalog.js
           node scripts/test_static_switch_catalog.js
