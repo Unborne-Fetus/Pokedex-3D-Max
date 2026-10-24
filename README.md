@@ -240,11 +240,26 @@ Viewing is **public and requires no sign-in**. Publishing is owner-only:
    regular GLB is automatically uploaded to GitHub. With **Open Switch model
    folder**, select the model in the Pokédex and click
    **Save selected model to GitHub**.
-4. Refresh the website on another browser or device. The published models
+4. To publish an entire loaded folder, click **Save all loaded models to GitHub**.
+   This publishes only currently loaded and verified local GLB files, one at a
+   time with progress reporting. Existing GitHub temporary imports are skipped
+   by default, and individual failed uploads do not delete local files.
+5. For a duplicate Pokémon number, enable **Override existing model with the
+   same Pokédex number** before importing or publishing a replacement.
+   Overriding an existing published model is explicit; it is never the default.
+6. Choose **Default model orientation** beside the 3D preview, then choose
+   **Default animation on load** in the GitHub panel. Click **Save selected
+   model / settings to GitHub**. For a previously published model with a
+   matching verified Git blob SHA, this changes only the manifest metadata
+   without uploading the GLB again. The preferred clip must actually exist
+   in the model. Settings edits and uploads require a connected owner token.
+7. Refresh the website on another browser or device. Published models
    should be listed without authentication once GitHub's public file cache
    updates.
 
-The upload is one Git commit containing both the GLB and its metadata update.
+Each individual model upload makes one Git commit containing the GLB and its
+metadata update; Save All runs these safely in sequence, not as one giant
+transaction.
 GitHub's default branch is updated without force-pushing, so concurrent writes
 cannot silently overwrite one another. Failed uploads leave local models intact.
 Imports larger than **40 MiB per converted GLB** remain local until a separate
