@@ -1027,7 +1027,7 @@ function refreshGitHubPublishButton() {
 }
 function refreshGitHubModelOptions() {
   const previous = githubDefaultAnimation.value;
-  const clips = [...new Set((currentModel?.animations || availableAnimations())
+  const clips = [...new Set((currentModel?.animations || [])
     .filter(name => typeof name === "string" && name))];
   githubDefaultAnimation.replaceChildren();
   for (const clip of clips) {
@@ -1123,36 +1123,106 @@ githubDisconnectBtn.addEventListener("click", () => {
   showGitHubConnected(false);
   githubStatus.textContent = "Disconnected. Models remain publicly viewable; uploads are disabled.";
 });
+async function rememberSuccessfulUpload(model) {
+  model.githubPublished = true;
+  if (model.gfpakImport && model.file instanceof File) {
+    try { await gfpakStorage("save", model); }
+    catch (error) { console.warn("Could not update local GitHub sync status", error); }
+  }
+}
+function mergePublishedEntries(published) {
+  if (!published.length) return;
+  const updated = new Set(published.map(model => Number(model.dex)));
+  mergeGitHubModels([
+    ...published,
+    ...models.filter(model => model.githubTemporary &&
+      !updated.has(Number(model.dex))),
+  ]);
+}
 githubPublishBtn.addEventListener("click", async () => {
-  if (githubBusy || !(currentModel?.file instanceof File)) return;
+  if (githubBusy || !githubStorage.connected() || !currentModel) return;
   const publishing = currentModel;
-  if (publishing.eggPlaceholder && !window.confirm(
+  const uploadingFile = publishing.file instanceof File;
+  if (!uploadingFile && publishing.githubTemporary !== true) return;
+  if (uploadingFile && publishing.eggPlaceholder && !window.confirm(
     "This is the Sword/Shield Egg (pm0000), NOT Victini's actual model. " +
-    "Publish it publicly in Victini #0494 as a clearly labelled Egg placeholder?"
+    "Publish it publicly as a clearly labelled Egg placeholder?"
+  )) return;
+  const replaceExisting = githubOverrideExisting.checked;
+  if (uploadingFile && replaceExisting && !window.confirm(
+    "Override the existing temporary GitHub model for #" +
+    String(publishing.dex).padStart(4, "0") + " if one exists? " +
+    "The previous published GLB for this species will be replaced."
   )) return;
   githubBusy = true;
+  githubDisconnectBtn.disabled = true;
   refreshGitHubPublishButton();
-  githubStatus.textContent = "Publishing Pokémon #" +
-    String(publishing.dex).padStart(4, "0") + " to GitHub…";
+  githubStatus.textContent = uploadingFile ? "Uploading Pokémon #" +
+    String(publishing.dex).padStart(4, "0") + " to GitHub…" :
+    "Saving selected model orientation and default animation…";
   try {
-    const published = await githubStorage.publishModel(publishing);
-    publishing.githubPublished = true;
-    if (publishing.gfpakImport) {
-      try { await gfpakStorage("save", publishing); }
-      catch (error) { console.warn("Could not update local upload status", error); }
-    }
-    mergeGitHubModels([
-      published,
-      ...models.filter(model => model.githubTemporary && model.dex !== published.dex),
-    ]);
-    githubStatus.textContent = publishing.name + " saved to GitHub. It is now public on every device.";
-    folderStatus.textContent = "Published Pokémon #" + String(publishing.dex).padStart(4, "0") +
-      " to GitHub. Model, embedded textures, skeleton and animations were saved.";
+    const published = uploadingFile
+      ? await githubStorage.publishModel(publishing, {replaceExisting})
+      : await githubStorage.saveModelSettings(publishing);
+    if (uploadingFile) await rememberSuccessfulUpload(publishing);
+    mergePublishedEntries([published]);
+    githubStatus.textContent = uploadingFile
+      ? publishing.name + " saved to GitHub. Its selected default settings are public."
+      : "Saved orientation and default animation for #" + publishing.dex + ".";
+    folderStatus.textContent = "Published settings for Pokémon #" +
+      String(publishing.dex).padStart(4, "0") + " to GitHub.";
   } catch (error) {
-    githubStatus.textContent = "GitHub upload failed: " + error.message +
+    githubStatus.textContent = "GitHub save failed: " + error.message +
       ". Local models were not removed.";
   } finally {
     githubBusy = false;
+    githubDisconnectBtn.disabled = false;
+    refreshGitHubPublishButton();
+  }
+});
+githubPublishAllBtn.addEventListener("click", async () => {
+  if (githubBusy || !githubStorage.connected()) return;
+  const pending = publishableLocalModels();
+  if (!pending.length) return;
+  const replaceExisting = githubOverrideExisting.checked;
+  if (!window.confirm(
+    "Save all " + pending.length + " verified, locally loaded Pokémon GLBs to GitHub? " +
+    (replaceExisting
+      ? "Existing temporary GitHub models with matching Pokédex numbers WILL be overwritten."
+      : "Previously published duplicates will be skipped.") +
+    " Models remain on your device if an upload fails."
+  )) return;
+  githubBusy = true;
+  githubDisconnectBtn.disabled = true;
+  refreshGitHubPublishButton();
+  try {
+    // Each published model updates the GitHub manifest against the latest HEAD.
+    // Sequential writes preserve manifest entries and report partial success.
+    const outcome = await githubStorage.publishModels(pending, {
+      replaceExisting,
+      onProgress: (index, total, model) => {
+        githubStatus.textContent = "Saving " + index + "/" + total +
+          " · Pokémon #" + String(model.dex).padStart(4, "0") + "…";
+      },
+    });
+    const publishedDex = new Set(outcome.published.map(row => Number(row.dex)));
+    for (const local of pending) {
+      if (publishedDex.has(Number(local.dex))) await rememberSuccessfulUpload(local);
+    }
+    mergePublishedEntries(outcome.published);
+    const failures = outcome.failed.slice(0, 3).map(item =>
+      "#" + item.dex + ": " + item.message).join(" | ");
+    githubStatus.textContent = "Save all: " + outcome.published.length +
+      " published, " + outcome.skipped.length + " duplicate(s) skipped, " +
+      outcome.failed.length + " failed." +
+      (failures ? " " + failures : "") +
+      " Local model files were preserved.";
+  } catch (error) {
+    githubStatus.textContent = "Save all failed: " + error.message +
+      ". Local model files were preserved.";
+  } finally {
+    githubBusy = false;
+    githubDisconnectBtn.disabled = false;
     refreshGitHubPublishButton();
   }
 });
