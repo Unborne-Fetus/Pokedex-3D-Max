@@ -1107,7 +1107,7 @@ githubConnectBtn.addEventListener("click", async () => {
     githubTokenInput.value = ""; // Never persist the credential.
     showGitHubConnected(true);
     githubStatus.textContent = "Connected as " + login +
-      ". GFPAK imports now publish automatically; folder imports can be published individually.";
+      ". Save selected models or all loaded models. Configure rotation and the default animation before saving.";
   } catch (error) {
     githubStatus.textContent = "GitHub connection failed: " + error.message;
   } finally {
@@ -1120,6 +1120,7 @@ githubConnectBtn.addEventListener("click", async () => {
 githubDisconnectBtn.addEventListener("click", () => {
   githubStorage.disconnect();
   githubTokenInput.value = "";
+  githubOverrideExisting.checked = false;
   showGitHubConnected(false);
   githubStatus.textContent = "Disconnected. Models remain publicly viewable; uploads are disabled.";
 });
@@ -1285,6 +1286,12 @@ gfpakZipFile.addEventListener("change", async () => {
           "Install it in Victini #0494 as a temporary Egg placeholder? " +
           "This replaces the local Victini preview; it does not change the original ZIP."
         )) return {skipped: true, detail: "Egg placeholder import cancelled"};
+        const existing = models.find(model =>
+          Number(model.dex) === Number(imported.dex) && !model.missingModel);
+        if (existing && (!githubStorage.connected() || !githubOverrideExisting.checked)) {
+          return { skipped: true, detail: "A model for this Pokémon is already loaded. " +
+            "Connect GitHub and enable Override existing model to replace it." };
+        }
         imported.gfpakImport = true;
         imported.orientation = window.POKEDEX3D_GFPAK_ZIP.orientation(imported);
         try {
@@ -1337,7 +1344,9 @@ gfpakZipFile.addEventListener("change", async () => {
         githubStatus.textContent = "Publishing " + (index + 1) + "/" +
           eligible.length + " to GitHub: " + imported.name + "…";
         try {
-          const entry = await githubStorage.publishModel(imported);
+          const entry = await githubStorage.publishModel(imported, {
+            replaceExisting: githubOverrideExisting.checked,
+          });
           published.push(entry);
           imported.githubPublished = true;
           if (savedDex.has(imported.dex)) {
