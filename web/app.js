@@ -266,7 +266,7 @@ for (const [value, label] of [
 const gfpakOrientationLabel = document.createElement("label");
 gfpakOrientationLabel.className = "animation-picker";
 gfpakOrientationLabel.hidden = true;
-gfpakOrientationLabel.textContent = "Imported model rotation ";
+gfpakOrientationLabel.textContent = "Default model orientation ";
 gfpakOrientationLabel.appendChild(gfpakOrientationSelect);
 animationSelect.closest("label")?.insertAdjacentElement("afterend", gfpakOrientationLabel);
 
@@ -1018,8 +1018,10 @@ function refreshGitHubPublishButton() {
   const selected = currentModel?.file instanceof File ||
     currentModel?.githubTemporary === true;
   githubPublishBtn.disabled = githubBusy || !connected || !selected;
-  githubPublishAllBtn.disabled = githubBusy || !connected ||
-    publishableLocalModels().length === 0;
+  const localCount = publishableLocalModels().length;
+  githubPublishAllBtn.textContent = "Save all " + localCount + " loaded model" +
+    (localCount === 1 ? "" : "s") + " to GitHub";
+  githubPublishAllBtn.disabled = githubBusy || !connected || localCount === 0;
   githubOverrideExisting.disabled = githubBusy || !connected;
   githubDefaultAnimation.disabled = githubBusy || !connected ||
     githubDefaultAnimation.options.length === 0;
@@ -1286,7 +1288,7 @@ gfpakZipFile.addEventListener("change", async () => {
           "Install it in Victini #0494 as a temporary Egg placeholder? " +
           "This replaces the local Victini preview; it does not change the original ZIP."
         )) return {skipped: true, detail: "Egg placeholder import cancelled"};
-        const existing = models.find(model =>
+        const existing = [...acceptedModels, ...models].find(model =>
           Number(model.dex) === Number(imported.dex) && !model.missingModel);
         if (existing && (!githubStorage.connected() || !githubOverrideExisting.checked)) {
           return { skipped: true, detail: "A model for this Pokémon is already loaded. " +
