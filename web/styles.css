@@ -123,7 +123,7 @@ button:hover, select:hover { background: #1a2b45; }
   overflow-wrap: anywhere;
 }
 .github-storage-panel label { font-size: .78rem; color: #dbe8fa; }
-.github-storage-panel input {
+.github-storage-panel input:not([type="checkbox"]), .github-storage-panel select {
   min-width: 0;
   width: 100%;
   color: #fff;
@@ -132,6 +132,10 @@ button:hover, select:hover { background: #1a2b45; }
   border-radius: 8px;
   padding: 9px 10px;
 }
+.github-setting-toggle { display: flex; align-items: flex-start; gap: 8px; line-height: 1.35; }
+.github-storage-panel input[type="checkbox"] { width: auto; min-width: 16px; height: 16px; flex: 0 0 auto; margin: 1px 0 0; accent-color: #69d8ba; }
+.github-storage-panel select { color: #fff; background: #081626; border: 1px solid #3b506c; border-radius: 8px; padding: 9px 10px; width: 100%; }
+.github-storage-panel select:disabled { opacity: .6; }
 .github-storage-actions { display: flex; gap: 7px; }
 .github-storage-panel button:disabled { cursor: not-allowed; opacity: .55; }
 .github-storage-panel button[hidden], .github-storage-panel input[hidden] { display: none; }
