@@ -14,6 +14,7 @@ const nextBtn = document.querySelector("#nextBtn");
 const resetCameraBtn = document.querySelector("#resetCamera");
 const toggleRotateBtn = document.querySelector("#toggleRotate");
 const animationSelect = document.querySelector("#animationSelect");
+const materialFinishSelect = document.querySelector("#materialFinish");
 const repairTexturesBtn = document.querySelector("#repairTextures");
 const repairPanel = document.querySelector("#repairPanel");
 const repairTitle = document.querySelector("#repairTitle");
@@ -252,9 +253,12 @@ const gfpakOrientationSelect = document.createElement("select");
 gfpakOrientationSelect.id = "gfpakOrientation";
 gfpakOrientationSelect.setAttribute("aria-label", "GFPAK model rotation");
 for (const [value, label] of [
-  ["0deg 0deg 0deg", "Original"], ["0deg 90deg 0deg", "X +90°"],
-  ["0deg -90deg 0deg", "X -90°"], ["0deg 180deg 0deg", "X 180°"],
-  ["0deg 0deg 90deg", "Y +90°"], ["0deg 0deg 180deg", "Y 180°"],
+  ["0deg 0deg 0deg", "Original"],
+  ["0deg 90deg 0deg", "Y +90°"], ["0deg -90deg 0deg", "Y -90°"],
+  ["0deg 180deg 0deg", "Y 180°"],
+  ["90deg 0deg 0deg", "X +90°"], ["-90deg 0deg 0deg", "X -90°"],
+  ["0deg 0deg 90deg", "Z +90°"], ["0deg 0deg -90deg", "Z -90°"],
+  ["0deg 0deg 180deg", "Z 180°"],
   ["90deg 90deg 0deg", "Legacy rotation 1"],
   ["-90deg 90deg 0deg", "Legacy rotation 2"],
   ["180deg 90deg 0deg", "Legacy rotation 3"]
@@ -335,6 +339,8 @@ let localModelsForExport = [];
 let remoteAbort = null;
 let loadSequence = 0;
 let cameraFitTimer = null;
+let activeAnimationSequence = null;
+let materialBaseline = [];
 
 // Species-specific camera pivot corrections. Units are a fraction of
 // horizontal model bounds; they only affect framing, never meshes or rigs.
@@ -406,12 +412,94 @@ function resetAnimationSelect(label = "Loading…") {
   animationSelect.disabled = true;
 }
 
-function playAnimation(name) {
-  if (!name || !availableAnimations().includes(name)) return;
+// Triplets in imported Switch archives are separate GLB clips. Treat complete
+// Start/Loop/End triplets as one action, keeping each raw clip independently
+// selectable for troubleshooting. Never guess missing phase names.
+function animationPhase(name) {
+  const normalized = String(name).replace(/^pm\d{4}(?:_\d{2}){2}_\d{5}_/i, "");
+  const match = normalized.match(/^(.+?)[_\s-]+(start|loop|end)$/i);
+  return match ? { key: match[1].toLowerCase(), phase: match[2].toLowerCase() } : null;
+}
+
+let animationSequences = new Map();
+function discoverAnimationSequences(animations) {
+  const groups = new Map();
+  for (const clip of animations) {
+    const part = animationPhase(clip);
+    if (!part) continue;
+    if (!groups.has(part.key)) groups.set(part.key, {});
+    groups.get(part.key)[part.phase] = clip;
+  }
+  return new Map([...groups].filter(([, phases]) =>
+    phases.start && phases.loop && phases.end));
+}
+
+function playClip(name, repetitions = Infinity) {
+  if (!name || !availableAnimations().includes(name)) return false;
   viewer.animationName = name;
   viewer.currentTime = 0;
-  viewer.play(); // Loop the selected clip until the user chooses another one.
+  viewer.play({ repetitions });
   messageEl.classList.add("hidden");
+  return true;
+}
+
+function playAnimation(name) {
+  activeAnimationSequence = null; // Cancel a previous action if user switches.
+  if (name.startsWith("sequence:")) {
+    const clips = animationSequences.get(name.slice(9));
+    if (!clips) return;
+    activeAnimationSequence = {
+      clips, phase: 0, expected: clips.start, modelSequence: loadSequence,
+    };
+    if (!playClip(clips.start, 1)) activeAnimationSequence = null;
+    return;
+  }
+  playClip(name);
+}
+
+viewer.addEventListener("finished", () => {
+  const sequence = activeAnimationSequence;
+  if (!sequence || sequence.modelSequence !== loadSequence ||
+      viewer.animationName !== sequence.expected) return;
+  sequence.phase++;
+  if (sequence.phase === 1) {
+    // A finite number of loop iterations guarantees the End animation runs.
+    sequence.expected = sequence.clips.loop;
+    if (!playClip(sequence.expected, 2)) activeAnimationSequence = null;
+  } else if (sequence.phase === 2) {
+    sequence.expected = sequence.clips.end;
+    if (!playClip(sequence.expected, 1)) activeAnimationSequence = null;
+  } else {
+    activeAnimationSequence = null;
+    const idle = chooseIdle(currentModel, availableAnimations());
+    if (idle) {
+      animationSelect.value = idle;
+      playClip(idle);
+    }
+  }
+});
+
+// View-only surface correction: do not mutate the GLB or overwrite its
+// textures. Snapshot each newly loaded scene so Original restores precisely.
+function applyMaterialFinish() {
+  const natural = materialFinishSelect?.value !== "original";
+  for (const record of materialBaseline) {
+    const pbr = record.material.pbrMetallicRoughness;
+    if (!pbr) continue;
+    try {
+      pbr.setMetallicFactor(natural ? Math.min(record.metal, 0.22) : record.metal);
+      pbr.setRoughnessFactor(natural ? Math.max(record.rough, 0.78) : record.rough);
+    } catch (_) { /* Do not break a model with unsupported materials. */ }
+  }
+}
+materialFinishSelect?.addEventListener("change", applyMaterialFinish);
+function captureMaterialFinish() {
+  materialBaseline = Array.from(viewer.model?.materials || []).map(material => ({
+    material,
+    metal: material.pbrMetallicRoughness?.metallicFactor ?? 0,
+    rough: material.pbrMetallicRoughness?.roughnessFactor ?? 1,
+  }));
+  applyMaterialFinish();
 }
 
 // Render friendly labels without changing the exact animation identifiers used by model-viewer.
@@ -458,7 +546,15 @@ function setupAnimationSelect() {
   }
   const idle = chooseIdle(currentModel, animations);
   const initial = idle || animations[0];
+  animationSequences = discoverAnimationSequences(animations);
   animationSelect.replaceChildren();
+  for (const [key, clips] of animationSequences) {
+    const option = document.createElement("option");
+    option.value = "sequence:" + key;
+    option.textContent = animationDisplayName(clips.start).replace(/\s+Start$/i, "") +
+      " • Start → Loop → End";
+    animationSelect.appendChild(option);
+  }
   for (const name of animations) {
     const option = document.createElement("option");
     option.value = name;
@@ -499,6 +595,10 @@ function computeCameraFrame(dimensions, center, viewportWidth, viewportHeight, m
   // Verified catalog metadata can tune genuinely unusual individual models.
   const scale = Number(model?.cameraDistanceScale);
   if (Number.isFinite(scale) && scale >= 0.5 && scale <= 2) distance *= scale;
+  // LA imports #0465 have unusually generous source bounds; #0493 has long
+  // appendages that approach the camera in motion. Avoid tiny/cropped poses.
+  const speciesFrameScale = { 465: 0.84, 493: 1.22 }[Number(model?.dex)];
+  if (speciesFrameScale) distance *= speciesFrameScale;
   if (!Number.isFinite(distance) || distance <= 0) return null;
 
   // Slightly lower the displayed Pokémon by lifting the camera target.
@@ -638,6 +738,9 @@ function loadModel(model) {
   clearLoadTimer();
   clearCameraFitTimer();
   resetAnimationSelect();
+  activeAnimationSequence = null;
+  animationSequences = new Map();
+  materialBaseline = [];
   currentModel = model;
   githubDefaultAnimation.replaceChildren();
   refreshGitHubModelOptions();
@@ -826,6 +929,7 @@ function applyFilter(loadFirst = true) {
 
 viewer.addEventListener("load", () => {
   clearLoadTimer();
+  captureMaterialFinish();
   const hasIdle = setupAnimationSelect();
   noteAnimationInspection(currentModel, hasIdle);
   scheduleCameraFit();
@@ -833,6 +937,8 @@ viewer.addEventListener("load", () => {
 
 viewer.addEventListener("error", () => {
   clearLoadTimer();
+  activeAnimationSequence = null;
+  materialBaseline = [];
   resetAnimationSelect("Unavailable");
   messageEl.textContent = currentModel?.communityCandidate ?
     "The external community preview could not render. The existing Switch catalog is untouched." :
