@@ -116,9 +116,9 @@
           camera-controls
           touch-action="pan-y"
           interaction-prompt="none"
-          shadow-intensity="1"
+          shadow-intensity="0.8"
           shadow-softness="0.8"
-          exposure="1.15"
+          exposure="0.95"
           tone-mapping="aces"
           environment-image="neutral"
           min-camera-orbit="auto 1deg 12%"
@@ -151,6 +151,12 @@
         <label class="animation-picker" for="animationSelect">Animation
           <select id="animationSelect" aria-label="Choose animation" disabled>
             <option value="">Loading…</option>
+          </select>
+        </label>
+        <label class="animation-picker" for="materialFinish">Materials
+          <select id="materialFinish" aria-label="Material reflection finish">
+            <option value="natural">Natural (less glossy)</option>
+            <option value="original">Original GLB</option>
           </select>
         </label>
         <button id="repairTextures" type="button">Repair textures</button>
@@ -196,7 +202,7 @@
   <script defer src="web/remote-switch-catalog.js?v=8"></script>
   <script defer src="web/species-texture-repairs.js?v=7"></script>
   <script defer src="web/github-model-storage.js?v=4"></script>
-  <script defer src="web/app.js?v=72"></script>
+  <script defer src="web/app.js?v=73"></script>
 </body>
 </html>
 
