@@ -1,6 +1,8 @@
-# All 1,025 Pokémon — regional and National Pokédex numbers
+# Missing Pokémon — regional and National Pokédex numbers
 
-Each National Pokédex species appears **exactly once**. Every base game and DLC has its own category and its **own regional numbering**. A species is assigned to the most recent game family in which it appears (as in the original list), then to the **latest DLC Pokédex it belongs to within that family**; otherwise it stays in the base-game Pokédex. Pokémon transferable or obtainable without a regional Pokédex entry are listed separately with `—`, not an invented regional number. Numbers can repeat across categories because each Pokédex starts again at #001. Each entry now shows both its regional and National Pokédex numbers; the companion CSV also includes both.
+Each Pokémon not yet published to the current Pokédex 3D Max manual-import catalog appears **exactly once**. Every base game and DLC has its own category and its **own regional numbering**. A species is assigned to the most recent game family in which it appears (as in the original list), then to the **latest DLC Pokédex it belongs to within that family**; otherwise it stays in the base-game Pokédex. Pokémon transferable or obtainable without a regional Pokédex entry are listed separately with `—`, not an invented regional number. Numbers can repeat across categories because each Pokédex starts again at #001. Each entry now shows both its regional and National Pokédex numbers; the companion CSV also includes both.
+
+**Catalog snapshot:** Excludes 49 Pokémon currently published in [`temporary-imports/manifest.json`](https://github.com/Unborne-Fetus/Pokedex-3D-Models-Animations/blob/main/temporary-imports/manifest.json). Local-only browser imports are not visible here; regenerate this reference as new models are published. This is a **missing-from-the-current-manual-catalog** list, not an availability list for historical Switch model archives.
 
 **Scope:** Let's Go, Sword/Shield (base, Isle of Armor, Crown Tundra), Brilliant Diamond/Shining Pearl, Legends: Arceus, Scarlet/Violet (base, Teal Mask/Kitakami, Indigo Disk/Blueberry), Legends: Z-A (base Lumiose, Mega Dimension/Hyperspace). Regional numbers were matched against the [PokéAPI regional Pokédex dataset](https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/pokemon_dex_numbers.csv). BDSP uses the expanded Sinnoh regional Pokédex; its National Dex-only species have no Sinnoh number. The introduction generation is retained in each line.
 
@@ -13,7 +15,7 @@ Each National Pokédex species appears **exactly once**. Every base game and DLC
 - SwSh — Other compatible (no regional number): 21
 - BDSP — Sinnoh: 2
 - BDSP — Other compatible (no regional number): 66
-- Legends: Arceus — Hisui: 55
+- Legends: Arceus — Hisui: 6
 - Scarlet/Violet — Paldea: 141
 - Scarlet/Violet — Teal Mask DLC (Kitakami): 126
 - Scarlet/Violet — Indigo Disk DLC (Blueberry): 160
@@ -21,7 +23,7 @@ Each National Pokédex species appears **exactly once**. Every base game and DLC
 - Legends: Z-A — Lumiose City: 232
 - Legends: Z-A — Mega Dimension DLC (Hyperspace): 132
 
-**Total: 1,025 distinct species**
+**Total missing: 976 distinct species**
 
 ## Let's Go — Kanto (0)
 
@@ -213,57 +215,8 @@ Each National Pokédex species appears **exactly once**. Every base game and DLC
 - — Regice — National #0378 (Gen 3)
 - — Registeel — National #0379 (Gen 3)
 
-## Legends: Arceus — Hisui (55)
+## Legends: Arceus — Hisui (6)
 
-- #053 Paras — National #0046 (Gen 1)
-- #054 Parasect — National #0047 (Gen 1)
-- #023 Ponyta — National #0077 (Gen 1)
-- #024 Rapidash — National #0078 (Gen 1)
-- #125 Lickitung — National #0108 (Gen 1)
-- #095 Tangela — National #0114 (Gen 1)
-- #127 Togepi — National #0175 (Gen 2)
-- #128 Togetic — National #0176 (Gen 2)
-- #142 Unown — National #0201 (Gen 2)
-- #146 Remoraid — National #0223 (Gen 2)
-- #147 Octillery — National #0224 (Gen 2)
-- #165 Mantine — National #0226 (Gen 2)
-- #018 Wurmple — National #0265 (Gen 3)
-- #019 Silcoon — National #0266 (Gen 3)
-- #020 Beautifly — National #0267 (Gen 3)
-- #021 Cascoon — National #0268 (Gen 3)
-- #022 Dustox — National #0269 (Gen 3)
-- #143 Spheal — National #0363 (Gen 3)
-- #144 Sealeo — National #0364 (Gen 3)
-- #145 Walrein — National #0365 (Gen 3)
-- #010 Bidoof — National #0399 (Gen 4)
-- #011 Bibarel — National #0400 (Gen 4)
-- #043 Burmy — National #0412 (Gen 4)
-- #044 Wormadam — National #0413 (Gen 4)
-- #045 Mothim — National #0414 (Gen 4)
-- #066 Cherubi — National #0420 (Gen 4)
-- #067 Cherrim — National #0421 (Gen 4)
-- #152 Glameow — National #0431 (Gen 4)
-- #153 Purugly — National #0432 (Gen 4)
-- #157 Chatot — National #0441 (Gen 4)
-- #148 Skorupi — National #0451 (Gen 4)
-- #149 Drapion — National #0452 (Gen 4)
-- #092 Carnivine — National #0455 (Gen 4)
-- #164 Mantyke — National #0458 (Gen 4)
-- #126 Lickilicky — National #0463 (Gen 4)
-- #096 Tangrowth — National #0465 (Gen 4)
-- #129 Togekiss — National #0468 (Gen 4)
-- #225 Uxie — National #0480 (Gen 4)
-- #226 Mesprit — National #0481 (Gen 4)
-- #227 Azelf — National #0482 (Gen 4)
-- #235 Dialga — National #0483 (Gen 4)
-- #236 Palkia — National #0484 (Gen 4)
-- #229 Regigigas — National #0486 (Gen 4)
-- #237 Giratina — National #0487 (Gen 4)
-- #230 Cresselia — National #0488 (Gen 4)
-- #239 Phione — National #0489 (Gen 4)
-- #240 Manaphy — National #0490 (Gen 4)
-- #241 Shaymin — National #0492 (Gen 4)
-- #238 Arceus — National #0493 (Gen 4)
 - #231 Tornadus — National #0641 (Gen 5)
 - #232 Thundurus — National #0642 (Gen 5)
 - #233 Landorus — National #0645 (Gen 5)
