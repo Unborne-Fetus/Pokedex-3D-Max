@@ -444,6 +444,7 @@ function playClip(name, repetitions = Infinity) {
 }
 
 function playAnimation(name) {
+  if (typeof name !== "string" || !name) return;
   activeAnimationSequence = null; // Cancel a previous action if user switches.
   if (name.startsWith("sequence:")) {
     const clips = animationSequences.get(name.slice(9));
@@ -489,6 +490,16 @@ function applyMaterialFinish() {
     try {
       pbr.setMetallicFactor(natural ? Math.min(record.metal, 0.22) : record.metal);
       pbr.setRoughnessFactor(natural ? Math.max(record.rough, 0.78) : record.rough);
+      if (typeof record.material.setSpecularFactor === "function" &&
+          Number.isFinite(record.specular)) {
+        record.material.setSpecularFactor(natural ?
+          Math.min(record.specular, 0.65) : record.specular);
+      }
+      if (typeof record.material.setClearcoatFactor === "function" &&
+          Number.isFinite(record.clearcoat)) {
+        record.material.setClearcoatFactor(natural ?
+          Math.min(record.clearcoat, 0.15) : record.clearcoat);
+      }
     } catch (_) { /* Do not break a model with unsupported materials. */ }
   }
 }
@@ -498,6 +509,8 @@ function captureMaterialFinish() {
     material,
     metal: material.pbrMetallicRoughness?.metallicFactor ?? 0,
     rough: material.pbrMetallicRoughness?.roughnessFactor ?? 1,
+    specular: material.specularFactor,
+    clearcoat: material.clearcoatFactor,
   }));
   applyMaterialFinish();
 }
