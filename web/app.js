@@ -608,10 +608,8 @@ function computeCameraFrame(dimensions, center, viewportWidth, viewportHeight, m
   // Verified catalog metadata can tune genuinely unusual individual models.
   const scale = Number(model?.cameraDistanceScale);
   if (Number.isFinite(scale) && scale >= 0.5 && scale <= 2) distance *= scale;
-  // LA imports #0465 have unusually generous source bounds; #0493 has long
-  // appendages that approach the camera in motion. Avoid tiny/cropped poses.
-  const speciesFrameScale = { 465: 0.84, 493: 1.22 }[Number(model?.dex)];
-  if (speciesFrameScale) distance *= speciesFrameScale;
+  // Arceus has long appendages that approach the camera in motion.
+  if (Number(model?.dex) === 493) distance *= 1.22;
   if (!Number.isFinite(distance) || distance <= 0) return null;
 
   // Slightly lower the displayed Pokémon by lifting the camera target.
