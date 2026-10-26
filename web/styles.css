@@ -71,6 +71,8 @@ button, input, select { font: inherit; }
   gap: 8px;
   margin-top: 10px;
 }
+.viewer-controls { flex-wrap: wrap; align-items: center; }
+#materialFinish { max-width: min(200px, 46vw); }
 
 button, select {
   border: 1px solid #31405a;
