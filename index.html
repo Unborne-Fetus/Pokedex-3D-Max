@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin />
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-  <link rel="stylesheet" href="web/styles.css?v=11" />
+  <link rel="stylesheet" href="web/styles.css?v=12" />
   <script defer src="web/vendor/model-viewer.min.js"></script>
 </head>
 <body>
@@ -48,7 +48,16 @@
 
   <main id="dexView" class="layout">
     <aside class="sidebar">
-      <details class="browser-folder-picker" id="importTools" open>
+      <input id="search" type="search" placeholder="Search Pokémon or #" autocomplete="off" />
+      <div class="toolbar">
+        <button id="prevBtn" type="button">← Previous</button>
+        <button id="nextBtn" type="button">Next →</button>
+      </div>
+      <details id="pokemonBrowser" class="pokemon-browser" open>
+        <summary>Browse Pokémon</summary>
+        <div id="list" class="pokemon-list" aria-live="polite"></div>
+      </details>
+      <details class="browser-folder-picker" id="importTools">
         <summary>Model imports and GitHub storage</summary>
         <button id="chooseLocalModels" type="button">Open Switch model folder</button>
         <button id="importGfpakZip" type="button">Import GFPAK Pokémon ZIPs</button>
@@ -88,12 +97,6 @@
           <small id="githubStatus" role="status" aria-live="polite">Public models load automatically. Publishing requires your GitHub token.</small>
         </section>
       </details>
-      <input id="search" type="search" placeholder="Search Pokémon or #" autocomplete="off" />
-      <div class="toolbar">
-        <button id="prevBtn" type="button">← Previous</button>
-        <button id="nextBtn" type="button">Next →</button>
-      </div>
-      <div id="list" class="pokemon-list" aria-live="polite"></div>
     </aside>
 
     <section class="viewer-panel">
@@ -168,10 +171,27 @@
   </main>
 
   <script>
-    // Hide advanced import controls initially on compact screens.
-    if (window.matchMedia("(max-width: 820px)").matches) {
-      document.getElementById("importTools").open = false;
-    }
+    // Keep the species browser close to the search on compact screens.
+    const compactDex = window.matchMedia("(max-width: 820px)");
+    const pokemonBrowser = document.getElementById("pokemonBrowser");
+    const searchBox = document.getElementById("search");
+    const modelPanel = document.querySelector(".viewer-panel");
+    if (compactDex.matches) pokemonBrowser.open = false;
+    searchBox.addEventListener("focus", () => {
+      if (compactDex.matches) pokemonBrowser.open = true;
+    });
+    searchBox.addEventListener("input", () => {
+      if (compactDex.matches) pokemonBrowser.open = true;
+    });
+    document.getElementById("list").addEventListener("click", (event) => {
+      if (compactDex.matches && event.target.closest(".entry")) {
+        pokemonBrowser.open = false;
+        modelPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+    compactDex.addEventListener("change", (event) => {
+      if (!event.matches) pokemonBrowser.open = true;
+    });
     window.__pokedex3dBooted = false;
     window.addEventListener("error", function (event) {
       var status = document.getElementById("status");
