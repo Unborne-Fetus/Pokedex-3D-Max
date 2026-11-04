@@ -430,3 +430,59 @@ model-viewer.fallback-active { visibility: hidden; }
   .coverage-meters { grid-template-columns: 1fr; }
   .coverage-meter:last-child { grid-column: auto; }
 }
+
+/* Compact-screen layout: prioritize the Pokédex search and model viewer. */
+.browser-folder-picker > summary {
+  display: none;
+  cursor: pointer;
+  color: #d9e9fb;
+  font-weight: 700;
+  padding: 2px 0;
+}
+@media (max-width: 820px) {
+  html, body { overflow-x: hidden; }
+  .topbar { position: static; gap: 10px; }
+  .coverage-meters { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .coverage-meter:last-child { grid-column: auto; }
+  .coverage-heading { display: block; font-size: .72rem; }
+  .coverage-heading strong { display: block; font-size: .76rem; }
+  .coverage-detail { display: none; }
+  .coverage-track { height: 7px; }
+  .layout { display: flex; flex-direction: column; overflow: visible; }
+  .sidebar { display: contents; }
+  #search { order: 0; width: calc(100% - 24px); margin: 12px 12px 0; }
+  .toolbar { order: 1; margin: 8px 12px 0; }
+  .toolbar > button { flex: 1 1 0; min-width: 0; }
+  .viewer-panel { order: 2; height: auto; min-height: 0; overflow: visible; padding: 12px; }
+  .viewer-wrap { flex: none; height: clamp(270px, 45dvh, 460px); min-height: 0; }
+  model-viewer { min-height: 0; }
+  .pokemon-list {
+    order: 3; flex: none; min-height: 150px; max-height: 280px;
+    margin: 0 12px; padding-right: 4px;
+  }
+  .browser-folder-picker { order: 4; margin: 12px; padding: 10px; }
+  .browser-folder-picker > summary { display: list-item; }
+  .viewer-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .viewer-controls > * { min-width: 0; }
+  .animation-picker { display: flex; white-space: normal; flex-wrap: wrap; }
+  .animation-picker select { flex: 1 1 140px; min-width: 0; max-width: 100%; }
+  .hint { line-height: 1.4; }
+}
+@media (max-width: 520px) {
+  .topbar { padding: 10px 12px; }
+  .topbar h1 { font-size: 1.2rem; }
+  .coverage-meters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .viewer-header { align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+  .viewer-header > div { min-width: 0; }
+  #formSelect { min-width: 0; max-width: 100%; }
+  .viewer-wrap { height: min(47dvh, 360px); min-height: 240px; }
+  .viewer-controls > .animation-picker { grid-column: 1 / -1; }
+  #materialFinish { max-width: 100%; }
+  #repairTextures { margin-left: 0; }
+  .viewer-message { width: max-content; max-width: calc(100% - 20px); text-align: center; }
+  .github-storage-actions { flex-wrap: wrap; }
+  .github-storage-actions > button { flex: 1 1 auto; }
+}
+@media (max-width: 820px) and (max-height: 600px) {
+  .viewer-wrap { height: 260px; min-height: 220px; }
+}
