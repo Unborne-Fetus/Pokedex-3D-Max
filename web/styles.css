@@ -486,3 +486,108 @@ model-viewer.fallback-active { visibility: hidden; }
 @media (max-width: 820px) and (max-height: 600px) {
   .viewer-wrap { height: 260px; min-height: 220px; }
 }
+
+/* Responsive pass 2: browsing stays accessible without burying the model. */
+.pokemon-browser {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+}
+.pokemon-browser > summary,
+.browser-folder-picker > summary {
+  display: list-item;
+  cursor: pointer;
+  font-weight: 700;
+  color: #cfe4fb;
+  padding: 10px 8px;
+  touch-action: manipulation;
+}
+.pokemon-browser > summary {
+  border-bottom: 1px solid #30405b;
+  font-size: .88rem;
+}
+.pokemon-browser[open] > .pokemon-list {
+  min-height: 0;
+  flex: 1 1 auto;
+}
+.pokemon-browser:not([open]) {
+  flex: 0 0 auto;
+}
+.browser-folder-picker {
+  flex: 0 0 auto;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+.browser-folder-picker[open] { max-height: 50%; }
+.browser-folder-picker > summary { padding: 4px 0; }
+.viewer-panel { overflow-y: auto; }
+.viewer-wrap { min-height: min(310px, 42dvh); }
+.topbar > div:first-child { min-width: 0; }
+.topbar #status { overflow-wrap: anywhere; }
+@media (max-width: 1199px) and (min-width: 821px) {
+  .layout { grid-template-columns: minmax(230px, 300px) minmax(0, 1fr); }
+  .topbar { padding: 10px 14px; gap: 9px; }
+  .topbar h1 { font-size: 1.25rem; }
+  .viewer-panel { padding: 12px; }
+  .viewer-header { gap: 8px; }
+  .viewer-header h2 { font-size: 1.5rem; }
+  .viewer-wrap { flex: 1 0 280px; }
+  .viewer-controls { gap: 7px; }
+  .viewer-controls button, .viewer-controls select { padding: 8px; }
+  .sidebar { padding: 10px; }
+}
+@media (max-height: 720px) and (min-width: 821px) {
+  .topbar { min-height: 0; }
+  .viewer-wrap { flex: 1 0 250px; }
+  .hint { font-size: .76rem; }
+}
+@media (max-width: 820px) {
+  .pokemon-browser {
+    order: 2;
+    flex: none;
+    margin: 8px 12px 0;
+    min-height: 0;
+    border: 1px solid #30405b;
+    border-radius: 10px;
+    background: #0c1a2b;
+    overflow: hidden;
+  }
+  .pokemon-browser > summary { padding: 9px 12px; }
+  .pokemon-browser:not([open]) > summary { border-bottom: 0; }
+  .pokemon-browser .pokemon-list {
+    margin: 0;
+    padding: 6px 8px;
+    max-height: min(230px, 29dvh);
+    min-height: 0;
+    flex: none;
+  }
+  .viewer-panel { order: 3; overflow: visible; }
+  .viewer-wrap { height: clamp(300px, 49dvh, 500px); min-height: 0; }
+  .browser-folder-picker {
+    order: 4;
+    margin: 8px 12px 16px;
+    max-height: none;
+    overflow: visible;
+    border: 1px solid #30405b;
+  }
+  .browser-folder-picker[open] { max-height: none; }
+  .browser-folder-picker > summary { padding: 6px; }
+  .browser-folder-picker:not([open]) { padding: 6px 10px; }
+  .browser-folder-picker:not([open]) > summary { padding: 4px; }
+  .viewer-controls button, .viewer-controls select { min-height: 42px; }
+}
+@media (max-width: 520px) {
+  .topbar { gap: 6px; }
+  .topbar p { font-size: .78rem; }
+  .top-actions { display: none; }
+  .coverage-meters { gap: 8px; }
+  .coverage-heading { font-size: .68rem; }
+  .coverage-heading strong { font-size: .7rem; }
+  .coverage-track { display: none; }
+  .viewer-wrap { height: clamp(270px, 47dvh, 400px); min-height: 0; }
+  .viewer-header h2 { font-size: 1.35rem; }
+  .viewer-controls { gap: 6px; }
+  .viewer-controls button { padding: 8px 5px; }
+  .viewer-controls > .animation-picker { gap: 5px; }
+}
