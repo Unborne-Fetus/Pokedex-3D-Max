@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin />
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-  <link rel="stylesheet" href="web/styles.css?v=10" />
+  <link rel="stylesheet" href="web/styles.css?v=11" />
   <script defer src="web/vendor/model-viewer.min.js"></script>
 </head>
 <body>
@@ -48,7 +48,8 @@
 
   <main id="dexView" class="layout">
     <aside class="sidebar">
-      <div class="browser-folder-picker">
+      <details class="browser-folder-picker" id="importTools" open>
+        <summary>Model imports and GitHub storage</summary>
         <button id="chooseLocalModels" type="button">Open Switch model folder</button>
         <button id="importGfpakZip" type="button">Import GFPAK Pokémon ZIPs</button>
         <input id="gfpakZipFile" type="file" accept=".zip,application/zip" multiple hidden aria-label="Choose one or more GFPAK Pokémon ZIP files" />
@@ -86,7 +87,7 @@
           <button id="publishAllGitHub" type="button" disabled>Save all loaded models to GitHub</button>
           <small id="githubStatus" role="status" aria-live="polite">Public models load automatically. Publishing requires your GitHub token.</small>
         </section>
-      </div>
+      </details>
       <input id="search" type="search" placeholder="Search Pokémon or #" autocomplete="off" />
       <div class="toolbar">
         <button id="prevBtn" type="button">← Previous</button>
@@ -167,6 +168,10 @@
   </main>
 
   <script>
+    // Hide advanced import controls initially on compact screens.
+    if (window.matchMedia("(max-width: 820px)").matches) {
+      document.getElementById("importTools").open = false;
+    }
     window.__pokedex3dBooted = false;
     window.addEventListener("error", function (event) {
       var status = document.getElementById("status");
